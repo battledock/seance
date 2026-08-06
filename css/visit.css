@@ -1,0 +1,74 @@
+/* La visite d'un cinéma. */
+
+/* ============ visite.html ============ */
+.contenuVisite{padding-top:calc(12px + var(--safeT));padding-bottom:26px}
+.barreVisite{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.retourMonCine{text-decoration:none;font-family:'Courier New',monospace;font-size:10.5px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--encre);
+  background:linear-gradient(180deg,#f6e3a6,#caa24a);padding:7px 12px;border-radius:14px}
+.retourVitrine:focus-visible,.retourMonCine:focus-visible,
+.ongletVisite:focus-visible,.btnEntrer:focus-visible{outline:2px solid var(--or);outline-offset:2px}
+.bandeauApercu{
+  display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 13px;border-radius:9px;
+  background:rgba(202,162,74,.16);border:1.5px solid rgba(202,162,74,.5);
+  font-size:12px;line-height:1.4;color:var(--creme);
+}
+.bandeauApercu.compact{padding:8px 11px;font-size:11px}
+.bandeauApercu .ico{width:17px;height:17px;color:var(--or-clair);flex:none}
+.btnApercu{margin-left:auto;flex:none;text-decoration:none;font-family:'Courier New',monospace;
+  font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--encre);
+  background:var(--or);padding:6px 10px;border-radius:12px;white-space:nowrap}
+.facadeVisite{margin-top:12px;border-radius:10px;overflow:hidden;line-height:0}
+.facadeVisite svg{width:100%;display:block}
+.carteArrivee{margin-top:12px}
+.btnEntrer{width:100%;margin-top:14px;padding:15px;display:flex;align-items:center;
+  justify-content:center;gap:9px;font-size:13px;letter-spacing:.1em}
+.btnEntrer .ico{width:19px;height:19px}
+.btnVisiter{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  margin-top:14px;padding:14px;text-decoration:none;font-size:12.5px;letter-spacing:.1em}
+.btnVisiter .ico{width:18px;height:18px}
+.voileEntree{
+  position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 50%, rgba(60,20,32,.9), rgba(6,2,4,.99));
+  animation:entreeIn .28s ease-out;
+}
+.voileEntree.sortie{animation:entreeOut .3s forwards}
+.veTexte{font-size:15px;letter-spacing:.24em;text-transform:uppercase;color:#f7dd9a;
+  text-shadow:0 0 18px rgba(247,221,154,.55)}
+.evNom{display:flex;align-items:baseline;justify-content:center;gap:7px;
+  font-size:17px;font-weight:bold;color:var(--or-clair)}
+.evPar{font-family:'Courier New',monospace;font-size:10.5px;opacity:.7;margin-top:2px}
+.ongletsVisite{display:flex;gap:6px;overflow-x:auto;margin-top:12px;padding-bottom:4px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.ongletsVisite::-webkit-scrollbar{display:none}
+.ongletVisite{
+  flex:none;display:flex;align-items:center;gap:5px;padding:9px 13px;border-radius:16px;
+  cursor:pointer;font-family:inherit;font-size:11.5px;white-space:nowrap;
+  background:transparent;color:var(--creme);border:1.5px solid rgba(202,162,74,.45);
+}
+.ongletVisite .ico{width:14px;height:14px}
+.ongletVisite.actif{background:var(--or);color:var(--encre);border-color:var(--or);font-weight:bold}
+.ongletVisite.ferme{opacity:.4}
+.hallBoite{margin-top:12px;border-radius:10px;overflow:hidden;line-height:0;
+  border:2px solid var(--or-sombre);box-shadow:inset 0 0 22px rgba(0,0,0,.5)}
+.hallSvg{width:100%;display:block}
+.carteSallePublique{margin-top:12px}
+.spDesc{font-size:12px;font-style:italic;opacity:.75;margin-top:4px;line-height:1.4}
+.grillePaliers{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}
+.grillePaliers div{display:flex;align-items:center;gap:6px;padding:8px 9px;border-radius:8px;
+  background:rgba(138,108,42,.1);border:1px solid rgba(138,108,42,.28)}
+.grillePaliers .ico{width:15px;height:15px;color:#8a6c2a;flex:none}
+.grillePaliers span{font-family:'Courier New',monospace;font-size:9px;letter-spacing:.06em;
+  text-transform:uppercase;color:#8a6c2a}
+.grillePaliers b{margin-left:auto;font-size:11.5px;color:#571520}
+.spProgramme{display:flex;align-items:center;gap:7px;margin-top:11px;padding:9px 11px;border-radius:8px;
+  font-family:'Courier New',monospace;font-size:11px;
+  background:rgba(87,21,32,.08);border:1px solid rgba(87,21,32,.3);color:#571520}
+.spProgramme.encours{background:rgba(46,107,58,.12);border-color:rgba(46,107,58,.4);color:#2e6b3a}
+.spProgramme.prive{opacity:.6;font-style:italic}
+.spProgramme .ico{width:14px;height:14px;flex:none}
+.espaceFerme{text-align:center;margin-top:14px}
+.statsVisites{margin-top:10px}
+.ligneSallePub{padding:9px 0;border-bottom:1px dashed rgba(138,108,42,.3)}
+.ligneSallePub:last-child{border-bottom:none}
+.champDesc{margin-top:6px;font-size:14px;padding:9px}

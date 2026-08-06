@@ -1,0 +1,434 @@
+/* Les salles : vue en coupe, avant/après des travaux. */
+
+/* ============ salles.html ============ */
+.carteSalle h2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.capBadge{display:flex;align-items:center;gap:5px;font-size:10.5px;letter-spacing:.08em;
+  font-family:'Courier New',monospace;color:#8a6c2a;text-transform:none;white-space:nowrap}
+.salleType{font-family:'Courier New',monospace;font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:#8a6c2a;margin-top:-2px}
+.apercuBoite{margin-top:10px;border-radius:8px;overflow:hidden;line-height:0;
+  border:1.5px solid rgba(138,108,42,.4);box-shadow:inset 0 0 18px rgba(0,0,0,.4)}
+.apercuBoite.grand{margin-top:4px}
+.apercuSalle{width:100%;display:block}
+.grilleEquip{margin-top:10px}
+.eqLigne{display:flex;align-items:center;gap:8px;padding:5px 0;
+  border-bottom:1px dashed rgba(138,108,42,.22)}
+.eqLigne:last-child{border-bottom:none}
+.eqLigne .ico{width:16px;height:16px;color:#8a6c2a;flex:none}
+.eqNom{flex:1;font-size:12.5px}
+.eqJauge{display:flex;gap:3px;flex:none}
+.eqJauge i{width:14px;height:5px;border-radius:3px;background:rgba(138,108,42,.22)}
+.eqJauge i.plein{background:linear-gradient(90deg,#caa24a,#e8b84b)}
+.eqNiv{flex:none;width:38px;text-align:right;font-family:'Courier New',monospace;
+  font-size:10px;color:#8a6c2a}
+.etatSalle{margin-top:10px;padding-top:9px;border-top:1px dashed rgba(138,108,42,.3)}
+.etLigne{display:flex;align-items:center;gap:8px;padding:3px 0;
+  font-family:'Courier New',monospace;font-size:10.5px;color:#6e5638}
+.etLigne span:first-child{flex:none;width:74px}
+.etPiste{flex:1;height:6px;border-radius:4px;background:rgba(138,108,42,.2);overflow:hidden}
+.etPiste i{display:block;height:100%;border-radius:4px}
+.etPiste i.bon{background:linear-gradient(90deg,#4a8c5a,#6bbd7c)}
+.etPiste i.moyen{background:linear-gradient(90deg,#c07a1f,#e8a04a)}
+.etPiste i.mauvais{background:linear-gradient(90deg,#8c2318,#c4453a)}
+.etLigne b{flex:none;width:40px;text-align:right;color:#571520}
+.resumeBonus{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;
+  font-family:'Courier New',monospace;font-size:10.5px;color:#6e5638}
+.resumeBonus .ico{width:13px;height:13px;color:#8a6c2a;vertical-align:-2px}
+.resumeBonus b{color:#571520}
+.btnGerer{width:100%;margin-top:12px;padding:12px;font-size:12px;letter-spacing:.1em}
+.carteConstruction .btnConstruire{width:100%;margin-top:12px}
+.notePied{margin-top:16px;text-align:center;font-size:11.5px;opacity:.6;
+  font-family:'Courier New',monospace;font-style:italic}
+.typesVerrouilles{margin-top:12px}
+.typeVerrou{display:flex;align-items:center;gap:9px;padding:8px 2px;opacity:.55;
+  border-bottom:1px dashed rgba(138,108,42,.25)}
+.typeVerrou:last-child{border-bottom:none}
+.typeVerrou .ico{width:16px;height:16px;color:#8a6c2a;flex:none}
+.typeVerrou b{font-size:12.5px;color:#571520}
+.typeVerrou small{display:block;font-size:10px;opacity:.75;font-family:'Courier New',monospace}
+.typeVerrou .badgeNiv{margin-left:auto}
+/* panneau de gestion */
+.panneauSalle .pnEnteteSalle{
+  position:relative;padding:15px 46px 12px 16px;border-radius:14px 14px 0 0;
+  background:linear-gradient(180deg,#571520,#3a0d16);
+}
+.panneauSalle .pnEnteteSalle .pnTitre{color:#f7dd9a}
+.panneauSalle .pnEnteteSalle .pnSous{color:rgba(247,221,154,.8)}
+.valeurActuelle{display:flex;gap:8px;margin-top:12px}
+.valeurActuelle div{
+  flex:1;text-align:center;padding:9px 5px;border-radius:8px;
+  background:rgba(138,108,42,.1);border:1px solid rgba(138,108,42,.3);
+}
+.valeurActuelle span{display:block;font-family:'Courier New',monospace;font-size:8.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:#8a6c2a}
+.valeurActuelle b{display:block;font-size:15px;color:#571520;margin-top:2px}
+.entretienBloc{padding:11px 12px;border-radius:9px;
+  background:rgba(138,108,42,.08);border:1px solid rgba(138,108,42,.28)}
+.btnEntretien{
+  width:100%;margin:6px 0 10px;padding:9px;border-radius:7px;cursor:pointer;
+  font-family:'Courier New',monospace;font-size:11px;letter-spacing:.06em;
+  background:transparent;color:#571520;border:1.5px solid rgba(87,21,32,.4);
+}
+.btnEntretien:last-child{margin-bottom:0}
+.btnEntretien:disabled{opacity:.35;cursor:not-allowed}
+.btnEntretien:active:not(:disabled){background:rgba(87,21,32,.08)}
+.blocEquip{padding:11px 0;border-bottom:1px dashed rgba(138,108,42,.3)}
+.blocEquip:last-child{border-bottom:none}
+.beEntete{display:flex;align-items:center;gap:8px}
+.beEntete .ico{width:17px;height:17px;color:#8a6c2a}
+.beNom{flex:1;font-size:13.5px;font-weight:bold;color:#571520}
+.beNiv{font-family:'Courier New',monospace;font-size:10px;color:#8a6c2a}
+.beActuel{font-size:11.5px;opacity:.72;margin-top:3px;line-height:1.4}
+.eqSuivant{margin-top:9px;padding:10px 11px;border-radius:9px;
+  background:rgba(202,162,74,.12);border:1px solid rgba(202,162,74,.4)}
+.eqSuivTitre{font-size:13px;font-weight:bold;color:#571520}
+.eqSuivDesc{font-size:11px;opacity:.7;margin-top:2px;font-style:italic}
+.eqCompare{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px;
+  font-family:'Courier New',monospace;font-size:10.5px;color:#6e5638}
+.eqCompare .fleche{color:#8a6c2a}
+.eqCompare .apres{color:#2e6b3a;font-weight:bold}
+.eqPlus{font-family:'Courier New',monospace;font-size:10px;color:#2e6b3a;margin-top:3px}
+.btnAmeliorer{width:100%;margin-top:9px;padding:10px;font-size:11.5px}
+.eqVerrou{margin-top:9px;padding:9px 11px;border-radius:9px;
+  background:rgba(36,26,18,.05);border:1.5px dashed rgba(138,108,42,.45)}
+.eqVerrou b{display:block;font-size:12.5px;color:#571520;opacity:.75}
+.eqVerrou span{display:block;font-family:'Courier New',monospace;font-size:10px;color:#8a6c2a;margin-top:2px}
+.eqMax{margin-top:9px;display:flex;align-items:center;gap:7px;
+  font-family:'Courier New',monospace;font-size:10.5px;color:#2e6b3a}
+.eqMax .ico{width:15px;height:15px}
+.ccEffets{margin-top:9px;padding:9px;border-radius:8px;font-size:12px;line-height:1.6;
+  background:rgba(46,107,58,.1);border:1px solid rgba(46,107,58,.3);color:#2e6b3a}
+.ccAlerte{margin-top:10px;font-size:11.5px;font-style:italic;color:#a83a2a;line-height:1.4}
+.icoGrandEcran{width:52px;height:52px;color:#f7dd9a}
+/* ============ salles.html : la version claire ============ */
+.sallesClair{padding-bottom:calc(var(--navH) + var(--safeB) + 18px)}
+.sallesClair::before,.sallesClair::after{display:none}
+.ongletsSalle{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.ongletsSalle::-webkit-scrollbar{display:none}
+.ongletsSalle button{flex:none;display:flex;align-items:center;gap:7px;padding:9px 15px;
+  border-radius:16px;cursor:pointer;background:#fdfcf9;border:1px solid rgba(36,26,18,.1);
+  font-family:'Outfit',system-ui,sans-serif;font-size:11.5px;font-weight:300;color:#6a5c48;
+  box-shadow:0 2px 6px rgba(36,26,18,.05);transition:.2s;white-space:nowrap}
+.ongletsSalle button .ico{width:15px;height:15px;color:#8c2331}
+.ongletsSalle button small{font-size:9.5px;opacity:.6}
+.ongletsSalle button.on{background:linear-gradient(180deg,#8c2331,#5a0e1a);color:#f0d89a;
+  border-color:transparent;font-weight:400;box-shadow:0 3px 10px rgba(90,14,26,.28)}
+.ongletsSalle button.on .ico{color:#f0d89a}
+.ongletsSalle button.plus{border-style:dashed;color:#7d7160}
+.carteSalle{position:relative;margin-top:12px;border-radius:16px;overflow:hidden;
+  background:#fdfcf9;border:1px solid rgba(36,26,18,.09);box-shadow:0 6px 22px rgba(36,26,18,.1)}
+.vueSalle{line-height:0}
+.vueSalle svg{width:100%;display:block}
+.badgeSalle{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:6px;
+  padding:5px 11px;border-radius:14px;background:rgba(253,252,249,.93);
+  border:1px solid rgba(201,152,47,.4);font-family:'Outfit',system-ui,sans-serif;
+  font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a2a18}
+.badgeSalle i{width:6px;height:6px;border-radius:50%;flex:none}
+.indiceSalle{padding:9px 12px;text-align:center;background:#fdfcf9;
+  border-top:1px solid rgba(36,26,18,.07);font-family:'Outfit',system-ui,sans-serif;
+  font-size:10px;font-weight:300;letter-spacing:.1em;color:#7d7160}
+.titreSection{display:flex;align-items:baseline;justify-content:space-between;margin:18px 2px 9px}
+.titreSection h2{font-family:'Marcellus',Georgia,serif;font-size:13px;letter-spacing:.16em;
+  text-transform:uppercase;color:#571520}
+.titreSection span{font-family:'Outfit',system-ui,sans-serif;font-size:9.5px;font-weight:300;
+  letter-spacing:.1em;color:#7d7160}
+.equipements{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.equip{position:relative;text-align:left;padding:14px 13px;border-radius:13px;cursor:pointer;
+  background:#fdfcf9;border:1px solid rgba(36,26,18,.08);
+  box-shadow:0 2px 8px rgba(36,26,18,.05);transition:transform .2s}
+.equip:active{transform:scale(.98)}
+.equip .ico{width:21px;height:21px;color:#8c2331}
+.equip b{display:block;font-family:'Marcellus',Georgia,serif;font-size:13.5px;color:#1a120c;
+  margin-top:7px;letter-spacing:.04em}
+.equip small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:10px;
+  font-weight:300;color:#7d7160;margin-top:2px}
+.points{display:flex;gap:4px;margin-top:9px}
+.points i{width:100%;height:3px;border-radius:2px;background:rgba(36,26,18,.12)}
+.points i.plein{background:linear-gradient(90deg,#caa24a,#e8b84b)}
+.equip .prix{position:absolute;top:13px;right:13px;font-family:'Outfit',system-ui,sans-serif;
+  font-size:11px;color:#571520}
+.equip.max .prix{color:#2f7d4a;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+.equip.bloque{opacity:.55}
+.equip.bloque .prix{color:#7d7160;font-size:9.5px}
+.entretien{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.btnEntretien{display:flex;align-items:center;gap:9px;padding:13px 14px;border-radius:13px;
+  cursor:pointer;text-align:left;background:#fdfcf9;border:1px solid rgba(36,26,18,.08);
+  box-shadow:0 2px 8px rgba(36,26,18,.05)}
+.btnEntretien:disabled{opacity:.5;cursor:default}
+.btnEntretien .ico{width:19px;height:19px;color:#8c2331;flex:none}
+.btnEntretien b{display:block;font-family:'Marcellus',Georgia,serif;font-size:13px;color:#1a120c}
+.btnEntretien small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:10px;
+  font-weight:300;color:#7d7160;margin-top:1px}
+.btnEntretien.large{grid-column:1 / -1}
+.construire{display:flex;align-items:center;gap:14px;width:100%;margin-top:9px;padding:17px 18px;
+  border:none;border-radius:15px;cursor:pointer;text-align:left;
+  background:linear-gradient(160deg,#f6e3a6,#c9982f);color:#2e1c06;
+  box-shadow:0 6px 20px rgba(138,108,42,.3)}
+.construire:disabled{opacity:.45;box-shadow:none;cursor:default}
+.construire.quatred{background:linear-gradient(160deg,#7fd8e8,#2a7a90);color:#06222e;
+  box-shadow:0 6px 20px rgba(42,122,144,.3)}
+.construire .agIco{flex:none;width:44px;height:44px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;background:rgba(255,255,255,.42)}
+.construire .agIco .ico{width:22px;height:22px;color:currentColor}
+.construire b{display:block;font-family:'Marcellus',Georgia,serif;font-size:16px;letter-spacing:.07em}
+.construire small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:11.5px;
+  font-weight:300;opacity:.82;margin-top:3px}
+.construire .agFleche{margin-left:auto;font-size:20px;opacity:.5}
+.noteDx{margin-top:9px;padding:0 4px;font-size:11.5px;line-height:1.55;color:#6a5c48;
+  font-style:italic}
+.batimentPlein{margin-top:16px;padding:20px 16px;border-radius:13px;text-align:center;
+  background:#fdfcf9;border:1px dashed rgba(36,26,18,.2);font-size:12.5px;line-height:1.6;
+  font-style:italic;color:#7d7160}
+/* le panneau de travaux, en feuille montante */
+.voileEquip{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;
+  background:rgba(20,12,10,.5);animation:apparaitEq .25s ease-out}
+.feuilleEquip{width:100%;max-height:88vh;overflow-y:auto;border-radius:18px 18px 0 0;
+  background:#f6f2e9;padding:16px 14px calc(18px + var(--safeB));
+  animation:monteEq .3s cubic-bezier(.2,1,.3,1)}
+.poigneeEquip{width:38px;height:4px;border-radius:2px;background:rgba(36,26,18,.18);margin:0 auto 14px}
+.feuilleEquip h3{font-family:'Marcellus',Georgia,serif;font-size:18px;letter-spacing:.06em;
+  color:#571520;text-align:center}
+.sousEquip{text-align:center;font-family:'Outfit',system-ui,sans-serif;font-size:10px;
+  font-weight:300;letter-spacing:.14em;text-transform:uppercase;color:#7d7160;margin-top:3px}
+.motBobEquip{display:flex;gap:10px;align-items:center;margin-top:14px;padding:12px 13px;
+  border-radius:12px;background:rgba(140,35,49,.05);border:1px solid rgba(140,35,49,.14);
+  font-size:12.5px;line-height:1.5;font-style:italic;color:#4a3520}
+.teteBobEquip{flex:none;width:36px;height:36px;border-radius:50%;overflow:hidden;
+  background:#f7ecd6;border:1.5px solid var(--or-sombre)}
+.teteBobEquip svg{width:100%;height:100%;display:block}
+.avantApres{display:flex;align-items:center;gap:9px;margin-top:14px}
+.aaVolet{flex:1;min-width:0;text-align:center}
+.aaEtiq{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:8.5px;font-weight:300;
+  letter-spacing:.16em;text-transform:uppercase;color:#7d7160;margin-bottom:5px}
+.aaVolet svg{width:100%;border-radius:9px;display:block;border:1px solid rgba(36,26,18,.12)}
+.aaVolet.apres svg{border-color:#c9982f;box-shadow:0 0 0 3px rgba(201,152,47,.18)}
+.aaNom{display:block;font-size:11.5px;color:#3a2a1c;margin-top:6px;line-height:1.3}
+.aaVolet.apres .aaNom{font-weight:bold}
+.aaFleche{flex:none;color:var(--or-sombre);font-size:19px}
+.effetsEquip{margin-top:14px}
+.effetEquip{display:flex;gap:9px;align-items:center;padding:8px 2px;
+  font-family:'Outfit',system-ui,sans-serif;font-size:12px;font-weight:300;color:#4a3520}
+.effetEquip .ico{width:15px;height:15px;color:#c9982f;flex:none}
+.btnTravaux{width:100%;margin-top:14px;padding:16px;border:none;border-radius:12px;cursor:pointer;
+  background:linear-gradient(180deg,#f6e3a6,#c9982f);color:#2e1c06;
+  font-family:'Marcellus',Georgia,serif;font-size:15px;letter-spacing:.1em;text-transform:uppercase;
+  box-shadow:0 4px 14px rgba(138,108,42,.32)}
+.btnTravaux:disabled{opacity:.45;box-shadow:none;cursor:default}
+.caisseEquip{text-align:center;font-family:'Outfit',system-ui,sans-serif;font-size:10.5px;
+  font-weight:300;color:#7d7160;margin-top:10px}
+.fermerEquip{display:block;width:100%;margin-top:8px;padding:12px;background:transparent;
+  border:none;cursor:pointer;font-family:'Outfit',system-ui,sans-serif;font-size:11px;
+  font-weight:300;letter-spacing:.1em;color:#7d7160;text-decoration:underline}
+/* le choix du jour, dans le bilan */
+.carteChoix .choixTitre{font-family:'Marcellus',Georgia,serif;font-size:15px;
+  letter-spacing:.06em;color:var(--or-clair);margin-bottom:6px}
+.carteChoix .choixResume{font-size:13px;line-height:1.55;color:var(--creme);
+  font-style:italic;margin-bottom:12px}
+.choixEffets{border-top:1px solid rgba(202,162,74,.16);padding-top:10px}
+.choixEffet{display:flex;gap:9px;align-items:flex-start;padding:6px 0;
+  font-family:'Outfit',system-ui,sans-serif;font-size:12px;font-weight:300;
+  line-height:1.45;color:var(--creme)}
+.choixEffet .ico{width:14px;height:14px;color:var(--or);flex:none;margin-top:2px}
+.choixSuites{margin-top:12px;padding-top:10px;border-top:1px dashed rgba(202,162,74,.22)}
+.csTitre{font-family:'Outfit',system-ui,sans-serif;font-size:9px;font-weight:300;
+  letter-spacing:.18em;text-transform:uppercase;color:#7d7160;margin-bottom:4px}
+.choixEffet.suite{color:#c9bda6}
+.choixEffet.suite .ico{color:var(--or-sombre)}
+.carteChoix.laissee .choixResume{color:#b09a80}
+/* les sorties de la semaine, dans la programmation */
+.semaineProg{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;
+  padding:12px 14px;margin-bottom:12px;border-radius:11px;
+  background:rgba(202,162,74,.07);border:1px solid rgba(202,162,74,.26)}
+.spGauche b,.spDroite b{display:block;font-family:'Marcellus',Georgia,serif;font-size:14px;
+  color:var(--or-clair);letter-spacing:.05em}
+.spGauche span,.spDroite span{display:block;font-family:'Outfit',system-ui,sans-serif;
+  font-size:10px;font-weight:300;color:#7d7160;margin-top:3px}
+.spDroite{text-align:right;max-width:52%}
+.spDroite span{margin:0 0 3px}
+.spDroite b{font-size:11.5px;line-height:1.35;color:#c9bda6}
+.grpProg{margin-bottom:14px}
+.grpTitre{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  padding:0 2px 7px;font-family:'Marcellus',Georgia,serif;font-size:12px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--or)}
+.grpTitre span{font-family:'Outfit',system-ui,sans-serif;font-size:9px;font-weight:300;
+  letter-spacing:.08em;text-transform:none;color:#8a7e68;text-align:right}
+.rangProg.evenementProg{background:linear-gradient(90deg,rgba(202,162,74,.16),transparent);
+  border-left:2px solid var(--or)}
+.carteAffiche .etat.nouveaute{color:#f7dd9a}
+.carteAffiche .etat.evenement{color:#2e1c06;background:linear-gradient(90deg,#f7dd9a,#c9982f)}
+.carteAffiche .etat.fin{color:#e0a33a}
+.carteAffiche .etat.reprise{color:#7d7160}
+.carteAffiche .etat.affiche{color:#c9bda6}
+/* le bandeau météo et événement de l'accueil */
+.bandeauJour{margin-top:12px;padding:12px 14px;border-radius:13px;background:#fdfcf9;
+  border:1px solid rgba(36,26,18,.08);box-shadow:0 2px 8px rgba(36,26,18,.05)}
+.bjLigne{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
+.bjLigne + .bjLigne{border-top:1px solid rgba(36,26,18,.07);margin-top:5px;padding-top:10px}
+.bjLigne .ico{width:17px;height:17px;color:#8c2331;flex:none;margin-top:2px}
+.bjLigne b{display:block;font-family:'Marcellus',Georgia,serif;font-size:13px;color:#1a120c;
+  letter-spacing:.04em}
+.bjLigne small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:11px;
+  font-weight:300;color:#7d7160;margin-top:2px;line-height:1.4}
+/* l'icône du voile de confirmation, oubliée lors de la refonte */
+.ccIco{display:flex;align-items:center;justify-content:center;width:56px;height:56px;
+  margin:0 auto 12px;border-radius:50%;background:rgba(202,162,74,.14);
+  border:1.5px solid rgba(202,162,74,.4)}
+.ccIco .ico{width:26px;height:26px;color:var(--or-clair)}
+/* confort tactile : aucune cible sous 44 px sur l'accueil */
+.vueOnglets button{min-height:44px}
+.chiffre{min-height:88px}
+.raccourci{min-height:64px}
+.actionGrande{min-height:78px}
+/* les raisons sous chaque séance du programme */
+.rpRaisons{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;
+  padding-left:2px}
+.rpRaisons span{font-family:'Outfit',system-ui,sans-serif;font-size:9.5px;font-weight:300;
+  padding:3px 8px;border-radius:10px}
+/* le résumé d'avant-ouverture, au bas de la programmation */
+.resumeOuvre{margin-top:16px;padding:15px 15px 16px;border-radius:13px;
+  background:rgba(202,162,74,.07);border:1px solid rgba(202,162,74,.3)}
+.roTitre{font-family:'Marcellus',Georgia,serif;font-size:15px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--or-clair);text-align:center;margin-bottom:12px}
+.roLigne{display:flex;gap:10px;align-items:center;padding:8px 2px;
+  border-top:1px solid rgba(202,162,74,.14);
+  font-family:'Outfit',system-ui,sans-serif;font-size:12.5px;font-weight:300;color:var(--creme)}
+.roLigne:first-of-type{border-top:none}
+.roLigne .ico{width:16px;height:16px;color:var(--or-sombre);flex:none}
+.roLigne.alerte{color:#e0a33a}
+.roLigne.alerte .ico{color:#e0a33a}
+.btnPortesProg{width:100%;margin-top:14px;padding:18px 10px;border:none;border-radius:11px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(180deg,#f6e3a6,#c9982f);color:#2e1c06;
+  font-family:'Marcellus',Georgia,serif;font-size:16px;letter-spacing:.14em;
+  text-transform:uppercase;box-shadow:0 5px 0 var(--or-sombre),0 10px 22px rgba(0,0,0,.35)}
+.btnPortesProg:active{transform:translateY(4px);box-shadow:0 1px 0 var(--or-sombre)}
+.btnPortesProg:disabled{opacity:.45;box-shadow:none;transform:none;cursor:default}
+.btnPortesProg .ico{width:20px;height:20px}
+/* le curseur de velours glisse entre les onglets de vue */
+.vueOnglets{position:relative}
+.vueCurseur{position:absolute;top:6px;bottom:6px;left:0;border-radius:9px;z-index:0;
+  background:linear-gradient(180deg,#8c2331,#5a0e1a);box-shadow:0 2px 7px rgba(90,14,26,.28);
+  transition:transform .3s cubic-bezier(.2,.9,.3,1),width .3s cubic-bezier(.2,.9,.3,1)}
+.vueOnglets button{position:relative;z-index:1;transition:color .22s}
+.vueOnglets button.on{background:transparent;box-shadow:none}
+/* l'image du cinéma apparaît en fondu quand on change de vue */
+.vueCine svg{animation:paraitVue .42s ease-out}
+/* le blason du style, posé en haut à droite de la carte */
+.vueStyle{position:absolute;top:10px;right:10px}
+.blason{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:14px;
+  background:rgba(253,252,249,.93);backdrop-filter:blur(8px);
+  border:1px solid rgba(140,35,49,.3);font-family:'Outfit',system-ui,sans-serif;
+  font-size:9.5px;font-weight:400;letter-spacing:.11em;text-transform:uppercase;color:#571520;
+  animation:paraitBlason .5s ease-out .2s both}
+.blason .ico{width:12px;height:12px;color:#8c2331}
+/* la ligne des sorties de la semaine */
+.bandeauSorties{display:flex;align-items:center;gap:11px;width:100%;margin-top:11px;
+  padding:13px 14px;border-radius:14px;cursor:pointer;text-align:left;background:#fdfcf9;
+  border:1px solid rgba(36,26,18,.08);box-shadow:0 2px 8px rgba(36,26,18,.05);
+  transition:transform .18s;animation:paraitBlason .5s ease-out .28s both}
+.bandeauSorties:active{transform:scale(.985)}
+.bandeauSorties .ico{flex:none;width:20px;height:20px;color:#8c2331}
+.bandeauSorties b{display:block;font-family:'Marcellus',Georgia,serif;font-size:13.5px;
+  color:#1a120c;letter-spacing:.03em}
+.bandeauSorties small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:10.5px;
+  font-weight:300;color:#7d7160;margin-top:2px;line-height:1.4;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:15.5em}
+.bandeauSorties .bsChev{margin-left:auto;font-size:18px;color:#b0a48f}
+.bandeauSorties.evenement{background:linear-gradient(100deg,rgba(232,184,75,.14),#fdfcf9 62%);
+  border-color:rgba(201,152,47,.42)}
+.bandeauSorties.evenement .ico{color:#c9982f}
+/* la pastille d'entretien */
+.raccourci .badgeNotif.alerte{background:#b5762c;color:#fdf3d2}
+/* la journée attendue, sous le résumé d'ouverture */
+.roLigne.bilanAttendu{border-top:1px dashed rgba(202,162,74,.28);margin-top:4px;padding-top:10px}
+.roLigne.bilanAttendu b{font-family:'Marcellus',Georgia,serif;font-size:14px;color:var(--or-clair)}
+.roLigne.bilanAttendu.alerte b{color:#e0a33a}
+/* le secours quand le jeu semble bloqué */
+.secoursCache{position:fixed;left:12px;right:12px;bottom:calc(16px + var(--safeB));z-index:400;
+  max-width:412px;margin:0 auto;padding:15px 16px 13px;border-radius:15px;
+  background:#fdfcf9;border:2px solid var(--or);
+  box-shadow:0 14px 40px rgba(0,0,0,.45);animation:monteSecours .32s cubic-bezier(.2,1,.3,1)}
+.scTexte b{display:block;font-family:'Marcellus',Georgia,serif;font-size:15px;color:#571520}
+.scTexte span{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:11.5px;
+  font-weight:300;color:#665a42;margin-top:4px;line-height:1.45}
+.scBtn{width:100%;margin-top:12px;padding:14px;border:none;border-radius:12px;cursor:pointer;
+  background:linear-gradient(180deg,#ffe89a,#c9982f);color:#2a1704;
+  font-family:'Marcellus',Georgia,serif;font-size:14px;letter-spacing:.1em;
+  text-transform:uppercase;box-shadow:0 4px 0 #8a6c2a}
+.scBtn:active{transform:translateY(3px);box-shadow:0 1px 0 #8a6c2a}
+.scFermer{display:block;width:100%;margin-top:6px;padding:9px;background:none;border:none;
+  cursor:pointer;color:#7d7160;font-family:'Outfit',system-ui,sans-serif;font-size:11.5px;
+  font-weight:300;text-decoration:underline}
+/* l'entretien du jeu, dans la page Plus */
+.btnEntretienJeu{display:block;width:100%;margin-top:10px;padding:14px 15px;border-radius:12px;
+  cursor:pointer;text-align:left;background:rgba(202,162,74,.07);
+  border:1px solid rgba(202,162,74,.3);
+  font-family:'Marcellus',Georgia,serif;font-size:13.5px;letter-spacing:.05em;
+  color:var(--or-clair)}
+.btnEntretienJeu small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:10.5px;
+  font-weight:300;letter-spacing:.02em;color:#9a8e78;margin-top:3px;line-height:1.4}
+/* la feuille de route, distincte des vrais déblocages */
+.titrePrevus{margin-top:18px;padding-top:14px;border-top:1px dashed rgba(202,162,74,.28);
+  font-family:'Marcellus',Georgia,serif;font-size:12px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--or-sombre)}
+.notePrevus{font-family:'Outfit',system-ui,sans-serif;font-size:11px;font-weight:300;
+  line-height:1.55;color:#9a8e78;margin:6px 0 10px;font-style:italic}
+.ligneDeblocage.prevu{opacity:.62}
+.badgeNiv.prevu{background:rgba(140,35,49,.12);color:#b09a80;border-color:rgba(140,35,49,.2)}
+/* ============================================================
+   LA SALLE EN COUPE
+   ============================================================ */
+.ongletsSalles{display:flex;gap:7px;overflow-x:auto;margin-top:14px;padding-bottom:4px;
+  scrollbar-width:none}
+.ongletsSalles::-webkit-scrollbar{display:none}
+.ongletSalle{
+  flex:none;display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:16px;
+  cursor:pointer;font-family:inherit;font-size:12px;white-space:nowrap;
+  background:transparent;color:var(--creme);border:1.5px solid rgba(202,162,74,.45);
+}
+.ongletSalle .ico{width:14px;height:14px}
+.ongletSalle small{opacity:.6;font-family:'Courier New',monospace;font-size:9.5px}
+.ongletSalle.actif{background:var(--or);color:var(--encre);border-color:var(--or);font-weight:bold}
+.cadreSalle{
+  margin-top:12px;border-radius:12px;overflow:hidden;line-height:0;
+  border:2.5px solid var(--or-sombre);
+  box-shadow:inset 0 0 34px rgba(0,0,0,.75), 0 8px 26px rgba(0,0,0,.4);
+}
+.svgSalleCoupe{width:100%;display:block}
+.zoneSalle{cursor:pointer;transition:filter .25s ease}
+.zoneSalle:focus-visible{outline:2px solid #e8b84b;outline-offset:-3px}
+@media (hover:hover){ .zoneSalle:hover{filter:brightness(1.25)} }
+.zoneSalle.touchee{animation:zonePulse .42s ease-out}
+.faisceauCoupe{animation:respireFaisceau 8s ease-in-out infinite;transform-origin:215px 330px}
+.ecranCoupe{animation:ecranPulse 3.4s ease-in-out infinite}
+.ecranHalo{animation:ecranPulse 2.2s ease-in-out infinite reverse}
+.lentille{animation:clignoteAmp 2.8s ease-in-out infinite}
+.ondeSon{animation:ondePulse 2.4s ease-out infinite;transform-origin:center}
+.souffle{animation:souffleClim 2.6s ease-in-out infinite}
+.fauteuilCoupe.casse{opacity:.85}
+.animLegeres .faisceauCoupe,.animLegeres .ondeSon,.animLegeres .souffle,
+.animLegeres .ecranHalo{animation:none}
+.ligneEtatSalle{display:flex;align-items:center;gap:9px;padding:7px 0;
+  font-family:'Courier New',monospace;font-size:10.5px;color:var(--creme)}
+.ligneEtatSalle .ico{width:13px;height:13px;color:var(--or-clair)}
+.ligneEtatSalle b{flex:none;color:var(--or-clair);font-size:10px}
+.actionsEntretien{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+/* ---------- avant / après ---------- */
+.motBob{font-size:12.5px;line-height:1.5;font-style:italic;opacity:.8;margin-bottom:14px}
+.avantApres{display:flex;align-items:center;gap:8px}
+.aaVolet{flex:1;min-width:0;text-align:center}
+.aaEtiquette{
+  display:block;font-family:'Courier New',monospace;font-size:8.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:#8a6c2a;margin-bottom:5px;
+}
+.apercuEquip{width:100%;border-radius:7px;display:block;
+  border:1.5px solid rgba(138,108,42,.4)}
+.aaVolet.apres .apercuEquip{border-color:var(--or);box-shadow:0 0 0 3px rgba(232,184,75,.18)}
+.aaPalier{display:block;font-size:11px;color:#571520;margin-top:5px;line-height:1.3}
+.aaVolet.apres .aaPalier{font-weight:bold}
+.aaFleche{flex:none;opacity:.55}
+.aaFleche .ico{width:19px;height:19px;color:#8a6c2a}
+.avantApres.complet{justify-content:center}
+.avantApres.complet .aaVolet{max-width:180px}
+.aaEffets{margin-top:14px}
+.btnTravaux{width:100%;margin-top:14px;padding:14px;font-size:12.5px}

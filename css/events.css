@@ -1,0 +1,70 @@
+/* Les festivals communautaires. */
+
+/* ============ événements ============ */
+.carteEvenement{margin-top:14px}
+.evEntete{text-align:center}
+.evNomGrand{font-size:18px;letter-spacing:.14em;text-transform:uppercase;color:#571520;line-height:1.25}
+.evDesc{font-size:12.5px;opacity:.7;margin-top:5px;font-style:italic;line-height:1.45}
+.evGlobal{margin-top:16px}
+.evChiffres{text-align:center;font-family:'Courier New',monospace;font-size:13px;color:#6e5638}
+.evChiffres b{font-size:19px;color:#571520}
+.pisteEvenement{height:15px;border-radius:9px;margin-top:9px;overflow:hidden;
+  background:rgba(138,108,42,.2);border:1px solid rgba(138,108,42,.4)}
+.barreEvenement{height:100%;width:0;border-radius:9px;
+  background:linear-gradient(90deg,#8a6c2a,#caa24a 55%,#f7dd9a);
+  transition:width 1.1s cubic-bezier(.25,1.3,.5,1);position:relative}
+.barreEvenement::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+  animation:brille 2.6s linear infinite}
+.evMeta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;margin-top:7px;
+  font-family:'Courier New',monospace;font-size:10.5px;color:#6e5638}
+.evMeta .ico{width:12px;height:12px;color:#8a6c2a;vertical-align:-2px}
+.maContribution{display:flex;align-items:center;gap:8px;margin-top:14px;padding:11px 13px;
+  border-radius:9px;background:rgba(202,162,74,.14);border:1px solid rgba(202,162,74,.45);
+  font-size:12.5px;color:var(--encre)}
+.maContribution .ico{width:16px;height:16px;color:#8a6c2a;flex:none}
+.maContribution b{color:#571520;font-family:'Courier New',monospace}
+.evVerrou{margin-top:10px;text-align:center;font-family:'Courier New',monospace;
+  font-size:10.5px;color:#8a6c2a;font-style:italic}
+.lignePalier{display:flex;align-items:center;gap:10px;padding:11px 2px;flex-wrap:wrap;
+  border-bottom:1px dashed rgba(138,108,42,.3);opacity:.6}
+.lignePalier:last-child{border-bottom:none}
+.lignePalier.atteint{opacity:1}
+.lignePalier .ico{width:18px;height:18px;color:#8a6c2a;flex:none}
+.lpTxt{flex:1;min-width:0}
+.lpTxt b{font-size:13px;color:#571520}
+.lpTxt small{display:block;font-size:10.5px;opacity:.7;font-family:'Courier New',monospace;margin-top:2px}
+.palEtat{flex:none;font-family:'Courier New',monospace;font-size:9.5px;letter-spacing:.06em;
+  padding:4px 9px;border-radius:12px;white-space:nowrap}
+.palEtat.attente{color:#8a6c2a;border:1px dashed rgba(138,108,42,.5)}
+.palEtat.manque{color:#c07a1f;border:1px solid rgba(192,122,31,.45)}
+.palEtat.pret{color:#2e6b3a;border:1px solid rgba(46,107,58,.5);background:rgba(46,107,58,.1)}
+.palEtat.obtenu{color:#571520;background:#f6e3a6;border:1px solid #caa24a}
+.palEtat.obtenu .ico{width:11px;height:11px;color:#571520}
+.btnReclamerEv{flex:none;padding:8px 13px;font-size:11px}
+.ligneTache{display:flex;align-items:flex-start;gap:10px;padding:10px 2px;
+  border-bottom:1px dashed rgba(138,108,42,.3)}
+.ligneTache:last-child{border-bottom:none}
+.ltCase{flex:none;width:20px;height:20px;border-radius:5px;margin-top:2px;
+  border:2px solid rgba(138,108,42,.5);display:flex;align-items:center;justify-content:center}
+.ligneTache.faite .ltCase{background:#2e6b3a;border-color:#2e6b3a}
+.ligneTache.faite .ltCase .ico{width:13px;height:13px;color:#fff}
+.ligneTache.faite .ltTxt b{text-decoration:line-through;opacity:.7}
+.ltTxt{flex:1;min-width:0}
+.ltTxt b{font-size:13px;color:#571520}
+.ltTxt small{display:block;font-size:10.5px;opacity:.7;font-family:'Courier New',monospace}
+.ltPiste{display:block;height:5px;border-radius:3px;margin-top:5px;
+  background:rgba(138,108,42,.2);overflow:hidden}
+.ltPiste i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#caa24a,#e8b84b)}
+.ltChiffres{margin-top:3px}
+.lienEvenement{display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 13px;
+  border-radius:10px;text-decoration:none;color:var(--encre);
+  background:radial-gradient(ellipse 120% 90% at 50% 0%,#fffdf6,#f2e8d0);
+  border:2px solid var(--or);box-shadow:0 0 0 3px rgba(232,184,75,.14)}
+.lienEvenement .ico{width:18px;height:18px;color:#8a6c2a;flex:none}
+.leTxt{flex:1;min-width:0}
+.leNom{display:block;font-size:13px;color:#571520}
+.lePiste{display:block;height:5px;border-radius:3px;margin:4px 0 3px;
+  background:rgba(138,108,42,.2);overflow:hidden}
+.lePiste i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#caa24a,#e8b84b)}
+.leTxt small{font-size:10px;opacity:.65;font-family:'Courier New',monospace}

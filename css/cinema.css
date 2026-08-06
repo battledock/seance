@@ -1,0 +1,379 @@
+/* L'accueil : façade, héros, panneau des séances. */
+
+/* ============ accueil (jeu.html) ============ */
+.facadeWrap{
+  margin:0 -12px;position:relative;
+}
+.facadeWrap svg{width:100%;display:block}
+.facadeWrap::after{ /* fondu doux entre la façade et le fond de page */
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:26px;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--nuit));
+}
+.clignote{animation:cli 1.6s infinite}
+.clignote.d2{animation-delay:.8s}
+.chenille{animation:chen .9s steps(2) infinite}
+.fenetreVoisin{animation:fen 6s infinite}
+.fenetreVoisin.f2{animation-delay:3s}
+/* spectateurs : 3 plans, marche articulée */
+.passant{animation:traverse linear forwards}
+.jambeA{animation:pasA var(--cad) ease-in-out infinite;transform-box:fill-box;transform-origin:top center}
+.jambeB{animation:pasB var(--cad) ease-in-out infinite;transform-box:fill-box;transform-origin:top center}
+.brasA{animation:pasB var(--cad) ease-in-out infinite;transform-box:fill-box;transform-origin:top center}
+.brasB{animation:pasA var(--cad) ease-in-out infinite;transform-box:fill-box;transform-origin:top center}
+.corps{animation:rebond calc(var(--cad)/2) ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+/* ===== statut du cinéma ===== */
+.statutCine{
+  display:flex;align-items:center;gap:8px;margin-top:10px;
+  font-size:12.5px;letter-spacing:.03em;color:var(--creme);
+  font-family:'Courier New',monospace;
+}
+.pastille{width:9px;height:9px;border-radius:50%;flex:none}
+.pastille.ouvert{background:#5fc978;box-shadow:0 0 8px rgba(95,201,120,.7);animation:pulseP 2s infinite}
+.pastille.ferme{background:#8a6c2a;box-shadow:0 0 6px rgba(138,108,42,.5)}
+.statutJour{margin-left:auto;color:var(--or-clair);letter-spacing:.14em;text-transform:uppercase;font-size:11px}
+/* ===== action principale ===== */
+.actionPrincipale{
+  width:100%;margin-top:14px;display:flex;align-items:center;gap:13px;
+  padding:15px 16px;cursor:pointer;text-align:left;font-family:inherit;
+  background:linear-gradient(180deg,#f6e3a6,#caa24a 55%,#8a6c2a);color:var(--encre);
+  border:2px solid var(--encre);border-radius:10px;
+  box-shadow:0 6px 0 #5c4720, 0 10px 26px rgba(0,0,0,.4);
+  animation:respire 2.6s ease-in-out infinite;
+  transition:transform .1s, box-shadow .1s;
+}
+.actionPrincipale:active{transform:translateY(5px);box-shadow:0 1px 0 #5c4720}
+.icoAction{width:27px;height:27px}
+.apTxt{display:flex;flex-direction:column;gap:1px}
+.apTitre{font-size:15px;font-weight:bold;letter-spacing:.06em;text-transform:uppercase}
+.apSous{font-size:11px;opacity:.72;font-family:'Courier New',monospace;letter-spacing:.04em}
+/* ============ confirmation d'ouverture ============ */
+.voileConfirm{
+  position:fixed;inset:0;z-index:160;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:rgba(8,3,6,.78);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  animation:voileP .25s ease-out;
+}
+.voileConfirm.sortie{animation:voilePOut .25s forwards}
+.carteConfirm{
+  width:100%;max-width:330px;text-align:center;padding:22px 18px 18px;border-radius:14px;color:var(--encre);
+  background:radial-gradient(ellipse 120% 80% at 50% 0%,#fffdf6,#f2e8d0);
+  border:2px solid var(--or-sombre);box-shadow:0 12px 40px rgba(0,0,0,.55);
+  animation:carteIn .35s cubic-bezier(.2,1.4,.4,1);
+}
+.icoConfirm{width:40px;height:40px;color:#8a6c2a}
+.ccTitre{font-size:18px;font-weight:bold;color:#571520;margin-top:6px}
+.ccTexte{font-size:12.5px;opacity:.75;line-height:1.5;margin-top:8px}
+.ccResume{
+  display:flex;flex-direction:column;gap:3px;margin-top:13px;padding:10px;border-radius:9px;
+  background:rgba(138,108,42,.1);border:1px solid rgba(138,108,42,.3);
+  font-family:'Courier New',monospace;font-size:11.5px;color:#6e5638;
+}
+.ccResume b{color:#571520}
+.ccBoutons{display:flex;gap:9px;margin-top:16px}
+.btnAnnuler{
+  flex:1;padding:13px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:12px;
+  letter-spacing:.08em;text-transform:uppercase;
+  background:transparent;color:#6e5638;border:1.5px solid rgba(138,108,42,.5);
+}
+.btnOuvrir{flex:1.4;padding:13px;font-size:12px}
+/* ============ séquence de simulation ============ */
+.voileSeance{
+  position:fixed;inset:0;z-index:180;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:radial-gradient(ellipse at 50% 40%,rgba(50,16,26,.96),rgba(6,2,4,.99));
+  animation:voileP .3s ease-out;
+}
+.voileSeance.sortie{animation:voilePOut .3s forwards}
+.seqBoite{width:100%;max-width:340px;text-align:center;color:#f2e8d5}
+.seqTitre{
+  font-size:16px;letter-spacing:.24em;text-transform:uppercase;color:#f7dd9a;
+  text-shadow:0 0 16px rgba(247,221,154,.5);min-height:22px;
+}
+.seqScene{margin-top:20px;min-height:150px;display:flex;align-items:center;justify-content:center}
+.seqPortes{display:flex;gap:5px;perspective:400px}
+.seqPortes span{
+  width:56px;height:96px;border-radius:4px;background:linear-gradient(180deg,#3d548c,#1a2547);
+  border:2px solid #caa24a;animation:ouvrePorte 1.3s ease-out forwards;
+}
+.seqPortes span:first-child{transform-origin:left center}
+.seqPortes span:last-child{transform-origin:right center;animation-name:ouvrePorteD}
+.seqSeance{width:100%;animation:carteIn .35s ease-out}
+.seqFilm{font-size:17px;font-weight:bold;color:#f7dd9a}
+.seqSalle{font-family:'Courier New',monospace;font-size:11px;color:#c9a48c;margin-top:3px}
+.seqJauge{height:14px;border-radius:8px;margin-top:16px;overflow:hidden;
+  background:rgba(232,184,75,.16);border:1px solid rgba(232,184,75,.4)}
+.seqJauge i{display:block;height:100%;width:0;border-radius:8px;
+  background:linear-gradient(90deg,#8a6c2a,#e8b84b,#f7dd9a);transition:width .12s linear}
+.seqCompte{font-family:'Courier New',monospace;font-size:13px;color:#f7dd9a;margin-top:8px;letter-spacing:.06em}
+.seqResultat{width:100%;animation:carteIn .3s ease-out}
+.seqLigne{font-size:14px;padding:5px 0;color:#f2e8d5}
+.seqLigne b{color:#f7dd9a;font-family:'Courier New',monospace;font-size:17px}
+.seqFin .icoFin{width:46px;height:46px;color:#caa24a;animation:tourneRayons 4s linear infinite}
+.seqBob{margin-top:18px;font-size:12.5px;color:#c9a48c;font-style:italic;min-height:34px;line-height:1.45}
+/* ============ accueil (jeu.html) — la scène, Bob, le journal ============
+   L'état du soir se pose sur le dessin au lieu d'une pastille de coin.
+   Le bloc « raccourcis » a disparu : la barre du bas fait ce travail. */
+.accueilClair{background:#fff}
+.carteCine{position:relative;border-radius:20px;overflow:hidden;
+  box-shadow:0 12px 32px rgba(22,18,16,.16)}
+.carteCine .vueCine svg{width:100%;display:block}
+.scVoile{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 36%,rgba(255,255,255,.99))}
+.surScene{position:absolute;left:0;right:0;bottom:44px;padding:0 16px 6px}
+.ssEt{display:inline-block;padding:4px 11px;border-radius:12px;font-size:9px;
+  letter-spacing:.16em;text-transform:uppercase;
+  background:rgba(140,35,49,.08);color:#8c2331;border:1px solid rgba(140,35,49,.22)}
+.surScene h2{font-family:'Marcellus',Georgia,serif;font-size:21px;margin-top:9px;
+  color:#161210;line-height:1.15}
+.surScene p{font-family:Georgia,serif;font-style:italic;font-size:14.5px;margin-top:4px;
+  line-height:1.4;color:#5f564c}
+.vueOnglets{position:relative;display:flex;padding:5px;background:#fff}
+.vueCurseur{position:absolute;top:5px;bottom:5px;left:5px;width:calc(33.33% - 3.3px);
+  border-radius:12px;background:linear-gradient(160deg,#ffe9b0,#c9982f);
+  box-shadow:0 3px 12px rgba(201,152,47,.3);
+  transition:transform .34s cubic-bezier(.2,1,.3,1)}
+/* Bob, en buste */
+.bobLigne{display:flex;gap:12px;align-items:flex-end;margin-top:16px}
+.bobPort{flex:none;width:78px;margin-bottom:-6px}
+.bobPort svg{width:100%;height:auto;display:block}
+.bobBulle{flex:1;padding:13px 15px;border-radius:16px 16px 16px 4px;background:#fff;
+  border:1px solid rgba(22,18,16,.09);box-shadow:0 5px 18px rgba(22,18,16,.07)}
+.bobBulle em{display:block;font-style:normal;font-size:8px;letter-spacing:.16em;
+  text-transform:uppercase;color:#8a6c2a;margin-bottom:5px}
+.bobBulle p{font-family:Georgia,serif;font-style:italic;font-size:15px;line-height:1.45;
+  color:#4a4038}
+.bobSvg{display:block}
+.bobBuste{transform-origin:60px 110px;animation:bobRespire 6s ease-in-out infinite}
+.bobYeux{transform-origin:60px 45px;animation:bobCligne 6.5s infinite}
+/* le bouton d'action, en velours */
+.actionGrande{position:relative;display:flex;align-items:center;gap:14px;width:100%;
+  margin-top:16px;padding:19px 17px;border-radius:15px;cursor:pointer;text-align:left;
+  border:none;overflow:hidden;color:#ffeec0;
+  background:linear-gradient(160deg,#a02a3c,#7c1424 45%,#4a0c16);
+  box-shadow:0 7px 0 #3a0a12,0 16px 32px rgba(124,20,36,.34)}
+.actionGrande:active{transform:translateY(5px);box-shadow:0 2px 0 #3a0a12}
+.actionGrande::before{content:"";position:absolute;left:16px;right:16px;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(240,216,154,.55),transparent)}
+.actionGrande .agIco{flex:none;width:46px;height:46px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;color:#2a1704;
+  background:linear-gradient(160deg,#f7dd9a,#c9982f)}
+.actionGrande .agIco svg{width:22px;height:22px}
+.actionGrande .agTx{flex:1;min-width:0}
+.actionGrande .agTx b{display:block;font-family:'Marcellus',Georgia,serif;font-size:18px}
+.actionGrande .agTx span{display:block;font-size:11.5px;font-weight:300;color:#e0bfa8;
+  margin-top:3px}
+.actionGrande .agChev{flex:none;font-size:22px;color:#e0b455;opacity:.85}
+/* le journal du matin */
+.titreAcc{display:flex;align-items:center;gap:10px;margin:22px 0 10px}
+.titreAcc b{font-family:'Marcellus',Georgia,serif;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:#8c2331}
+.titreAcc i{flex:1;height:1px;background:linear-gradient(90deg,#c9982f,transparent);opacity:.5}
+.journalAcc{padding:15px;border-radius:16px;background:#fff;
+  border:1px solid rgba(22,18,16,.09);box-shadow:0 4px 16px rgba(22,18,16,.055)}
+.jlAcc{display:flex;gap:12px;align-items:flex-start;padding:11px 0;
+  border-top:1px solid rgba(22,18,16,.09)}
+.jlAcc:first-child{border-top:none;padding-top:0}
+.jlAcc .ico{flex:none;width:20px;height:20px;color:#c9982f;margin-top:1px}
+.jlAcc b{display:block;font-size:13px;font-weight:400;color:#161210}
+.jlAcc small{display:block;font-size:10.5px;font-weight:300;color:#8a7e70;margin-top:2px;
+  line-height:1.45}
+.jlAcc.alerte .ico{color:#a8621a}
+.jlAcc.alerte b{color:#a8621a}
+/* les trois chiffres */
+.chiffres{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.chiffres > div{position:relative;padding:14px 8px;border-radius:15px;text-align:center;
+  background:#fff;border:1px solid rgba(22,18,16,.09);box-shadow:0 3px 12px rgba(22,18,16,.05)}
+.chiffres b{display:block;font-family:'Marcellus',Georgia,serif;font-size:22px;color:#161210;
+  font-variant-numeric:tabular-nums}
+.chiffres span{display:block;font-size:8px;letter-spacing:.15em;text-transform:uppercase;
+  color:#8a7e70;margin-top:4px}
+/* ============================================================
+   LA VIE DU CINÉMA — façade animée
+   Uniquement transform et opacity. GPU, jamais de layout.
+   ============================================================ */
+/* ---------- pluie ---------- */
+.pluie line{
+  animation-name:tombePluie;animation-timing-function:linear;animation-iteration-count:infinite;
+  will-change:transform;
+}
+.flaques{animation:miroite 5s ease-in-out infinite}
+/* ---------- brume ---------- */
+.nappeA{animation:deriveBrume 34s ease-in-out infinite}
+.nappeB{animation:deriveBrume 46s ease-in-out infinite reverse}
+/* ---------- vent ---------- */
+.feuilles path{
+  animation-name:vole;animation-timing-function:linear;animation-iteration-count:infinite;
+  transform:translate3d(-30px,var(--yv,340px),0);
+}
+/* ---------- portes ---------- */
+/* Les battants pivotent sur leur charnière. On travaille en boîte de
+   remplissage : l'origine suit le rectangle lui-même, quelles que soient
+   les coordonnées du SVG. La perspective 3D est évitée, elle n'est pas
+   fiable sur les SVG dans Safari. */
+.porteG,.porteD{
+  transform-box:fill-box;
+  transition:transform .5s cubic-bezier(.34,.8,.35,1), opacity .5s ease;
+}
+.porteG{transform-origin:left center}
+/* charnière côté mur */
+    
+.porteD{transform-origin:right center}
+.porteG.battante,.porteD.battante{transform:scaleX(.28);opacity:.55}
+/* la lumière du hall s'échappe par l'ouverture */
+.lueurSeuil{opacity:0;transition:opacity .45s ease}
+.lueurSeuil.visible{opacity:.26}
+/* ---------- véhicule ---------- */
+.voiturePasse{
+  animation-name:traverseRue;animation-timing-function:cubic-bezier(.35,0,.5,1);
+  animation-fill-mode:forwards;will-change:transform;
+}
+/* ---------- oiseaux ---------- */
+.volOiseaux{
+  animation-name:traverseCiel;animation-timing-function:linear;animation-fill-mode:forwards;
+}
+.volOiseaux path{animation:batAiles .42s ease-in-out infinite alternate}
+/* ---------- fumée ---------- */
+.fumeeCheminee circle{
+  animation:monteFumee 9s ease-out infinite;transform-origin:356px 150px;
+}
+/* ---------- enseigne ---------- */
+.enseigneVivante{animation:respireNeon 4.5s ease-in-out infinite}
+.enseigneVivante.gresille{animation:gresillement .7s steps(2,end)}
+/* ---------- zones tactiles ---------- */
+.zoneTactile{
+  fill:transparent;cursor:pointer;
+  transition:fill .3s ease;
+}
+.zoneTactile:focus-visible{outline:2px solid #e8b84b;outline-offset:-2px}
+.zoneTactile.touchee{fill:rgba(255,223,154,.14);animation:pulseZone .42s ease-out}
+@media (hover:hover){ .zoneTactile:hover{fill:rgba(255,223,154,.07)} }
+/* ---------- l'onglet caché fige la façade ---------- */
+.enPause .pluie line,.enPause .nappeA,.enPause .nappeB,.enPause .feuilles path,
+.enPause .fumeeCheminee circle,.enPause .enseigneVivante,.enPause .volOiseaux,
+.enPause .voiturePasse{animation-play-state:paused}
+.animLegeres .fumeeCheminee,.animLegeres .flaques{display:none}
+/* ---------- bandeau météo ---------- */
+.bandeauMeteo{
+  display:flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;
+  font-family:'Courier New',monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--or-clair);opacity:.75;
+}
+.bandeauMeteo .ico{width:13px;height:13px}
+/* ---------- panneau des séances, intégré au décor ---------- */
+.panneauSeances{
+  position:relative;margin-top:14px;padding:14px 12px 12px;border-radius:12px;overflow:hidden;
+  background:linear-gradient(180deg,#1c1018,#120a10);
+  border:2px solid var(--or-sombre);
+  box-shadow:inset 0 2px 18px rgba(0,0,0,.7), 0 6px 20px rgba(0,0,0,.35);
+}
+.psAmpoules{display:flex;justify-content:space-between;padding:0 4px 10px}
+.psAmpoules i{
+  width:6px;height:6px;border-radius:50%;background:#ffdf9a;
+  box-shadow:0 0 7px rgba(255,223,154,.8);
+  animation:clignoteAmp 3.4s ease-in-out infinite;
+}
+.psAmpoules i:nth-child(3n){animation-delay:.9s}
+.psAmpoules i:nth-child(3n+1){animation-delay:1.8s}
+.animLegeres .psAmpoules i{animation:none}
+.psLigne{
+  display:flex;align-items:center;gap:10px;padding:9px 4px;
+  border-bottom:1px dashed rgba(202,162,74,.28);
+}
+.psLigne:last-child{border-bottom:none}
+.psHeure{
+  flex:none;min-width:52px;text-align:center;padding:4px 0;border-radius:4px;
+  font-family:'Courier New',monospace;font-size:12px;font-weight:bold;
+  color:#241a12;background:linear-gradient(180deg,#f6e3a6,#caa24a);
+}
+.psTitre{flex:1;min-width:0;font-size:13px;color:var(--creme);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.psSalle{flex:none;font-family:'Courier New',monospace;font-size:9.5px;
+  letter-spacing:.1em;color:var(--or-clair);opacity:.7}
+.psVide{text-align:center;padding:16px 8px;color:var(--creme);opacity:.6;
+  font-size:12.5px;line-height:1.5}
+/* ============================================================
+   PNJ — marcher, attendre, entrer, sortir
+   ============================================================ */
+.pnj{will-change:transform}
+/* attendre : léger dandinement sur place */
+.patiente{animation:piaffe 3.2s ease-in-out infinite}
+.patiente.avance{
+  animation:none;
+  transform:translate3d(var(--dx,0),0,0);
+  transition:transform 1.1s cubic-bezier(.4,0,.3,1);
+}
+.pnj.entre{opacity:0;transition:opacity .55s ease .3s}
+/* regarder l'affiche : tête qui bouge à peine */
+.regarde{animation:observe 4.5s ease-in-out infinite}
+.marcheVers{
+  animation:none !important;
+  transform:translate3d(var(--dx,0),0,0);
+  transition:transform 2.4s cubic-bezier(.35,0,.4,1);
+}
+/* sortir du cinéma et repartir dans la rue */
+.pnj.sort{
+  animation-name:repart;animation-timing-function:cubic-bezier(.3,0,.5,1);
+  animation-fill-mode:forwards;
+}
+.pnj.sort.content{filter:none}
+.pnj.sort.decu{filter:saturate(.55) brightness(.9)}
+/* le photographe s'arrête, cadre, repart */
+.photographe{animation:cadre 3s ease-in-out}
+.flashPhoto{opacity:0;animation:flashe .45s ease-out}
+/* le balayeur : geste régulier */
+.balaie{animation:balaye 2.2s ease-in-out infinite}
+.balai{animation:balayeBras 2.2s ease-in-out infinite;transform-origin:215px 426px}
+/* l'enfant qui montre du doigt : petits sauts */
+.montre{animation:sautille 1.6s ease-in-out infinite}
+/* ============================================================
+   OBJETS DÉBLOQUÉS — ils arrivent en douceur
+   ============================================================ */
+.apparait{animation:poseObjet .9s cubic-bezier(.2,1.3,.4,1) both}
+.tapisVip{transform-origin:215px 396px}
+.pancarteComplet{animation-delay:.35s;transform-origin:318px 244px}
+.enseigneConf{animation-delay:.2s}
+.plaqueNiveau{animation-delay:.5s}
+.banderole{animation-delay:.15s}
+.animLegeres .patiente,.animLegeres .regarde,.animLegeres .balaie,
+.animLegeres .balai,.animLegeres .montre,.animLegeres .photographe{animation:none}
+.enPause .pnj,.enPause .balai,.enPause .apparait{animation-play-state:paused}
+/* ============================================================
+   LA FAÇADE ÉVOLUTIVE — animations
+   ============================================================ */
+.facadeRiche{width:100%;display:block}
+/* passants */
+.passantR{animation-name:traverseR;animation-timing-function:linear;
+  animation-fill-mode:forwards;will-change:transform}
+.passantR.lointain{filter:blur(.55px)}
+.passantR .jambeA{animation:pasA var(--cad,.6s) ease-in-out infinite alternate;
+  transform-origin:0 -11.5px}
+.passantR .jambeB{animation:pasB var(--cad,.6s) ease-in-out infinite alternate;
+  transform-origin:0 -11.5px}
+.passantR .brasA{animation:brasA var(--cad,.6s) ease-in-out infinite alternate;
+  transform-origin:-5px -25.6px}
+.passantR .brasB{animation:brasB var(--cad,.6s) ease-in-out infinite alternate;
+  transform-origin:5px -25.6px}
+.passantR .corps{animation:tangage var(--cad,.6s) ease-in-out infinite alternate;
+  transform-origin:0 -11px}
+/* enseigne et ampoules */
+.amp{animation:clig 3.4s ease-in-out infinite}
+.amp.a1{animation-delay:.85s}
+.amp.a2{animation-delay:1.7s}
+.amp.a3{animation-delay:2.55s}
+.chenille{animation:defileAmp 1.4s linear infinite}
+.neonVivant{animation:respireNeon2 4.6s ease-in-out infinite}
+.neonFatigue{animation:fatigueNeon 7s steps(2,end) infinite}
+.lettreBlade{animation:blade 2.6s ease-in-out infinite}
+/* ciel */
+.etoiles circle{animation:scintille 4s ease-in-out infinite}
+.nuageA{animation:deriveNuage 90s linear infinite}
+.nuageB{animation:deriveNuage 130s linear infinite reverse}
+/* horloge, projecteurs, pigeons */
+.aiguilleM{animation:tourneM 60s linear infinite;transform-origin:0 0}
+.faisceauA{transform-origin:112px 452px;animation:balayeA 9s ease-in-out infinite alternate}
+.faisceauB{transform-origin:368px 452px;animation:balayeB 11s ease-in-out infinite alternate}
+.pigeons g{animation:picore 4.2s ease-in-out infinite}
+.vacille{animation:vacilleLampe 3.2s steps(2,end) infinite}
+.animLegeres .etoiles circle,.animLegeres .nuageA,.animLegeres .nuageB,
+.animLegeres .faisceauA,.animLegeres .faisceauB,.animLegeres .pigeons g,
+.animLegeres .lettreBlade,.animLegeres .chenille{animation:none}
+.enPause .passantR,.enPause .amp,.enPause .faisceauA,.enPause .faisceauB,
+.enPause .etoiles circle,.enPause .nuageA,.enPause .nuageB{animation-play-state:paused}

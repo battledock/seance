@@ -1,0 +1,67 @@
+/* Le bandeau clair : médaille, nom, statut, niveau. */
+
+.entete{
+  position:fixed;top:0;left:0;right:0;z-index:40;padding-top:var(--safeT);
+  background:rgba(253,251,247,.95);
+  backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);
+  border-bottom:1px solid rgba(36,26,18,.08);
+  box-shadow:0 1px 0 rgba(232,184,75,.32), 0 4px 16px rgba(0,0,0,.28);
+}
+.entete .in{display:flex;align-items:center;gap:12px;padding:10px 16px 10px 14px}
+.entete .medailleH{
+  flex:none;width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;
+  background:radial-gradient(circle at 34% 28%,#fdf3d2,#e8d3a0);
+  border:1.5px solid #caa24a;
+  box-shadow:inset 0 -2px 5px rgba(138,108,42,.22), 0 1px 3px rgba(0,0,0,.18);
+}
+.entete .bloc{flex:1;min-width:0}
+.entete .nomCine{
+  display:block;font-family:'Marcellus',Georgia,serif;font-size:17px;letter-spacing:.14em;
+  text-transform:uppercase;color:#1a120c;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.entete .etatH{
+  display:flex;align-items:center;gap:7px;margin-top:3px;min-width:0;
+  font-family:'Outfit',system-ui,sans-serif;font-size:9px;font-weight:300;
+  letter-spacing:.18em;text-transform:uppercase;color:#9a8a72;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.entete .etatH.ferme{color:#9a7a3a}
+.entete .etatH.travaux{color:#b5762c}
+.entete .pastilleH{
+  width:5px;height:5px;border-radius:50%;flex:none;background:#3f9e5c;
+  box-shadow:0 0 0 3px rgba(63,158,92,.15);
+  animation:souffleH 3.4s ease-in-out infinite;
+}
+.entete .pastilleH.fermeH{background:#b08a3a;box-shadow:0 0 0 3px rgba(176,138,58,.14);animation:none}
+.entete .pastilleH.travauxH{background:#d98a2b;box-shadow:0 0 0 3px rgba(217,138,43,.16);
+  animation:cligH 1.2s steps(2) infinite}
+.entete .droiteH{flex:none;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.entete .argentH{
+  font-family:'Outfit',system-ui,sans-serif;font-size:13px;font-weight:400;
+  letter-spacing:.02em;color:#1a120c;white-space:nowrap;
+}
+.entete .xpZone{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Outfit',system-ui,sans-serif;font-size:8.5px;font-weight:300;
+  letter-spacing:.16em;text-transform:uppercase;color:#9a8a72;
+}
+.entete .xpPiste{
+  width:34px;height:2px;border-radius:1px;background:rgba(36,26,18,.12);overflow:hidden;
+}
+.entete .xpBarre{
+  display:block;height:100%;width:0;border-radius:1px;
+  background:linear-gradient(90deg,#caa24a,#e8b84b);
+  transition:width .8s cubic-bezier(.25,1.2,.5,1);
+}
+.entete .badgeNotif{background:#a83a2a;color:#fff}
+.entete .pastilleH.travauxH{background:#e8a04a;box-shadow:0 0 6px rgba(232,160,74,.9);animation:cligPart 1.2s steps(2) infinite}
+.entete .xpZone{display:flex;align-items:center;gap:6px;flex:none}
+.entete .xpNiv{font-family:'Courier New',monospace;font-size:8.5px;letter-spacing:.14em;color:#caa24a}
+.entete .xpPiste{width:52px;height:4px;border-radius:3px;background:rgba(232,184,75,.18);overflow:hidden}
+.entete .xpBarre{height:100%;width:0;border-radius:3px;
+  background:linear-gradient(90deg,#caa24a,#f7dd9a);transition:width .8s cubic-bezier(.3,1.4,.5,1)}
+.enteteBilan{text-align:center;margin-top:8px}
+.enteteVisite{margin-top:12px;text-align:center}
+.enteteCat{margin-top:14px;text-align:center}

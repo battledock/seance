@@ -1,0 +1,234 @@
+/* Toutes les images-clés du jeu. Rien d'autre ici. */
+
+@keyframes souffleH{50%{opacity:.45}}
+@keyframes cligH{50%{opacity:.35}}
+@keyframes coucou{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(-12deg)}86%{transform:rotate(3deg)}92%{transform:rotate(-8deg)}}
+@keyframes cligPart{50%{opacity:.35}}
+@keyframes monteXP{
+  0%{opacity:0;transform:translate(-50%,14px) scale(.85)}
+  14%{opacity:1;transform:translate(-50%,0) scale(1)}
+  72%{opacity:1;transform:translate(-50%,-26px)}
+  100%{opacity:0;transform:translate(-50%,-52px)}
+}
+@keyframes voileIn{from{opacity:0}to{opacity:1}}
+@keyframes voileOut{to{opacity:0}}
+@keyframes carteIn{from{opacity:0;transform:scale(.82) translateY(20px)}to{opacity:1;transform:none}}
+@keyframes tourneRayons{to{transform:rotate(360deg)}}
+@keyframes pulseNiv{50%{text-shadow:0 0 40px rgba(247,221,154,1)}}
+@keyframes recIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@keyframes tourneBobineChargement{to{transform:rotate(360deg)}}
+@keyframes defilePellicule{to{stroke-dashoffset:-20}}
+@keyframes vaEtVient{
+  0%{transform:translateX(-100%)}100%{transform:translateX(360%)}
+}
+@media (prefers-reduced-motion:reduce){
+  .vcBobine .roue,.vcPiste i,.vcBobine .pellicule{animation:none}
+  .contenu,.entete,.navBas{transition:none}
+}
+@keyframes cli{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes chen{50%{opacity:.3}}
+@keyframes fen{0%,88%,100%{opacity:.85}92%,96%{opacity:.25}}
+@keyframes traverse{from{transform:translateX(var(--x0))}to{transform:translateX(var(--x1))}}
+@keyframes pasA{0%,100%{transform:rotate(20deg)}50%{transform:rotate(-20deg)}}
+@keyframes pasB{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}
+@keyframes rebond{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.1px)}}
+@keyframes pulseP{50%{box-shadow:0 0 14px rgba(95,201,120,.9)}}
+@keyframes respire{50%{box-shadow:0 6px 0 #5c4720, 0 0 26px rgba(232,184,75,.45)}}
+@keyframes brille{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+@keyframes voileP{from{opacity:0}to{opacity:1}}
+@keyframes voilePOut{to{opacity:0}}
+@keyframes monteP{from{transform:translateY(100%)}to{transform:none}}
+@keyframes ouvrePorte{to{transform:rotateY(-72deg);opacity:.55}}
+@keyframes ouvrePorteD{to{transform:rotateY(72deg);opacity:.55}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,16px) scale(.9)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+@keyframes entreeIn{from{opacity:0}to{opacity:1}}
+@keyframes entreeOut{to{opacity:0}}
+@media (prefers-reduced-motion: reduce){
+  .voileEntree{animation:none}
+}
+@keyframes volRea{
+  0%{opacity:0;transform:translateY(0) scale(.6)}
+  20%{opacity:1;transform:translateY(-8px) scale(1.15)}
+  100%{opacity:0;transform:translateY(-52px) scale(.9)}
+}
+@media (prefers-reduced-motion: reduce){
+  .volReaction{display:none}
+  .toastSocial{animation:none}
+}
+@keyframes vacilleApplique{0%,100%{opacity:.92}42%{opacity:.72}68%{opacity:1}}
+@keyframes ampoulesFronton{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes entreLigne{from{opacity:0;transform:translate3d(-8px,0,0)}to{opacity:1;transform:none}}
+@keyframes apparaitEq{from{opacity:0}to{opacity:1}}
+@keyframes monteEq{from{transform:translateY(100%)}to{transform:none}}
+@keyframes paraitVue{from{opacity:0;transform:scale(1.012)}to{opacity:1;transform:none}}
+@keyframes paraitBlason{from{opacity:0;transform:translate3d(0,-5px,0)}to{opacity:1;transform:none}}
+@keyframes monteSecours{from{opacity:0;transform:translate3d(0,16px,0)}to{opacity:1;transform:none}}
+@keyframes paraitCamp{from{opacity:0}to{opacity:1}}
+@keyframes monteCamp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes paraitCalcCamp{from{opacity:0;transform:translate3d(0,8px,0)}to{opacity:1;transform:none}}
+@keyframes colleeCamp{from{opacity:0;transform:translate3d(0,-14px,0) rotate(-9deg) scale(.9)}
+  to{opacity:1;transform:none}}
+@keyframes tombeCamp{0%,55%{transform:none;opacity:1}
+  72%{transform:translateY(26px) rotate(6deg);opacity:.85}
+  80%,100%{transform:translateY(30px);opacity:0}}
+@keyframes emetCamp{0%,100%{opacity:.15}45%{opacity:1}}
+@keyframes goutteCamp{0%,60%{transform:none;opacity:0}70%{opacity:1}
+  100%{transform:translateY(46px);opacity:0}}
+@keyframes bobRespire{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.012)}}
+@keyframes bobCligne{0%,96%,100%{transform:scaleY(1)}98%{transform:scaleY(.08)}}
+@keyframes respireFaisceau{
+  0%,100%{opacity:.85;transform:rotate(0deg)}
+  50%{opacity:1;transform:rotate(.7deg)}
+}
+@keyframes respireHalo{0%,100%{opacity:.85}50%{opacity:1}}
+@keyframes clignoteAmp{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes balanceFanion{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes monteePoussiere{
+  0%{opacity:0;transform:translate3d(0,0,0)}
+  12%{opacity:.5}
+  88%{opacity:.35}
+  100%{opacity:0;transform:translate3d(var(--derive,0), -70vh, 0)}
+}
+@keyframes entreeContenu{
+  from{opacity:0;transform:translate3d(0,10px,0) scale(.995)}
+  to{opacity:1;transform:none}
+}
+@keyframes refletHero{0%,72%{transform:translateX(-120%)}88%,100%{transform:translateX(120%)}}
+@keyframes tombePluie{
+  from{transform:translate3d(0,0,0);opacity:0}
+  10%{opacity:.5}
+  90%{opacity:.4}
+  to{transform:translate3d(-70px,470px,0);opacity:0}
+}
+@keyframes miroite{0%,100%{opacity:.22}50%{opacity:.34}}
+@keyframes deriveBrume{
+  0%,100%{transform:translate3d(-30px,0,0)}
+  50%{transform:translate3d(40px,-6px,0)}
+}
+@keyframes vole{
+  from{transform:translate3d(-30px,var(--yv),0) rotate(0deg);opacity:0}
+  8%{opacity:.7}
+  92%{opacity:.55}
+  to{transform:translate3d(470px,calc(var(--yv) - 40px),0) rotate(540deg);opacity:0}
+}
+@keyframes traverseRue{
+  from{transform:translate3d(var(--x0),0,0)}
+  to{transform:translate3d(var(--x1),0,0)}
+}
+@keyframes traverseCiel{
+  from{transform:translate3d(-60px,0,0)}
+  to{transform:translate3d(490px,-26px,0)}
+}
+@keyframes batAiles{from{transform:scaleY(1)}to{transform:scaleY(.35)}}
+@keyframes monteFumee{
+  from{transform:translate3d(0,0,0) scale(.5);opacity:.2}
+  70%{opacity:.09}
+  to{transform:translate3d(-26px,-62px,0) scale(2.1);opacity:0}
+}
+@keyframes respireNeon{0%,100%{opacity:.94}50%{opacity:1}}
+@keyframes gresillement{
+  0%,18%,42%,66%,100%{opacity:1}
+  9%,30%,54%{opacity:.25}
+}
+@keyframes pulseZone{0%{fill:rgba(255,223,154,.3)}100%{fill:rgba(255,223,154,0)}}
+@keyframes piaffe{
+  0%,100%{transform:translate3d(0,0,0)}
+  35%{transform:translate3d(0,-1.4px,0)}
+  70%{transform:translate3d(1.5px,0,0)}
+}
+@keyframes observe{
+  0%,100%{transform:translate3d(0,0,0)}
+  40%{transform:translate3d(-1.6px,0,0)}
+  60%{transform:translate3d(1.4px,-.6px,0)}
+}
+@keyframes repart{
+  from{transform:translate3d(0,0,0);opacity:0}
+  12%{opacity:1}
+  to{transform:translate3d(var(--fin,220px),0,0);opacity:1}
+}
+@keyframes cadre{
+  0%,100%{transform:translate3d(0,0,0)}
+  40%,60%{transform:translate3d(0,-2px,0) scale(1.02)}
+}
+@keyframes flashe{0%{opacity:0}18%{opacity:.55}100%{opacity:0}}
+@keyframes balaye{
+  0%,100%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(5px,0,0)}
+}
+@keyframes balayeBras{
+  0%,100%{transform:translate3d(0,0,0) rotate(-6deg)}
+  50%{transform:translate3d(6px,0,0) rotate(9deg)}
+}
+@keyframes sautille{
+  0%,100%{transform:translate3d(0,0,0)}
+  45%{transform:translate3d(0,-3px,0)}
+}
+@keyframes poseObjet{
+  from{opacity:0;transform:translate3d(0,7px,0) scale(.96)}
+  to{opacity:1;transform:none}
+}
+@keyframes celIn{from{opacity:0}to{opacity:1}}
+@keyframes celOut{to{opacity:0}}
+@keyframes derouleBanniere{
+  from{opacity:0;transform:translate3d(0,-24px,0) scaleX(.5)}
+  to{opacity:1;transform:none}
+}
+@keyframes apparitionCel{from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
+@keyframes ecranPulse{0%,100%{opacity:.88}50%{opacity:1}}
+@keyframes applaudit{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to{transform:translate3d(0,-2px,0) scale(1.04)}
+}
+@keyframes claque{from{transform:scaleX(1)}to{transform:scaleX(.42)}}
+@keyframes bobJoie{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-4px,0) rotate(-1.5deg)}}
+@keyframes mainVersCentre{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(var(--sens,22px),-4px,0)}
+}
+@keyframes entreRecompense{
+  from{opacity:0;transform:translate3d(-16px,0,0)}
+  to{opacity:1;transform:none}
+}
+@keyframes illumineFacade{
+  0%,100%{filter:none}
+  12%{filter:brightness(1.5) saturate(1.25)}
+  30%{filter:brightness(1.15) saturate(1.1)}
+  48%{filter:brightness(1.45) saturate(1.2)}
+  70%{filter:brightness(1.12)}
+}
+@keyframes surgitTrophee{
+  from{opacity:0;transform:scale(.72) translate3d(0,18px,0)}
+  to{opacity:1;transform:none}
+}
+@keyframes tourneLueur{to{transform:rotate(360deg)}}
+@keyframes zonePulse{0%{filter:brightness(1.7)}100%{filter:brightness(1)}}
+@keyframes ondePulse{0%{opacity:.35;transform:scale(1)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes souffleClim{0%,100%{opacity:.3}50%{opacity:.7}}
+@keyframes objetPris{
+  0%{transform:translateY(0) scale(1)}
+  40%{transform:translateY(-7px) scale(1.05)}
+  100%{transform:translateY(0) scale(1)}
+}
+@keyframes clapClap{0%,88%,100%{transform:rotate(0deg)}92%{transform:rotate(-16deg)}96%{transform:rotate(0deg)}}
+@keyframes defileMontage{0%,100%{opacity:.5}50%{opacity:.95}}
+@keyframes tourneBobine{to{transform:rotate(270deg)}}
+@keyframes traverseR{from{transform:translate3d(var(--x0),0,0)}
+  to{transform:translate3d(var(--x1),0,0)}}
+@keyframes pasA{from{transform:rotate(17deg)}to{transform:rotate(-17deg)}}
+@keyframes pasB{from{transform:rotate(-17deg)}to{transform:rotate(17deg)}}
+@keyframes brasA{from{transform:rotate(-13deg)}to{transform:rotate(13deg)}}
+@keyframes brasB{from{transform:rotate(13deg)}to{transform:rotate(-13deg)}}
+@keyframes tangage{from{transform:translateY(0)}to{transform:translateY(-.7px)}}
+@keyframes clig{0%,100%{opacity:.42}50%{opacity:1}}
+@keyframes defileAmp{0%,100%{opacity:.25}18%{opacity:1}40%{opacity:.3}}
+@keyframes respireNeon2{0%,100%{opacity:.93}50%{opacity:1}}
+@keyframes fatigueNeon{0%,92%,100%{opacity:1}94%{opacity:.42}96%{opacity:.95}98%{opacity:.55}}
+@keyframes blade{0%,100%{opacity:.85}50%{opacity:1}}
+@keyframes scintille{0%,100%{opacity:.25}50%{opacity:.95}}
+@keyframes deriveNuage{from{transform:translateX(-40px)}to{transform:translateX(480px)}}
+@keyframes tourneM{to{transform:rotate(360deg)}}
+@keyframes balayeA{from{transform:rotate(-13deg)}to{transform:rotate(16deg)}}
+@keyframes balayeB{from{transform:rotate(14deg)}to{transform:rotate(-15deg)}}
+@keyframes picore{0%,100%{transform:translateY(0)}
+  44%{transform:translateY(1.4px) rotate(6deg)}52%{transform:translateY(0)}}
+@keyframes vacilleLampe{0%,72%,100%{opacity:1}76%{opacity:.15}80%{opacity:.9}86%{opacity:.3}}

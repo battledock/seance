@@ -1,0 +1,27 @@
+/* La fiche publique d'un cinéma. */
+
+/* ============ cinema-public.html ============ */
+.contenuPublic{padding-top:calc(14px + var(--safeT));padding-bottom:24px}
+.retourVitrine{display:inline-block;margin-bottom:4px;text-decoration:none;
+  font-family:'Courier New',monospace;font-size:11.5px;color:var(--or-clair);opacity:.85}
+.carteVitrine{margin-top:12px}
+.jaugeReput{display:flex;align-items:center;gap:8px;margin-top:12px;
+  font-family:'Courier New',monospace;font-size:11px;color:#6e5638}
+.jaugeReput .ico{width:13px;height:13px;color:#8a6c2a;vertical-align:-2px}
+.jaugeReput b{flex:none;color:#571520}
+.metaVitrine{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;
+  font-family:'Courier New',monospace;font-size:10.5px;color:#6e5638}
+.metaVitrine .ico{width:13px;height:13px;color:#8a6c2a;vertical-align:-2px}
+.grilleStats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:4px}
+.grilleStats div{text-align:center;padding:12px 6px;border-radius:9px;
+  background:rgba(138,108,42,.1);border:1px solid rgba(138,108,42,.3)}
+.grilleStats b{display:block;font-size:20px;color:#571520;font-family:Georgia,serif}
+.grilleStats span{display:block;font-family:'Courier New',monospace;font-size:9px;
+  letter-spacing:.08em;text-transform:uppercase;color:#8a6c2a;margin-top:3px}
+.zoneSociale{opacity:.7}
+.piedVitrine{text-align:center;margin-top:16px;font-family:'Courier New',monospace;
+  font-size:10px;letter-spacing:.1em;opacity:.5}
+.vitrineFermee{text-align:center;margin-top:20px}
+.vfIco{margin-bottom:4px}
+.btnRetourJeu{display:block;width:100%;margin-top:16px;padding:13px;text-align:center;
+  text-decoration:none;font-size:12px;letter-spacing:.1em}

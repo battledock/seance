@@ -1,0 +1,401 @@
+/* La programmation : mur d'affiches, grille des séances. */
+
+/* ============ programmation.html ============ */
+.vide{padding:16px 4px;text-align:center;font-size:13px;opacity:.6;font-style:italic;line-height:1.6}
+/* --- programme du jour --- */
+.ligneSeance{
+  display:flex;align-items:stretch;gap:11px;padding:10px 2px;
+  border-bottom:1px dashed rgba(138,108,42,.3);
+}
+.ligneSeance:last-of-type{border-bottom:none}
+.lsHeure{
+  flex:none;align-self:flex-start;font-family:'Courier New',monospace;font-weight:bold;font-size:12.5px;
+  background:var(--encre);color:var(--or-clair);padding:5px 8px;border-radius:6px;
+}
+.ligneSeance.validee .lsHeure{background:#571520}
+.lsCorps{flex:1;min-width:0}
+.lsTitre{font-size:14px;font-weight:bold;color:#571520;line-height:1.25}
+.lsMeta{font-size:11px;opacity:.75;font-family:'Courier New',monospace;margin-top:2px}
+.lsMeta2{font-size:10px;opacity:.55;font-family:'Courier New',monospace;margin-top:1px}
+.lsActions{flex:none;display:flex;flex-direction:column;gap:5px;justify-content:center}
+.btnMini{
+  width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1.5px solid rgba(138,108,42,.45);color:#8a6c2a;font-size:12px;
+}
+.btnMini .ico{width:15px;height:15px}
+.btnMini.danger{border-color:rgba(87,21,32,.4);color:#571520}
+.btnMini:active{background:rgba(138,108,42,.12)}
+.lsVerrou{flex:none;align-self:center;color:#8a6c2a}
+.lsVerrou .ico{width:17px;height:17px}
+.bilanProg{
+  display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:12px;padding-top:10px;
+  border-top:1.5px solid rgba(138,108,42,.35);
+  font-family:'Courier New',monospace;font-size:11px;color:#6e5638;
+}
+.bilanProg b{color:#571520}
+.btnValider{width:100%;margin-top:14px;font-size:13px;letter-spacing:.14em}
+.programmeValide{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;padding:11px 13px;border-radius:9px;
+  background:rgba(46,107,58,.12);border:1.5px solid rgba(46,107,58,.4);
+  font-family:'Courier New',monospace;font-size:11.5px;color:#2e6b3a;
+}
+.programmeValide .ico{width:17px;height:17px}
+.btnRouvrir{
+  margin-left:auto;background:transparent;border:1px solid rgba(46,107,58,.5);color:#2e6b3a;
+  font-family:'Courier New',monospace;font-size:10px;padding:5px 10px;border-radius:12px;cursor:pointer;
+}
+/* --- fiches films --- */
+.ficheFilm{display:flex;gap:11px;padding:12px 2px;border-bottom:1px dashed rgba(138,108,42,.3)}
+.ficheFilm:last-child{border-bottom:none}
+.ficheFilm.verrouille{opacity:.55}
+.ffAffiche{
+  flex:none;width:74px;height:104px;border-radius:5px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;padding:7px 6px;
+  box-shadow:0 3px 9px rgba(90,60,30,.35), inset 0 0 0 1.5px rgba(255,255,255,.16);
+}
+.ffAffiche::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 18%,rgba(255,255,255,.3),transparent 62%),
+             linear-gradient(180deg,transparent 45%,rgba(0,0,0,.55));
+}
+.ffAffTitre{position:relative;font-size:9px;line-height:1.2;color:#fdf3d2;font-weight:bold;
+  text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.ffAffGenre{position:relative;font-family:'Courier New',monospace;font-size:6.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(253,243,210,.75);margin-top:2px}
+.ffCadenas{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,5,8,.6)}
+.ffCadenas .ico{width:26px;height:26px;color:#f7dd9a}
+.ffCorps{flex:1;min-width:0}
+.ffHaut{display:flex;align-items:baseline;justify-content:space-between;gap:7px}
+.ffTitre{font-weight:bold;font-size:14px;color:#571520;line-height:1.2}
+.ffGenre{flex:none;font-family:'Courier New',monospace;font-size:8.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:#8a6c2a;border:1px solid rgba(138,108,42,.5);padding:2px 6px;border-radius:10px}
+.ffResume{font-size:11.5px;opacity:.7;line-height:1.4;margin-top:4px;font-style:italic}
+.ffMeta{display:flex;gap:12px;margin-top:6px;font-family:'Courier New',monospace;font-size:10.5px;color:#6e5638}
+.ffMeta .ico{width:13px;height:13px;color:#8a6c2a}
+.ffPop{display:flex;align-items:center;gap:6px;margin-top:5px;font-family:'Courier New',monospace;
+  font-size:10px;color:#6e5638}
+.ffPop .ico{width:13px;height:13px;color:#8a6c2a}
+.jaugePop{flex:1;max-width:80px;height:5px;border-radius:3px;background:rgba(138,108,42,.22);overflow:hidden}
+.jaugePop i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#caa24a,#e8b84b)}
+.popVal{font-weight:bold;color:#571520}
+.ffVerrou{margin-top:6px;font-family:'Courier New',monospace;font-size:10px;color:#8a6c2a;
+  letter-spacing:.06em}
+.btnProg{margin-top:7px;padding:8px 14px;font-size:11.5px}
+.btnProg:disabled{opacity:.4;cursor:not-allowed}
+/* --- panneau de création de séance --- */
+.voilePanneau{
+  position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(8,3,6,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  animation:voileP .25s ease-out;
+}
+.voilePanneau.sortie{animation:voilePOut .25s forwards}
+.panneauSeance{
+  width:100%;max-width:440px;max-height:92dvh;overflow-y:auto;
+  background:radial-gradient(ellipse 120% 60% at 50% 0%,#fffdf6,#f2e8d0);
+  border:2px solid var(--or-sombre);border-bottom:none;
+  border-radius:16px 16px 0 0;color:var(--encre);
+  box-shadow:0 -8px 34px rgba(0,0,0,.5);
+  animation:monteP .32s cubic-bezier(.2,1.2,.4,1);
+  padding-bottom:calc(14px + var(--safeB));
+}
+.pnEntete{position:relative;padding:16px 46px 14px 16px;border-radius:14px 14px 0 0}
+.pnEntete::after{content:"";position:absolute;inset:0;border-radius:14px 14px 0 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 60%,rgba(0,0,0,.35))}
+.pnTitre{position:relative;display:block;font-size:17px;font-weight:bold;color:#fdf3d2;
+  text-shadow:0 1px 3px rgba(0,0,0,.55);z-index:1}
+.pnSous{position:relative;display:block;margin-top:3px;font-family:'Courier New',monospace;
+  font-size:10.5px;color:rgba(253,243,210,.85);z-index:1}
+.pnFermer{position:absolute;top:12px;right:12px;z-index:2;width:30px;height:30px;border-radius:50%;
+  background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.3);color:#fdf3d2;font-size:14px;cursor:pointer}
+.pnCorps{padding:4px 16px 0}
+.lblProg{display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  margin:15px 0 7px;color:#6e5638}
+.choixSalles{display:flex;flex-direction:column;gap:7px}
+.carteSalleChoix{
+  display:flex;flex-direction:column;gap:2px;text-align:left;padding:9px 12px;cursor:pointer;
+  background:rgba(255,255,255,.6);border:2px solid rgba(36,26,18,.22);border-radius:9px;
+  font-family:inherit;color:var(--encre);
+}
+.carteSalleChoix.sel{border-color:#571520;background:#fff;box-shadow:0 0 0 3px rgba(87,21,32,.13)}
+.carteSalleChoix.enTravaux{opacity:.6}
+.csNom{font-size:13.5px;font-weight:bold}
+.csMeta{font-family:'Courier New',monospace;font-size:10px;opacity:.7;display:flex;align-items:center;gap:5px}
+.csMeta .ico{width:12px;height:12px}
+.csEtat{font-family:'Courier New',monospace;font-size:9.5px;letter-spacing:.06em;margin-top:1px}
+.csEtat.libre{color:#2e6b3a}
+.csEtat.occupee{color:#a83a2a}
+.csEtat.travaux{color:#c07a1f}
+.choixHoraires{display:flex;flex-wrap:wrap;gap:7px}
+.pastHoraire{
+  position:relative;padding:9px 14px;cursor:pointer;border-radius:8px;font-family:'Courier New',monospace;
+  font-size:12.5px;font-weight:bold;background:transparent;color:var(--encre);
+  border:1.5px solid rgba(138,108,42,.5);
+}
+.pastHoraire.sel{background:var(--encre);color:var(--or-clair);border-color:var(--encre)}
+.pastHoraire.occupe{opacity:.45;text-decoration:line-through}
+.pastHoraire i{position:absolute;top:3px;right:4px;width:5px;height:5px;border-radius:50%;background:#a83a2a}
+.reglagePrix{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:2px}
+.btnPrix{
+  width:42px;height:42px;border-radius:50%;font-size:20px;cursor:pointer;
+  background:linear-gradient(180deg,#f6e3a6,#caa24a);border:2px solid var(--encre);color:var(--encre);
+  box-shadow:0 3px 0 #5c4720;
+}
+.btnPrix:active{transform:translateY(2px);box-shadow:0 1px 0 #5c4720}
+.prixVal{font-family:'Courier New',monospace;font-size:24px;font-weight:bold;color:#571520;min-width:78px;text-align:center}
+.curseurPrix{width:100%;margin-top:10px;accent-color:#8a6c2a}
+.pnRecap{margin-top:16px;padding:11px 12px;border-radius:9px;
+  background:rgba(138,108,42,.09);border:1px solid rgba(138,108,42,.3)}
+.recapLigne{display:flex;align-items:center;gap:8px;font-size:12px;padding:3px 0;line-height:1.4}
+.recapLigne .ico{width:15px;height:15px;color:#8a6c2a;flex:none}
+.recapLigne b{color:#571520;font-family:'Courier New',monospace}
+.recapLigne small{opacity:.6;font-size:10px}
+.pnBob{
+  display:flex;align-items:flex-start;gap:9px;margin-top:11px;padding:10px 12px;border-radius:9px;
+  background:rgba(202,162,74,.14);border:1px solid rgba(202,162,74,.45);
+  font-size:12px;line-height:1.45;
+}
+.pnBob.conflit{background:rgba(168,58,42,.12);border-color:rgba(168,58,42,.45);color:#8c2318}
+.pnBob small{opacity:.75;font-size:10.5px}
+.pnBobIco .ico{width:16px;height:16px;color:#8a6c2a}
+.pnBob.conflit .pnBobIco .ico{color:#a83a2a}
+.btnAjouter{width:100%;margin-top:16px;padding:14px;font-size:13px;letter-spacing:.1em}
+.btnAjouter:disabled{opacity:.45;cursor:not-allowed}
+/* accueil : séances enrichies */
+.seance .titreF small{display:block;font-size:10px;opacity:.6;font-family:'Courier New',monospace;margin-top:1px}
+/* ============ programmation.html : la salle de projection ============ */
+.salleProg{position:relative;overflow:hidden}
+.salleProg::before{
+  content:"";position:absolute;inset:-40px -20px;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(ellipse 120% 46% at 50% 4%, rgba(232,184,75,.10), transparent 60%),
+    repeating-linear-gradient(93deg, rgba(0,0,0,.2) 0 2px, transparent 2px 26px),
+    linear-gradient(180deg,#241713,#150d0c 55%,#0b0708);
+}
+.salleProg::after{
+  content:"";position:absolute;inset:-40px -20px;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 38%, transparent 54%, rgba(0,0,0,.5));
+}
+/* tentures et appliques */
+.tentureP{position:absolute;top:-40px;bottom:0;width:66px;z-index:-1;pointer-events:none;opacity:.8}
+.tentureP.g{left:-16px;background:
+  repeating-linear-gradient(96deg, rgba(0,0,0,.34) 0 4px, transparent 4px 15px),
+  linear-gradient(90deg,#7c1424,#4a0c16 62%,transparent)}
+.tentureP.d{right:-16px;background:
+  repeating-linear-gradient(84deg, rgba(0,0,0,.34) 0 4px, transparent 4px 15px),
+  linear-gradient(270deg,#7c1424,#4a0c16 62%,transparent)}
+.appliqueP{position:absolute;top:290px;width:22px;height:38px;pointer-events:none}
+.appliqueP.g{left:-4px}
+.appliqueP.d{right:-4px}
+.appliqueP i{position:absolute;inset:0;border-radius:4px 4px 11px 11px;
+  background:linear-gradient(180deg,#f7dd9a,#c07a1f);
+  box-shadow:0 0 24px 10px rgba(232,168,58,.36);
+  animation:vacilleApplique 5s ease-in-out infinite}
+/* le fronton lumineux */
+.fronton{position:relative;margin:2px 0 14px;padding:16px 24px;text-align:center;
+  border-radius:10px;background:linear-gradient(180deg,#241413,#150b0b);
+  border:2px solid var(--or-sombre);
+  box-shadow:0 0 32px rgba(232,168,58,.2), inset 0 0 28px rgba(0,0,0,.7)}
+.fronton::before,.fronton::after{content:"";position:absolute;left:9px;right:9px;height:9px;
+  background:radial-gradient(circle at 6px 50%, var(--or-clair) 0 3px, transparent 3.6px) repeat-x;
+  background-size:19px 9px;filter:drop-shadow(0 0 5px rgba(255,200,110,.85));
+  animation:ampoulesFronton 3.2s ease-in-out infinite}
+.fronton::before{top:5px}
+.fronton::after{bottom:5px;animation-delay:1.1s}
+.fronton h1{font-family:'Marcellus',Georgia,serif;font-size:24px;letter-spacing:.2em;
+  text-transform:uppercase;color:#ffe9b0;
+  text-shadow:0 0 20px rgba(255,190,90,.7),0 2px 0 #6a4a12;margin:6px 0 3px}
+.fronton p{font-family:'Outfit',system-ui,sans-serif;font-size:9.5px;font-weight:300;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--or-clair);opacity:.78}
+/* les trois onglets */
+.segments{display:flex;gap:2px;margin-bottom:16px;padding:4px;border-radius:11px;
+  background:rgba(10,6,6,.7);border:1px solid rgba(202,162,74,.35)}
+.segments button{flex:1;padding:10px 4px;border:none;border-radius:8px;cursor:pointer;
+  background:transparent;font-family:'Outfit',system-ui,sans-serif;font-size:10px;
+  font-weight:300;letter-spacing:.12em;text-transform:uppercase;color:#9a8e78;transition:.22s}
+.segments button.on{background:linear-gradient(180deg,#f6e3a6,#c9982f);color:#2e1c06;
+  font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+/* le carrousel */
+.carrousel{position:relative;margin-bottom:18px}
+.pisteAffiches{display:flex;gap:12px;overflow-x:auto;padding:2px 0 4px;
+  scroll-snap-type:x mandatory;scrollbar-width:none;justify-content:safe center;
+  scroll-padding-inline:34px}
+.pisteAffiches::-webkit-scrollbar{display:none}
+.pisteAffiches::before,.pisteAffiches::after{content:"";flex:none;width:22px}
+.pisteVide{flex:1;padding:44px 16px;text-align:center;color:#9a8e78;font-size:13px;
+  line-height:1.7;font-style:italic}
+.pisteVide small{opacity:.7;font-size:11.5px}
+.carteAff{flex:none;width:126px;scroll-snap-align:center;padding:0;background:none;
+  border:none;cursor:pointer;text-align:center;
+  transition:transform .25s cubic-bezier(.2,1.2,.4,1)}
+.carteAff:active{transform:scale(1.03)}
+.carteAff:focus-visible{outline:2px solid var(--or);outline-offset:4px;border-radius:6px}
+.cadreAff{display:block;position:relative;border-radius:4px;overflow:hidden;
+  border:2px solid var(--or-sombre);box-shadow:0 6px 20px rgba(0,0,0,.6)}
+.cadreAff svg{width:100%;display:block;aspect-ratio:2/3}
+.genreEt{position:absolute;top:7px;left:50%;transform:translateX(-50%);padding:2px 8px;
+  border-radius:2px;background:rgba(10,6,6,.84);border:1px solid var(--or-sombre);
+  font-family:'Outfit',system-ui,sans-serif;font-size:7.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--or-clair);white-space:nowrap}
+.maisonEt{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);padding:2px 7px;
+  border-radius:2px;background:var(--or);color:#241a12;
+  font-family:'Outfit',system-ui,sans-serif;font-size:7px;letter-spacing:.12em;
+  text-transform:uppercase}
+.voileVerrou{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(8,4,6,.62)}
+.voileVerrou .ico{width:22px;height:22px;color:var(--or-clair)}
+.carteAff.verrouillee .cadreAff svg{filter:saturate(.3)}
+.titreAff{display:block;font-family:'Marcellus',Georgia,serif;font-size:12.5px;line-height:1.25;
+  color:#fdf3d2;margin-top:9px;min-height:32px;letter-spacing:.05em}
+.ligneAff{display:block;margin:7px auto 0;padding:5px 0;width:96px;border-radius:14px;
+  border:1px solid var(--or-sombre);background:rgba(10,6,6,.6);
+  font-family:'Outfit',system-ui,sans-serif;font-size:11.5px;color:var(--or-clair)}
+.etatAff{display:block;margin-top:6px;font-family:'Outfit',system-ui,sans-serif;
+  font-size:8.5px;letter-spacing:.15em;text-transform:uppercase}
+.etatAff.cours{color:#5cb87a}
+.etatAff.venir{color:#e0a33a}
+.etatAff.libre{color:#9a8e78}
+.etatAff.ferme{color:#8a7060}
+.flecheC{position:absolute;top:104px;width:30px;height:30px;border-radius:50%;z-index:3;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  background:rgba(16,9,9,.9);border:1px solid var(--or-sombre);color:var(--or-clair);
+  font-size:15px;transition:opacity .25s}
+.flecheC.g{left:-2px}
+.flecheC.d{right:-2px}
+.flecheC.eteinte{opacity:.2;pointer-events:none}
+/* la plaque du jour */
+.ligneJour{display:flex;gap:9px;margin-bottom:12px}
+.plaqueJour{flex:1;padding:11px;text-align:center;border-radius:8px;position:relative;
+  background:linear-gradient(180deg,#1c1210,#120b0a);border:1px solid var(--or-sombre);
+  font-family:'Marcellus',Georgia,serif;font-size:13.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--or-clair)}
+.plaqueJour::before,.plaqueJour::after{content:"";position:absolute;top:50%;width:5px;height:5px;
+  border-radius:50%;background:var(--or-sombre);transform:translateY(-50%)}
+.plaqueJour::before{left:8px}
+.plaqueJour::after{right:8px}
+.badgeJour{flex:none;display:flex;align-items:center;gap:7px;padding:0 13px;border-radius:8px;
+  background:rgba(16,9,9,.7);border:1px solid var(--or-sombre);
+  font-family:'Outfit',system-ui,sans-serif;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--creme)}
+.badgeJour svg{width:17px;height:17px;stroke:var(--or);fill:none;stroke-width:1.6}
+/* le tableau détaillé */
+.tableauProg{position:relative;padding:10px;border-radius:10px;
+  background:linear-gradient(180deg,rgba(28,18,16,.92),rgba(14,9,9,.92));
+  border:1px solid rgba(202,162,74,.32);box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.tableauProg::before{content:"";position:absolute;inset:4px;border-radius:7px;
+  border:1px solid rgba(202,162,74,.14);pointer-events:none}
+.rangProg{display:flex;align-items:center;gap:11px;padding:12px 6px;cursor:pointer;
+  border-bottom:1px solid rgba(202,162,74,.13);transition:background .2s}
+.rangProg:last-of-type{border-bottom:none}
+.rangProg:active{background:rgba(232,184,75,.08)}
+.rangProg.verrouille{cursor:default}
+.rpHeure{flex:none;min-width:66px;text-align:center;padding:7px 6px;border-radius:15px;
+  border:1px solid var(--or-sombre);font-family:'Outfit',system-ui,sans-serif;
+  font-size:12px;color:var(--or-clair)}
+.rpMid{flex:1;min-width:0}
+.rpMid b{display:block;font-family:'Marcellus',Georgia,serif;font-size:13px;letter-spacing:.05em;
+  color:#fdf3d2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpMid span{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:9.5px;
+  font-weight:300;color:#9a8e78;margin-top:3px;letter-spacing:.04em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpDr{flex:none;text-align:right}
+.rpDr b{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:14px;font-weight:500}
+.rpDr b.haut{color:#5cb87a}
+.rpDr b.moyen{color:#e0a33a}
+.rpDr b.bas{color:#e2564a}
+.rpDr span{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:8.5px;
+  font-weight:300;letter-spacing:.1em;text-transform:uppercase;color:#8a7e68;margin-top:2px}
+.rpChev{flex:none;color:var(--or-sombre);font-size:17px;line-height:1}
+.rpChev .ico{width:15px;height:15px;color:var(--or)}
+.videProg{padding:30px 14px;text-align:center;color:#9a8e78;font-size:13px;
+  line-height:1.7;font-style:italic}
+.videProg small{opacity:.75;font-size:11.5px}
+.aVenirProg{display:flex;align-items:center;gap:8px;padding:11px 8px;margin-top:6px;
+  border-top:1px solid rgba(202,162,74,.14);
+  font-family:'Outfit',system-ui,sans-serif;font-size:10.5px;font-weight:300;color:#8a7e68}
+.aVenirProg .ico{width:14px;height:14px;color:var(--or-sombre);flex:none}
+.bilanProg{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;
+  padding:11px 8px 4px;margin-top:4px;border-top:1px solid rgba(202,162,74,.16);
+  font-family:'Outfit',system-ui,sans-serif;font-size:10px;font-weight:300;color:#9a8e78}
+.bilanProg b{color:var(--or-clair);font-weight:400}
+.actionsProg{display:flex;gap:9px;margin-top:12px}
+.btnOrProg{flex:1;padding:14px 6px;border:none;border-radius:8px;cursor:pointer;
+  background:linear-gradient(180deg,#f6e3a6,#c9982f);color:#2e1c06;
+  font-family:'Outfit',system-ui,sans-serif;font-size:11px;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;box-shadow:0 3px 12px rgba(0,0,0,.45)}
+.btnOrProg:disabled{opacity:.45;cursor:default;box-shadow:none}
+.btnVideProg{flex:1;padding:14px 6px;border-radius:8px;cursor:pointer;background:transparent;
+  border:1px solid var(--or-sombre);color:var(--or-clair);
+  font-family:'Outfit',system-ui,sans-serif;font-size:11px;font-weight:300;
+  letter-spacing:.12em;text-transform:uppercase}
+/* Bob sur cette page */
+.blocBobProg{margin-top:16px}
+.blocBobProg .bob{width:74px}
+/* la fiche d'un film, ouverte depuis le carrousel */
+.agPapier{position:relative;aspect-ratio:2/3;border-radius:4px;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:18px 14px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+.agPapier svg{position:absolute;inset:0;width:100%;height:100%}
+.agVoile{position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 42%,rgba(6,3,4,.86))}
+.agTitre{position:relative;font-family:'Marcellus',Georgia,serif;font-size:21px;
+  line-height:1.2;text-align:center;color:#fdf3d2;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+.agGenre{position:relative;font-family:'Outfit',system-ui,sans-serif;font-size:9.5px;
+  font-weight:300;letter-spacing:.22em;text-transform:uppercase;color:var(--or-clair);
+  opacity:.85;margin-top:7px}
+/* ============ MUR D'AFFICHES — le catalogue en journal ============
+   Une ligne par film, groupée par état. Remplace le carrousel,
+   qui montrait une carte à la fois sur cinquante-trois films. */
+.listeFilms{display:block}
+.titreCat{display:flex;align-items:center;gap:9px;margin:16px 0 9px}
+.titreCat:first-child{margin-top:2px}
+.titreCat b{font-family:'Marcellus',Georgia,serif;font-size:12.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--or-clair)}
+.titreCat i{flex:1;height:1px;background:linear-gradient(90deg,rgba(202,162,74,.45),transparent)}
+.titreCat small{font-family:'Outfit',system-ui,sans-serif;font-size:10px;font-weight:300;
+  color:#8a7f6c}
+.ligneFilm{display:flex;gap:12px;align-items:center;width:100%;padding:11px 12px;
+  margin-bottom:8px;border-radius:13px;cursor:pointer;text-align:left;
+  background:rgba(255,255,255,.04);border:1px solid rgba(202,162,74,.16);
+  transition:transform .16s,background .16s}
+.ligneFilm:active{transform:scale(.99)}
+.ligneFilm:focus-visible{outline:2px solid var(--or);outline-offset:3px}
+.vignFilm{flex:none;width:44px;height:62px;border-radius:3px;overflow:hidden;
+  border:1px solid var(--or-sombre);box-shadow:0 2px 7px rgba(0,0,0,.4)}
+.vignFilm svg{width:100%;height:100%;display:block}
+.txtFilm{flex:1;min-width:0}
+.txtFilm b{display:block;font-family:'Marcellus',Georgia,serif;font-size:14px;
+  color:var(--ivoire);line-height:1.2;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.genreFilm{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:10px;
+  font-weight:300;letter-spacing:.1em;text-transform:uppercase;color:#9a8e78;margin-top:2px}
+.etatFilm{display:inline-block;margin-top:6px;padding:2.5px 8px;border-radius:10px;
+  font-family:'Outfit',system-ui,sans-serif;font-size:9.5px;font-weight:300;
+  background:rgba(255,255,255,.06);color:#c9bda6}
+.etatFilm.nouveaute{background:rgba(47,125,74,.18);color:#7fd4a0}
+.etatFilm.evenement{background:linear-gradient(180deg,#f6e3a6,#c9982f);color:#2e1c06;
+  font-weight:400}
+.etatFilm.reprise{background:rgba(140,35,49,.16);color:#e0a0aa}
+.etatFilm.fin{background:rgba(180,110,40,.16);color:#e8bb7a}
+.prixFilm{flex:none;text-align:right}
+.prixFilm b{display:block;font-family:'Marcellus',Georgia,serif;font-size:15px;
+  color:var(--or-clair);font-variant-numeric:tabular-nums}
+.prixFilm small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:9px;
+  font-weight:300;color:#8a7f6c}
+.ligneFilm.verrou{opacity:.42;background:rgba(255,255,255,.02);
+  border-color:rgba(255,255,255,.07)}
+.ligneFilm.verrou .vignFilm{filter:grayscale(.8)}
+/* ---- MUR D'AFFICHES — un film encore hors de portée ---- */
+.rangProg.verrouProg{opacity:.42;cursor:default}
+.rangProg.verrouProg .rpHeure{color:#9a8e78;border-color:rgba(202,162,74,.25)}
+.rangProg.verrouProg .rpMid b{color:#a89c88}
+.rangProg.verrouProg .rpDr b{color:#8a7f6c}
+.rangProg.verrouProg .rpChev{width:15px;height:15px;color:#8a7f6c}
+/* le message exact, dans le panneau de secours */
+.scDetail{margin-top:10px;padding:9px 10px;border-radius:9px;
+  background:rgba(36,26,18,.06);border:1px solid rgba(36,26,18,.1);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.5;
+  color:#5a4a3a;word-break:break-word;max-height:96px;overflow:auto}
+.scCopier{display:block;width:100%;margin-top:7px;padding:9px;border-radius:9px;cursor:pointer;
+  background:rgba(36,26,18,.05);border:1px solid rgba(36,26,18,.14);color:#5a4a3a;
+  font-family:'Outfit',system-ui,sans-serif;font-size:11px;font-weight:300}

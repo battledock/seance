@@ -1,0 +1,106 @@
+/* Progression : niveaux, missions, mur des trophées. */
+
+/* ============ progression.html ============ */
+.prochainNiveau{margin-top:14px;padding:11px 12px;border-radius:9px;
+  background:rgba(202,162,74,.12);border:1px solid rgba(202,162,74,.4)}
+.pnLabel{font-family:'Courier New',monospace;font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:#8a6c2a;margin-bottom:5px}
+.ligneMission{
+  display:flex;align-items:center;gap:10px;padding:10px 2px;text-decoration:none;color:var(--encre);
+  border-bottom:1px dashed rgba(138,108,42,.3);
+}
+.ligneMission:last-child{border-bottom:none}
+.ligneMission .ico{width:18px;height:18px;color:#8a6c2a;flex:none}
+.lmTxt{flex:1;min-width:0}
+.lmTxt b{font-size:13px;color:#571520}
+.lmTxt small{display:block;font-size:10.5px;opacity:.65;font-family:'Courier New',monospace}
+.lmFleche{color:#8a6c2a;font-size:15px}
+.ligneMission.faite{opacity:.5}
+.ligneMission.faite .lmTxt b{text-decoration:line-through}
+.carteCadeau{border-color:var(--or);box-shadow:0 0 0 3px rgba(232,184,75,.16), 0 8px 22px rgba(90,60,30,.22)}
+.btnReclamer{margin-left:auto;flex:none;padding:8px 13px;font-size:11px}
+.paletteNiveau{padding:11px 2px;border-bottom:1px dashed rgba(138,108,42,.3);opacity:.55}
+.paletteNiveau:last-child{border-bottom:none}
+.paletteNiveau.acquis{opacity:1}
+.paletteNiveau.courant{background:rgba(202,162,74,.12);border-radius:9px;padding:11px;opacity:1}
+.pnEnteteNiv{display:flex;align-items:center;gap:9px}
+.pnNum{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Courier New',monospace;font-size:12px;font-weight:bold;
+  background:rgba(138,108,42,.2);color:#8a6c2a}
+.paletteNiveau.acquis .pnNum{background:#571520;color:var(--or-clair)}
+.pnTitreNiv{flex:1;font-size:13.5px;font-weight:bold;color:#571520}
+.pnEtat{flex:none;font-family:'Courier New',monospace;font-size:9.5px;color:#8a6c2a;text-align:right}
+.pnRecomp{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;padding-left:35px}
+.puceRecomp{display:inline-flex;align-items:center;gap:4px;font-family:'Courier New',monospace;
+  font-size:9.5px;color:#6e5638;background:rgba(138,108,42,.1);
+  border:1px solid rgba(138,108,42,.28);padding:3px 8px;border-radius:11px}
+.puceRecomp .ico{width:11px;height:11px}
+/* ============================================================
+   LE MUR DES TROPHÉES
+   ============================================================ */
+.murTrophees{
+  position:relative;margin-top:14px;padding:22px 12px 14px;border-radius:12px;overflow:hidden;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 1px, transparent 1px 52px),
+    linear-gradient(180deg,#3a2830,#241820);
+  border:2px solid var(--or-sombre);box-shadow:inset 0 4px 26px rgba(0,0,0,.6);
+}
+.mtEclairage{
+  position:absolute;top:-30%;left:50%;transform:translateX(-50%);
+  width:150%;height:70%;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 0%, rgba(255,223,154,.18), transparent 68%);
+}
+.mtGrille{position:relative;display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:22px 12px}
+.cadreTrophee{
+  position:relative;padding:0;background:none;border:none;cursor:pointer;
+  transform:rotate(var(--incline,0deg));transition:transform .28s cubic-bezier(.2,1.3,.4,1);
+}
+.cadreTrophee:active,.cadreTrophee:focus-visible{transform:rotate(0deg) scale(1.06)}
+@media (hover:hover){ .cadreTrophee:hover{transform:rotate(0deg) scale(1.05)} }
+.ctCrochet{
+  position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  width:2px;height:9px;background:#5a4a38;
+}
+.ctCrochet::after{
+  content:"";position:absolute;top:-3px;left:-2.5px;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f6e3a6,#8a6c2a);
+}
+.ctCadre{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  aspect-ratio:3/4;padding:8px 5px;border-radius:2px;
+  background:linear-gradient(160deg,#241a20,#150e13);
+  border:3px solid #8a6c2a;box-shadow:0 5px 14px rgba(0,0,0,.55);
+}
+.cadreTrophee.plein .ctCadre{
+  border-color:#e8b84b;
+  background:radial-gradient(ellipse at 50% 25%,#3a2a20,#150e13);
+  box-shadow:0 5px 16px rgba(0,0,0,.55), 0 0 0 1px rgba(232,184,75,.3);
+}
+.ctMedaille .ico{width:28px;height:28px;color:#e8b84b}
+.ctNomC{font-size:8.5px;line-height:1.15;text-align:center;color:var(--creme);opacity:.85}
+.ctSilhouette .ico{width:26px;height:26px;color:#4a3a30;opacity:.5}
+.cadreTrophee.vide .ctCadre{opacity:.62}
+.mtPlaque{
+  position:relative;text-align:center;margin-top:18px;padding:7px 0;
+  font-family:'Courier New',monospace;font-size:9.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:#241a12;
+  background:linear-gradient(180deg,#f6e3a6,#caa24a);border-radius:3px;
+}
+.voileTropheeFiche{
+  position:fixed;inset:0;z-index:220;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(6,2,4,.88);animation:celIn .26s ease-out;
+}
+.voileTropheeFiche.sortie{animation:celOut .26s forwards}
+.ficheTrophee{
+  position:relative;max-width:310px;padding:26px 22px;border-radius:14px;text-align:center;
+  background:radial-gradient(ellipse 120% 100% at 50% 0%,#fffdf6,#efe2c4);
+  border:2.5px solid var(--or);box-shadow:0 14px 40px rgba(0,0,0,.55);
+  animation:surgitTrophee .5s cubic-bezier(.2,1.4,.4,1) both;
+}
+.ftMedaille{margin-bottom:8px}
+.ftNom{font-family:Georgia,serif;font-size:18px;color:#571520}
+.ftDesc{font-family:'Courier New',monospace;font-size:11px;opacity:.7;margin-top:5px}
+.ftHistoire{font-size:13px;line-height:1.6;margin-top:14px;font-style:italic;
+  padding-top:14px;border-top:1px dashed rgba(138,108,42,.4)}
+.ftDate{font-family:'Courier New',monospace;font-size:9.5px;opacity:.55;margin-top:12px}

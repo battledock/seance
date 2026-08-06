@@ -1,0 +1,204 @@
+/* Communauté : recherche, classements, amis, défis. */
+
+/* ============ communaute.html ============ */
+.barreRecherche{display:flex;align-items:center;gap:9px;margin-top:14px;padding:0 12px;
+  border-radius:10px;background:rgba(255,255,255,.7);border:2px solid var(--or-sombre)}
+.barreRecherche input{flex:1;padding:13px 0;font-size:16px;font-family:'Courier New',monospace;
+  background:transparent;border:none;outline:none;color:var(--encre)}
+.ligneCinema{
+  display:flex;align-items:center;gap:11px;margin-top:9px;padding:11px 13px;border-radius:10px;
+  text-decoration:none;color:var(--encre);
+  background:radial-gradient(ellipse 120% 90% at 50% 0%,#fffdf6,#f2e8d0);
+  border:2px solid var(--or-sombre);box-shadow:0 4px 12px rgba(90,60,30,.18);
+}
+.lcEmbleme{flex:none;border-radius:50%;overflow:hidden;background:#1c070d;
+  border:2px solid var(--or-sombre);line-height:0}
+.lcTxt{flex:1;min-width:0}
+.lcNom{display:block;font-size:14px;color:#571520}
+.lcPseudo{display:block;font-size:10.5px;opacity:.7;font-family:'Courier New',monospace}
+.lcNiv{display:block;font-size:10px;opacity:.6;font-family:'Courier New',monospace;margin-top:1px}
+.lcVisiter{flex:none;font-family:'Courier New',monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--or-clair);background:#571520;padding:6px 11px;border-radius:14px}
+/* ============ classements ============ */
+.ongletsSection{display:flex;gap:7px;margin-top:14px}
+.ongletSection{
+  flex:1;padding:11px 0;border-radius:9px;cursor:pointer;font-family:inherit;font-size:12.5px;
+  background:transparent;color:var(--creme);border:1.5px solid rgba(202,162,74,.45);
+}
+.ongletSection.actif{background:var(--or);color:var(--encre);border-color:var(--or);font-weight:bold}
+.ongletSection:focus-visible{outline:2px solid var(--or);outline-offset:2px}
+.bandeauSaison{
+  display:flex;align-items:center;gap:9px;margin-top:14px;padding:10px 13px;border-radius:9px;
+  background:rgba(202,162,74,.14);border:1.5px solid rgba(202,162,74,.45);
+  font-size:12.5px;line-height:1.35;color:var(--creme);
+}
+.bandeauSaison .ico{width:17px;height:17px;color:var(--or-clair);flex:none}
+.bandeauSaison small{opacity:.75;font-family:'Courier New',monospace;font-size:10.5px}
+.ongletsCat{display:flex;gap:6px;overflow-x:auto;margin-top:12px;padding-bottom:4px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.ongletsCat::-webkit-scrollbar{display:none}
+.ongletCat{
+  flex:none;display:flex;align-items:center;gap:5px;padding:9px 13px;border-radius:16px;
+  cursor:pointer;font-family:inherit;font-size:11.5px;white-space:nowrap;
+  background:transparent;color:var(--creme);border:1.5px solid rgba(202,162,74,.45);
+}
+.ongletCat .ico{width:14px;height:14px}
+.ongletCat.actif{background:var(--or);color:var(--encre);border-color:var(--or);font-weight:bold}
+.titreCat{font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--or-clair)}
+.periodeCat{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:3px;
+  font-family:'Courier New',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:#caa24a}
+.periodeCat .ico{width:12px;height:12px}
+.filtresClassement{display:flex;gap:7px;margin-top:10px;justify-content:center;flex-wrap:wrap}
+.pastFiltre{padding:7px 13px;border-radius:15px;cursor:pointer;font-family:'Courier New',monospace;
+  font-size:10.5px;background:transparent;color:var(--creme);border:1.5px solid rgba(202,162,74,.4)}
+.pastFiltre.actif{background:rgba(232,184,75,.85);color:var(--encre);border-color:var(--or)}
+.carteMaPosition{
+  display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:12px;padding:14px;
+  border-radius:11px;text-align:center;
+  background:radial-gradient(ellipse 120% 90% at 50% 0%,#fffdf6,#f2e8d0);
+  border:2px solid var(--or);color:var(--encre);box-shadow:0 0 0 3px rgba(232,184,75,.16);
+}
+.mpRang b{font-size:30px;color:#571520;font-family:Georgia,serif}
+.mpRang sup{font-size:14px}
+.mpRang span{display:block;font-family:'Courier New',monospace;font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;color:#8a6c2a;margin-top:1px}
+.mpScore{font-family:'Courier New',monospace;font-size:13px;color:#571520;margin-top:4px}
+.mpEcart{font-size:11.5px;opacity:.7;margin-top:5px;font-style:italic;line-height:1.35}
+.carteMaPosition.absente{flex-direction:row;align-items:center;gap:9px;text-align:left;
+  border-color:var(--or-sombre);box-shadow:none;font-size:12px;line-height:1.4}
+.carteMaPosition.absente .ico{width:17px;height:17px;color:#8a6c2a;flex:none}
+.lienReglage{color:#571520;font-weight:bold}
+.ligneClassement{
+  display:flex;align-items:center;gap:9px;margin-top:8px;padding:10px 11px;border-radius:10px;
+  text-decoration:none;color:var(--encre);
+  background:radial-gradient(ellipse 120% 90% at 50% 0%,#fffdf6,#f2e8d0);
+  border:2px solid var(--or-sombre);box-shadow:0 3px 10px rgba(90,60,30,.16);
+}
+.ligneClassement.moi{border-color:#571520;box-shadow:0 0 0 3px rgba(87,21,32,.16)}
+.ligneClassement.podium{border-width:2.5px}
+.ligneClassement.p1{border-color:#e8b84b;background:linear-gradient(180deg,#fff8e2,#f6e6bc)}
+.ligneClassement.p2{border-color:#b8b8b8;background:linear-gradient(180deg,#fdfdfa,#eeeee8)}
+.ligneClassement.p3{border-color:#c08a4a;background:linear-gradient(180deg,#fdf3e6,#f0e0cc)}
+.lcRang{flex:none;min-width:30px;text-align:center;font-family:Georgia,serif;
+  font-size:17px;font-weight:bold;color:#571520}
+.lcRang i{font-size:9px;font-style:normal;vertical-align:super}
+.p1 .lcRang{font-size:21px;color:#8a6c2a}
+.lcScore{flex:none;font-family:'Courier New',monospace;font-size:11px;font-weight:bold;
+  color:#571520;text-align:right;max-width:38%;line-height:1.3}
+.lcMeta{display:block;font-size:10px;opacity:.65;font-family:'Courier New',monospace;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pagination{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:14px}
+.btnPage{flex:1;padding:11px 0;border-radius:8px;cursor:pointer;font-family:'Courier New',monospace;
+  font-size:11px;background:transparent;color:var(--creme);border:1.5px solid rgba(202,162,74,.45)}
+.btnPage:disabled{opacity:.35;cursor:not-allowed}
+.pageInfo{flex:none;font-family:'Courier New',monospace;font-size:11px;color:#caa24a}
+/* ============ social ============ */
+.barreSociale{display:flex;gap:8px;margin-top:4px}
+.btnSocial{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 8px;
+  border-radius:9px;cursor:pointer;font-family:inherit;font-size:12px;
+  background:rgba(255,255,255,.6);border:2px solid rgba(36,26,18,.24);color:var(--encre);
+}
+.btnSocial .ico{width:16px;height:16px;color:#8a6c2a;flex:none}
+.btnSocial.actif{background:#571520;color:var(--or-clair);border-color:#571520}
+.btnSocial.actif .ico{color:var(--or-clair)}
+.btnSocial:disabled{opacity:.5;cursor:not-allowed}
+.btnSocial.chargement{opacity:.6}
+.btnSocial:focus-visible,.btnReaction:focus-visible{outline:2px solid var(--or);outline-offset:2px}
+.blocReactions{margin-top:14px}
+.brTitre{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:#8a6c2a;margin-bottom:7px}
+.grilleReactions{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:7px}
+.btnReaction{
+  display:flex;align-items:center;gap:6px;padding:9px 10px;border-radius:9px;cursor:pointer;
+  font-family:inherit;font-size:11px;text-align:left;
+  background:rgba(255,255,255,.55);border:2px solid rgba(36,26,18,.18);color:var(--encre);
+}
+.btnReaction .ico{width:15px;height:15px;color:#8a6c2a;flex:none}
+.btnReaction.actif{border-color:#571520;background:#fff;box-shadow:0 0 0 3px rgba(87,21,32,.13)}
+.brNote{margin-top:8px;font-size:11px;font-style:italic;opacity:.7;line-height:1.4}
+.compteurSocial{display:flex;align-items:center;gap:6px;margin-top:12px;
+  font-family:'Courier New',monospace;font-size:11px;color:#6e5638}
+.compteurSocial .ico{width:14px;height:14px;color:#8a6c2a}
+.resumeReactions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pastReaction{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:14px;
+  font-family:'Courier New',monospace;font-size:10px;color:#571520;
+  background:rgba(138,108,42,.12);border:1px solid rgba(138,108,42,.3)}
+.pastReaction .ico{width:12px;height:12px}
+.lienDiscret{display:block;width:100%;margin-top:14px;padding:9px;cursor:pointer;
+  background:transparent;border:none;font-family:'Courier New',monospace;font-size:10px;
+  letter-spacing:.06em;color:#8a6c2a;opacity:.7;text-decoration:underline}
+.toastSocial{
+  position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:190;
+  display:flex;align-items:center;gap:9px;max-width:90vw;padding:11px 16px;border-radius:24px;
+  background:linear-gradient(180deg,#f6e3a6,#caa24a);color:var(--encre);
+  box-shadow:0 6px 22px rgba(0,0,0,.42);animation:toastIn .35s cubic-bezier(.2,1.4,.4,1);
+}
+.toastSocial .ico{width:17px;height:17px;flex:none}
+.tsTxt{font-size:12.5px;line-height:1.35}
+.volReaction{position:fixed;z-index:195;pointer-events:none;animation:volRea .9s ease-out forwards}
+.volReaction .ico{width:24px;height:24px;color:#e8b84b}
+/* abonnements et amis */
+.explicationSociale{display:flex;gap:9px;margin-top:14px;padding:11px 13px;border-radius:9px;
+  background:rgba(202,162,74,.13);border:1px solid rgba(202,162,74,.4);
+  font-size:11.5px;line-height:1.5;color:var(--creme)}
+.explicationSociale .ico{width:16px;height:16px;color:var(--or-clair);flex:none;margin-top:1px}
+.carteAbonnement,.ligneAmi{display:flex;align-items:center;gap:10px;padding:11px 2px;
+  border-bottom:1px dashed rgba(138,108,42,.3)}
+.carteAbonnement:last-child,.ligneAmi:last-child{border-bottom:none}
+.caNom,.laNom{display:block;font-size:13.5px;color:#571520;font-weight:bold}
+.caPseudo,.caMeta,.caNouvelle{display:block;font-size:10px;opacity:.7;font-family:'Courier New',monospace}
+.caNouvelle{color:#2e6b3a;opacity:.85;margin-top:2px}
+.caActions{flex:none;display:flex;flex-direction:column;gap:5px}
+.btnMiniOr,.btnMiniGris{padding:7px 11px;border-radius:13px;cursor:pointer;text-decoration:none;
+  font-family:'Courier New',monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;
+  text-align:center;white-space:nowrap;border:none}
+.btnMiniOr{background:#571520;color:var(--or-clair)}
+.btnMiniGris{background:transparent;color:#8a6c2a;border:1px solid rgba(138,108,42,.5)}
+.ligneActivite{display:flex;align-items:center;gap:10px;padding:9px 2px;text-decoration:none;
+  color:var(--encre);border-bottom:1px dashed rgba(138,108,42,.3)}
+.ligneActivite:last-child{border-bottom:none}
+.laTxt{flex:1;min-width:0}
+.laMsg{display:block;font-size:11px;opacity:.75;font-family:'Courier New',monospace}
+.lcEmbleme,.laEmbleme{flex:none;border-radius:50%;overflow:hidden;background:#1c070d;
+  border:2px solid var(--or-sombre);line-height:0}
+/* notifications */
+.ligneNotif{display:flex;align-items:flex-start;gap:10px;padding:10px 2px;
+  border-bottom:1px dashed rgba(138,108,42,.3)}
+.ligneNotif:last-child{border-bottom:none}
+.ligneNotif .ico{width:17px;height:17px;color:#8a6c2a;flex:none;margin-top:1px}
+.ligneNotif.nonlue{background:rgba(202,162,74,.1);border-radius:8px;padding:10px 8px}
+.lnTxt b{display:block;font-size:12.5px;color:#571520;font-weight:normal}
+.lnTxt small{display:block;font-size:9.5px;opacity:.55;font-family:'Courier New',monospace;margin-top:2px}
+.badgeNotif{display:none;align-items:center;justify-content:center;min-width:17px;height:17px;
+  padding:0 5px;border-radius:9px;background:#a83a2a;color:#fff;
+  font-family:'Courier New',monospace;font-size:9.5px;font-weight:bold;margin-left:5px}
+.ongletSection .badgeNotif{margin-left:4px}
+/* ============ défis ============ */
+.btnNouveauDefi{width:100%;margin-top:14px;display:flex;align-items:center;justify-content:center;
+  gap:8px;padding:13px;font-size:12.5px}
+.btnNouveauDefi .ico{width:17px;height:17px}
+.carteDefi{padding:12px 2px;border-bottom:1px dashed rgba(138,108,42,.3)}
+.carteDefi:last-child{border-bottom:none}
+.carteDefi.reussi{opacity:.85}
+.carteDefi.echoue{opacity:.5}
+.cdEntete{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.cdEntete b{font-size:14px;color:#571520}
+.cdEtat{flex:none;font-family:'Courier New',monospace;font-size:9px;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 8px;border-radius:11px}
+.cdEtat.actif{color:#2e6b3a;border:1px solid rgba(46,107,58,.5)}
+.cdEtat.attente{color:#8a6c2a;border:1px dashed rgba(138,108,42,.5)}
+.cdEtat.reussi{color:#571520;background:#f6e3a6;border:1px solid #caa24a}
+.cdEtat.echoue{color:#8c2318;border:1px solid rgba(140,35,24,.4)}
+.cdDesc{font-size:11.5px;opacity:.7;margin-top:3px;font-style:italic;line-height:1.4}
+.cdAvec{display:flex;align-items:center;gap:6px;margin-top:6px;
+  font-family:'Courier New',monospace;font-size:10.5px;color:#6e5638}
+.cdAvec .ico{width:13px;height:13px;color:#8a6c2a}
+.cdChiffres{text-align:center;font-family:'Courier New',monospace;font-size:12px;
+  color:#571520;margin-top:9px}
+.cdDetail{display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px 12px;margin-top:6px;
+  font-family:'Courier New',monospace;font-size:10px;color:#6e5638}
+.cdDetail .ico{width:11px;height:11px;vertical-align:-1px}
+.cdActions{display:flex;gap:7px;margin-top:9px}
+.cdActions:empty{display:none}

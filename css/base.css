@@ -1,0 +1,24 @@
+/* Socle commun à toutes les pages.
+   Une page n'importe que base.css et sa feuille propre. */
+
+@import "variables.css?v=2ab9afab";
+@import "header.css?v=2ab9afab";
+@import "navigation.css?v=2ab9afab";
+@import "components.css?v=2ab9afab";
+@import "animations.css?v=2ab9afab";
+
+/* ---- écrans ---- */
+@import "cinema.css?v=2ab9afab";
+@import "dayprep.css?v=2ab9afab";
+@import "screenings.css?v=2ab9afab";
+@import "rooms.css?v=2ab9afab";
+@import "studio.css?v=2ab9afab";
+@import "report.css?v=2ab9afab";
+@import "office.css?v=2ab9afab";
+@import "progress.css?v=2ab9afab";
+@import "customization.css?v=2ab9afab";
+@import "profile.css?v=2ab9afab";
+@import "community.css?v=2ab9afab";
+@import "events.css?v=2ab9afab";
+@import "visit.css?v=2ab9afab";
+@import "public-cinema.css?v=2ab9afab";

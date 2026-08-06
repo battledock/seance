@@ -1,0 +1,29 @@
+/* Le bilan de la journée. */
+
+/* ============ bilan.html ============ */
+.ebJour{font-size:19px;letter-spacing:.18em;text-transform:uppercase;color:var(--or-clair);
+  text-shadow:0 0 18px rgba(247,221,154,.35)}
+.ebSous{font-family:'Courier New',monospace;font-size:11px;letter-spacing:.14em;color:#caa24a;margin-top:4px}
+.positif{color:#2e6b3a}
+.negatif{color:#a83a2a}
+.bilanBob{margin-top:14px}
+.bobMiniTete.grand{flex:0 0 52px;height:52px}
+.bandeauRecord{
+  display:flex;align-items:center;gap:9px;margin-top:14px;padding:11px 13px;border-radius:9px;
+  background:linear-gradient(180deg,#f6e3a6,#caa24a);color:var(--encre);
+  font-family:'Courier New',monospace;font-size:11.5px;font-weight:bold;letter-spacing:.06em;
+  box-shadow:0 4px 16px rgba(232,184,75,.35);
+}
+.bandeauRecord .ico{width:18px;height:18px}
+.ligneBilanSeance{display:flex;gap:11px;padding:10px 2px;border-bottom:1px dashed rgba(138,108,42,.3)}
+.ligneBilanSeance:last-child{border-bottom:none}
+.lbHeure{flex:none;align-self:flex-start;font-family:'Courier New',monospace;font-weight:bold;font-size:12px;
+  background:#571520;color:var(--or-clair);padding:5px 8px;border-radius:6px}
+.lbCorps{flex:1;min-width:0}
+.lbTitre{font-size:14px;font-weight:bold;color:#571520}
+.lbJauge{height:7px;border-radius:4px;margin-top:5px;background:rgba(138,108,42,.2);overflow:hidden}
+.lbJauge i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#caa24a,#e8b84b)}
+.lbMeta{font-family:'Courier New',monospace;font-size:10.5px;opacity:.75;margin-top:4px}
+.lbIncident{display:flex;align-items:flex-start;gap:6px;margin-top:5px;font-size:11px;color:#a83a2a;font-style:italic}
+.lbIncident .ico{width:13px;height:13px;flex:none;margin-top:1px}
+.btnJourSuivant{width:100%;margin-top:18px;padding:15px;font-size:13.5px;letter-spacing:.12em}

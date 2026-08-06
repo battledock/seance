@@ -1,0 +1,169 @@
+/* La préparation du matin : journal, réservations, dossier, résumé. */
+
+/* ============ preparation.html : le matin ============
+   Les fonds papier vont de #fdfbf3 à #e8dcc0. Le gris #8a7c60
+   n'y atteignait que 3,0 de contraste sur le plus sombre — les
+   détails du journal étaient à peine lisibles en plein jour.
+   Les textes secondaires passent à #665a42 : 5,0 au minimum.
+   ============================================================ */
+.sallePrep{position:relative;overflow:hidden}
+.sallePrep::before{
+  content:"";position:absolute;inset:-40px -20px;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(ellipse 120% 44% at 50% 2%, rgba(232,184,75,.10), transparent 62%),
+    linear-gradient(180deg,#241713,#150d0c 55%,#0b0708);
+}
+.frontonPrep h1{font-size:21px}
+.prepAttente{padding:60px 16px;text-align:center;color:#9a8e78;font-style:italic;font-size:13px}
+.prepRefus{padding:32px 18px;text-align:center;border-radius:10px;
+  background:rgba(28,18,16,.9);border:1px solid rgba(202,162,74,.3)}
+.prepRefus p{font-size:13.5px;line-height:1.6;color:var(--creme);margin-bottom:16px}
+.prepAvertit{margin-top:12px;padding:12px 14px;border-radius:9px;text-align:center;
+  background:rgba(168,58,42,.16);border:1px solid rgba(226,86,74,.45);
+  font-size:12.5px;color:#f0c4bc}
+/* fil d'ariane */
+.filAriane{display:flex;justify-content:center;gap:7px;margin:0 0 16px}
+.faPoint{width:7px;height:7px;border-radius:50%;background:rgba(202,162,74,.28);
+  transition:background .3s, transform .3s}
+.faPoint.fait{background:var(--or-sombre)}
+.faPoint.ici{background:var(--or);transform:scale(1.4)}
+/* 1. le journal du matin */
+.journalMatin{padding:16px 15px;border-radius:11px;
+  background:linear-gradient(180deg,#fdfbf3,#f0e9d6);border:2px solid var(--or-sombre);
+  box-shadow:0 8px 26px rgba(0,0,0,.45);color:var(--encre)}
+.jmEntete{display:flex;align-items:baseline;justify-content:space-between;
+  padding-bottom:9px;margin-bottom:12px;border-bottom:2px solid rgba(36,26,18,.15)}
+.jmJour{font-family:'Marcellus',Georgia,serif;font-size:19px;letter-spacing:.13em;
+  text-transform:uppercase;color:#571520}
+.jmStyle{font-family:'Outfit',system-ui,sans-serif;font-size:9px;font-weight:300;
+  letter-spacing:.16em;text-transform:uppercase;color:#665a42}
+.jmBob{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px}
+.jmTete{flex:none;width:44px;height:44px;border-radius:50%;overflow:hidden;
+  border:2px solid var(--or-sombre);background:#f7ecd6}
+.jmTete svg{width:100%;height:100%;display:block}
+.jmSalut{font-size:13.5px;line-height:1.5;font-style:italic;color:#3a2a1c;padding-top:5px}
+.jmLignes{list-style:none}
+.jmLigne{display:flex;gap:10px;align-items:flex-start;padding:11px 4px;cursor:pointer;
+  border-top:1px dashed rgba(36,26,18,.18);
+  animation:entreLigne .4s ease-out both}
+.jmLigne .ico{width:17px;height:17px;color:#8a6c2a;flex:none;margin-top:2px}
+.jmLigne b{display:block;font-size:13.5px;font-weight:normal;line-height:1.4;color:#241a12}
+.jmLigne small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:11px;
+  font-weight:300;color:#665a42;margin-top:3px;max-height:0;overflow:hidden;
+  transition:max-height .3s ease, margin .3s ease}
+.jmLigne.ouverte small{max-height:60px}
+/* 2. les réservations */
+.panneauResa{padding:12px;border-radius:11px;
+  background:linear-gradient(180deg,rgba(28,18,16,.94),rgba(14,9,9,.94));
+  border:1px solid rgba(202,162,74,.34)}
+.prEntete{display:flex;align-items:baseline;justify-content:space-between;
+  padding:4px 4px 12px;border-bottom:1px solid rgba(202,162,74,.2);
+  font-family:'Outfit',system-ui,sans-serif;font-size:10px;font-weight:300;
+  letter-spacing:.16em;text-transform:uppercase;color:#9a8e78}
+.prEntete b{font-family:'Marcellus',Georgia,serif;font-size:19px;letter-spacing:.04em;
+  color:var(--or-clair);text-transform:none}
+.ligneResa{padding:12px 4px;border-bottom:1px solid rgba(202,162,74,.13);cursor:pointer}
+.ligneResa:last-of-type{border-bottom:none}
+.lrHaut{display:flex;align-items:center;gap:10px}
+.lrHeure{flex:none;min-width:56px;text-align:center;padding:6px 4px;border-radius:14px;
+  border:1px solid var(--or-sombre);font-family:'Outfit',system-ui,sans-serif;
+  font-size:11.5px;color:var(--or-clair)}
+.lrTitre{flex:1;min-width:0}
+.lrTitre b{display:block;font-family:'Marcellus',Georgia,serif;font-size:13px;color:#fdf3d2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrTitre small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:9.5px;
+  font-weight:300;color:#9a8e78;margin-top:2px}
+.lrChiffre{flex:none;text-align:right}
+.lrChiffre b{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:14px;
+  font-weight:500}
+.lrChiffre small{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:8.5px;
+  font-weight:300;color:#8a7e68;margin-top:1px}
+.lrChiffre.haut b{color:#5cb87a}
+.lrChiffre.moyen b{color:#e0a33a}
+.lrChiffre.bas b{color:#e2564a}
+.lrJauge{height:3px;border-radius:2px;margin-top:9px;background:rgba(202,162,74,.16);
+  overflow:hidden}
+.lrJauge i{display:block;height:100%;border-radius:2px;transition:width .7s ease}
+.lrJauge i.haut{background:#5cb87a}
+.lrJauge i.moyen{background:#e0a33a}
+.lrJauge i.bas{background:#e2564a}
+.lrRaisons{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;max-height:0;overflow:hidden;
+  transition:max-height .3s ease}
+.ligneResa.ouverte .lrRaisons{max-height:70px}
+.lrRaisons span{font-family:'Outfit',system-ui,sans-serif;font-size:9.5px;font-weight:300;
+  padding:3px 8px;border-radius:10px}
+.rPlus{background:rgba(92,184,122,.16);color:#8fd6a6}
+.rMoins{background:rgba(226,86,74,.14);color:#f0a49a}
+.rNeutre{color:#8a7e68}
+.prTotaux{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;
+  padding:12px 4px 2px;margin-top:6px;border-top:1px solid rgba(202,162,74,.2);
+  font-family:'Outfit',system-ui,sans-serif;font-size:10px;font-weight:300;color:#9a8e78}
+.prTotaux b{color:var(--or-clair);font-weight:400}
+.prTotaux .negatif b{color:#e2564a}
+/* 3. le dossier */
+.dossier{padding:18px 16px;border-radius:11px;position:relative;
+  background:linear-gradient(180deg,#f7f1e0,#e8dcc0);border:2px solid var(--or-sombre);
+  box-shadow:0 10px 30px rgba(0,0,0,.5);color:var(--encre)}
+.dossier::before{content:"";position:absolute;top:-1px;left:22px;width:62px;height:9px;
+  border-radius:0 0 5px 5px;background:var(--or-sombre)}
+.doEtiquette{display:inline-block;padding:3px 10px;border-radius:3px;
+  background:#571520;color:var(--or-clair);
+  font-family:'Outfit',system-ui,sans-serif;font-size:8.5px;font-weight:400;
+  letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px}
+.dossier h2{font-family:'Marcellus',Georgia,serif;font-size:19px;letter-spacing:.08em;
+  color:#571520;margin-bottom:8px}
+.doRecit{font-size:13.5px;line-height:1.6;color:#3a2a1c}
+.doBob{display:flex;gap:9px;align-items:flex-start;margin-top:13px;padding:11px 12px;
+  border-radius:9px;background:rgba(87,21,32,.07);border-left:3px solid var(--or-sombre);
+  font-size:12.5px;line-height:1.5;font-style:italic;color:#4a3520}
+.doTete{flex:none;width:34px;height:34px;border-radius:50%;overflow:hidden;background:#f7ecd6}
+.doTete svg{width:100%;height:100%;display:block}
+.doOptions{margin-top:16px;display:flex;flex-direction:column;gap:9px}
+.doOptions.enCours{opacity:.45;pointer-events:none}
+.doOption{text-align:left;padding:13px 14px;border-radius:9px;cursor:pointer;
+  background:#fffdf6;border:1.5px solid var(--or-sombre);
+  transition:transform .2s, box-shadow .2s}
+.doOption:active{transform:scale(.985)}
+.doOption b{display:block;font-family:'Marcellus',Georgia,serif;font-size:14.5px;
+  color:#571520;margin-bottom:6px}
+.doOption span{display:block;font-family:'Outfit',system-ui,sans-serif;font-size:11.5px;
+  font-weight:300;color:#5a4a38;padding-left:12px;position:relative;line-height:1.5}
+.doOption span::before{content:"·";position:absolute;left:2px;color:var(--or-sombre)}
+.doOption em{display:block;font-style:normal;font-family:'Outfit',system-ui,sans-serif;
+  font-size:11px;color:#a83a2a;margin-top:6px}
+.doPlusTard{display:block;width:100%;margin-top:12px;padding:10px;cursor:pointer;
+  background:transparent;border:none;font-family:'Outfit',system-ui,sans-serif;
+  font-size:11px;font-weight:300;letter-spacing:.1em;color:#665a42;text-decoration:underline}
+.dossier.resolu{background:linear-gradient(180deg,#eee8d8,#ded4bc)}
+.doResume{font-size:13.5px;line-height:1.6;color:#3a2a1c;margin-bottom:10px}
+.doEffet{display:flex;gap:8px;align-items:center;padding:7px 0;
+  font-family:'Outfit',system-ui,sans-serif;font-size:12px;font-weight:300;color:#4a3520}
+.doEffet .ico{width:14px;height:14px;color:#8a6c2a;flex:none}
+/* 4. le résumé */
+.resumePrep{padding:16px 15px;border-radius:11px;
+  background:linear-gradient(180deg,rgba(28,18,16,.94),rgba(14,9,9,.94));
+  border:1px solid rgba(202,162,74,.34)}
+.rpTitre{font-family:'Marcellus',Georgia,serif;font-size:17px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--or-clair);text-align:center;margin-bottom:14px}
+.rpLigne{display:flex;gap:10px;align-items:center;padding:9px 2px;
+  border-top:1px solid rgba(202,162,74,.13);
+  font-family:'Outfit',system-ui,sans-serif;font-size:12.5px;font-weight:300;color:var(--creme)}
+.rpLigne:first-of-type{border-top:none}
+.rpLigne .ico{width:16px;height:16px;color:var(--or-sombre);flex:none}
+.rpLigne.alerte{color:#e0a33a}
+.rpLigne.alerte .ico{color:#e0a33a}
+.rpLigne.discret{color:#8a7e68;font-size:11px}
+.btnPortes{width:100%;margin-top:14px;padding:18px 10px;border:none;border-radius:10px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(180deg,#f6e3a6,#c9982f);color:#2e1c06;
+  font-family:'Marcellus',Georgia,serif;font-size:16px;letter-spacing:.14em;
+  text-transform:uppercase;box-shadow:0 5px 18px rgba(0,0,0,.5)}
+.btnPortes .ico{width:20px;height:20px}
+.btnPortes:disabled{opacity:.4;box-shadow:none;cursor:default}
+.btnEtape{width:100%;margin-top:10px}
+/* le refus d'une option doit se voir, pas disparaître dans un toast */
+.doEchec{
+  margin-top:14px;padding:12px 14px;border-radius:8px;
+  background:rgba(168,58,42,.12);border:1.5px solid rgba(168,58,42,.5);
+  font-family:'Outfit',system-ui,sans-serif;font-size:12.5px;line-height:1.5;color:#8a2318;
+}
