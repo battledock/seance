@@ -443,8 +443,8 @@
 
 /* ---- fondu bas ---- */
 .sceneFade{
-  position:fixed;bottom:var(--navH);left:0;right:0;height:60px;
-  background:linear-gradient(180deg,transparent,rgba(10,4,6,.65));
+  position:fixed;bottom:calc(var(--navH) + var(--safeB));left:0;right:0;height:44px;
+  background:linear-gradient(180deg,transparent,rgba(10,4,6,.45));
   pointer-events:none;z-index:10;
 }
 
@@ -468,16 +468,20 @@ body.pageImmersive .navBas a.actif{
 
 
 
-/* ---- la façade remplit la hauteur de l'écran ---- */
+/* ---- la façade remplit l'écran SANS passer sous la nav ----
+   La barre du bas masquait le trottoir et la route : on borne la
+   scène juste au-dessus d'elle, et le dessin s'ancre par le bas. */
+body.pageImmersive .sceneJeu{
+  height:100vh;height:100dvh;
+  padding-bottom:0;
+}
 .sceneFacade{
-  position:absolute;inset:0;
-  padding-top:0;
+  position:absolute;left:0;right:0;top:0;
+  bottom:calc(var(--navH) + var(--safeB));
+  overflow:hidden;
 }
 .sceneFacade .facadeRiche{
   width:100%;height:100%;display:block;
-}
-body.pageImmersive .sceneJeu{
-  height:100vh;height:100dvh;
 }
 /* nouvelles animations de ciel */
 .etoilesVives g{animation:scintilleFort 5.5s ease-in-out infinite}
@@ -487,3 +491,4 @@ body.pageImmersive .sceneJeu{
 .nuageLoin{animation:deriveNuage 190s linear infinite}
 .animLegeres .voieLactee,.animLegeres .etoilesVives g,.animLegeres .nuageLoin{animation:none}
 .enPause .nuageLoin,.enPause .etoilesVives g,.enPause .voieLactee{animation-play-state:paused}
+
