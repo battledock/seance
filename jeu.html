@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=93089721">
+  <link rel="stylesheet" href="css/base.css?v=becf21cb">
   <style>
     body{margin:0}
 
@@ -24,7 +24,12 @@
        démarre. On attend devant un ciel, la façade s'y dessine, et
        rien ne clignote puisque plus rien ne se superpose.
        ------------------------------------------------------------ */
-    .sceneJeu{opacity:1}
+    /* La scène porte un fond presque noir hérité du thème sombre.
+       Tant que la façade n'est pas dessinée, ce noir masquait le ciel
+       de la page : au moindre retard, on se retrouvait devant un
+       écran noir sans rien comprendre. On la laisse transparente —
+       le ciel se voit dessous, et la façade vient s'y poser. */
+    .sceneJeu{opacity:1;background:transparent}
     .navBas{opacity:0;transition:opacity .38s ease}
     body.pret .navBas{opacity:1}
     html,body{background:linear-gradient(180deg,
@@ -61,8 +66,9 @@
   <div class="sceneFade" aria-hidden="true"></div>
 </main>
 
-<script type="module" src="js/pages/jeu.js?v=93089721"></script>
+<script type="module" src="js/pages/jeu.js?v=becf21cb"></script>
 </body>
 </html>
+
 
 
