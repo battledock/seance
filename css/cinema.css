@@ -377,3 +377,73 @@
 .animLegeres .lettreBlade,.animLegeres .chenille{animation:none}
 .enPause .passantR,.enPause .amp,.enPause .faisceauA,.enPause .faisceauB,
 .enPause .etoiles circle,.enPause .nuageA,.enPause .nuageB{animation-play-state:paused}
+
+
+/* ============================================================
+   COMPOSITION IMMERSIVE — le cinéma est l'interface
+   jeu.html V3 : plus de cartes, le monde remplit l'écran
+   ============================================================ */
+
+/* ---- scène principale ---- */
+.sceneJeu{
+  position:relative;min-height:100dvh;overflow:hidden;
+  background:#0a0406;
+}
+.sceneJeu .facadeRiche{width:100%;display:block}
+
+.sceneFacade{
+  position:relative;width:100%;
+  padding-top:calc(var(--safeT));
+}
+
+/* ---- HUD transparent ---- */
+.hudJeu{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(10px + var(--safeT)) 16px 8px;
+  pointer-events:none;
+  font-family:'Outfit',system-ui,sans-serif;
+}
+.hudGauche{display:flex;align-items:baseline;gap:6px}
+.hudNom{
+  font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(247,221,154,.75);text-shadow:0 1px 6px rgba(0,0,0,.6);
+}
+.hudNiv{
+  font-size:8px;letter-spacing:.12em;
+  color:rgba(247,221,154,.4);text-shadow:0 1px 4px rgba(0,0,0,.5);
+}
+.hudDroite{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.hudArgent{
+  font-size:13px;font-weight:500;
+  color:rgba(247,221,154,.7);text-shadow:0 1px 6px rgba(0,0,0,.6);
+}
+.hudXp{
+  width:36px;height:2.5px;border-radius:2px;
+  background:rgba(255,255,255,.1);overflow:hidden;
+}
+.hudXpBarre{
+  display:block;height:100%;width:0;border-radius:2px;
+  background:rgba(247,221,154,.5);
+  transition:width .8s cubic-bezier(.25,1.2,.5,1);
+}
+
+/* phase matin : HUD sombre sur ciel clair */
+.sceneJeu.phaseMatin .hudNom{color:rgba(36,26,18,.65)}
+.sceneJeu.phaseMatin .hudNiv{color:rgba(36,26,18,.4)}
+.sceneJeu.phaseMatin .hudArgent{color:rgba(36,26,18,.7)}
+.sceneJeu.phaseMatin .hudXp{background:rgba(36,26,18,.1)}
+.sceneJeu.phaseMatin .hudXpBarre{background:rgba(202,162,74,.6)}
+/* phase après-midi */
+.sceneJeu.phaseAprem .hudNom{color:rgba(36,26,18,.6)}
+.sceneJeu.phaseAprem .hudNiv{color:rgba(36,26,18,.35)}
+.sceneJeu.phaseAprem .hudArgent{color:rgba(36,26,18,.65)}
+.sceneJeu.phaseAprem .hudXp{background:rgba(36,26,18,.1)}
+.sceneJeu.phaseAprem .hudXpBarre{background:rgba(202,162,74,.55)}
+
+/* ---- fondu bas ---- */
+.sceneFade{
+  position:fixed;bottom:var(--navH);left:0;right:0;height:60px;
+  background:linear-gradient(180deg,transparent,rgba(10,4,6,.65));
+  pointer-events:none;z-index:10;
+}
