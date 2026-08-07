@@ -83,7 +83,10 @@ function etatBatiment(niveau){
     herbes:           i === 0,
     trottoirFissure:  i <= 1,
     ampouleMorte:     i <= 1,
-    pigeons:          i <= 1,
+    /* Les pigeons signalent l'abandon : ils appartiennent au tout
+       premier âge. Ils traînaient encore au stade « Remis à neuf »,
+       ce qui contredisait la rénovation qu'on venait de payer. */
+    pigeons:          i === 0,
     echafaudage:      i === 1,
 
     /* ---- ce qui s'ajoute avec les niveaux ---- */
@@ -142,3 +145,4 @@ export {
   etatBatiment,
   murSelonEtat
 };
+
