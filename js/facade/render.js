@@ -806,10 +806,17 @@ ${E.tapis ? `<g>
 <!-- ═══ ROUTE ═══ -->
 <g>
   <path d="M0 466 L480 466 L480 ${BASROUTE} L0 ${BASROUTE} Z" fill="url(#routeG)"/>
+  <!-- UN SEUL AXE MÉDIAN
+
+       Il y avait deux rangées de pointillés : une à 30 % de la
+       hauteur de chaussée, une seconde à 72 % sur les grands
+       écrans. Deux lignes parallèles se lisent comme deux
+       chaussées séparées — d'où l'impression tenace d'une double
+       route alors qu'un seul bitume est dessiné.
+
+       On garde la ligne médiane, au milieu de la chaussée. -->
   <g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".14" : ".3"}" stroke-width="3"
-     stroke-dasharray="26 22"><path d="M0 ${Math.round(466 + HROUTE*.30)} L480 ${Math.round(466 + HROUTE*.30)}"/></g>
-  ${HROUTE > 96 ? `<g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".08" : ".16"}" stroke-width="4"
-     stroke-dasharray="34 30"><path d="M0 ${Math.round(466 + HROUTE*.72)} L480 ${Math.round(466 + HROUTE*.72)}"/></g>` : ""}
+     stroke-dasharray="26 22"><path d="M0 ${Math.round(466 + HROUTE*.5)} L480 ${Math.round(466 + HROUTE*.5)}"/></g>
   <g opacity=".18">
     <ellipse cx="150" cy="${Math.round(466 + HROUTE*.52)}" rx="60" ry="7" fill="#000"/>
     ${HROUTE > 110 ? `<ellipse cx="370" cy="${Math.round(466 + HROUTE*.86)}" rx="72" ry="8" fill="#000"/>` : ""}
@@ -1045,6 +1052,7 @@ export {
   nuageVolumetrique,
   vitrineEtat
 };
+
 
 
 
