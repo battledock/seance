@@ -494,3 +494,28 @@ body.pageImmersive .sceneJeu{
 
 
 
+
+/* ============================================================
+   L'ÉCRAN D'ÉCHEC DE CHARGEMENT
+
+   Un message perdu en haut d'une page noire ne dit pas au joueur
+   quoi faire. Ici il y a une phrase, un bouton, et le code de
+   l'erreur en petit — de quoi repartir ou rapporter.
+   ============================================================ */
+.echecChargement{
+  position:fixed;inset:0;z-index:600;display:flex;align-items:center;
+  justify-content:center;padding:28px;
+  background:radial-gradient(ellipse at 50% 42%,#241016,#0d0709 78%);
+}
+.ecBoite{max-width:320px;width:100%;text-align:center}
+.ecBoite h2{font-family:'Marcellus',Georgia,serif;font-size:19px;color:#f7dd9a;
+  margin-bottom:9px;letter-spacing:.02em}
+.ecBoite p{font-family:'Outfit',system-ui,sans-serif;font-size:13px;
+  color:rgba(247,221,154,.72);line-height:1.55;margin-bottom:20px}
+.ecReessayer{width:100%;background:linear-gradient(180deg,#f6e3a6,#caa24a 55%,#8a6c2a);
+  border:none;border-radius:12px;padding:15px;font-family:'Marcellus',Georgia,serif;
+  font-size:15px;color:#2a1810;letter-spacing:.12em;cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.ecReessayer:active{transform:translateY(1px)}
+.ecBoite small{display:block;margin-top:14px;font-family:'Outfit',system-ui,sans-serif;
+  font-size:10px;letter-spacing:.1em;color:rgba(247,221,154,.32)}
