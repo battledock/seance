@@ -1069,7 +1069,6 @@ export {
   agranditAffiche,
   allerAuCatalogue,
   allerAuProgramme,
-  boutonsProg,
   brancheSegments,
   brouillon,
   bulleConseil,
