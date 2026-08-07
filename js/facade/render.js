@@ -12,6 +12,130 @@ import { A } from "../ui/genre-posters.js?v=144ee666";
    FAÇADE ÉVOLUTIVE — le même bâtiment à travers six âges
    ============================================================ */
 
+
+
+/* ------------------------------------------------------------
+   LE VOISINAGE
+
+   Deux blocs de couleur unie encadraient le cinéma. Un immeuble
+   haussmannien n'est pas une masse plate : il a des bandeaux qui
+   marquent les étages, des appuis de fenêtre, des balcons filants,
+   une corniche. Ce sont ces lignes horizontales qui donnent
+   l'échelle et disent « ville » plutôt que « décor ».
+   ------------------------------------------------------------ */
+function immeubleVoisin(x, y, l, h, P, cote, lum){
+  const ETAGE = 38;
+  const n = Math.floor((h - 20) / ETAGE);
+  const teinte = P.immeubles[0];
+  let out = `<rect x="${x}" y="${y}" width="${l}" height="${h}" fill="${teinte}"/>`;
+
+  /* la face qui regarde le cinéma reçoit moins de jour */
+  out += `<rect x="${cote === "g" ? x + l - 14 : x}" y="${y}" width="14" height="${h}"
+    fill="#000" opacity=".16"/>`;
+  out += `<rect x="${cote === "g" ? x : x + l - 8}" y="${y}" width="8" height="${h}"
+    fill="#fff" opacity=".05"/>`;
+
+  /* corniche */
+  out += `<rect x="${x-3}" y="${y-7}" width="${l+6}" height="7" fill="${P.toit}"/>
+    <rect x="${x-4}" y="${y-9}" width="${l+8}" height="3" fill="${P.toit}" opacity=".8"/>
+    <rect x="${x-3}" y="${y}" width="${l+6}" height="2" fill="#000" opacity=".22"/>`;
+
+  for(let i = 0; i < n; i++){
+    const ye = y + 14 + i * ETAGE;
+    /* bandeau d'étage */
+    out += `<rect x="${x}" y="${ye + 26}" width="${l}" height="3.5" fill="${P.toit}" opacity=".38"/>
+      <rect x="${x}" y="${ye + 29.5}" width="${l}" height="1.4" fill="#000" opacity=".16"/>`;
+    /* balcon filant un étage sur deux */
+    if(i % 2 === 1){
+      out += `<rect x="${x-2}" y="${ye + 22}" width="${l+4}" height="2.4" fill="${P.toit}" opacity=".5"/>`;
+      for(let b = 0; b < Math.floor(l / 7); b++)
+        out += `<rect x="${(x + 3 + b * 7).toFixed(1)}" y="${ye + 16}" width="1.1" height="6"
+          fill="${P.toit}" opacity=".42"/>`;
+    }
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------
+   L'APPAREIL DE PIERRE
+
+   Le mur n'était qu'un dégradé barré de neuf traits horizontaux :
+   à l'œil, une surface plastique. Une façade de 1930 est faite de
+   blocs taillés, et ce qui la rend vivante n'est pas le joint mais
+   la variation d'un bloc à l'autre — l'un plus clair, l'autre plus
+   gris, un troisième piqué d'humidité.
+
+   On pose donc un vrai appareil : assises régulières, joints
+   décalés d'une rangée à l'autre, et une teinte propre à chaque
+   pierre tirée d'une suite déterministe — la façade est toujours
+   la même d'une visite à l'autre.
+   ------------------------------------------------------------ */
+function appareilPierre(x, y, l, h, M, P, usure, graine = 7){
+  const HA = 26;                       /* hauteur d'assise */
+  const LB = 44;                       /* longueur moyenne d'un bloc */
+  const rangs = Math.ceil(h / HA);
+  let out = "";
+  let n = graine;
+  const suite = ()=>{ n = (n * 1103515245 + 12345) & 0x7fffffff; return (n % 1000) / 1000; };
+
+  for(let r = 0; r < rangs; r++){
+    const yb = y + r * HA;
+    const hb = Math.min(HA, y + h - yb);
+    if(hb < 4) continue;
+    /* une assise sur deux démarre à mi-bloc : les joints ne s'alignent pas */
+    let xb = x - (r % 2 ? LB * .5 : 0);
+    while(xb < x + l){
+      const lb = LB * (.72 + suite() * .56);
+      const x0 = Math.max(x, xb), x1 = Math.min(x + l, xb + lb);
+      if(x1 - x0 > 3){
+        const t = suite();
+        /* la teinte du bloc : claire, neutre ou sourde */
+        const ton = t < .3 ? "#fff" : t < .62 ? null : "#000";
+        const force = t < .3 ? (.05 + t * .12)
+                    : t < .62 ? 0
+                    : (.04 + (t - .62) * .16);
+        if(ton) out += `<rect x="${x0.toFixed(1)}" y="${yb.toFixed(1)}"
+          width="${(x1-x0).toFixed(1)}" height="${hb.toFixed(1)}"
+          fill="${ton}" opacity="${force.toFixed(3)}"/>`;
+        /* piqûre d'humidité sur les pierres du bas */
+        if(usure > .1 && suite() < .16 && yb > y + h * .55)
+          out += `<ellipse cx="${(x0 + (x1-x0)*suite()).toFixed(1)}"
+            cy="${(yb + hb * .7).toFixed(1)}" rx="${(4 + suite()*7).toFixed(1)}"
+            ry="${(3 + suite()*4).toFixed(1)}" fill="#3a3020"
+            opacity="${(.05 + usure * .09).toFixed(3)}"/>`;
+      }
+      xb += lb;
+    }
+  }
+
+  /* les joints : creux en haut, lumière en bas — c'est ce relief
+     minuscule qui fait lire la pierre plutôt que le papier peint */
+  let joints = `<g>`;
+  for(let r = 1; r < rangs; r++){
+    const yb = y + r * HA;
+    if(yb > y + h - 2) break;
+    joints += `<path d="M${x} ${yb} L${x+l} ${yb}" stroke="#000" stroke-opacity=".13" stroke-width="1.1"/>`
+            + `<path d="M${x} ${(yb+1).toFixed(1)} L${x+l} ${(yb+1).toFixed(1)}"
+                 stroke="#fff" stroke-opacity=".05" stroke-width=".8"/>`;
+  }
+  /* joints verticaux, en quinconce */
+  n = graine * 3;
+  for(let r = 0; r < rangs; r++){
+    const yb = y + r * HA, hb = Math.min(HA, y + h - yb);
+    if(hb < 4) continue;
+    let xb = x - (r % 2 ? LB * .5 : 0);
+    while(xb < x + l){
+      const lb = LB * (.72 + suite() * .56);
+      xb += lb;
+      if(xb > x + 2 && xb < x + l - 2)
+        joints += `<path d="M${xb.toFixed(1)} ${yb.toFixed(1)} L${xb.toFixed(1)} ${(yb+hb).toFixed(1)}"
+          stroke="#000" stroke-opacity=".10" stroke-width="1"/>`;
+    }
+  }
+  joints += `</g>`;
+  return out + joints;
+}
+
 /* ------------------------------------------------------------
    GÉOMÉTRIE ADAPTATIVE
 
@@ -175,6 +299,13 @@ function dessineFacadeEvolutive(opts = {}){
     <stop offset=".5" stop-color="${enseigneVive ? "#7a5a30" : "#3a4048"}"/>
     <stop offset="1" stop-color="${enseigneVive ? "#3a2a1c" : "#22282e"}"/>
   </linearGradient>
+  <!-- une vitre renvoie le ciel en haut, la rue sombre en bas -->
+  <linearGradient id="refletCielG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="${P.ciel[1]}" stop-opacity=".42"/>
+    <stop offset=".34" stop-color="${P.ciel[2]}" stop-opacity=".22"/>
+    <stop offset=".52" stop-color="${P.immeubles[1]}" stop-opacity=".3"/>
+    <stop offset="1" stop-color="#000" stop-opacity=".26"/>
+  </linearGradient>
   <linearGradient id="tapisG" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#a82b3d"/><stop offset="1" stop-color="#6e1424"/>
   </linearGradient>
@@ -184,6 +315,11 @@ function dessineFacadeEvolutive(opts = {}){
   </linearGradient>
   <linearGradient id="planchesG" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#8a6c48"/><stop offset="1" stop-color="#5a4430"/>
+  </linearGradient>
+  <linearGradient id="ombreAuventG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#000" stop-opacity=".34"/>
+    <stop offset=".45" stop-color="#000" stop-opacity=".14"/>
+    <stop offset="1" stop-color="#000" stop-opacity="0"/>
   </linearGradient>
   <radialGradient id="vignetteG" cx=".5" cy=".45" r=".72">
     <stop offset=".55" stop-color="#000" stop-opacity="0"/>
@@ -296,14 +432,20 @@ ${phase === "nuit"
     (212+Math.random()*54).toFixed(0), 3, 4, P, Math.random()<.6)).join("") : ""}
 </g>
 <g>
-  <rect x="0" y="188" width="72" height="196" fill="${P.immeubles[0]}"/>
-  <rect x="0" y="184" width="72" height="6" fill="${P.toit}"/>
+  ${immeubleVoisin(0, 188, 72, 196, P, "g", lum)}
   ${[0,1,2,3].map(r=>[0,1,2].map(c=>
     fenetreVoisin(9 + c*22, 204 + r*40, 13, 22, P, lum && Math.random()<.62)).join("")).join("")}
-  <rect x="408" y="176" width="72" height="208" fill="${P.immeubles[0]}"/>
-  <rect x="408" y="172" width="72" height="6" fill="${P.toit}"/>
+  ${[0,1,2,3].map(r=>[0,1,2].map(c=>
+    `<rect x="${7 + c*22}" y="${202 + r*40}" width="17" height="2" fill="${P.toit}" opacity=".45"/>
+     <rect x="${7 + c*22}" y="${226 + r*40}" width="17" height="2.4" fill="${P.toit}" opacity=".55"/>`
+    ).join("")).join("")}
+  ${immeubleVoisin(408, 176, 72, 208, P, "d", lum)}
   ${[0,1,2,3,4].map(r=>[0,1].map(c=>
     fenetreVoisin(422 + c*26, 192 + r*38, 15, 22, P, lum && Math.random()<.55)).join("")).join("")}
+  ${[0,1,2,3,4].map(r=>[0,1].map(c=>
+    `<rect x="${420 + c*26}" y="${190 + r*38}" width="19" height="2" fill="${P.toit}" opacity=".45"/>
+     <rect x="${420 + c*26}" y="${214 + r*38}" width="19" height="2.4" fill="${P.toit}" opacity=".55"/>`
+    ).join("")).join("")}
   <rect x="404" y="176" width="4" height="208" fill="${P.toit}" opacity=".7"/>
 </g>
 <rect x="0" y="150" width="480" height="150" fill="${P.brume}" opacity="${P.brumeOpac}"/>
@@ -335,9 +477,7 @@ ${phase === "nuit"
 
   <!-- corps -->
   <rect x="86" y="132" width="308" height="248" fill="url(#murG)"/>
-  <g stroke="#000" stroke-opacity=".07" stroke-width="1">
-    ${[...Array(9)].map((_,i)=>`<path d="M86 ${146+i*26} L394 ${146+i*26}"/>`).join("")}
-  </g>
+  ${appareilPierre(86, 132, 308, 248, M, P, E.usure, 11)}
   ${E.usure > .05 ? `<rect x="86" y="132" width="308" height="248" fill="url(#salissure)"
     opacity="${(E.usure).toFixed(2)}"/>` : ""}
   <rect x="86" y="132" width="308" height="16" fill="#000" opacity=".18"/>
@@ -402,6 +542,12 @@ ${phase === "nuit"
   </g>` : ""}
 
   <!-- ═══ VITRINES ═══ -->
+  <!-- L'ombre portée de l'auvent : c'est elle qui donne au marquee
+       son épaisseur. Sans elle, la façade reste plate. -->
+  ${E.marquee ? `<g pointer-events="none">
+    <path d="M96 284 L384 284 L384 322 L96 322 Z" fill="url(#ombreAuventG)"/>
+    <path d="M120 284 L360 284 L352 300 L128 300 Z" fill="#000" opacity=".2"/>
+  </g>` : ""}
   ${vitrineEtat(104, 296, 62, 92, seances[0], enseigneVive, E)}
   ${vitrineEtat(314, 296, 62, 92, seances[1], enseigneVive, E)}
   ${E.verriere ? `<g>
@@ -418,12 +564,18 @@ ${phase === "nuit"
     <path d="M178 288 L302 288 L292 300 L188 300 Z" fill="#000" opacity=".3"/>
     <rect x="180" y="296" width="120" height="92" fill="#100a10"/>
     ${enseigneVive ? `<rect x="184" y="300" width="112" height="84" fill="#ffdf9a" opacity=".1"/>` : ""}
-    <rect x="184" y="300" width="54" height="84" rx="2" fill="url(#vitreG)"
-      stroke="${E.portesDorees ? "url(#orG)" : "url(#laitonG)"}" stroke-width="${E.portesDorees ? 3 : 2}"/>
-    <rect x="242" y="300" width="54" height="84" rx="2" fill="url(#vitreG)"
-      stroke="${E.portesDorees ? "url(#orG)" : "url(#laitonG)"}" stroke-width="${E.portesDorees ? 3 : 2}"/>
-    <path d="M190 380 L216 304 L226 304 L200 380 Z" fill="#fff" opacity=".08"/>
-    <path d="M248 380 L274 304 L284 304 L258 380 Z" fill="#fff" opacity=".08"/>
+    ${[184, 242].map(bx=>`
+      <rect x="${bx}" y="300" width="54" height="84" rx="2" fill="url(#vitreG)"
+        stroke="${E.portesDorees ? "url(#orG)" : "url(#laitonG)"}" stroke-width="${E.portesDorees ? 3 : 2}"/>
+      <!-- ce que la vitre renvoie : le ciel, la ligne des toits d'en face, la rue -->
+      <rect x="${bx+2}" y="302" width="50" height="80" fill="url(#refletCielG)"/>
+      <path d="M${bx+2} 336 l9 -7 l7 4 l11 -9 l8 6 l9 -5 l6 4 l0 6 l-50 0 Z"
+        fill="${P.immeubles[0]}" opacity=".2"/>
+      <!-- la barre de lumière rasante, en biais sur le verre -->
+      <path d="M${bx+6} 382 L${bx+32} 302 L${bx+42} 302 L${bx+16} 382 Z" fill="#fff" opacity=".1"/>
+      <path d="M${bx+38} 382 L${bx+52} 340 L${bx+52} 356 L${bx+46} 382 Z" fill="#fff" opacity=".055"/>
+      ${enseigneVive ? `<ellipse cx="${bx+27}" cy="318" rx="19" ry="11"
+        fill="#ffdf9a" opacity=".13"/>` : ""}`).join("")}
     <rect x="228" y="332" width="4" height="24" rx="2"
       fill="${E.portesDorees ? "url(#orG)" : "url(#laitonG)"}"/>
     <rect x="248" y="332" width="4" height="24" rx="2"
@@ -752,8 +904,11 @@ function vitrineEtat(x, y, l, h, seance, lum, E){
     : `<rect x="${x}" y="${y}" width="${l}" height="${h}" fill="#2a241f"/>
       <text x="${x + l/2}" y="${y + h/2}" text-anchor="middle" font-family="Courier New"
         font-size="8" fill="#8a7e70" opacity=".5" letter-spacing="1.5">PROCHAINEMENT</text>`}
+    <rect x="${x}" y="${y}" width="${l}" height="${h*.4}" fill="url(#refletCielG)" opacity=".5"/>
     <path d="M${x} ${y+h} L${x + l*.55} ${y} L${x + l*.85} ${y} L${x + l*.3} ${y+h} Z"
-      fill="#fff" opacity="${E.vitrinesLaiton ? ".07" : ".045"}"/>
+      fill="#fff" opacity="${E.vitrinesLaiton ? ".085" : ".055"}"/>
+    <path d="M${x + l*.78} ${y+h} L${x+l} ${y + h*.52} L${x+l} ${y + h*.7} L${x + l*.9} ${y+h} Z"
+      fill="#fff" opacity=".04"/>
     ${lum ? `<rect x="${x}" y="${y}" width="${l}" height="${h}" fill="#ffdf9a" opacity=".07"/>` : ""}
   </g>`;
 }
@@ -769,11 +924,14 @@ function ampoulesChenillard(x1, x2, y, n, r = 2.4){
 /* ---- exports ---- */
 export {
   ampoulesChenillard,
+  appareilPierre,
+  immeubleVoisin,
   geometrieSelonEcran,
   dessineFacadeEvolutive,
   nuageVolumetrique,
   vitrineEtat
 };
+
 
 
 
