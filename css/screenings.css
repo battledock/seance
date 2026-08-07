@@ -407,36 +407,67 @@
    LA PAGE DU JOUR EN CLAIR
 
    Le programme se lisait en blanc sur bordeaux, sous une tenture
-   et deux appliques. C'était l'ambiance du hall, mais on venait
-   ici pour compter : des horaires, des prévisions, de l'argent.
-   Le sombre rendait ces chiffres pénibles à suivre.
+   et un fronton à ampoules. C'était l'ambiance du hall, mais on
+   vient ici pour compter : des horaires, des prévisions, de
+   l'argent. Le sombre rendait ces chiffres pénibles à suivre.
 
-   La page passe donc au clair. Le décor reste dans jeu.html, où
-   il raconte quelque chose ; ici on travaille.
+   La page passe donc au clair — entièrement. Poser un fond clair
+   ne suffisait pas : le décor sombre était peint dans un
+   pseudo-élément de .salleProg, qui restait devant. Il faut
+   l'éteindre explicitement, sinon on obtient des cartes blanches
+   flottant sur un fond noir, ce qui ne ressemble à rien.
+
+   Le décor reste dans jeu.html, où il raconte quelque chose ;
+   ici on travaille.
    ============================================================ */
 .progClaire{
+  position:relative;
   background:#f7f4ef;
   min-height:100vh;
   color:#2a2422;
 }
-.progClaire .fronton{background:none;border:none;box-shadow:none;padding:6px 0 14px;text-align:left}
-.progClaire .fronton h1{font-family:'Marcellus',Georgia,serif;font-size:22px;color:#1a1614;
-  letter-spacing:-.01em;text-shadow:none}
-.progClaire .fronton p{font-size:12px;color:#8a8078;margin-top:2px;letter-spacing:0;text-transform:none}
+/* on éteint le décor sombre hérité de la salle */
+.progClaire::before,
+.progClaire::after{display:none !important;content:none !important}
+
+/* le fronton lumineux devient un simple titre */
+.progClaire .fronton{
+  background:none;border:none;box-shadow:none;
+  padding:4px 0 12px;margin:0 0 4px;text-align:left;border-radius:0;
+}
+.progClaire .fronton::before,
+.progClaire .fronton::after{display:none;content:none;animation:none}
+.progClaire .fronton h1{
+  font-family:'Marcellus',Georgia,serif;font-size:22px;color:#1a1614;
+  letter-spacing:.02em;text-transform:none;text-shadow:none;margin:0;
+}
+.progClaire .fronton p{
+  font-size:12px;color:#8a8078;margin-top:2px;
+  letter-spacing:0;text-transform:none;opacity:1;font-weight:400;
+}
 
 /* les trois onglets */
-.progClaire .segments{display:flex;gap:7px;margin-bottom:16px;background:none;border:none;padding:0}
-.progClaire .segments button{flex:1;background:#fff;border:1px solid #e2dad0;border-radius:10px;
-  padding:9px 4px;font-family:inherit;font-size:11.5px;color:#8a8078;font-weight:500;
-  letter-spacing:0;text-transform:none;box-shadow:none}
+.progClaire .segments{display:flex;gap:7px;margin-bottom:16px;background:none;
+  border:none;padding:0;box-shadow:none}
+.progClaire .segments button{flex:1;background:#fff;border:1px solid #e2dad0;
+  border-radius:10px;padding:10px 4px;font-family:'Outfit',system-ui,sans-serif;
+  font-size:11.5px;color:#8a8078;font-weight:500;letter-spacing:0;
+  text-transform:none;box-shadow:none;text-shadow:none}
 .progClaire .segments button.on{background:#571520;border-color:#571520;color:#f7dd9a}
+
+/* la zone de Bob, en clair elle aussi */
+.progClaire .blocBob{background:#fdfbf7;border:1px solid #eee7dd;border-radius:13px;
+  box-shadow:none;padding:12px 13px;margin-top:10px}
+.progClaire .blocBob .bulleBob,
+.progClaire .blocBob p{color:#5a524c;background:none;border:none;box-shadow:none}
 
 /* en-tête du jour */
 .ligneJourProg{display:flex;align-items:center;justify-content:space-between;
   gap:10px;margin-bottom:14px}
-.ligneJourProg h1{font-family:'Marcellus',Georgia,serif;font-size:21px;color:#1a1614}
-.badgeJourProg{background:#fff;border:1px solid #e2dad0;border-radius:20px;padding:5px 12px;
-  font-size:11px;color:#6a605a;font-weight:500;white-space:nowrap}
+.ligneJourProg h1{font-family:'Marcellus',Georgia,serif;font-size:21px;color:#1a1614;
+  text-shadow:none;letter-spacing:.01em}
+.badgeJourProg{background:#fff;border:1px solid #e2dad0;border-radius:20px;
+  padding:5px 12px;font-size:11px;color:#6a605a;font-weight:500;white-space:nowrap}
 
 /* ---- une séance ---- */
 .carteSeance{background:#fff;border:1px solid #eae4dc;border-radius:14px;margin-bottom:9px;
@@ -544,3 +575,23 @@
 .progClaire .grpTitre,.progClaire .ficheFilm b{color:#1a1614}
 .progClaire .ficheFilm{border-bottom-color:#eae4dc}
 .progClaire .vide{color:#9a908a}
+
+/* Le conteneur des séances gardait sa vitrine sombre à liseré doré,
+   héritée du tableau d'origine. Sur fond clair il formait un bloc
+   noir derrière les cartes blanches — les deux ne se parlaient pas.
+   Il redevient un simple empilement, sans cadre ni fond. */
+.progClaire .tableauProg{
+  background:none;border:none;box-shadow:none;padding:0;border-radius:0;
+}
+.progClaire .tableauProg::before{display:none;content:none}
+
+/* Les pastilles rondes sur les côtés appartenaient au décor de salle. */
+.progClaire .carrousel,
+.progClaire .flecheC{display:none}
+
+/* Bob, en clair */
+.progClaire .blocBob{background:#fdfbf7;border:1px solid #eee7dd;border-radius:13px;
+  box-shadow:none}
+.progClaire .blocBob .nomBob,
+.progClaire .blocBob b{color:#8a7a68}
+.progClaire .blocBob .bulleBob{background:#fff;border:1px solid #eae4dc;color:#5a524c}
