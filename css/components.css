@@ -564,14 +564,10 @@ body.pageClaire .decorLieu{display:none}
   animation-name:monteePoussiere;animation-timing-function:linear;animation-iteration-count:infinite;
 }
 /* ---------- entrée dans la pièce ---------- */
-.entreeLieu{animation:entreeContenu .34s cubic-bezier(.2,.8,.3,1) both}
-/* ---------- sortie vers une autre pièce ---------- */
-.voileLieu{
-  position:fixed;inset:0;z-index:400;pointer-events:none;opacity:0;
-  background:radial-gradient(ellipse at 50% 45%, rgba(40,12,20,.55), rgba(6,2,4,.96));
-  transition:opacity .22s ease-in;
-}
-.voileLieu.ferme{opacity:1}
+/* Les transitions entre pièces ont été retirées : un voile presque
+   noir se posait sur l'écran avant chaque changement de page, ce qui
+   donnait un écran noir de deux dixièmes de seconde à chaque clic sur
+   la navigation. Le style qui l'accompagnait n'a plus d'objet. */
 /* ---------- l'onglet caché fige tout ---------- */
 .enPause *,
 .animLegeres .faisceauProj,
@@ -771,3 +767,4 @@ body.pageClaire .decorLieu{display:none}
 .aaEtiquette,.mtPlaque,.vmSocleItem span,.indiceBureau{
   font-family:'Outfit',system-ui,sans-serif;font-weight:300;
 }
+
