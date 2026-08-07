@@ -1,5 +1,5 @@
-import { toastSocial } from "../social.js?v=2ab9afab";
-import { ouvreAssistant, ouvreFicheFilm, projet, reprendProjet } from "../studio.js?v=2ab9afab";
+import { toastSocial } from "../social.js?v=144ee666";
+import { ouvreAssistant, ouvreFicheFilm, projet, reprendProjet } from "../studio.js?v=144ee666";
 
 /* ============================================================
    LE BUREAU DU STUDIO

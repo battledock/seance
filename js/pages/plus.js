@@ -1,11 +1,11 @@
 /* Point d'entrée de plus.html */
 
-import { demarreChargement, finChargement, filetChargement } from "../ui/loading.js?v=2ab9afab";
-import { initAmbiance } from "../ambiance.js?v=2ab9afab";
-import { initialiserJeu } from "../game-state.js?v=2ab9afab";
-import { messageErreur } from "../supabase-client.js?v=2ab9afab";
-import { initPlus } from "./parts/office.js?v=2ab9afab";
-import { majBadgeNotifications } from "./parts/community-social.js?v=2ab9afab";
+import { demarreChargement, finChargement, filetChargement } from "../ui/loading.js?v=144ee666";
+import { initAmbiance } from "../ambiance.js?v=144ee666";
+import { initialiserJeu } from "../game-state.js?v=144ee666";
+import { messageErreur } from "../supabase-client.js?v=144ee666";
+import { initPlus } from "./parts/office.js?v=144ee666";
+import { majBadgeNotifications } from "./parts/community-social.js?v=144ee666";
 
 demarreChargement();
 filetChargement();

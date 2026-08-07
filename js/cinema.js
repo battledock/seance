@@ -1,28 +1,28 @@
 /* L'accueil : façade vivante, héros, statut du jour. */
 
-import { phraseFrequentation, phraseNiveau, phraseRecette } from "./ambiance.js?v=2ab9afab";
-import { compareHeures, filmParId } from "./data/films.js?v=2ab9afab";
+import { phraseFrequentation, phraseNiveau, phraseRecette } from "./ambiance.js?v=144ee666";
+import { compareHeures, filmParId } from "./data/films.js?v=144ee666";
 import {
   chargeJournee,
   ouvreCinema,
   passeAuJourSuivant,
   statutJournee,
   verifieOuverture
-} from "./engine/day.js?v=2ab9afab";
-import { animeLeCinema, bobMeteo } from "./facade/life.js?v=2ab9afab";
-import { dessineHallEvolutif } from "./facade/lobby.js?v=2ab9afab";
-import { spawnPassant } from "./facade/pedestrians.js?v=2ab9afab";
-import { dessineFacadeEvolutive } from "./facade/render.js?v=2ab9afab";
-import { animeLaVitalite, remarqueVitalite } from "./facade/vitality.js?v=2ab9afab";
-import { Etat, chargeSallesEtat, fmtArgent, statutCinema } from "./game-state.js?v=2ab9afab";
-import { bandeauEvenement } from "./pages/parts/events.js?v=2ab9afab";
-import { niveauActuel, progressionVersSuivant } from "./progression.js?v=2ab9afab";
-import { salles } from "./rooms.js?v=2ab9afab";
-import { appelSecurise, rpc, sbFetch } from "./supabase-client.js?v=2ab9afab";
-import { echappe, texteSur } from "./ui/emblems.js?v=2ab9afab";
-import { A } from "./ui/genre-posters.js?v=2ab9afab";
-import { icone } from "./ui/icons.js?v=2ab9afab";
-import { salleEnCoupe } from "./ui/room-view.js?v=2ab9afab";
+} from "./engine/day.js?v=144ee666";
+import { animeLeCinema, bobMeteo } from "./facade/life.js?v=144ee666";
+import { dessineHallEvolutif } from "./facade/lobby.js?v=144ee666";
+import { spawnPassant } from "./facade/pedestrians.js?v=144ee666";
+import { dessineFacadeEvolutive } from "./facade/render.js?v=144ee666";
+import { animeLaVitalite, remarqueVitalite } from "./facade/vitality.js?v=144ee666";
+import { Etat, chargeSallesEtat, fmtArgent, statutCinema } from "./game-state.js?v=144ee666";
+import { bandeauEvenement } from "./pages/parts/events.js?v=144ee666";
+import { niveauActuel, progressionVersSuivant } from "./progression.js?v=144ee666";
+import { salles } from "./rooms.js?v=144ee666";
+import { appelSecurise, rpc, sbFetch } from "./supabase-client.js?v=144ee666";
+import { echappe, texteSur } from "./ui/emblems.js?v=144ee666";
+import { A } from "./ui/genre-posters.js?v=144ee666";
+import { icone } from "./ui/icons.js?v=144ee666";
+import { salleEnCoupe } from "./ui/room-view.js?v=144ee666";
 
 /* Accueil vivant du cinéma (jeu.html) */
 
