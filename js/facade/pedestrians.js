@@ -83,23 +83,55 @@ function accessoire2(type, hab){
 const ACC_R = ["chapeau","beret","bonnet","sac","popcorn","echarpe","parapluie",
                "sacoche","telephone","","","","",""];
 
+
+/* ------------------------------------------------------------
+   L'ANIMATION DES ARTICULATIONS
+
+   Une rotation CSS a besoin qu'on lui désigne son centre, et
+   aucune des deux boîtes de référence disponibles ne tombe sur
+   l'articulation : « view-box » vise le coin du dessin entier,
+   « fill-box » le coin du tracé. Les membres partaient donc
+   pivoter très loin de la hanche.
+
+   animateTransform tourne, lui, autour du (0,0) du groupe —
+   c'est-à-dire du point où le translate l'a posé. C'est
+   précisément l'articulation.
+   ------------------------------------------------------------ */
+const CYCLE = {
+  cuisse: {t:"0;.25;.5;.62;.78;1",      v:"24;6;-20;-14;8;24"},
+  genou:  {t:"0;.12;.38;.52;.64;.78;.92;1", v:"-5;-1;-4;-16;-52;-34;-9;-5"},
+  pied:   {t:"0;.12;.4;.52;.62;.8;1",   v:"-13;2;4;16;-2;-10;-13"},
+  epaule: {t:"0;.5;1",                  v:"-17;16;-17"},
+  coude:  {t:"0;.3;.55;.8;1",           v:"-6;-22;-4;-15;-6"}
+};
+
+function pivot(nom, duree, decalage){
+  const c = CYCLE[nom];
+  return `<animateTransform attributeName="transform" type="rotate"
+    dur="${duree}s" repeatCount="indefinite" calcMode="spline"
+    keyTimes="${c.t}" values="${c.v}"
+    keySplines="${c.t.split(";").slice(1).map(()=>".42 0 .58 1").join(";")}"
+    begin="${decalage}s" additive="sum"/>`;
+}
+
 /* ------------------------------------------------------------
    UNE JAMBE — hanche, genou, cheville
    Les groupes sont imbriqués et translatés : chaque articulation
    tourne autour de son propre point, jamais autour du bassin.
    ------------------------------------------------------------ */
-function jambe(cote, bas, chauss, jupe){
+function jambe(cote, bas, chauss, jupe, D, ph){
   const C = cote;              /* "A" (avant) ou "B" (arrière) */
+  const dec = C === "A" ? ph : ph - D/2;   /* une demi-foulée d'écart */
   const teinteBas = C === "B" ? ombre(bas, .84) : bas;
   const teinteCh  = C === "B" ? ombre(chauss, .84) : chauss;
   return `<g transform="translate(${C === "A" ? -2.1 : 2.1} -17)">
-    <g class="cuisse${C}">
+    <g class="cuisse${C}">${pivot("cuisse", D, dec)}
       <path d="M-2.4 0 L2.4 0 L2.1 8.6 L-2.1 8.6 Z" fill="${teinteBas}"/>
       ${jupe ? "" : `<path d="M-2.4 0 L-.6 0 L-.8 8.6 L-2.1 8.6 Z" fill="#fff" opacity=".07"/>`}
-      <g transform="translate(0 8.6)" class="genou${C}">
+      <g transform="translate(0 8.6)" class="genou${C}">${pivot("genou", D, dec)}
         <path d="M-2 0 L2 0 L1.7 7.4 L-1.7 7.4 Z" fill="${teinteBas}"/>
         <path d="M-2 0 L-.4 0 L-.6 7.4 L-1.7 7.4 Z" fill="#fff" opacity=".06"/>
-        <g transform="translate(0 7.4)" class="pied${C}">
+        <g transform="translate(0 7.4)" class="pied${C}">${pivot("pied", D, dec)}
           <path d="M-1.9 0 L2 0 L3.5 1.6 L3.6 2.6 L-2.1 2.6 Z" fill="${teinteCh}"/>
           <path d="M-2.1 2.1 L3.6 2.1 L3.6 2.6 L-2.1 2.6 Z" fill="#000" opacity=".35"/>
         </g>
@@ -111,15 +143,16 @@ function jambe(cote, bas, chauss, jupe){
 /* ------------------------------------------------------------
    UN BRAS — épaule, coude
    ------------------------------------------------------------ */
-function bras(cote, hab, peau, manteau){
+function bras(cote, hab, peau, manteau, D, ph){
   const C = cote;
+  const dec = C === "A" ? ph - D/2 : ph;
   const teinte = C === "A" ? ombre(hab, .68) : eclaire(hab, 1.06);
   const teintePeau = C === "A" ? ombre(peau, .82) : peau;
   return `<g transform="translate(${C === "A" ? -4.5 : 4.5} -28.6)">
-    <g class="epaule${C}">
+    <g class="epaule${C}">${pivot("epaule", D, dec)}
       <path d="M-1.8 0 L1.8 0 L1.6 7.8 L-1.6 7.8 Z" fill="${teinte}"/>
       ${manteau ? "" : `<path d="M-1.8 0 L-.5 0 L-.6 7.8 L-1.6 7.8 Z" fill="#fff" opacity=".09"/>`}
-      <g transform="translate(0 7.8)" class="coude${C}">
+      <g transform="translate(0 7.8)" class="coude${C}">${pivot("coude", D, dec)}
         <path d="M-1.6 0 L1.6 0 L1.4 6.8 L-1.4 6.8 Z" fill="${teinte}"/>
         <circle cx="0" cy="8" r="1.6" fill="${teintePeau}"/>
         <path d="M-1.6 6.8 L1.6 6.8 L1.4 7.4 L-1.4 7.4 Z" fill="${ombre(teinte,.72)}"/>
@@ -131,7 +164,7 @@ function bras(cote, hab, peau, manteau){
 /* ------------------------------------------------------------
    LA SILHOUETTE COMPLÈTE
    ------------------------------------------------------------ */
-function silhouette2(){
+function silhouette2(D = 1, ph = 0){
   const peau = pick2(TEINTES_R.peau), hab = pick2(TEINTES_R.habit),
         bas = pick2(TEINTES_R.bas), chev = pick2(TEINTES_R.cheveux),
         chauss = pick2(TEINTES_R.chaussure);
@@ -146,13 +179,17 @@ function silhouette2(){
 
   return `<g transform="scale(${corpulence.toFixed(2)} ${stature.toFixed(2)})">
     <!-- jambe arrière d'abord : elle passe derrière le torse -->
-    ${jambe("B", bas, chauss, jupe)}
+    ${jambe("B", bas, chauss, jupe, D, ph)}
     <!-- bras arrière -->
-    ${bras("A", hab, peau, manteau)}
+    ${bras("A", hab, peau, manteau, D, ph)}
     <!-- jambe avant -->
-    ${jambe("A", bas, chauss, jupe)}
+    ${jambe("A", bas, chauss, jupe, D, ph)}
 
     <g class="corps">
+      <animateTransform attributeName="transform" type="translate"
+        dur="${(D/2).toFixed(2)}s" repeatCount="indefinite" calcMode="spline"
+        keyTimes="0;.5;1" values="0 .5;0 -.75;0 .5"
+        keySplines=".42 0 .58 1;.42 0 .58 1" begin="${ph.toFixed(2)}s"/>
       ${jupe ? `<path d="M-5.4 -19.4 L5.4 -19.4 L7 -9 L-7 -9 Z" fill="${hab}"/>
         <path d="M-5.4 -19.4 L5.4 -19.4 L5.8 -16 L-5.8 -16 Z" fill="${habOmbre}" opacity=".45"/>
         <path d="M-1.4 -19.4 L-2.6 -9 L-4.4 -9 L-2.8 -19.4 Z" fill="#fff" opacity=".06"/>` : ""}
@@ -178,6 +215,10 @@ function silhouette2(){
       <path d="M-1.5 -33.4 L1.5 -33.4 L1.5 -31.6 L-1.5 -31.6 Z" fill="${ombre(peau,.76)}"/>
 
       <g class="tete">
+        <animateTransform attributeName="transform" type="translate"
+          dur="${(D/2).toFixed(2)}s" repeatCount="indefinite" calcMode="spline"
+          keyTimes="0;.5;1" values="0 -.2;0 .28;0 -.2"
+          keySplines=".42 0 .58 1;.42 0 .58 1" begin="${ph.toFixed(2)}s"/>
         <!-- crâne -->
         <ellipse cx="0" cy="-36.6" rx="3.7" ry="4.1" fill="${peau}"/>
         <!-- volume : joue à l'ombre -->
@@ -202,7 +243,7 @@ function silhouette2(){
     </g>
 
     <!-- bras avant : il passe devant le torse -->
-    ${bras("B", hab, peau, manteau)}
+    ${bras("B", hab, peau, manteau, D, ph)}
   </g>`;
 }
 
@@ -212,7 +253,7 @@ function spawnPassant(mouille){
 
   const versDroite = Math.random() < .5;
   const entre = Math.random() < .28 && plan.id !== "planLoin";
-  const s = silhouette2();
+
 
   const g = document.createElementNS(SVG_NS2, "g");
   const x0 = versDroite ? -50 : 530;
@@ -221,8 +262,9 @@ function spawnPassant(mouille){
 
   /* la cadence suit la vitesse : qui marche vite fait des pas courts et rapides.
      Une foulée complète, deux appuis. */
-  const cadence = (1.02 * (duree/14) / plan.k).toFixed(2);
-  const phase = (-Math.random() * Number(cadence)).toFixed(2);
+  const cadence = Number((1.02 * (duree/14) / plan.k).toFixed(2));
+  const phase = Number((-Math.random() * cadence).toFixed(2));
+  const s = silhouette2(cadence, phase);
 
   g.setAttribute("class", "passantR" + (plan.flou ? " lointain" : ""));
   g.setAttribute("opacity", plan.opac);
@@ -238,15 +280,24 @@ function spawnPassant(mouille){
   if(!cible) return;
   cible.appendChild(g);
 
+  /* Celui qui entre disparaît vite et en s'enfonçant légèrement,
+     comme s'il passait la porte. L'ancien fondu d'une demi-seconde
+     le laissait flotter en transparence devant la façade. */
   setTimeout(()=>{
-    if(entre){ g.style.transition = "opacity .6s"; g.style.opacity = "0"; }
-    setTimeout(()=>g.remove(), 900);
-  }, duree*1000 - 300);
+    if(entre){
+      g.style.transition = "opacity .22s ease-in";
+      g.style.opacity = "0";
+      const interne = g.firstElementChild;
+      if(interne) interne.style.transition = "transform .22s ease-in";
+    }
+    setTimeout(()=>g.remove(), entre ? 260 : 400);
+  }, duree*1000 - (entre ? 240 : 300));
 }
 
 /* ---- exports ---- */
 export {
   ACC_R,
+  CYCLE,
   PLANS_R,
   SVG_NS2,
   TEINTES_R,
@@ -256,6 +307,8 @@ export {
   jambe,
   ombre,
   pick2,
+  pivot,
   silhouette2,
   spawnPassant
 };
+
