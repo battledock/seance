@@ -75,10 +75,8 @@ async function initAccueil(){
   if(typeof animeLeCinema === "function") animeLeCinema();
   if(typeof animeLaVitalite === "function") animeLaVitalite();
 
-  /* passants proportionnels à l'heure */
-  spawnSpectateur();
-  setTimeout(spawnSpectateur, 3000);
-  setTimeout(spawnSpectateur, 7000);
+  /* le trottoir reste vivant tant qu'on regarde */
+  peupleLaRue();
 
   /* cycle de phase */
   let phaseCourante = phaseSelonHeure();
@@ -140,25 +138,41 @@ function rendFacadeImmersive(){
   const cible = document.getElementById("sceneFacade");
   if(!cible) return;
   const niveau = (typeof niveauActuel === "function") ? niveauActuel() : 1;
+  const r = ratioScene();
+  ratioDessine = r;
   dessineFacade(c, {
     cible: "sceneFacade",
     phase: phaseSelonHeure(),
     niveau,
-    ratio: ratioScene()
+    ratio: r
   });
 }
 
-/* la rotation ou le repli de la barre d'adresse change la zone :
-   on redessine, mais pas à chaque pixel */
+/* ------------------------------------------------------------
+   REDESSINER, MAIS SEULEMENT QUAND IL LE FAUT
+
+   Sur mobile, la barre d'adresse qui se replie déclenche un
+   « resize » de quelques pixels. Redessiner à chaque fois faisait
+   clignoter la façade au chargement — on voyait le décor bouger
+   et les pigeons disparaître, parce que le second dessin arrivait
+   avec des données que le premier n'avait pas encore.
+
+   On ne redessine donc que si la forme du cadre a réellement
+   changé, et jamais pour un écart négligeable.
+   ------------------------------------------------------------ */
 let minuteurRedessin = null;
+let ratioDessine = null;
+
 function surveilleTaille(){
   const relance = ()=>{
     clearTimeout(minuteurRedessin);
     minuteurRedessin = setTimeout(()=>{
+      const r = ratioScene();
+      if(ratioDessine !== null && Math.abs(r - ratioDessine) < 0.04) return;
       rendFacadeImmersive();
       if(typeof animeLeCinema === "function") animeLeCinema();
       if(typeof animeLaVitalite === "function") animeLaVitalite();
-    }, 240);
+    }, 320);
   };
   window.addEventListener("resize", relance);
   window.addEventListener("orientationchange", relance);
@@ -425,6 +439,67 @@ function spawnSpectateur(){
   spawnPassant(p === "nuit" || p === "crepuscule");
 }
 
+/* ------------------------------------------------------------
+   LE TROTTOIR VIVANT
+
+   Trois passants lâchés au chargement puis plus rien : au bout
+   d'une minute la rue était morte. Ici un semeur tourne en
+   continu et son rythme suit ce qui se passe vraiment — l'heure,
+   le nombre de séances, la réputation du cinéma.
+
+   Le semeur s'arrête quand l'onglet passe à l'arrière-plan :
+   inutile de peupler une rue que personne ne regarde.
+   ------------------------------------------------------------ */
+let semeurRue = null;
+
+function densiteRue(){
+  const h = new Date().getHours();
+  /* le quartier respire : creux le matin, affluence en soirée */
+  let base = h < 8 ? .35 : h < 12 ? .6 : h < 17 ? .75 : h < 22 ? 1.25 : .55;
+
+  /* un cinéma qui joue attire du monde devant sa façade */
+  const seances = (Etat.seancesJour || []).length;
+  if(seances) base *= 1 + Math.min(.5, seances * .16);
+
+  /* la journée en cours pèse davantage que le programme prévu */
+  const st = (typeof statutJournee === "function") ? statutJournee() : "draft";
+  if(st === "running") base *= 1.45;
+  if(st === "completed") base *= .7;
+
+  /* et la réputation se voit dans la rue */
+  const rep = Number(Etat.cinema?.reputation ?? 50);
+  base *= .78 + rep / 160;
+
+  return Math.max(.25, Math.min(2.1, base));
+}
+
+function peupleLaRue(){
+  arreteLaRue();
+
+  /* on amorce avec quelques silhouettes déjà en chemin, pour que
+     la rue ne soit pas vide à l'ouverture de la page */
+  const amorce = Math.round(2 + densiteRue());
+  for(let i = 0; i < amorce; i++) setTimeout(spawnSpectateur, i * 1400 + Math.random() * 900);
+
+  const semer = ()=>{
+    if(!document.hidden && document.getElementById("planProche")) spawnSpectateur();
+    const d = densiteRue();
+    const attente = (3200 + Math.random() * 5200) / d;
+    semeurRue = setTimeout(semer, attente);
+  };
+  semeurRue = setTimeout(semer, 2600 + Math.random() * 2400);
+
+  document.addEventListener("visibilitychange", ()=>{
+    if(document.hidden) arreteLaRue();
+    else if(!semeurRue) peupleLaRue();
+  });
+}
+
+function arreteLaRue(){
+  clearTimeout(semeurRue);
+  semeurRue = null;
+}
+
 async function chargeSeancesAccueil(){
   const c = Etat.cinema;
   const data = await sbFetch(`seances?cinema_id=eq.${c.id}&jour=eq.${c.jour}&select=*&order=heure`);
@@ -682,4 +757,5 @@ export {
   rendSeances, rendStatut, rendVueCine, rendreFacadePublique,
   seancesFacade, spawnSpectateur, statsDuJour, vueCourante
 };
+
 
