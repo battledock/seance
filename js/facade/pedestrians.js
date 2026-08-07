@@ -98,11 +98,17 @@ const ACC_R = ["chapeau","beret","bonnet","sac","popcorn","echarpe","parapluie",
    précisément l'articulation.
    ------------------------------------------------------------ */
 const CYCLE = {
-  cuisse: {t:"0;.25;.5;.62;.78;1",      v:"24;6;-20;-14;8;24"},
-  genou:  {t:"0;.12;.38;.52;.64;.78;.92;1", v:"-5;-1;-4;-16;-52;-34;-9;-5"},
-  pied:   {t:"0;.12;.4;.52;.62;.8;1",   v:"-13;2;4;16;-2;-10;-13"},
-  epaule: {t:"0;.5;1",                  v:"-17;16;-17"},
-  coude:  {t:"0;.3;.55;.8;1",           v:"-6;-22;-4;-15;-6"}
+  /* cuisse : plus d'amplitude, la jambe part franchement devant et derrière */
+  cuisse: {t:"0;.25;.5;.62;.78;1",          v:"34;10;-28;-20;12;34"},
+  /* genou : plié à la réception (appui) ET très plié au passage de la jambe libre.
+     C'est la double flexion qui donne une vraie foulée. */
+  genou:  {t:"0;.1;.28;.5;.58;.68;.82;.94;1", v:"-8;-20;-6;-12;-30;-62;-42;-14;-8"},
+  /* pied : talon qui attaque, pied à plat, poussée sur la pointe */
+  pied:   {t:"0;.1;.32;.5;.6;.72;.86;1",    v:"-16;4;6;20;24;-6;-14;-16"},
+  /* épaule : vrai balancement, bien plus ample */
+  epaule: {t:"0;.5;1",                      v:"-30;28;-30"},
+  /* coude : le bras se plie davantage quand il passe derrière */
+  coude:  {t:"0;.28;.5;.74;1",              v:"-10;-34;-8;-26;-10"}
 };
 
 function pivot(nom, duree, decalage){
@@ -188,8 +194,13 @@ function silhouette2(D = 1, ph = 0){
     <g class="corps">
       <animateTransform attributeName="transform" type="translate"
         dur="${(D/2).toFixed(2)}s" repeatCount="indefinite" calcMode="spline"
-        keyTimes="0;.5;1" values="0 .5;0 -.75;0 .5"
-        keySplines=".42 0 .58 1;.42 0 .58 1" begin="${ph.toFixed(2)}s"/>
+        keyTimes="0;.5;1" values="0 .7;0 -.9;0 .7"
+        keySplines=".42 0 .58 1;.42 0 .58 1" begin="${ph.toFixed(2)}s" additive="sum"/>
+      <animateTransform attributeName="transform" type="rotate"
+        dur="${D.toFixed(2)}s" repeatCount="indefinite" calcMode="spline"
+        keyTimes="0;.25;.5;.75;1" values="-2.5;0;2.5;0;-2.5"
+        keySplines=".42 0 .58 1;.42 0 .58 1;.42 0 .58 1;.42 0 .58 1"
+        begin="${ph.toFixed(2)}s" additive="sum"/>
       ${jupe ? `<path d="M-5.4 -19.4 L5.4 -19.4 L7 -9 L-7 -9 Z" fill="${hab}"/>
         <path d="M-5.4 -19.4 L5.4 -19.4 L5.8 -16 L-5.8 -16 Z" fill="${habOmbre}" opacity=".45"/>
         <path d="M-1.4 -19.4 L-2.6 -9 L-4.4 -9 L-2.8 -19.4 Z" fill="#fff" opacity=".06"/>` : ""}
@@ -326,5 +337,6 @@ export {
   silhouette2,
   spawnPassant
 };
+
 
 
