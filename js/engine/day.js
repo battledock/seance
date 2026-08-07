@@ -243,18 +243,17 @@ function parleBobBilan(msg){
   if(b){ b.disabled = false; b.textContent = msg; }
 }
 
-/* ============================================================
-   TRANSACTIONS — historique économique complet
-   ============================================================ */
-async function enregistreTransaction({categorie, montant, solde_avant, solde_apres, salle_id, details}){
-  try{
-    await sbFetch("transactions", {method:"POST", prefer:"return=minimal", body:{
-      cinema_id: Etat.cinema.id, user_id: Etat.session?.user_id, salle_id: salle_id || null,
-      jour: Etat.cinema.jour, categorie, montant,
-      solde_avant, solde_apres, details: details || null
-    }});
-  }catch(e){}
-}
+/* ------------------------------------------------------------
+   LE JOURNAL DES TRANSACTIONS
+
+   Il était autrefois écrit depuis le navigateur. Ce n'est plus
+   le cas : chaque mouvement d'argent passe par rex_mouvement
+   côté serveur, qui débite et journalise dans la même
+   transaction. Écrire d'ici en plus aurait produit des doublons,
+   et laissait surtout la porte ouverte à de fausses écritures.
+
+   La table n'accepte donc plus d'insertion depuis le client.
+   ------------------------------------------------------------ */
 
 /* l'usure des salles est appliquée par simuler_journee() côté serveur */
 
@@ -263,7 +262,6 @@ export {
   bilanDisponible,
   chargeJournee,
   chargeStats,
-  enregistreTransaction,
   journaliseXp,
   journaliseXpSimple,
   majStatsCinema,
@@ -276,3 +274,4 @@ export {
   verifieOuverture,
   xpDeLaJournee
 };
+
