@@ -447,3 +447,21 @@
   background:linear-gradient(180deg,transparent,rgba(10,4,6,.65));
   pointer-events:none;z-index:10;
 }
+
+
+/* ---- masquer le header classique sur la page immersive ---- */
+body:has(.sceneJeu) .entete{display:none}
+/* la nav reste mais se pose sur le fond sombre */
+body:has(.sceneJeu) .navBas{
+  background:rgba(10,4,6,.92);
+  border-top:1px solid rgba(202,162,74,.15);
+  box-shadow:none;
+}
+body:has(.sceneJeu) .navBas a{color:rgba(202,162,74,.4)}
+body:has(.sceneJeu) .navBas a.actif{
+  color:#f7dd9a;
+  background:linear-gradient(180deg,rgba(140,35,49,.8),rgba(90,14,26,.9));
+  box-shadow:inset 0 -2px 0 rgba(202,162,74,.6),0 2px 8px rgba(90,14,26,.35);
+}
+/* le contenu n'a plus le padding du header */
+.sceneJeu{padding-top:0}
