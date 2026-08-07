@@ -1,6 +1,5 @@
 /* Point d'entrée de jeu.html — composition immersive */
 
-import { demarreChargement, finChargement, filetChargement } from "../ui/loading.js?v=93089721";
 import { initAmbiance } from "../ambiance.js?v=93089721";
 import { initialiserJeu, Etat } from "../game-state.js?v=93089721";
 import { messageErreur } from "../supabase-client.js?v=93089721";
@@ -16,8 +15,8 @@ import "../facade/vitality.js?v=93089721";
    masque le header classique sans utiliser :has() */
 document.body.classList.add("pageImmersive");
 
-demarreChargement();
-filetChargement();
+/* Plus d'écran de chargement ici : la page porte déjà la couleur du
+   ciel, on attend devant le ciel plutôt que devant une bobine. */
 initAmbiance("jeu");
 
 try{
@@ -32,5 +31,7 @@ try{
   const zone = document.getElementById("hudNom") || document.body;
   zone.textContent = messageErreur(e) + " Recharge la page.";
 }finally{
-  finChargement();
+  /* « pret » ne sert plus qu'à faire apparaître la barre du bas */
+  document.body.classList.add("pret");
 }
+
