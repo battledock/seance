@@ -196,7 +196,10 @@ function dessineFacadeEvolutive(opts = {}){
   const CIEL = G.ciel;
   const BASROUTE = H - DY;       /* bas du cadre, en coordonnées locales */
   const HROUTE = BASROUTE - 466; /* hauteur de route disponible */
-  const P = PALETTES[phase];
+  /* Un nom de phase inattendu renvoyait undefined, et tout le dessin
+     s'effondrait sur la première couleur lue. On retombe sur une
+     palette valide : mieux vaut un ciel approximatif qu'un écran mort. */
+  const P = PALETTES[phase] || PALETTES.aprem;
   const E = etatBatiment(opts.niveau || 1);
   const M = murSelonEtat(P, E);
   const lum = P.lumieres;
