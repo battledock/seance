@@ -762,7 +762,7 @@ function rendVueAffiche(){
         <small>Choisis un film pour ouvrir ta première séance.</small>
       </div>
       <button class="btnAjoutProg" onclick="allerAuCatalogue()">+ Ajouter une séance</button>
-      ${blocBob()}`;
+`;
     rendValidation(verrouille);
     return;
   }
@@ -772,7 +772,7 @@ function rendVueAffiche(){
     ? `<button class="btnAjoutProg" onclick="allerAuCatalogue()">+ Ajouter une séance</button>`
     : "";
 
-  tab.innerHTML = entete + cartes + ajout + resumeAvantOuverture() + blocBob();
+  tab.innerHTML = entete + cartes + ajout + resumeAvantOuverture();
   rendValidation(verrouille);
 }
 
@@ -834,13 +834,6 @@ function resumeAvantOuverture(){
   </section>`;
 }
 
-/* le mot de Bob, sous le résumé */
-function blocBob(){
-  return `<div class="blocBobProg">
-    <div class="bbTete">${icone("etoile")}</div>
-    <p><b>Bob — homme à tout faire</b>${echappe(conseilProg())}</p>
-  </div>`;
-}
 
 async function lanceLaJournee(){
   const b = document.querySelector(".btnPortesProg");
