@@ -55,6 +55,67 @@ body.sort{animation:sortie .7s forwards}
 
 <script>
 /* ============================================================
+   CONTRÔLE DE VERSION — avant toute chose
+
+   Cette page s'affiche à chaque connexion : c'est l'endroit idéal
+   pour rattraper une version périmée. On compare le tampon courant
+   à celui réellement servi par le serveur. S'ils diffèrent, on
+   purge le cache et on recharge CETTE page ; elle repartira alors
+   sur des fichiers neufs et enverra le joueur vers un jeu à jour.
+
+   Le tampon VERSION est mis à jour automatiquement par le
+   cache-bust global à chaque déploiement.
+   ============================================================ */
+const VERSION = "93089721";
+
+async function verifieVersion(){
+  /* on n'ennuie le serveur qu'une fois par session de navigation */
+  try{
+    if(sessionStorage.getItem("version_verifiee") === VERSION) return;
+  }catch(e){}
+
+  try{
+    const rep = await fetch("jeu.html?sonde=" + Date.now(), {
+      cache: "reload", credentials: "same-origin"
+    });
+    if(!rep.ok) return;
+    const html = await rep.text();
+    const m = html.match(/\?v=([0-9a-f]{8})/);
+    const serveur = m ? m[1] : null;
+
+    try{ sessionStorage.setItem("version_verifiee", VERSION); }catch(e){}
+
+    /* le serveur a du neuf que ce chargement n'a pas : on se rafraîchit */
+    if(serveur && serveur !== VERSION){
+      /* purge des caches applicatifs et des service workers */
+      try{
+        if(window.caches && caches.keys){
+          const noms = await caches.keys();
+          await Promise.all(noms.map(n => caches.delete(n)));
+        }
+      }catch(e){}
+      try{
+        if(navigator.serviceWorker && navigator.serviceWorker.getRegistrations){
+          const rs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(rs.map(r => r.unregister()));
+        }
+      }catch(e){}
+      /* on recharge cette page sous une adresse jamais vue */
+      location.replace("chargement-connexion.html?frais=" + Date.now());
+      /* on stoppe tout : le rechargement prend le relais */
+      throw new Error("rafraichissement");
+    }
+  }catch(e){
+    if(String(e.message) === "rafraichissement") throw e;
+    /* réseau capricieux : on continue sans bloquer la connexion */
+  }
+}
+
+/* on lance la vérification, mais elle ne doit jamais empêcher
+   d'entrer dans le jeu si le réseau coince */
+const versionOK = verifieVersion().catch(()=>{});
+
+/* ============================================================
    POINT DE CONTRÔLE — la destination dépend de l'état officiel
    ============================================================ */
 if(!localStorage.getItem("rex_session")) location.replace("index.html");
@@ -167,3 +228,4 @@ const timer = setInterval(()=>{
 </script>
 </body>
 </html>
+
