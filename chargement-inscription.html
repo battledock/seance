@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Le Rex du Quartier — Préparation</title>
+<style>
+:root{--safeT:env(safe-area-inset-top,0px);--safeB:env(safe-area-inset-bottom,0px)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:Georgia,serif;min-height:100dvh;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 40%,#4a1220,#2a0a12 55%,#12040a 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:var(--safeT) 0 var(--safeB);
+  opacity:0;animation:entre .6s forwards;
+}
+@keyframes entre{to{opacity:1}}
+body.sort{animation:sortie .7s forwards}
+@keyframes sortie{to{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+.tourne{animation:spin 1.6s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pelli{stroke-dasharray:6 8;animation:defile 1s linear infinite}
+@keyframes defile{to{stroke-dashoffset:-14}}
+.titre{font-size:15px;letter-spacing:.26em;text-transform:uppercase;color:#f7dd9a}
+.pct{font-family:'Courier New',monospace;font-size:13px;letter-spacing:.2em;color:#caa24a;min-height:16px}
+.vanne{font-family:'Courier New',monospace;font-size:12px;color:#c9a48c;text-align:center;max-width:78vw;line-height:1.6;min-height:38px}
+</style>
+</head>
+<body>
+
+<svg style="width:min(56vw,220px);height:auto;display:block" viewBox="0 0 220 160">
+  <path class="pelli" d="M60 88 Q110 118 160 88" stroke="#caa24a" stroke-width="7" fill="none"/>
+  <g class="tourne">
+    <circle cx="60" cy="60" r="46" fill="#1c070d" stroke="#caa24a" stroke-width="4"/>
+    <circle cx="60" cy="60" r="9" fill="#caa24a"/>
+    <g>
+      <circle cx="60" cy="28" r="9" fill="#0d0306"/><circle cx="88" cy="76" r="9" fill="#0d0306"/><circle cx="32" cy="76" r="9" fill="#0d0306"/>
+    </g>
+    <circle cx="60" cy="60" r="30" fill="none" stroke="#571520" stroke-width="10"/>
+  </g>
+  <g class="tourne" style="animation-duration:1.1s">
+    <circle cx="160" cy="74" r="32" fill="#1c070d" stroke="#caa24a" stroke-width="4"/>
+    <circle cx="160" cy="74" r="7" fill="#caa24a"/>
+    <g fill="#0d0306">
+      <circle cx="160" cy="52" r="6.5"/><circle cx="179" cy="85" r="6.5"/><circle cx="141" cy="85" r="6.5"/>
+    </g>
+  </g>
+</svg>
+
+<div class="titre">Le Rex du Quartier</div>
+<div class="pct" id="pct">BOBINAGE… 0%</div>
+<div class="vanne" id="vanne">« Sens de rotation ? Aucune idée. Ça tourne, c'est déjà Cannes. »</div>
+
+<script>
+/* garde : pas de session → retour au guichet */
+if(!localStorage.getItem("rex_session")) location.replace("index.html");
+
+const DUREE_MIN = 3200;   /* durée mini d'affichage (ms) */
+const DESTINATION = "inscription.html";
+
+const VANNES = [
+  "« Sens de rotation ? Aucune idée. Ça tourne, c'est déjà Cannes. »",
+  "« La pellicule fait 2 km. J'ai compté. Une fois. Jamais deux. »",
+  "« Je graisse la manivelle. Avec du beurre. On fait avec ce qu'on a. »",
+  "« Le projecteur chauffe. Moi aussi. On est une équipe. »",
+  "« Ton cinéma t'attend. Je dépoussière les clés. Y'en a qu'une, mais quand même. »"
+];
+const VANNE_GLISSE = "« 87%… retour à 40. La bobine a glissé, on en parle plus. »";
+
+const elPct = document.getElementById("pct");
+const elVanne = document.getElementById("vanne");
+elVanne.textContent = VANNES[Math.floor(Math.random()*VANNES.length)];
+
+let p = 0, aGlisse = false, fini = false;
+const debut = Date.now();
+let derniereVanne = Date.now();
+
+const timer = setInterval(()=>{
+  p += Math.random()*9;
+  /* une seule glissade possible, pour le gag */
+  if(!aGlisse && p>82 && p<92 && Math.random()<.4){
+    p = 40; aGlisse = true;
+    elVanne.textContent = VANNE_GLISSE;
+    derniereVanne = Date.now();
+  }
+  /* vanne qui tourne toutes les ~3s */
+  if(Date.now()-derniereVanne > 3000){
+    elVanne.textContent = VANNES[Math.floor(Math.random()*VANNES.length)];
+    derniereVanne = Date.now();
+  }
+  if(p >= 100){
+    p = 100;
+    if(!fini && Date.now()-debut >= DUREE_MIN){
+      fini = true;
+      clearInterval(timer);
+      elPct.textContent = "BOBINAGE… 100%";
+      elVanne.textContent = "« Silence dans la salle… PROJECTION ! »";
+      setTimeout(()=>{
+        document.body.classList.add("sort");
+        setTimeout(()=>location.replace(DESTINATION), 720);
+      }, 700);
+      return;
+    }
+  }
+  elPct.textContent = "BOBINAGE… " + Math.floor(p) + "%";
+},260);
+</script>
+</body>
+</html>

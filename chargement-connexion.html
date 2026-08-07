@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Le Rex du Quartier — Bobinage</title>
+<style>
+:root{--safeT:env(safe-area-inset-top,0px);--safeB:env(safe-area-inset-bottom,0px)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:Georgia,serif;min-height:100dvh;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 40%,#4a1220,#2a0a12 55%,#12040a 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:var(--safeT) 0 var(--safeB);
+  opacity:0;animation:entre .6s forwards;
+}
+@keyframes entre{to{opacity:1}}
+body.sort{animation:sortie .7s forwards}
+@keyframes sortie{to{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+.tourne{animation:spin 1.6s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pelli{stroke-dasharray:6 8;animation:defile 1s linear infinite}
+@keyframes defile{to{stroke-dashoffset:-14}}
+.titre{font-size:15px;letter-spacing:.26em;text-transform:uppercase;color:#f7dd9a}
+.pct{font-family:'Courier New',monospace;font-size:13px;letter-spacing:.2em;color:#caa24a;min-height:16px}
+.vanne{font-family:'Courier New',monospace;font-size:12px;color:#c9a48c;text-align:center;max-width:78vw;line-height:1.6;min-height:38px}
+</style>
+</head>
+<body>
+
+<svg style="width:min(56vw,220px);height:auto;display:block" viewBox="0 0 220 160">
+  <path class="pelli" d="M60 88 Q110 118 160 88" stroke="#caa24a" stroke-width="7" fill="none"/>
+  <g class="tourne">
+    <circle cx="60" cy="60" r="46" fill="#1c070d" stroke="#caa24a" stroke-width="4"/>
+    <circle cx="60" cy="60" r="9" fill="#caa24a"/>
+    <g>
+      <circle cx="60" cy="28" r="9" fill="#0d0306"/><circle cx="88" cy="76" r="9" fill="#0d0306"/><circle cx="32" cy="76" r="9" fill="#0d0306"/>
+    </g>
+    <circle cx="60" cy="60" r="30" fill="none" stroke="#571520" stroke-width="10"/>
+  </g>
+  <g class="tourne" style="animation-duration:1.1s">
+    <circle cx="160" cy="74" r="32" fill="#1c070d" stroke="#caa24a" stroke-width="4"/>
+    <circle cx="160" cy="74" r="7" fill="#caa24a"/>
+    <g fill="#0d0306">
+      <circle cx="160" cy="52" r="6.5"/><circle cx="179" cy="85" r="6.5"/><circle cx="141" cy="85" r="6.5"/>
+    </g>
+  </g>
+</svg>
+
+<div class="titre">Le Rex du Quartier</div>
+<div class="pct" id="pct">BOBINAGE… 0%</div>
+<div class="vanne" id="vanne">« Sens de rotation ? Aucune idée. Ça tourne, c'est déjà Cannes. »</div>
+
+<script>
+/* ============================================================
+   POINT DE CONTRÔLE — la destination dépend de l'état officiel
+   ============================================================ */
+if(!localStorage.getItem("rex_session")) location.replace("index.html");
+
+const SB_URL = "https://zpfkekiavlfphialvphi.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZmtla2lhdmxmcGhpYWx2cGhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc4MzIsImV4cCI6MjEwMTMwMzgzMn0.ORa4y_AMjuWbxboKm3o6Jn7ryYjkOm4mSgLa2Schv98";
+
+let DESTINATION = "jeu.html";
+let etapesFaites = 0;
+const TOTAL_ETAPES = 4;
+
+function sess(){ try{ return JSON.parse(localStorage.getItem("rex_session")); }catch(e){ return null; } }
+
+async function lit(chemin){
+  const s = sess();
+  const rep = await fetch(SB_URL + "/rest/v1/" + chemin, {
+    headers:{"apikey":SB_KEY, "Authorization":"Bearer " + s.access_token}
+  });
+  if(rep.status === 401) throw new Error("session");
+  return rep.json();
+}
+
+async function renouvelle(){
+  const s = sess();
+  if(!s?.refresh_token) return false;
+  const rep = await fetch(SB_URL + "/auth/v1/token?grant_type=refresh_token", {
+    method:"POST", headers:{"apikey":SB_KEY,"Content-Type":"application/json"},
+    body: JSON.stringify({refresh_token:s.refresh_token})
+  });
+  if(!rep.ok) return false;
+  const d = await rep.json();
+  if(!d.access_token) return false;
+  localStorage.setItem("rex_session", JSON.stringify({...s,
+    access_token:d.access_token, refresh_token:d.refresh_token || s.refresh_token,
+    user_id: d.user?.id || s.user_id, expire_le: Date.now() + (d.expires_in||3600)*1000}));
+  return true;
+}
+
+/* la progression affichée suit les étapes réellement terminées */
+const controle = (async ()=>{
+  try{
+    const s = sess();
+    if(s?.expire_le && Date.now() > s.expire_le - 60000){
+      if(!await renouvelle()){ localStorage.removeItem("rex_session"); location.replace("index.html"); return; }
+    }
+    etapesFaites = 1;
+
+    const cinemas = await lit(`cinemas?user_id=eq.${sess().user_id}&select=*`);
+    if(!Array.isArray(cinemas) || cinemas.length === 0){ DESTINATION = "inscription.html"; etapesFaites = TOTAL_ETAPES; return; }
+    const cine = cinemas[0];
+    etapesFaites = 2;
+
+    /* une salle au minimum : rattrapage des anciennes parties */
+    const salles = await lit(`salles?cinema_id=eq.${cine.id}&select=id&limit=1`);
+    etapesFaites = 3;
+
+    /* état de la journée : un bilan en attente prend la priorité */
+    const journees = await lit(`journees?cinema_id=eq.${cine.id}&jour=eq.${cine.jour}&select=statut,resultats`);
+    const j = Array.isArray(journees) && journees[0];
+    if(j && j.statut === "running" && j.resultats) DESTINATION = "bilan.html";
+    else DESTINATION = "jeu.html";
+    etapesFaites = TOTAL_ETAPES;
+  }catch(e){
+    if(String(e.message) === "session"){
+      if(!await renouvelle()){ localStorage.removeItem("rex_session"); location.replace("index.html"); return; }
+    }
+    /* réseau capricieux : on laisse jeu.html gérer, il rechargera l'état officiel */
+    DESTINATION = "jeu.html";
+    etapesFaites = TOTAL_ETAPES;
+  }
+})();
+
+const VANNES = [
+  "« Sens de rotation ? Aucune idée. Ça tourne, c'est déjà Cannes. »",
+  "« La pellicule fait 2 km. J'ai compté. Une fois. Jamais deux. »",
+  "« Je graisse la manivelle. Avec du beurre. On fait avec ce qu'on a. »",
+  "« Le projecteur chauffe. Moi aussi. On est une équipe. »",
+  "« Ta salle arrive. Je passe un coup de balai entre les rangs 3 et 4. »"
+];
+
+const elPct = document.getElementById("pct");
+const elVanne = document.getElementById("vanne");
+elVanne.textContent = VANNES[Math.floor(Math.random()*VANNES.length)];
+
+let p = 0, fini = false;
+const debut = Date.now();
+let derniereVanne = Date.now();
+
+const timer = setInterval(()=>{
+  /* le pourcentage suit les étapes réellement terminées */
+  const cible = Math.round((etapesFaites / TOTAL_ETAPES) * 100);
+  if(p < cible) p = Math.min(cible, p + 4);
+
+  if(Date.now()-derniereVanne > 3000){
+    elVanne.textContent = VANNES[Math.floor(Math.random()*VANNES.length)];
+    derniereVanne = Date.now();
+  }
+  elPct.textContent = "BOBINAGE… " + Math.floor(p) + "%";
+
+  if(p >= 100 && !fini && Date.now()-debut >= DUREE_MIN){
+    fini = true;
+    clearInterval(timer);
+    elVanne.textContent = "« Silence dans la salle… PROJECTION ! »";
+    setTimeout(()=>{
+      document.body.classList.add("sort");
+      setTimeout(()=>location.replace(DESTINATION), 700);
+    }, 600);
+  }
+},120);
+</script>
+</body>
+</html>
