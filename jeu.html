@@ -9,8 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/base.css?v=2ab9afab">
   <style>
-    /* Style minimal du voile : il doit couvrir l'écran avant même
-       que base.css soit arrivé, sinon on aperçoit la page nue. */
     body{margin:0;background:#0a0406}
     .contenu,.entete,.navBas{opacity:0}
     #voileChargement{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;
@@ -37,41 +35,26 @@
   <div class="vcPiste"><i></i></div>
 </div>
 
-<main class="contenu accueilClair">
+<main class="sceneJeu">
 
-  <!-- 1. le cinéma en scène : le dessin porte l'état du soir -->
-  <div class="carteCine">
-    <div class="vueCine" id="vueCine"></div>
-    <span class="scVoile" aria-hidden="true"></span>
-    <div class="surScene" id="surScene"></div>
-    <div class="vueStyle" id="vueStyle"></div>
-    <nav class="vueOnglets" id="vueOnglets" role="tablist">
-      <span class="vueCurseur" id="vueCurseur" aria-hidden="true"></span>
-      <button role="tab" class="on" data-v="facade" aria-selected="true">Dehors</button>
-      <button role="tab" data-v="hall" aria-selected="false">Le hall</button>
-      <button role="tab" data-v="salle" aria-selected="false">La salle</button>
-    </nav>
+  <!-- HUD transparent superposé au ciel -->
+  <div class="hudJeu" id="hudJeu">
+    <div class="hudGauche">
+      <span class="hudNom" id="hudNom"></span>
+      <span class="hudNiv" id="hudNiv"></span>
+    </div>
+    <div class="hudDroite">
+      <span class="hudArgent" id="hudArgent"></span>
+      <span class="hudXp"><span class="hudXpBarre" id="hudXpBarre"></span></span>
+    </div>
   </div>
 
-  <!-- 2. Bob prend la parole avant qu'on décide -->
-  <div class="bobLigne">
-    <span class="bobPort" id="bobPort"></span>
-    <span class="bobBulle"><em>Bob — ouvreur</em>
-      <p id="bulleTexteAccueil">…</p></span>
-  </div>
+  <!-- La façade occupe tout l'écran -->
+  <div class="sceneFacade" id="sceneFacade"></div>
 
-  <!-- 3. l'action du moment -->
-  <button class="actionGrande" id="actionPrincipale"></button>
+  <!-- Dégradé bas pour fondu vers la nav -->
+  <div class="sceneFade" aria-hidden="true"></div>
 
-  <!-- 4. le journal du matin -->
-  <div class="titreAcc"><b>Le matin</b><i></i></div>
-  <div class="journalAcc" id="journalAcc"></div>
-  <div id="bandeauSorties"></div>
-
-  <!-- 5. trois chiffres -->
-  <div class="chiffres" id="chiffres"></div>
-
-  <div id="bandeauEvenement"></div>
 </main>
 
 <script type="module" src="js/pages/jeu.js?v=2ab9afab"></script>
