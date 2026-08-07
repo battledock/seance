@@ -232,3 +232,74 @@
 @keyframes picore{0%,100%{transform:translateY(0)}
   44%{transform:translateY(1.4px) rotate(6deg)}52%{transform:translateY(0)}}
 @keyframes vacilleLampe{0%,72%,100%{opacity:1}76%{opacity:.15}80%{opacity:.9}86%{opacity:.3}}
+
+
+/* ============================================================
+   CYCLE DE MARCHE — hanche, genou, cheville, épaule, coude
+
+   Un cycle complet vaut une foulée : deux appuis. La cuisse
+   balance d'avant en arrière ; le genou reste presque tendu à
+   l'appui puis se plie fort au passage de la jambe libre ; le
+   pied attaque par le talon, se pose à plat, puis pousse sur la
+   pointe. C'est cette flexion du genou qui empêche le pied de
+   patiner sur le trottoir.
+   ============================================================ */
+@keyframes marcheCuisse{
+  0%   {transform:rotate(24deg)}
+  25%  {transform:rotate(6deg)}
+  50%  {transform:rotate(-20deg)}
+  62%  {transform:rotate(-14deg)}
+  78%  {transform:rotate(8deg)}
+  100% {transform:rotate(24deg)}
+}
+@keyframes marcheGenou{
+  0%   {transform:rotate(-5deg)}
+  12%  {transform:rotate(-1deg)}
+  38%  {transform:rotate(-4deg)}
+  52%  {transform:rotate(-16deg)}
+  64%  {transform:rotate(-52deg)}
+  78%  {transform:rotate(-34deg)}
+  92%  {transform:rotate(-9deg)}
+  100% {transform:rotate(-5deg)}
+}
+@keyframes marchePied{
+  0%   {transform:rotate(-13deg)}
+  12%  {transform:rotate(2deg)}
+  40%  {transform:rotate(4deg)}
+  52%  {transform:rotate(16deg)}
+  62%  {transform:rotate(-2deg)}
+  80%  {transform:rotate(-10deg)}
+  100% {transform:rotate(-13deg)}
+}
+@keyframes marcheEpaule{
+  0%   {transform:rotate(-17deg)}
+  50%  {transform:rotate(16deg)}
+  100% {transform:rotate(-17deg)}
+}
+@keyframes marcheCoude{
+  0%   {transform:rotate(-6deg)}
+  30%  {transform:rotate(-22deg)}
+  55%  {transform:rotate(-4deg)}
+  80%  {transform:rotate(-15deg)}
+  100% {transform:rotate(-6deg)}
+}
+/* le bassin monte à chaque appui : deux fois par foulée */
+@keyframes marcheTangage{
+  0%,50%,100% {transform:translateY(.5px)}
+  25%,75%     {transform:translateY(-.75px)}
+}
+/* la tête compense légèrement pour rester stable */
+@keyframes marcheTete{
+  0%,50%,100% {transform:translateY(-.22px) rotate(1.2deg)}
+  25%,75%     {transform:translateY(.3px) rotate(-1deg)}
+}
+/* les pans de manteau et d'écharpe suivent le mouvement */
+@keyframes marchePan{
+  0%,100% {transform:rotate(3.5deg)}
+  50%     {transform:rotate(-3.5deg)}
+}
+/* l'ombre au sol se resserre quand le corps s'élève */
+@keyframes marcheOmbre{
+  0%,50%,100% {transform:scaleX(1);opacity:.32}
+  25%,75%     {transform:scaleX(.86);opacity:.24}
+}
