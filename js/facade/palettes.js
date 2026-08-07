@@ -15,8 +15,8 @@ const PALETTES = {
   aprem: {
     ciel:["#6fa8d8","#a8cce0","#dfe4d8"], cielHaut:"#3f88c8", soleil:"#fffbe8", soleilY:60, halo:.06,
     nuageOmbre:"#6f92b4", routeBas:"#36363c",
-    mur:["#d8b48c","#b8926a"], murOmbre:"#96745200", pierre:"#e8d4b4",
-    toit:"#63４a3c".replace("４","4"), trottoir:["#d4cec4","#b4aa9e"], route:["#525258","#424248"],
+    mur:["#d8b48c","#b8926a"], murOmbre:"#967452", pierre:"#e8d4b4",
+    toit:"#634a3c", trottoir:["#d4cec4","#b4aa9e"], route:["#525258","#424248"],
     fenetres:"#7a92a9", lumieres:false, ombreLong:.7, ombreOpac:.26,
     brume:"#dfe4d8", brumeOpac:.10, vignette:.18, immeubles:["#b8a890","#9a8a74","#7e7060"]
   },
@@ -132,4 +132,5 @@ export {
   pilastre,
   vitrine
 };
+
 
