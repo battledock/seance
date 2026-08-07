@@ -332,6 +332,12 @@
 .enseigneConf{animation-delay:.2s}
 .plaqueNiveau{animation-delay:.5s}
 .banderole{animation-delay:.15s}
+.animLegeres .passantR .cuisseA,.animLegeres .passantR .cuisseB,
+.animLegeres .passantR .genouA,.animLegeres .passantR .genouB,
+.animLegeres .passantR .piedA,.animLegeres .passantR .piedB,
+.animLegeres .passantR .coudeA,.animLegeres .passantR .coudeB,
+.animLegeres .passantR .tete,.animLegeres .passantR .pan,
+.animLegeres .passantR .ombreSol{animation:none}
 .animLegeres .patiente,.animLegeres .regarde,.animLegeres .balaie,
 .animLegeres .balai,.animLegeres .montre,.animLegeres .photographe{animation:none}
 .enPause .pnj,.enPause .balai,.enPause .apparait{animation-play-state:paused}
@@ -343,16 +349,48 @@
 .passantR{animation-name:traverseR;animation-timing-function:linear;
   animation-fill-mode:forwards;will-change:transform}
 .passantR.lointain{filter:blur(.55px)}
-.passantR .jambeA{animation:pasA var(--cad,.6s) ease-in-out infinite alternate;
-  transform-origin:0 -11.5px}
-.passantR .jambeB{animation:pasB var(--cad,.6s) ease-in-out infinite alternate;
-  transform-origin:0 -11.5px}
-.passantR .brasA{animation:brasA var(--cad,.6s) ease-in-out infinite alternate;
-  transform-origin:-5px -25.6px}
-.passantR .brasB{animation:brasB var(--cad,.6s) ease-in-out infinite alternate;
-  transform-origin:5px -25.6px}
-.passantR .corps{animation:tangage var(--cad,.6s) ease-in-out infinite alternate;
-  transform-origin:0 -11px}
+/* ── squelette articulé ──────────────────────────────────────
+   Chaque groupe est déjà positionné par un translate ; la
+   rotation s'applique donc autour de son propre point d'attache.
+   transform-box:view-box garde ce repère quel que soit le tracé. */
+.passantR .cuisseA,.passantR .cuisseB,
+.passantR .genouA,.passantR .genouB,
+.passantR .piedA,.passantR .piedB,
+.passantR .epauleA,.passantR .epauleB,
+.passantR .coudeA,.passantR .coudeB{
+  transform-box:view-box;transform-origin:0 0;
+}
+.passantR .cuisseA{animation:marcheCuisse var(--cad,1s) linear infinite;
+  animation-delay:var(--ph,0s)}
+.passantR .genouA {animation:marcheGenou  var(--cad,1s) linear infinite;
+  animation-delay:var(--ph,0s)}
+.passantR .piedA  {animation:marchePied   var(--cad,1s) linear infinite;
+  animation-delay:var(--ph,0s)}
+/* la jambe opposée est décalée d'une demi-foulée */
+.passantR .cuisseB{animation:marcheCuisse var(--cad,1s) linear infinite;
+  animation-delay:calc(var(--ph,0s) - var(--cad,1s) / 2)}
+.passantR .genouB {animation:marcheGenou  var(--cad,1s) linear infinite;
+  animation-delay:calc(var(--ph,0s) - var(--cad,1s) / 2)}
+.passantR .piedB  {animation:marchePied   var(--cad,1s) linear infinite;
+  animation-delay:calc(var(--ph,0s) - var(--cad,1s) / 2)}
+/* les bras vont à l'inverse des jambes du même côté */
+.passantR .epauleA{animation:marcheEpaule var(--cad,1s) linear infinite;
+  animation-delay:calc(var(--ph,0s) - var(--cad,1s) / 2)}
+.passantR .coudeA {animation:marcheCoude  var(--cad,1s) linear infinite;
+  animation-delay:calc(var(--ph,0s) - var(--cad,1s) / 2)}
+.passantR .epauleB{animation:marcheEpaule var(--cad,1s) linear infinite;
+  animation-delay:var(--ph,0s)}
+.passantR .coudeB {animation:marcheCoude  var(--cad,1s) linear infinite;
+  animation-delay:var(--ph,0s)}
+/* le corps monte deux fois par foulée */
+.passantR .corps{animation:marcheTangage var(--cad,1s) ease-in-out infinite;
+  animation-delay:var(--ph,0s);transform-box:view-box;transform-origin:0 -13px}
+.passantR .tete{animation:marcheTete var(--cad,1s) ease-in-out infinite;
+  animation-delay:var(--ph,0s);transform-box:view-box;transform-origin:0 -31px}
+.passantR .pan{animation:marchePan var(--cad,1s) ease-in-out infinite;
+  animation-delay:var(--ph,0s);transform-box:view-box;transform-origin:0 -28px}
+.passantR .ombreSol{animation:marcheOmbre var(--cad,1s) ease-in-out infinite;
+  animation-delay:var(--ph,0s);transform-box:view-box;transform-origin:0 0}
 /* enseigne et ampoules */
 .amp{animation:clig 3.4s ease-in-out infinite}
 .amp.a1{animation-delay:.85s}
@@ -491,4 +529,5 @@ body.pageImmersive .sceneJeu{
 .nuageLoin{animation:deriveNuage 190s linear infinite}
 .animLegeres .voieLactee,.animLegeres .etoilesVives g,.animLegeres .nuageLoin{animation:none}
 .enPause .nuageLoin,.enPause .etoilesVives g,.enPause .voieLactee{animation-play-state:paused}
+
 
