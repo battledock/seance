@@ -12,10 +12,36 @@
     body{margin:0;background:#0a0406}
     .sceneJeu,.navBas{opacity:0;transition:opacity .38s ease}
     body.pret .sceneJeu,body.pret .navBas{opacity:1}
+    /* ------------------------------------------------------------
+       LE VOILE S'ACCORDE AU CIEL
+
+       Le voile de chargement était bordeaux comme sur les autres
+       pages. Mais jeu.html est la seule page qui s'ouvre sur un
+       ciel : passer du bordeaux au bleu franc produisait un éclair
+       rouge à chaque chargement.
+
+       On teinte donc le voile avec le ciel de l'heure courante,
+       posé en variable avant même que le JavaScript du jeu ne
+       démarre. Le voile s'efface alors dans la continuité du décor.
+       ------------------------------------------------------------ */
     #voileChargement{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;
       align-items:center;justify-content:center;gap:20px;
-      background:radial-gradient(ellipse at 50% 42%,#2a1018,#0a0406 72%)}
+      background:radial-gradient(ellipse at 50% 42%,
+        var(--voileHaut,#2a1018), var(--voileBas,#0a0406) 72%)}
   </style>
+  <script>
+    /* la teinte du voile suit l'heure, comme le ciel de la façade */
+    (function(){
+      var h = new Date().getHours(), haut, bas;
+      if(h >= 6 && h < 11)       { haut = "#7ba4c8"; bas = "#3f6f9c"; }  /* matin */
+      else if(h >= 11 && h < 18) { haut = "#6fa8d8"; bas = "#35719e"; }  /* après-midi */
+      else if(h >= 18 && h < 21) { haut = "#8a5484"; bas = "#2a1c3e"; }  /* aube du soir */
+      else                       { haut = "#141a38"; bas = "#05070f"; }  /* nuit */
+      var r = document.documentElement.style;
+      r.setProperty("--voileHaut", haut);
+      r.setProperty("--voileBas",  bas);
+    })();
+  </script>
 </head>
 <body>
 
@@ -54,3 +80,4 @@
 <script type="module" src="js/pages/jeu.js?v=93089721"></script>
 </body>
 </html>
+
