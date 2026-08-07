@@ -5,28 +5,32 @@
 
 const PALETTES = {
   matin: {
-    ciel:["#8fb4d4","#c5d9e4","#e8dcc8"], soleil:"#fff4d8", soleilY:96, halo:.10,
+    ciel:["#8fb4d4","#c5d9e4","#e8dcc8"], cielHaut:"#5f92c2", soleil:"#fff4d8", soleilY:96, halo:.10,
+    nuageOmbre:"#7f9ab8", routeBas:"#2e2e34",
     mur:["#c9a882","#a8875f"], murOmbre:"#8a6c48", pierre:"#d8c0a0",
     toit:"#5a4438", trottoir:["#c8c2b8","#a89e92"], route:["#4a4a4e","#3a3a3e"],
     fenetres:"#6a8299", lumieres:false, ombreLong:1.6, ombreOpac:.20,
     brume:"#e8dcc8", brumeOpac:.16, vignette:.22, immeubles:["#a89880","#8a7a64","#6e6050"]
   },
   aprem: {
-    ciel:["#6fa8d8","#a8cce0","#dfe4d8"], soleil:"#fffbe8", soleilY:60, halo:.06,
+    ciel:["#6fa8d8","#a8cce0","#dfe4d8"], cielHaut:"#3f88c8", soleil:"#fffbe8", soleilY:60, halo:.06,
+    nuageOmbre:"#6f92b4", routeBas:"#36363c",
     mur:["#d8b48c","#b8926a"], murOmbre:"#96745200", pierre:"#e8d4b4",
     toit:"#63４a3c".replace("４","4"), trottoir:["#d4cec4","#b4aa9e"], route:["#525258","#424248"],
     fenetres:"#7a92a9", lumieres:false, ombreLong:.7, ombreOpac:.26,
     brume:"#dfe4d8", brumeOpac:.10, vignette:.18, immeubles:["#b8a890","#9a8a74","#7e7060"]
   },
   crepuscule: {
-    ciel:["#2e3a6e","#8a5a7a","#e08a5a"], soleil:"#ffb870", soleilY:300, halo:.34,
+    ciel:["#2e3a6e","#8a5a7a","#e08a5a"], cielHaut:"#141c4a", soleil:"#ffb870", soleilY:300, halo:.34,
+    nuageOmbre:"#5a3a62", routeBas:"#1c1c24",
     mur:["#8a6a5a","#6a4a44"], murOmbre:"#4a3230", pierre:"#a08472",
     toit:"#3a2a2c", trottoir:["#7a6e6a","#5a5250"], route:["#32323a","#26262e"],
     fenetres:"#ffcf8a", lumieres:true, ombreLong:2.4, ombreOpac:.16,
     brume:"#c07a5a", brumeOpac:.20, vignette:.34, immeubles:["#5a4a52","#463a44","#332a34"]
   },
   nuit: {
-    ciel:["#0a1024","#141c38","#242c4a"], soleil:"#e8eeff", soleilY:80, halo:.52,
+    ciel:["#0a1024","#141c38","#242c4a"], cielHaut:"#03050e", soleil:"#e8eeff", soleilY:80, halo:.52,
+    nuageOmbre:"#1e2440", routeBas:"#0c0c10",
     mur:["#3a2e34","#2a2028"], murOmbre:"#1e1620", pierre:"#4a3c40",
     toit:"#1a1418", trottoir:["#3a3438","#282428"], route:["#1c1c22","#141418"],
     fenetres:"#ffd89a", lumieres:true, ombreLong:1.2, ombreOpac:.10,
@@ -128,3 +132,4 @@ export {
   pilastre,
   vitrine
 };
+
