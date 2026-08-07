@@ -1,12 +1,12 @@
-import { etatBatiment, murSelonEtat } from "./ages.js?v=144ee666";
+import { etatBatiment, murSelonEtat } from "./ages.js?v=93089721";
 import {
   PALETTES,
   ampoules,
   decoupe,
   fenetreVoisin,
   pilastre
-} from "./palettes.js?v=144ee666";
-import { A } from "../ui/genre-posters.js?v=144ee666";
+} from "./palettes.js?v=93089721";
+import { A } from "../ui/genre-posters.js?v=93089721";
 
 /* ============================================================
    FAÇADE ÉVOLUTIVE — le même bâtiment à travers six âges
@@ -282,12 +282,43 @@ function dessineFacadeEvolutive(opts = {}){
     <stop offset="0" stop-color="${P.nuageOmbre || "#8fa4bc"}" stop-opacity=".5"/>
     <stop offset="1" stop-color="${P.nuageOmbre || "#8fa4bc"}" stop-opacity="0"/>
   </radialGradient>
-  <filter id="flouNuage" x="-40%" y="-60%" width="180%" height="240%">
-    <feGaussianBlur stdDeviation="7"/>
-  </filter>
-  <filter id="flouNuageDoux" x="-40%" y="-60%" width="180%" height="240%">
-    <feGaussianBlur stdDeviation="3.2"/>
-  </filter>
+  <!-- bord de nuage : blanc plein au centre, fondu vers le vide.
+       Remplace le flou gaussien : le contour respire sans laiteux. -->
+  <radialGradient id="nuageBordG" cx=".5" cy=".5" r=".5">
+    <stop offset=".62" stop-color="#ffffff" stop-opacity="1"/>
+    <stop offset=".82" stop-color="#ffffff" stop-opacity=".55"/>
+    <stop offset="1"   stop-color="#ffffff" stop-opacity="0"/>
+  </radialGradient>
+  <!-- ventre d'ombre du nuage -->
+  <linearGradient id="nuageVentreG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0"   stop-color="${P.nuageOmbre || "#8fa4bc"}" stop-opacity="0"/>
+    <stop offset=".55" stop-color="${P.nuageOmbre || "#8fa4bc"}" stop-opacity=".22"/>
+    <stop offset="1"   stop-color="${P.nuageOmbre || "#8fa4bc"}" stop-opacity=".4"/>
+  </linearGradient>
+  <!-- crête éclairée -->
+  <radialGradient id="nuageCreteG" cx=".5" cy=".4" r=".6">
+    <stop offset="0"  stop-color="#ffffff" stop-opacity=".9"/>
+    <stop offset="1"  stop-color="#ffffff" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="voieLacteeG" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0"   stop-color="#8ea4d8" stop-opacity="0"/>
+    <stop offset=".5"  stop-color="#aab6e4" stop-opacity=".5"/>
+    <stop offset="1"   stop-color="#8ea4d8" stop-opacity="0"/>
+  </linearGradient>
+  <radialGradient id="luneHaloG" cx=".5" cy=".5" r=".5">
+    <stop offset="0"   stop-color="#dfe8ff" stop-opacity=".22"/>
+    <stop offset=".5"  stop-color="#dfe8ff" stop-opacity=".08"/>
+    <stop offset="1"   stop-color="#dfe8ff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="soleilHaloG" cx=".5" cy=".5" r=".5">
+    <stop offset="0"   stop-color="${P.soleil}" stop-opacity=".28"/>
+    <stop offset=".5"  stop-color="${P.soleil}" stop-opacity=".1"/>
+    <stop offset="1"   stop-color="${P.soleil}" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="etoileHaloG" cx=".5" cy=".5" r=".5">
+    <stop offset="0"  stop-color="#dfe8ff" stop-opacity=".5"/>
+    <stop offset="1"  stop-color="#dfe8ff" stop-opacity="0"/>
+  </radialGradient>
   <radialGradient id="ampouleG" cx=".4" cy=".35" r=".7">
     <stop offset="0" stop-color="#fffdf0"/><stop offset=".5" stop-color="#ffdf9a"/>
     <stop offset="1" stop-color="#e8a83a"/>
@@ -373,9 +404,9 @@ function dessineFacadeEvolutive(opts = {}){
 
 ${phase === "nuit" ? `
 <g class="voieLactee" opacity=".16">
-  <ellipse cx="300" cy="${Math.round(CIEL*.34)}" rx="240" ry="${Math.round(CIEL*.16)}" fill="#8ea4d8" filter="url(#flouNuage)"
+  <ellipse cx="300" cy="${Math.round(CIEL*.34)}" rx="240" ry="${Math.round(CIEL*.18)}" fill="url(#voieLacteeG)"
     transform="rotate(-24 300 ${Math.round(CIEL*.34)})"/>
-  <ellipse cx="240" cy="${Math.round(CIEL*.48)}" rx="180" ry="${Math.round(CIEL*.10)}" fill="#a8b4e0" filter="url(#flouNuage)"
+  <ellipse cx="240" cy="${Math.round(CIEL*.48)}" rx="180" ry="${Math.round(CIEL*.12)}" fill="url(#voieLacteeG)"
     transform="rotate(-20 240 ${Math.round(CIEL*.48)})" opacity=".7"/>
 </g>
 <g class="etoiles">${[...Array(120)].map((_,i)=>{
@@ -392,7 +423,7 @@ ${phase === "nuit" ? `
   const y = (12 + Math.random()*CIEL*.7).toFixed(0);
   return `<g style="animation-delay:${(i*.9).toFixed(1)}s">
     <circle cx="${x}" cy="${y}" r="1.5" fill="#fff"/>
-    <circle cx="${x}" cy="${y}" r="5.5" fill="#dfe8ff" opacity=".18" filter="url(#flouNuageDoux)"/>
+    <circle cx="${x}" cy="${y}" r="5.5" fill="url(#etoileHaloG)"/>
     <path d="M${x} ${Number(y)-6} L${x} ${Number(y)+6} M${Number(x)-6} ${y} L${Number(x)+6} ${y}"
       stroke="#fff" stroke-width=".55" opacity=".5"/>
   </g>`;
@@ -400,8 +431,8 @@ ${phase === "nuit" ? `
 
 ${phase === "nuit"
   ? `<g>
-     <circle cx="392" cy="${Math.round(CIEL*.34)}" r="76" fill="#dfe8ff" opacity=".07" filter="url(#flouNuage)"/>
-     <circle cx="392" cy="${Math.round(CIEL*.34)}" r="44" fill="#eef2ff" opacity=".13" filter="url(#flouNuage)"/>
+     <circle cx="392" cy="${Math.round(CIEL*.34)}" r="76" fill="url(#luneHaloG)"/>
+     <circle cx="392" cy="${Math.round(CIEL*.34)}" r="44" fill="url(#luneHaloG)"/>
      <circle cx="392" cy="${Math.round(CIEL*.34)}" r="21" fill="#f2f5ff"/>
      <circle cx="392" cy="${Math.round(CIEL*.34)}" r="21" fill="#dfe4f2" opacity=".5"/>
      <g opacity=".2" fill="#8a94b0">
@@ -413,9 +444,9 @@ ${phase === "nuit"
      </g>`
   : `<g>
      <circle cx="${phase==="crepuscule"?96:368}" cy="${Math.round(CIEL*(phase==="crepuscule"?.74:.30))}" r="118"
-       fill="${P.soleil}" opacity=".10" filter="url(#flouNuage)"/>
+       fill="url(#soleilHaloG)"/>
      <circle cx="${phase==="crepuscule"?96:368}" cy="${Math.round(CIEL*(phase==="crepuscule"?.74:.30))}" r="64"
-       fill="${P.soleil}" opacity=".22" filter="url(#flouNuage)"/>
+       fill="url(#soleilHaloG)"/>
      <circle cx="${phase==="crepuscule"?96:368}" cy="${Math.round(CIEL*(phase==="crepuscule"?.74:.30))}"
        r="${phase==="crepuscule"?28:20}" fill="${P.soleil}" opacity=".95"/>
      </g>`}
@@ -790,10 +821,6 @@ ${E.tapis ? `<g>
   </g>
   <ellipse cx="72" cy="478" rx="15" ry="5" fill="#000" opacity=".3"/>
   <ellipse cx="72" cy="477" rx="13" ry="4" fill="${P.route[0]}"/>
-  ${enseigneVive ? `<g opacity=".2" filter="url(#flouFort)">
-    <ellipse cx="240" cy="486" rx="110" ry="18" fill="#ffdf9a"/>
-    <ellipse cx="240" cy="504" rx="70" ry="11" fill="#ffc76a"/>
-  </g>` : ""}
 </g>
 
 <!-- ═══ MOBILIER ═══ -->
@@ -872,7 +899,7 @@ ${E.tapis ? `<g>
 
 ${enseigneVive ? `<g>
   <ellipse cx="240" cy="424" rx="180" ry="52" fill="url(#solHaloG)" opacity=".7"/>
-  <ellipse cx="240" cy="398" rx="92" ry="24" fill="#ffdf9a" opacity=".12" filter="url(#flouLeger)"/>
+  <ellipse cx="240" cy="392" rx="80" ry="18" fill="url(#solHaloG)" opacity=".5"/>
 </g>` : ""}
 
 <!-- ═══ PROJECTEURS DE PREMIÈRE ═══ -->
@@ -903,39 +930,72 @@ ${E.projecteursCiel && lum ? `<g class="projecteurs" opacity=".5">
 
 
 /* ============================================================
-   NUAGE VOLUMÉTRIQUE
-   Un nuage n'est pas trois ellipses posées côte à côte : c'est
-   une masse dont le dessous est plus dense et le dessus mangé
-   par la lumière. On empile des bulbes de tailles décroissantes,
-   on pose une ombre sourde en bas, un liseré clair en haut.
+   NUAGE VOLUMÉTRIQUE — sans flou
+
+   Le flou gaussien étalait le nuage et le rendait laiteux. Ici le
+   volume vient uniquement de la géométrie : une masse pleine et
+   opaque, un ventre d'ombre plaqué dessous, une crête éclairée sur
+   le dessus, et une couronne de bulbes arrondis sur le pourtour.
+   Chaque bulbe de bord a son propre petit dégradé radial pour
+   fondre proprement dans le ciel, ce qui donne un contour net mais
+   pas dur — sans aucun filtre.
    ============================================================ */
 function nuageVolumetrique(cx, cy, echelle = 1, densite = .7){
   const e = echelle;
-  const bulbes = [
-    {dx:-46, dy:  6, r:24}, {dx:-22, dy: -8, r:32}, {dx:  6, dy:-14, r:36},
-    {dx: 34, dy: -4, r:28}, {dx: 58, dy:  8, r:20}, {dx: 16, dy: 10, r:26},
-    {dx:-34, dy: 12, r:19}
-  ];
-  const corps = bulbes.map(b =>
-    `<ellipse cx="${(cx + b.dx*e).toFixed(1)}" cy="${(cy + b.dy*e).toFixed(1)}"
-      rx="${(b.r*e).toFixed(1)}" ry="${(b.r*e*.74).toFixed(1)}" fill="#fff"/>`).join("");
 
-  /* la base : une barre floue qui aplatit le nuage par le dessous */
-  const base = `<ellipse cx="${cx}" cy="${(cy + 16*e).toFixed(1)}"
-    rx="${(72*e).toFixed(1)}" ry="${(13*e).toFixed(1)}" fill="#fff"/>`;
+  /* les bulbes de contour : ils dessinent la silhouette bombée.
+     Chaque valeur r est le rayon ; ils se chevauchent largement. */
+  const couronne = [
+    {dx:-52, dy:  8, r:20}, {dx:-34, dy: -4, r:28}, {dx:-14, dy:-12, r:33},
+    {dx:  8, dy:-16, r:35}, {dx: 30, dy:-11, r:30}, {dx: 50, dy: -2, r:24},
+    {dx: 64, dy:  9, r:17}, {dx: 40, dy: 12, r:22}, {dx: 14, dy: 14, r:24},
+    {dx:-14, dy: 13, r:23}, {dx:-38, dy: 12, r:18}
+  ];
+
+  /* la masse pleine centrale : un socle qui remplit l'intérieur,
+     pour qu'aucun jour ne se voie entre les bulbes */
+  const masse = `<path d="
+    M${(cx-58*e).toFixed(1)} ${(cy+10*e).toFixed(1)}
+    Q${(cx-52*e).toFixed(1)} ${(cy-14*e).toFixed(1)} ${(cx-28*e).toFixed(1)} ${(cy-16*e).toFixed(1)}
+    Q${(cx-8*e).toFixed(1)} ${(cy-24*e).toFixed(1)} ${(cx+14*e).toFixed(1)} ${(cy-20*e).toFixed(1)}
+    Q${(cx+42*e).toFixed(1)} ${(cy-20*e).toFixed(1)} ${(cx+52*e).toFixed(1)} ${(cy-2*e).toFixed(1)}
+    Q${(cx+72*e).toFixed(1)} ${(cy+2*e).toFixed(1)} ${(cx+66*e).toFixed(1)} ${(cy+16*e).toFixed(1)}
+    Q${(cx+40*e).toFixed(1)} ${(cy+22*e).toFixed(1)} ${(cx+10*e).toFixed(1)} ${(cy+20*e).toFixed(1)}
+    Q${(cx-30*e).toFixed(1)} ${(cy+22*e).toFixed(1)} ${(cx-58*e).toFixed(1)} ${(cy+10*e).toFixed(1)} Z"
+    fill="#ffffff"/>`;
+
+  /* le socle plat du dessous : la ligne d'horizon du nuage */
+  const socle = `<ellipse cx="${cx}" cy="${(cy + 15*e).toFixed(1)}"
+    rx="${(66*e).toFixed(1)}" ry="${(11*e).toFixed(1)}" fill="#ffffff"/>`;
+
+  /* les bulbes opaques : le blanc plein qui donne le relief */
+  const bulbes = couronne.map(b =>
+    `<circle cx="${(cx + b.dx*e).toFixed(1)}" cy="${(cy + b.dy*e).toFixed(1)}"
+      r="${(b.r*e).toFixed(1)}" fill="#ffffff"/>`).join("");
+
+  /* un fin liseré fondu sur le pourtour : les mêmes bulbes en
+     dégradé radial, décalés d'un cheveu vers l'extérieur, pour un
+     bord qui respire au lieu de trancher */
+  const ourlet = couronne.map(b =>
+    `<circle cx="${(cx + b.dx*e*1.03).toFixed(1)}" cy="${(cy + b.dy*e*1.03).toFixed(1)}"
+      r="${(b.r*e*1.12).toFixed(1)}" fill="url(#nuageBordG)"/>`).join("");
+
+  /* le ventre d'ombre : plaqué sous la masse, teinte froide */
+  const ventre = `<ellipse cx="${(cx + 4*e).toFixed(1)}" cy="${(cy + 12*e).toFixed(1)}"
+    rx="${(54*e).toFixed(1)}" ry="${(13*e).toFixed(1)}" fill="url(#nuageVentreG)"/>`;
+
+  /* la crête éclairée : deux bosses claires sur le dessus */
+  const crete = `
+    <ellipse cx="${(cx - 6*e).toFixed(1)}" cy="${(cy - 13*e).toFixed(1)}"
+      rx="${(30*e).toFixed(1)}" ry="${(12*e).toFixed(1)}" fill="url(#nuageCreteG)"/>
+    <ellipse cx="${(cx + 26*e).toFixed(1)}" cy="${(cy - 9*e).toFixed(1)}"
+      rx="${(18*e).toFixed(1)}" ry="${(8*e).toFixed(1)}" fill="url(#nuageCreteG)"/>`;
 
   return `<g opacity="${densite.toFixed(2)}">
-    <g filter="url(#flouNuage)" opacity=".55">
-      <ellipse cx="${cx}" cy="${(cy + 20*e).toFixed(1)}" rx="${(78*e).toFixed(1)}"
-        ry="${(18*e).toFixed(1)}" fill="url(#nuageOmbreG)"/>
-    </g>
-    <g filter="url(#flouNuageDoux)">${base}${corps}</g>
-    <g opacity=".5">
-      <ellipse cx="${(cx + 6*e).toFixed(1)}" cy="${(cy - 20*e).toFixed(1)}"
-        rx="${(34*e).toFixed(1)}" ry="${(13*e).toFixed(1)}" fill="url(#nuageG)"/>
-      <ellipse cx="${(cx - 24*e).toFixed(1)}" cy="${(cy - 13*e).toFixed(1)}"
-        rx="${(24*e).toFixed(1)}" ry="${(10*e).toFixed(1)}" fill="url(#nuageG)"/>
-    </g>
+    ${ourlet}
+    ${masse}${socle}${bulbes}
+    ${ventre}
+    ${crete}
   </g>`;
 }
 
@@ -990,6 +1050,7 @@ export {
   nuageVolumetrique,
   vitrineEtat
 };
+
 
 
 
