@@ -48,9 +48,22 @@ try{
 
 
 
-/* l'écran d'échec, avec de quoi repartir */
+/* ------------------------------------------------------------
+   L'ÉCRAN D'ÉCHEC
+
+   Il n'affichait que le nom de l'erreur — « TypeError » — ce qui
+   ne dit rien de l'endroit ni de la cause. On montre maintenant
+   le message et la première ligne utile de la pile, repliés sous
+   un détail : invisible au joueur ordinaire, mais copiable en un
+   geste quand il faut rapporter la panne.
+   ------------------------------------------------------------ */
 function montreEchec(e){
-  const detail = (e && (e.code || e.name)) ? String(e.code || e.name) : "inconnu";
+  const nom = (e && (e.code || e.name)) ? String(e.code || e.name) : "inconnu";
+  const msg = (e && e.message) ? String(e.message) : "";
+  const pile = (e && e.stack) ? String(e.stack).split("\n").slice(0,4).join("\n") : "";
+  const technique = (nom + (msg ? " — " + msg : "") + (pile ? "\n\n" + pile : ""))
+    .replace(/</g, "&lt;");
+
   const o = document.createElement("div");
   o.className = "echecChargement";
   o.innerHTML = `
@@ -58,10 +71,18 @@ function montreEchec(e){
       <h2>Le cinéma n'a pas ouvert</h2>
       <p>${messageErreur(e)}</p>
       <button class="ecReessayer" id="ecReessayer">Réessayer</button>
-      <small>code : ${detail}</small>
+      <details class="ecDetail">
+        <summary>Détail technique</summary>
+        <pre id="ecPile">${technique}</pre>
+        <button class="ecCopier" id="ecCopier">Copier</button>
+      </details>
     </div>`;
   document.body.appendChild(o);
-  document.getElementById("ecReessayer").addEventListener("click", ()=>{
-    location.reload();
+
+  document.getElementById("ecReessayer").addEventListener("click", ()=>location.reload());
+  document.getElementById("ecCopier").addEventListener("click", ()=>{
+    const t = document.getElementById("ecPile").textContent;
+    try{ navigator.clipboard.writeText(t); }catch(err){}
+    document.getElementById("ecCopier").textContent = "Copié";
   });
 }
