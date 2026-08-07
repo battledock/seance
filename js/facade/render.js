@@ -31,27 +31,33 @@ function immeubleVoisin(x, y, l, h, P, cote, lum){
 
   /* la face qui regarde le cinéma reçoit moins de jour */
   out += `<rect x="${cote === "g" ? x + l - 14 : x}" y="${y}" width="14" height="${h}"
-    fill="#000" opacity=".16"/>`;
+    fill="#000" opacity=".18"/>`;
   out += `<rect x="${cote === "g" ? x : x + l - 8}" y="${y}" width="8" height="${h}"
-    fill="#fff" opacity=".05"/>`;
+    fill="#fff" opacity=".06"/>`;
 
-  /* corniche */
+  /* corniche : trois plans pour l'épaisseur */
   out += `<rect x="${x-3}" y="${y-7}" width="${l+6}" height="7" fill="${P.toit}"/>
-    <rect x="${x-4}" y="${y-9}" width="${l+8}" height="3" fill="${P.toit}" opacity=".8"/>
-    <rect x="${x-3}" y="${y}" width="${l+6}" height="2" fill="#000" opacity=".22"/>`;
+    <rect x="${x-4}" y="${y-9}" width="${l+8}" height="3" fill="${P.toit}" opacity=".85"/>
+    <rect x="${x-5}" y="${y-11}" width="${l+10}" height="2" fill="${P.toit}" opacity=".55"/>
+    <rect x="${x-3}" y="${y}" width="${l+6}" height="2" fill="#000" opacity=".26"/>`;
 
   for(let i = 0; i < n; i++){
     const ye = y + 14 + i * ETAGE;
-    /* bandeau d'étage */
-    out += `<rect x="${x}" y="${ye + 26}" width="${l}" height="3.5" fill="${P.toit}" opacity=".38"/>
-      <rect x="${x}" y="${ye + 29.5}" width="${l}" height="1.4" fill="#000" opacity=".16"/>`;
+    /* bandeau d'étage : arête claire + creux sombre */
+    out += `<rect x="${x}" y="${ye + 26}" width="${l}" height="3.5" fill="${P.toit}" opacity=".42"/>
+      <rect x="${x}" y="${ye + 29.5}" width="${l}" height="1.4" fill="#000" opacity=".18"/>
+      <rect x="${x}" y="${ye + 25}" width="${l}" height=".8" fill="#fff" opacity=".08"/>`;
     /* balcon filant un étage sur deux */
     if(i % 2 === 1){
-      out += `<rect x="${x-2}" y="${ye + 22}" width="${l+4}" height="2.4" fill="${P.toit}" opacity=".5"/>`;
+      out += `<rect x="${x-2}" y="${ye + 22}" width="${l+4}" height="2.4" fill="${P.toit}" opacity=".55"/>`;
       for(let b = 0; b < Math.floor(l / 7); b++)
         out += `<rect x="${(x + 3 + b * 7).toFixed(1)}" y="${ye + 16}" width="1.1" height="6"
-          fill="${P.toit}" opacity=".42"/>`;
+          fill="${P.toit}" opacity=".46"/>`;
+      /* main courante avec liseré : le fer forgé attrape la lumière */
+      out += `<rect x="${x-2}" y="${ye + 15.4}" width="${l+4}" height=".8" fill="#000" opacity=".22"/>`;
     }
+    /* appui de fenêtre : une simple barre horizontale qui pose l'étage */
+    out += `<rect x="${x+4}" y="${ye + 4}" width="${l-8}" height="1.6" fill="${P.toit}" opacity=".3"/>`;
   }
   return out;
 }
@@ -224,10 +230,11 @@ function dessineFacadeEvolutive(opts = {}){
     <stop offset=".55" stop-color="${P.ciel[1]}"/>
     <stop offset="1" stop-color="${P.ciel[2]}"/>
   </linearGradient>
-  <linearGradient id="murG" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="${M.fonce}"/>
-    <stop offset=".35" stop-color="${M.clair}"/>
-    <stop offset="1" stop-color="${M.fonce}"/>
+  <linearGradient id="murG" x1="0" y1="0" x2="1" y2=".3">
+    <stop offset="0"   stop-color="${M.fonce}"/>
+    <stop offset=".28" stop-color="${M.clair}"/>
+    <stop offset=".62" stop-color="${M.clair}"/>
+    <stop offset="1"   stop-color="${M.fonce}"/>
   </linearGradient>
   <linearGradient id="pierreG" x1="0" y1="0" x2="1" y2="0">
     <stop offset="0" stop-color="${M.pierre}" stop-opacity=".55"/>
@@ -299,13 +306,30 @@ function dessineFacadeEvolutive(opts = {}){
     <stop offset=".5" stop-color="${enseigneVive ? "#7a5a30" : "#3a4048"}"/>
     <stop offset="1" stop-color="${enseigneVive ? "#3a2a1c" : "#22282e"}"/>
   </linearGradient>
-  <!-- une vitre renvoie le ciel en haut, la rue sombre en bas -->
+  <!-- ce que renvoie une vitre :
+       en haut, le ciel du jour ;
+       vers 40 %, la ligne des toits d'en face qui se réfléchit ;
+       en bas, la rue à contre-jour. -->
   <linearGradient id="refletCielG" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="${P.ciel[1]}" stop-opacity=".42"/>
-    <stop offset=".34" stop-color="${P.ciel[2]}" stop-opacity=".22"/>
-    <stop offset=".52" stop-color="${P.immeubles[1]}" stop-opacity=".3"/>
-    <stop offset="1" stop-color="#000" stop-opacity=".26"/>
+    <stop offset="0"    stop-color="${P.ciel[1]}"      stop-opacity=".48"/>
+    <stop offset=".22"  stop-color="${P.ciel[2]}"      stop-opacity=".34"/>
+    <stop offset=".42"  stop-color="${P.immeubles[0]}" stop-opacity=".42"/>
+    <stop offset=".55"  stop-color="${P.immeubles[1]}" stop-opacity=".32"/>
+    <stop offset=".78"  stop-color="${P.route[0]}"     stop-opacity=".28"/>
+    <stop offset="1"    stop-color="#000"              stop-opacity=".34"/>
   </linearGradient>
+  <!-- le liseré du haut : châssis de porte -->
+  <linearGradient id="liseréHautG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0"   stop-color="#fff" stop-opacity=".28"/>
+    <stop offset=".5"  stop-color="#fff" stop-opacity=".08"/>
+    <stop offset="1"   stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <!-- le halo doré que l'enseigne projette sur les vitres, le soir -->
+  <radialGradient id="refletEnseigneG" cx=".5" cy="0" r=".9">
+    <stop offset="0"   stop-color="#ffdf9a" stop-opacity=".32"/>
+    <stop offset=".45" stop-color="#ffc76a" stop-opacity=".18"/>
+    <stop offset="1"   stop-color="#ffc76a" stop-opacity="0"/>
+  </radialGradient>
   <linearGradient id="tapisG" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#a82b3d"/><stop offset="1" stop-color="#6e1424"/>
   </linearGradient>
@@ -477,10 +501,18 @@ ${phase === "nuit"
 
   <!-- corps -->
   <rect x="86" y="132" width="308" height="248" fill="url(#murG)"/>
+  <!-- gradient très doux du haut vers le bas : le mur reçoit plus de
+       lumière près de la corniche que près du trottoir. Effet subtil,
+       mais c'est lui qui empêche le mur de lire comme du carton. -->
+  <rect x="86" y="132" width="308" height="120" fill="url(#solHaloG)" opacity=".08"
+    transform="translate(0 0)" pointer-events="none"/>
   ${appareilPierre(86, 132, 308, 248, M, P, E.usure, 11)}
   ${E.usure > .05 ? `<rect x="86" y="132" width="308" height="248" fill="url(#salissure)"
     opacity="${(E.usure).toFixed(2)}"/>` : ""}
-  <rect x="86" y="132" width="308" height="16" fill="#000" opacity=".18"/>
+  <!-- l'ombre projetée par la corniche sur le haut du mur : c'est ce
+       liseré sombre qui donne au bâtiment son épaisseur -->
+  <rect x="86" y="132" width="308" height="10" fill="#000" opacity=".28"/>
+  <rect x="86" y="132" width="308" height="18" fill="#000" opacity=".14"/>
   ${ecaillure(120, 200, 40, 30)}${ecaillure(300, 250, 46, 34)}${ecaillure(180, 320, 34, 26)}
   ${coulure(96, 148, 60)}${coulure(384, 148, 74)}${coulure(240, 210, 40)}
 
@@ -545,8 +577,15 @@ ${phase === "nuit"
   <!-- L'ombre portée de l'auvent : c'est elle qui donne au marquee
        son épaisseur. Sans elle, la façade reste plate. -->
   ${E.marquee ? `<g pointer-events="none">
+    <!-- la pénombre principale : le marquee éclipse la lumière du jour -->
     <path d="M96 284 L384 284 L384 322 L96 322 Z" fill="url(#ombreAuventG)"/>
-    <path d="M120 284 L360 284 L352 300 L128 300 Z" fill="#000" opacity=".2"/>
+    <!-- l'ombre projetée juste sous la corniche : plus dense -->
+    <path d="M120 284 L360 284 L352 302 L128 302 Z" fill="#000" opacity=".26"/>
+    <!-- une seconde ombre plus douce qui descend sur les vitrines -->
+    <rect x="96" y="284" width="288" height="28" fill="#000" opacity=".12"/>
+    <!-- les deux caissons latéraux reçoivent moins de lumière -->
+    <rect x="96" y="284" width="24" height="106" fill="#000" opacity=".14"/>
+    <rect x="360" y="284" width="24" height="106" fill="#000" opacity=".14"/>
   </g>` : ""}
   ${vitrineEtat(104, 296, 62, 92, seances[0], enseigneVive, E)}
   ${vitrineEtat(314, 296, 62, 92, seances[1], enseigneVive, E)}
@@ -565,17 +604,37 @@ ${phase === "nuit"
     <rect x="180" y="296" width="120" height="92" fill="#100a10"/>
     ${enseigneVive ? `<rect x="184" y="300" width="112" height="84" fill="#ffdf9a" opacity=".1"/>` : ""}
     ${[184, 242].map(bx=>`
+      <!-- le châssis, laiton ou or selon le niveau -->
       <rect x="${bx}" y="300" width="54" height="84" rx="2" fill="url(#vitreG)"
         stroke="${E.portesDorees ? "url(#orG)" : "url(#laitonG)"}" stroke-width="${E.portesDorees ? 3 : 2}"/>
-      <!-- ce que la vitre renvoie : le ciel, la ligne des toits d'en face, la rue -->
+
+      <!-- couche 1 : le monde d'en face que la vitre renvoie -->
       <rect x="${bx+2}" y="302" width="50" height="80" fill="url(#refletCielG)"/>
-      <path d="M${bx+2} 336 l9 -7 l7 4 l11 -9 l8 6 l9 -5 l6 4 l0 6 l-50 0 Z"
-        fill="${P.immeubles[0]}" opacity=".2"/>
-      <!-- la barre de lumière rasante, en biais sur le verre -->
-      <path d="M${bx+6} 382 L${bx+32} 302 L${bx+42} 302 L${bx+16} 382 Z" fill="#fff" opacity=".1"/>
-      <path d="M${bx+38} 382 L${bx+52} 340 L${bx+52} 356 L${bx+46} 382 Z" fill="#fff" opacity=".055"/>
-      ${enseigneVive ? `<ellipse cx="${bx+27}" cy="318" rx="19" ry="11"
-        fill="#ffdf9a" opacity=".13"/>` : ""}`).join("")}
+
+      <!-- couche 2 : la silhouette des immeubles d'en face, réfléchie
+           à la ligne d'horizon (le trottoir opposé), en teinte de mur -->
+      <path d="M${bx+2} 338
+               l6 -4 l4 3 l3 -8 l5 6 l7 -5 l4 4 l6 -3 l5 5 l4 -2 l6 4
+               l0 12 l-50 0 Z"
+        fill="${P.immeubles[0]}" opacity=".28"/>
+      <!-- une fenêtre allumée dans l'immeuble d'en face, le soir -->
+      ${lum ? `<rect x="${bx+12}" y="336" width="3.4" height="4.2" fill="${P.fenetres}" opacity=".55"/>
+        <rect x="${bx+34}" y="340" width="3" height="3.6" fill="${P.fenetres}" opacity=".45"/>` : ""}
+
+      <!-- couche 3 : le halo de l'enseigne qui frappe le verre -->
+      ${enseigneVive ? `<rect x="${bx+2}" y="302" width="50" height="46"
+        fill="url(#refletEnseigneG)"/>` : ""}
+
+      <!-- couche 4 : les barres de lumière rasante -->
+      <path d="M${bx+6} 382 L${bx+32} 302 L${bx+42} 302 L${bx+16} 382 Z" fill="#fff" opacity=".14"/>
+      <path d="M${bx+38} 382 L${bx+52} 340 L${bx+52} 356 L${bx+46} 382 Z" fill="#fff" opacity=".07"/>
+
+      <!-- couche 5 : le liseré du haut, réflexion du châssis -->
+      <rect x="${bx+2}" y="302" width="50" height="14" fill="url(#liseréHautG)"/>
+
+      <!-- couche 6 : la poussière discrète dans les coins bas -->
+      <path d="M${bx+2} 376 L${bx+10} 376 L${bx+2} 382 Z" fill="#000" opacity=".18"/>
+      <path d="M${bx+52} 376 L${bx+44} 376 L${bx+52} 382 Z" fill="#000" opacity=".18"/>`).join("")}
     <rect x="228" y="332" width="4" height="24" rx="2"
       fill="${E.portesDorees ? "url(#orG)" : "url(#laitonG)"}"/>
     <rect x="248" y="332" width="4" height="24" rx="2"
@@ -931,6 +990,7 @@ export {
   nuageVolumetrique,
   vitrineEtat
 };
+
 
 
 
