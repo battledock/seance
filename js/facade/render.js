@@ -12,8 +12,61 @@ import { A } from "../ui/genre-posters.js?v=144ee666";
    FAÇADE ÉVOLUTIVE — le même bâtiment à travers six âges
    ============================================================ */
 
+/* ------------------------------------------------------------
+   GÉOMÉTRIE ADAPTATIVE
+
+   Le dessin ne se contente plus d'être rogné : il se recompose.
+   Le bâtiment garde toujours la même taille apparente ; ce sont
+   le ciel au-dessus et la route en dessous qui s'étirent ou se
+   resserrent selon la forme de l'écran.
+
+   ratio = largeur / hauteur de la zone visible.
+     0.42 → écran très allongé (Redmi, S24 Ultra)
+     0.56 → écran court (iPhone SE)
+     0.75 → tablette
+   ------------------------------------------------------------ */
+function geometrieSelonEcran(ratio){
+  const r = Math.max(.34, Math.min(.95, Number(ratio) || .48));
+
+  /* le bâtiment et son trottoir : bloc incompressible, 480 × 400 */
+  const LARGEUR = 480;
+  const BLOC = 400;
+
+  /* Hauteur d'un cadre qui épouserait exactement l'écran. On en
+     retient 84 % : le dessin déborde donc légèrement sur les côtés,
+     ce qui donne au bâtiment sa présence. Le rognage latéral ne
+     mange que le bord des immeubles voisins, jamais le cinéma. */
+  const exact = LARGEUR / r;
+  let hauteur = Math.round(exact * .84);
+
+  /* bornes : ni écrasé sur une tablette, ni étiré sur un mobile long */
+  hauteur = Math.max(640, Math.min(920, hauteur));
+
+  /* le reste se partage : le ciel prend la part du lion */
+  const reste = hauteur - BLOC;
+  let ciel  = Math.round(reste * .62);
+  let route = reste - ciel;
+
+  /* la route ne doit ni disparaître ni s'étaler */
+  if(route < 46){ route = 46; ciel = reste - 46; }
+  if(route > 132){ route = 132; ciel = reste - 132; }
+
+  return {
+    hauteur: BLOC + ciel + route,
+    ciel, route,
+    dy: ciel - 88
+  };
+}
+
 function dessineFacadeEvolutive(opts = {}){
   const phase = opts.phase || "nuit";
+  const G = geometrieSelonEcran(opts.ratio);
+  const H = G.hauteur;
+  const DY = G.dy;
+  const CIEL = G.ciel;
+  const BASROUTE = H - DY;       /* bas du cadre, en coordonnées locales */
+  const HROUTE = BASROUTE - 466; /* hauteur de route disponible */
+  const BASCULE = Math.round(466 + HROUTE * .42);
   const P = PALETTES[phase];
   const E = etatBatiment(opts.niveau || 1);
   const M = murSelonEtat(P, E);
@@ -38,8 +91,8 @@ function dessineFacadeEvolutive(opts = {}){
         opacity="${(.18 + E.usure*.22).toFixed(2)}"/>` : "";
 
   return `
-<svg viewBox="0 0 480 640" class="facadeRiche" xmlns="http://www.w3.org/2000/svg"
-  preserveAspectRatio="xMidYMax slice"
+<svg viewBox="0 0 480 ${H}" class="facadeRiche" xmlns="http://www.w3.org/2000/svg"
+  preserveAspectRatio="xMidYMid slice"
   role="img" aria-label="Façade du cinéma ${nomBrut}, ${E.age.nom}">
 <defs>
   <linearGradient id="cielG" x1="0" y1="0" x2="0" y2="1">
@@ -153,19 +206,19 @@ function dessineFacadeEvolutive(opts = {}){
 </defs>
 
 <!-- ═══ CIEL ═══ -->
-<rect width="480" height="640" fill="url(#cielG)"/>
-<rect width="480" height="250" fill="url(#cielHautG)"/>
+<rect width="480" height="${H}" fill="url(#cielG)"/>
+<rect width="480" height="${Math.round(CIEL*.92)}" fill="url(#cielHautG)"/>
 
 ${phase === "nuit" ? `
 <g class="voieLactee" opacity=".16">
-  <ellipse cx="300" cy="76" rx="240" ry="34" fill="#8ea4d8" filter="url(#flouNuage)"
-    transform="rotate(-24 300 76)"/>
-  <ellipse cx="240" cy="106" rx="180" ry="22" fill="#a8b4e0" filter="url(#flouNuage)"
-    transform="rotate(-20 240 106)" opacity=".7"/>
+  <ellipse cx="300" cy="${Math.round(CIEL*.34)}" rx="240" ry="${Math.round(CIEL*.16)}" fill="#8ea4d8" filter="url(#flouNuage)"
+    transform="rotate(-24 300 ${Math.round(CIEL*.34)})"/>
+  <ellipse cx="240" cy="${Math.round(CIEL*.48)}" rx="180" ry="${Math.round(CIEL*.10)}" fill="#a8b4e0" filter="url(#flouNuage)"
+    transform="rotate(-20 240 ${Math.round(CIEL*.48)})" opacity=".7"/>
 </g>
 <g class="etoiles">${[...Array(120)].map((_,i)=>{
   const x = (Math.random()*480).toFixed(0);
-  const y = (Math.random()*225).toFixed(0);
+  const y = (Math.random()*CIEL*.94).toFixed(0);
   const r = (0.35 + Math.random()*1.05).toFixed(2);
   const o = (.22 + Math.random()*.7).toFixed(2);
   const teinte = Math.random() < .12 ? "#cfe0ff" : Math.random() < .2 ? "#ffeccf" : "#fff";
@@ -174,7 +227,7 @@ ${phase === "nuit" ? `
 }).join("")}</g>
 <g class="etoilesVives">${[...Array(7)].map((_,i)=>{
   const x = (40 + Math.random()*400).toFixed(0);
-  const y = (14 + Math.random()*150).toFixed(0);
+  const y = (12 + Math.random()*CIEL*.7).toFixed(0);
   return `<g style="animation-delay:${(i*.9).toFixed(1)}s">
     <circle cx="${x}" cy="${y}" r="1.5" fill="#fff"/>
     <circle cx="${x}" cy="${y}" r="5.5" fill="#dfe8ff" opacity=".18" filter="url(#flouNuageDoux)"/>
@@ -185,23 +238,23 @@ ${phase === "nuit" ? `
 
 ${phase === "nuit"
   ? `<g>
-     <circle cx="392" cy="${P.soleilY - 26}" r="76" fill="#dfe8ff" opacity=".07" filter="url(#flouNuage)"/>
-     <circle cx="392" cy="${P.soleilY - 26}" r="44" fill="#eef2ff" opacity=".13" filter="url(#flouNuage)"/>
-     <circle cx="392" cy="${P.soleilY - 26}" r="21" fill="#f2f5ff"/>
-     <circle cx="392" cy="${P.soleilY - 26}" r="21" fill="#dfe4f2" opacity=".5"/>
+     <circle cx="392" cy="${Math.round(CIEL*.34)}" r="76" fill="#dfe8ff" opacity=".07" filter="url(#flouNuage)"/>
+     <circle cx="392" cy="${Math.round(CIEL*.34)}" r="44" fill="#eef2ff" opacity=".13" filter="url(#flouNuage)"/>
+     <circle cx="392" cy="${Math.round(CIEL*.34)}" r="21" fill="#f2f5ff"/>
+     <circle cx="392" cy="${Math.round(CIEL*.34)}" r="21" fill="#dfe4f2" opacity=".5"/>
      <g opacity=".2" fill="#8a94b0">
-       <circle cx="386" cy="${P.soleilY - 32}" r="4.2"/>
-       <circle cx="398" cy="${P.soleilY - 20}" r="3"/>
-       <circle cx="390" cy="${P.soleilY - 16}" r="2.2"/>
+       <circle cx="386" cy="${Math.round(CIEL*.30)}" r="4.2"/>
+       <circle cx="398" cy="${Math.round(CIEL*.38)}" r="3"/>
+       <circle cx="390" cy="${Math.round(CIEL*.41)}" r="2.2"/>
      </g>
-     <circle cx="383" cy="${P.soleilY - 34}" r="18.5" fill="${P.ciel[0]}"/>
+     <circle cx="383" cy="${Math.round(CIEL*.29)}" r="18.5" fill="${P.ciel[0]}"/>
      </g>`
   : `<g>
-     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-42:-18)}" r="118"
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${Math.round(CIEL*(phase==="crepuscule"?.74:.30))}" r="118"
        fill="${P.soleil}" opacity=".10" filter="url(#flouNuage)"/>
-     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-42:-18)}" r="64"
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${Math.round(CIEL*(phase==="crepuscule"?.74:.30))}" r="64"
        fill="${P.soleil}" opacity=".22" filter="url(#flouNuage)"/>
-     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-42:-18)}"
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${Math.round(CIEL*(phase==="crepuscule"?.74:.30))}"
        r="${phase==="crepuscule"?28:20}" fill="${P.soleil}" opacity=".95"/>
      </g>`}
 
@@ -209,23 +262,23 @@ ${phase === "nuit"
 <g class="cieux">
   <!-- plan lointain, très diffus -->
   <g class="nuageLoin" opacity="${phase==="nuit"?.10:.26}">
-    ${nuageVolumetrique(80, 62, 1.2, .42)}
-    ${nuageVolumetrique(398, 34, .95, .34)}
-    ${nuageVolumetrique(250, 16, .8, .26)}
+    ${nuageVolumetrique(80,  CIEL*.28, 1.2, .42)}
+    ${nuageVolumetrique(398, CIEL*.15, .95, .34)}
+    ${nuageVolumetrique(250, CIEL*.07, .8,  .26)}
   </g>
   <!-- plan médian -->
   <g class="nuageA" opacity="${phase==="nuit"?.18:.62}">
-    ${nuageVolumetrique(120, 104, 1.02, .66)}
-    ${nuageVolumetrique(380, 128, .78, .52)}
+    ${nuageVolumetrique(120, CIEL*.47, 1.02,.66)}
+    ${nuageVolumetrique(380, CIEL*.58, .78, .52)}
   </g>
   <!-- plan proche, plus contrasté -->
   <g class="nuageB" opacity="${phase==="nuit"?.14:.5}">
-    ${nuageVolumetrique(332, 74, 1.18, .62)}
-    ${nuageVolumetrique(44, 140, .88, .45)}
+    ${nuageVolumetrique(332, CIEL*.33, 1.18,.62)}
+    ${nuageVolumetrique(44,  CIEL*.63, .88, .45)}
   </g>
 </g>
 
-<g transform="translate(0 76)">
+<g transform="translate(0 ${DY})">
 <!-- ═══ VILLE ═══ -->
 <g opacity=".55">
   <path d="M0 208 L28 208 L28 176 L56 176 L56 196 L92 196 L92 164 L124 164 L124 200
@@ -513,16 +566,16 @@ ${E.tapis ? `<g>
 
 <!-- ═══ ROUTE ═══ -->
 <g>
-  <path d="M0 466 L480 466 L480 520 L0 520 Z" fill="url(#routeG)"/>
-  <path d="M0 520 L480 520 L480 560 L0 560 Z" fill="url(#routeLoinG)"/>
-  <path d="M0 520 L480 520 L480 528 L0 528 Z" fill="#000" opacity=".14"/>
+  <path d="M0 466 L480 466 L480 ${BASCULE} L0 ${BASCULE} Z" fill="url(#routeG)"/>
+  <path d="M0 ${BASCULE} L480 ${BASCULE} L480 ${BASROUTE} L0 ${BASROUTE} Z" fill="url(#routeLoinG)"/>
+  <path d="M0 ${BASCULE} L480 ${BASCULE} L480 ${BASCULE + 8} L0 ${BASCULE + 8} Z" fill="#000" opacity=".14"/>
   <g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".14" : ".3"}" stroke-width="3"
-     stroke-dasharray="26 22"><path d="M0 500 L480 500"/></g>
-  <g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".08" : ".16"}" stroke-width="4"
-     stroke-dasharray="34 30"><path d="M0 540 L480 540"/></g>
-  <g opacity=".22">
-    <ellipse cx="150" cy="532" rx="60" ry="8" fill="#000"/>
-    <ellipse cx="370" cy="552" rx="72" ry="9" fill="#000"/>
+     stroke-dasharray="26 22"><path d="M0 ${Math.round(466 + HROUTE*.30)} L480 ${Math.round(466 + HROUTE*.30)}"/></g>
+  ${HROUTE > 96 ? `<g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".08" : ".16"}" stroke-width="4"
+     stroke-dasharray="34 30"><path d="M0 ${Math.round(466 + HROUTE*.72)} L480 ${Math.round(466 + HROUTE*.72)}"/></g>` : ""}
+  <g opacity=".18">
+    <ellipse cx="150" cy="${Math.round(466 + HROUTE*.52)}" rx="60" ry="7" fill="#000"/>
+    ${HROUTE > 110 ? `<ellipse cx="370" cy="${Math.round(466 + HROUTE*.86)}" rx="72" ry="8" fill="#000"/>` : ""}
   </g>
   <ellipse cx="72" cy="478" rx="15" ry="5" fill="#000" opacity=".3"/>
   <ellipse cx="72" cy="477" rx="13" ry="4" fill="${P.route[0]}"/>
@@ -628,12 +681,12 @@ ${E.projecteursCiel && lum ? `<g class="projecteurs" opacity=".5">
 </g>` : ""}
 
 </g>
-<g transform="translate(0 76)">
+<g transform="translate(0 ${DY})">
   <g id="planLoin"></g><g id="planMilieu"></g><g id="planProche"></g>
 </g>
 
-<rect width="480" height="640" fill="url(#grain)" opacity=".5" pointer-events="none"/>
-<rect width="480" height="640" fill="url(#vignetteG)" pointer-events="none"/>
+<rect width="480" height="${H}" fill="url(#grain)" opacity=".5" pointer-events="none"/>
+<rect width="480" height="${H}" fill="url(#vignetteG)" pointer-events="none"/>
 </svg>`;
 }
 
@@ -716,8 +769,10 @@ function ampoulesChenillard(x1, x2, y, n, r = 2.4){
 /* ---- exports ---- */
 export {
   ampoulesChenillard,
+  geometrieSelonEcran,
   dessineFacadeEvolutive,
   nuageVolumetrique,
   vitrineEtat
 };
+
 
