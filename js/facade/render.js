@@ -498,6 +498,24 @@ ${phase === "nuit"
     ).join("")).join("")}
   <rect x="404" y="176" width="4" height="208" fill="${P.toit}" opacity=".7"/>
 </g>
+
+<!-- ═══ MITOYENNETÉ ═══
+     Le cinéma va de x=86 à x=394, les voisins s'arrêtent à 72 et
+     reprennent à 408 : il restait quatorze unités de ciel de chaque
+     côté, visibles du toit jusqu'au trottoir. Le bâtiment paraissait
+     posé dans le vide au lieu d'être encastré dans sa rue.
+
+     On comble par le mur pignon du voisin, celui qu'on voit de biais
+     quand deux immeubles se touchent : même pierre, mais dans l'ombre
+     puisqu'il ne prend jamais le jour de face. -->
+<g>
+  <rect x="66" y="182" width="24" height="202" fill="${P.immeubles[1]}"/>
+  <rect x="66" y="182" width="24" height="202" fill="#000" opacity=".3"/>
+  <rect x="86" y="182" width="4" height="202" fill="#000" opacity=".22"/>
+  <rect x="390" y="170" width="24" height="214" fill="${P.immeubles[1]}"/>
+  <rect x="390" y="170" width="24" height="214" fill="#000" opacity=".3"/>
+  <rect x="390" y="170" width="4" height="214" fill="#000" opacity=".22"/>
+</g>
 <rect x="0" y="150" width="480" height="150" fill="${P.brume}" opacity="${P.brumeOpac}"/>
 <rect x="0" y="120" width="480" height="90" fill="${P.brume}" opacity="${(P.brumeOpac*.55).toFixed(3)}"/>
 
@@ -526,7 +544,9 @@ ${phase === "nuit"
   </g>` : ""}
 
   <!-- corps -->
-  <rect x="86" y="132" width="308" height="248" fill="url(#murG)"/>
+  <!-- le corps descend jusqu'au trottoir (384) : il s'arrêtait à 380,
+       laissant une fente de ciel au ras du sol -->
+  <rect x="86" y="132" width="308" height="252" fill="url(#murG)"/>
   <!-- gradient très doux du haut vers le bas : le mur reçoit plus de
        lumière près de la corniche que près du trottoir. Effet subtil,
        mais c'est lui qui empêche le mur de lire comme du carton. -->
@@ -747,8 +767,11 @@ ${phase === "nuit"
 </g>
 
 <!-- ═══ TROTTOIR ═══ -->
+<!-- ombre de contact : ce qui pose vraiment le bâtiment au sol -->
 <g>
   <path d="M0 384 L480 384 L480 452 L0 452 Z" fill="url(#trottoirG)"/>
+  <rect x="0" y="384" width="480" height="7" fill="#000" opacity=".2"/>
+  <rect x="86" y="384" width="308" height="4" fill="#000" opacity=".22"/>
   <g stroke="#000" stroke-opacity=".12" stroke-width="1.2">
     ${[...Array(11)].map((_,i)=>{
       const xh = i*48, xb = (i - 5.5)*72 + 240;
