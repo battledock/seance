@@ -21,6 +21,7 @@ import { accomplitMission, debloque } from "./progression.js?v=93089721";
 import { toastSocial } from "./social.js?v=93089721";
 import { appelSecurise, messageErreur, rpc, sbFetch } from "./supabase-client.js?v=93089721";
 import { echappe, texteSur } from "./ui/emblems.js?v=93089721";
+import { dessineHall } from "./facade/hall.js?v=93089721";
 import { afficheDuFilm } from "./ui/genre-posters.js?v=93089721";
 import { icone } from "./ui/icons.js?v=93089721";
 
@@ -129,7 +130,15 @@ async function rendVue(){
   const bj = document.getElementById("badgeJourTxt");
   if(bj) bj.textContent = "Jour " + (Etat.cinema?.jour || 1);
 
-  if(vueProg === "affiche"){ rendVueAffiche(); }
+  /* la vue « à l'affiche » se joue dans le hall ; les deux autres
+     gardent le carrousel d'affiches, qu'on montre ou qu'on cache */
+  const hall = document.getElementById("sceneHall");
+  const carr = document.getElementById("carrousel");
+  const dansLeHall = vueProg === "affiche";
+  if(hall) hall.style.display = dansLeHall ? "" : "none";
+  if(carr) carr.classList.toggle("masque", dansLeHall);
+
+  if(dansLeHall){ rendVueAffiche(); }
   else if(vueProg === "catalogue"){ rendVueCatalogue(); }
   else{ await rendVueEvenements(); }
 
@@ -620,30 +629,79 @@ function modifieSeance(id){
 /* ============================================================
    VUE 1 — À L'AFFICHE : les séances du jour
    ============================================================ */
+/* ------------------------------------------------------------
+   RENDU DU HALL
+
+   Les séances déjà programmées occupent leurs cadres, dans
+   l'ordre des horaires. On complète avec des cadres vides
+   jusqu'à la limite du jour, sans jamais dépasser cinq : au-delà
+   la scène deviendrait illisible sur un téléphone, et le tableau
+   en dessous reprend de toute façon le détail complet.
+   ------------------------------------------------------------ */
+function rendHall(valide, limite){
+  const scene = document.getElementById("sceneHall");
+  if(!scene) return;
+
+  const triees = [...seancesJour].sort((a,b)=>compareHeures(a.heure, b.heure));
+  const creneaux = triees.map(s=>{
+    const f = filmParId(s.film_id);
+    return {
+      id: s.id,
+      heure: s.heure,
+      film: f ? {titre: f.titre, genre: f.genre} : {titre: s.film_id, genre: ""},
+      salle: s.salle || "",
+      passee: seanceCommencee(s)
+    };
+  });
+
+  /* des cadres vides pour ce qu'il reste à programmer */
+  const restants = Math.max(0, Math.min(limite, 5) - creneaux.length);
+  for(let i = 0; i < restants; i++){
+    creneaux.push({id:null, heure: prochainCreneauLibre(creneaux), film:null, salle:null});
+  }
+  /* un hall vide montre quand même un cadre, sinon la scène paraît cassée */
+  if(creneaux.length === 0) creneaux.push({id:null, heure:"—", film:null, salle:null});
+
+  scene.innerHTML = dessineHall(creneaux);
+  scene.classList.toggle("verrouille", !!valide);
+
+  if(!valide) brancheCadres(scene);
+}
+
+/* un horaire plausible pour le prochain cadre vide, à titre indicatif */
+function prochainCreneauLibre(deja){
+  const pris = new Set(deja.map(c=>c.heure));
+  return horairesDisponibles().find(h=>!pris.has(h)) || "—";
+}
+
+/* toucher un cadre : plein → on modifie la séance, vide → on choisit un film */
+function brancheCadres(scene){
+  scene.querySelectorAll(".cadreHall").forEach(el=>{
+    const ouvre = () => {
+      const sid = el.dataset.seance;
+      if(sid) modifieSeance(sid);
+      else allerAuCatalogue();
+    };
+    el.addEventListener("click", ouvre);
+    el.addEventListener("keydown", e=>{
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); ouvre(); }
+    });
+  });
+}
+
 function rendVueAffiche(){
   const limite = limiteSeances();
   const valide = journeeLancee();   /* verrouillé seulement une fois ouvert */
 
-  /* le carrousel montre une affiche par séance */
-  const piste = document.getElementById("pisteAffiches");
-  if(!piste) return;
-  if(seancesJour.length === 0){
-    piste.innerHTML = `<div class="pisteVide">Le projecteur est froid.<br>
-      <small>Aucune séance au programme.</small></div>`;
-  }else{
-    piste.innerHTML = seancesJour.map(s=>{
-      const f = filmParId(s.film_id);
-      const passee = seanceCommencee(s);
-      return carteAffiche({
-        genre: f ? f.genre : "Drame",
-        titre: f ? f.titre : s.film_id,
-        ligne: s.heure,
-        etat: passee ? "En cours" : "À venir",
-        classe: passee ? "cours" : "venir",
-        action: valide ? "" : `modifieSeance('${s.id}')`
-      });
-    }).join("");
-  }
+  /* ------------------------------------------------------------
+     LE HALL
+
+     On dessine la scène plutôt que le carrousel : un cadre par
+     créneau, rempli si une séance y est programmée. Les cadres
+     libres invitent à en ajouter une, dans la limite du nombre
+     de séances que les salles permettent.
+     ------------------------------------------------------------ */
+  rendHall(valide, limite);
 
   /* le tableau reprend le détail, ligne à ligne */
   const tab = document.getElementById("tableauProg");
@@ -1082,5 +1140,6 @@ Object.assign(window, {
   supprimeSeance,
   valideSeance
 });
+
 
 
