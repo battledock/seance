@@ -12,6 +12,10 @@ import "../ui/room-view.js?v=2ab9afab";
 import "../facade/life.js?v=2ab9afab";
 import "../facade/vitality.js?v=2ab9afab";
 
+/* marquer le body AVANT le chargement pour que le CSS
+   masque le header classique sans utiliser :has() */
+document.body.classList.add("pageImmersive");
+
 demarreChargement();
 filetChargement();
 initAmbiance("jeu");
