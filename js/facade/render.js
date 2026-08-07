@@ -38,7 +38,7 @@ function dessineFacadeEvolutive(opts = {}){
         opacity="${(.18 + E.usure*.22).toFixed(2)}"/>` : "";
 
   return `
-<svg viewBox="0 0 480 580" class="facadeRiche" xmlns="http://www.w3.org/2000/svg"
+<svg viewBox="0 0 480 640" class="facadeRiche" xmlns="http://www.w3.org/2000/svg"
   preserveAspectRatio="xMidYMax slice"
   role="img" aria-label="Façade du cinéma ${nomBrut}, ${E.age.nom}">
 <defs>
@@ -153,7 +153,7 @@ function dessineFacadeEvolutive(opts = {}){
 </defs>
 
 <!-- ═══ CIEL ═══ -->
-<rect width="480" height="580" fill="url(#cielG)"/>
+<rect width="480" height="640" fill="url(#cielG)"/>
 <rect width="480" height="250" fill="url(#cielHautG)"/>
 
 ${phase === "nuit" ? `
@@ -632,8 +632,8 @@ ${E.projecteursCiel && lum ? `<g class="projecteurs" opacity=".5">
   <g id="planLoin"></g><g id="planMilieu"></g><g id="planProche"></g>
 </g>
 
-<rect width="480" height="580" fill="url(#grain)" opacity=".5" pointer-events="none"/>
-<rect width="480" height="580" fill="url(#vignetteG)" pointer-events="none"/>
+<rect width="480" height="640" fill="url(#grain)" opacity=".5" pointer-events="none"/>
+<rect width="480" height="640" fill="url(#vignetteG)" pointer-events="none"/>
 </svg>`;
 }
 
