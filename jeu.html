@@ -9,43 +9,29 @@
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/base.css?v=93089721">
   <style>
-    body{margin:0;background:#0a0406}
+    body{margin:0}
 
     /* ------------------------------------------------------------
-       UN SEUL FONDU, PAS DEUX
+       AUCUNE ÉTAPE AVANT LE CINÉMA
 
-       La scène apparaissait en fondu (0,38 s) pendant que le voile
-       s'effaçait (0,48 s). Deux transitions superposées : le temps
-       qu'elles se croisent, on voyait le voile au travers du ciel
-       encore translucide, et le ciel semblait battre une fois.
+       Il y avait un voile avec une bobine qui tournait, puis deux
+       fondus qui se croisaient — celui du voile qui partait et celui
+       de la scène qui venait. C'est ce croisement qui faisait battre
+       le ciel une fois avant de se stabiliser.
 
-       Le voile couvre déjà tout : la scène n'a donc aucune raison
-       d'apparaître progressivement. Elle est posée, opaque, sous le
-       voile ; seul le voile s'efface. Un seul mouvement, aucun
-       clignotement possible.
+       Tout cela a disparu. La page porte la couleur du ciel de
+       l'heure dès la première image, avant même que le JavaScript
+       démarre. On attend devant un ciel, la façade s'y dessine, et
+       rien ne clignote puisque plus rien ne se superpose.
        ------------------------------------------------------------ */
     .sceneJeu{opacity:1}
     .navBas{opacity:0;transition:opacity .38s ease}
     body.pret .navBas{opacity:1}
-    /* ------------------------------------------------------------
-       LE VOILE S'ACCORDE AU CIEL
-
-       Le voile de chargement était bordeaux comme sur les autres
-       pages. Mais jeu.html est la seule page qui s'ouvre sur un
-       ciel : passer du bordeaux au bleu franc produisait un éclair
-       rouge à chaque chargement.
-
-       On teinte donc le voile avec le ciel de l'heure courante,
-       posé en variable avant même que le JavaScript du jeu ne
-       démarre. Le voile s'efface alors dans la continuité du décor.
-       ------------------------------------------------------------ */
-    #voileChargement{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;gap:20px;
-      background:radial-gradient(ellipse at 50% 42%,
-        var(--voileHaut,#2a1018), var(--voileBas,#0a0406) 72%)}
+    html,body{background:linear-gradient(180deg,
+      var(--cielHaut,#6fa8d8), var(--cielBas,#35719e))}
   </style>
   <script>
-    /* la teinte du voile suit l'heure, comme le ciel de la façade */
+    /* le fond de page prend le ciel de l'heure, avant tout chargement */
     (function(){
       var h = new Date().getHours(), haut, bas;
       if(h >= 6 && h < 11)       { haut = "#7ba4c8"; bas = "#3f6f9c"; }  /* matin */
@@ -53,29 +39,12 @@
       else if(h >= 18 && h < 21) { haut = "#8a5484"; bas = "#2a1c3e"; }  /* aube du soir */
       else                       { haut = "#141a38"; bas = "#05070f"; }  /* nuit */
       var r = document.documentElement.style;
-      r.setProperty("--voileHaut", haut);
-      r.setProperty("--voileBas",  bas);
+      r.setProperty("--cielHaut", haut);
+      r.setProperty("--cielBas",  bas);
     })();
   </script>
 </head>
 <body>
-
-<div class="voileChargement" id="voileChargement" role="status" aria-live="polite">
-  <svg class="vcBobine" viewBox="0 0 74 74" aria-hidden="true">
-    <g class="roue">
-      <circle cx="37" cy="37" r="32" fill="none" stroke="#caa24a" stroke-width="3"/>
-      <circle cx="37" cy="37" r="7" fill="#caa24a"/>
-      <g fill="#caa24a" opacity=".85">
-        <circle cx="37" cy="16" r="5.4"/><circle cx="55" cy="47" r="5.4"/><circle cx="19" cy="47" r="5.4"/>
-      </g>
-    </g>
-    <circle class="pellicule" cx="37" cy="37" r="32" fill="none"
-      stroke="#f7dd9a" stroke-width="1.6" opacity=".6"/>
-  </svg>
-  <div class="vcNom">Séance</div>
-  <div class="vcTexte">On allume le projecteur…</div>
-  <div class="vcPiste"><i></i></div>
-</div>
 
 <main class="sceneJeu">
   <div class="hudJeu" id="hudJeu">
@@ -95,4 +64,5 @@
 <script type="module" src="js/pages/jeu.js?v=93089721"></script>
 </body>
 </html>
+
 
