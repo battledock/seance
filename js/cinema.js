@@ -401,7 +401,12 @@ function phaseSelonHeure(){
   const h = new Date().getHours();
   if(h>=6 && h<11) return "matin";
   if(h>=11 && h<18) return "aprem";
-  if(h>=18 && h<21) return "aube";
+  /* Cette tranche s'appelait « aube », un nom qui n'existe nulle part
+     ailleurs : les palettes, la façade et le hall parlent tous de
+     « crepuscule ». Entre 18 h et 21 h, la palette demandée n'existait
+     donc pas et le dessin de la façade plantait — le jeu était
+     inutilisable tous les soirs, trois heures durant. */
+  if(h>=18 && h<21) return "crepuscule";
   return "nuit";
 }
 
