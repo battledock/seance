@@ -385,7 +385,11 @@ function salleEnCoupe(salle, opts = {}){
 
 function apercuEquipement(cle, niveau){
   const cleC = (typeof couleurSiegesCle === "function") ? couleurSiegesCle() : "rouge";
-  const F = COULEURS_FAUTEUIL[cleC] || COULEURS_FAUTEUIL.rouge;
+  /* La palette des fauteuils s'appelle TEINTES dans ce module. On la
+     désignait ici sous un nom qui n'existe nulle part dans le projet,
+     COULEURS_FAUTEUIL : chaque aperçu d'équipement levait donc une
+     ReferenceError et la page des salles se bloquait. */
+  const F = TEINTES[cleC] || TEINTES.rouge;
   const N = Math.max(0, Math.min(3, niveau));
   let contenu = "";
 
@@ -447,7 +451,15 @@ function brancheZonesSalle(conteneur, salle){
     const declenche = ()=>{
       z.classList.add("touchee");
       setTimeout(()=>z.classList.remove("touchee"), 420);
-      if(cle === "projecteur"){ bulleSalles(MOTS_ZONES.projecteur); return; }
+      /* Le projecteur n'a pas de panneau d'amélioration : il se
+         remplace au niveau du cinéma, pas de la salle. On le disait
+         via MOTS_ZONES.projecteur — un objet qui n'existe nulle part,
+         donc toucher le projecteur levait une ReferenceError. */
+      if(cle === "projecteur"){
+        bulleSalles("Le projecteur appartient à la cabine, pas à la salle. "
+          + "Il se remplace depuis le bureau.");
+        return;
+      }
       ouvrePanneauEquipement(cle, salle);
     };
     z.addEventListener("click", declenche);
@@ -469,3 +481,4 @@ export {
   repartitionSalle,
   salleEnCoupe
 };
+
