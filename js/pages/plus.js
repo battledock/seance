@@ -6,6 +6,7 @@ import { initialiserJeu } from "../game-state.js?v=93089721";
 import { messageErreur } from "../supabase-client.js?v=93089721";
 import { initPlus } from "./parts/office.js?v=93089721";
 import { majBadgeNotifications } from "./parts/community-social.js?v=93089721";
+import { rendCarteVersion } from "../version.js?v=93089721";
 
 demarreChargement();
 filetChargement();
@@ -16,6 +17,7 @@ try{
   if(etat){
   initPlus();
   majBadgeNotifications();
+  rendCarteVersion();
   }
 }catch(e){
   console.error("[Rex] plus", e);
@@ -25,3 +27,4 @@ try{
   /* la page ne se montre qu'une fois entièrement dessinée */
   finChargement();
 }
+
