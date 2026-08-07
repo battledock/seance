@@ -38,7 +38,8 @@ function dessineFacadeEvolutive(opts = {}){
         opacity="${(.18 + E.usure*.22).toFixed(2)}"/>` : "";
 
   return `
-<svg viewBox="0 0 480 520" class="facadeRiche" xmlns="http://www.w3.org/2000/svg"
+<svg viewBox="0 0 480 660" class="facadeRiche" xmlns="http://www.w3.org/2000/svg"
+  preserveAspectRatio="xMidYMax slice"
   role="img" aria-label="Façade du cinéma ${nomBrut}, ${E.age.nom}">
 <defs>
   <linearGradient id="cielG" x1="0" y1="0" x2="0" y2="1">
@@ -77,6 +78,30 @@ function dessineFacadeEvolutive(opts = {}){
   <linearGradient id="routeG" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="${P.route[0]}"/><stop offset="1" stop-color="${P.route[1]}"/>
   </linearGradient>
+  <linearGradient id="cielHautG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="${P.cielHaut || P.ciel[0]}"/>
+    <stop offset=".62" stop-color="${P.ciel[0]}" stop-opacity=".55"/>
+    <stop offset="1" stop-color="${P.ciel[0]}" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="routeLoinG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="${P.route[1]}"/>
+    <stop offset="1" stop-color="${P.routeBas || P.route[1]}"/>
+  </linearGradient>
+  <radialGradient id="nuageG" cx=".4" cy=".38" r=".72">
+    <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+    <stop offset=".55" stop-color="#ffffff" stop-opacity=".55"/>
+    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="nuageOmbreG" cx=".5" cy=".72" r=".6">
+    <stop offset="0" stop-color="${P.nuageOmbre || "#8fa4bc"}" stop-opacity=".5"/>
+    <stop offset="1" stop-color="${P.nuageOmbre || "#8fa4bc"}" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="flouNuage" x="-40%" y="-60%" width="180%" height="240%">
+    <feGaussianBlur stdDeviation="7"/>
+  </filter>
+  <filter id="flouNuageDoux" x="-40%" y="-60%" width="180%" height="240%">
+    <feGaussianBlur stdDeviation="3.2"/>
+  </filter>
   <radialGradient id="ampouleG" cx=".4" cy=".35" r=".7">
     <stop offset="0" stop-color="#fffdf0"/><stop offset=".5" stop-color="#ffdf9a"/>
     <stop offset="1" stop-color="#e8a83a"/>
@@ -128,34 +153,79 @@ function dessineFacadeEvolutive(opts = {}){
 </defs>
 
 <!-- ═══ CIEL ═══ -->
-<rect width="480" height="520" fill="url(#cielG)"/>
-${phase === "nuit" ? `<g class="etoiles">${[...Array(46)].map((_,i)=>
-  `<circle cx="${(Math.random()*480).toFixed(0)}" cy="${(Math.random()*190).toFixed(0)}"
-    r="${(0.5+Math.random()*0.9).toFixed(2)}" fill="#fff"
-    opacity="${(.3+Math.random()*.6).toFixed(2)}"
-    style="animation-delay:${(i*.17).toFixed(2)}s"/>`).join("")}</g>` : ""}
+<rect width="480" height="660" fill="url(#cielG)"/>
+<rect width="480" height="330" fill="url(#cielHautG)"/>
+
+${phase === "nuit" ? `
+<g class="voieLactee" opacity=".16">
+  <ellipse cx="300" cy="104" rx="240" ry="40" fill="#8ea4d8" filter="url(#flouNuage)"
+    transform="rotate(-24 300 104)"/>
+  <ellipse cx="240" cy="140" rx="180" ry="26" fill="#a8b4e0" filter="url(#flouNuage)"
+    transform="rotate(-20 240 140)" opacity=".7"/>
+</g>
+<g class="etoiles">${[...Array(120)].map((_,i)=>{
+  const x = (Math.random()*480).toFixed(0);
+  const y = (Math.random()*290).toFixed(0);
+  const r = (0.35 + Math.random()*1.05).toFixed(2);
+  const o = (.22 + Math.random()*.7).toFixed(2);
+  const teinte = Math.random() < .12 ? "#cfe0ff" : Math.random() < .2 ? "#ffeccf" : "#fff";
+  return `<circle cx="${x}" cy="${y}" r="${r}" fill="${teinte}" opacity="${o}"
+    style="animation-delay:${(i*.11).toFixed(2)}s;animation-duration:${(3 + Math.random()*3.5).toFixed(1)}s"/>`;
+}).join("")}</g>
+<g class="etoilesVives">${[...Array(7)].map((_,i)=>{
+  const x = (40 + Math.random()*400).toFixed(0);
+  const y = (18 + Math.random()*195).toFixed(0);
+  return `<g style="animation-delay:${(i*.9).toFixed(1)}s">
+    <circle cx="${x}" cy="${y}" r="1.5" fill="#fff"/>
+    <circle cx="${x}" cy="${y}" r="5.5" fill="#dfe8ff" opacity=".18" filter="url(#flouNuageDoux)"/>
+    <path d="M${x} ${Number(y)-6} L${x} ${Number(y)+6} M${Number(x)-6} ${y} L${Number(x)+6} ${y}"
+      stroke="#fff" stroke-width=".55" opacity=".5"/>
+  </g>`;
+}).join("")}</g>` : ""}
 
 ${phase === "nuit"
-  ? `<g><circle cx="392" cy="${P.soleilY}" r="42" fill="#dfe8ff" opacity=".1" filter="url(#flouFort)"/>
-     <circle cx="392" cy="${P.soleilY}" r="19" fill="#eef2ff"/>
-     <circle cx="384" cy="${P.soleilY - 6}" r="17" fill="${P.ciel[0]}"/></g>`
-  : `<g><circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY}" r="58"
-       fill="${P.soleil}" opacity=".2" filter="url(#flouFort)"/>
-     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY}" r="${phase==="crepuscule"?26:19}"
-       fill="${P.soleil}" opacity=".9"/></g>`}
+  ? `<g>
+     <circle cx="392" cy="${P.soleilY + 6}" r="76" fill="#dfe8ff" opacity=".07" filter="url(#flouNuage)"/>
+     <circle cx="392" cy="${P.soleilY + 6}" r="44" fill="#eef2ff" opacity=".13" filter="url(#flouNuage)"/>
+     <circle cx="392" cy="${P.soleilY + 6}" r="21" fill="#f2f5ff"/>
+     <circle cx="392" cy="${P.soleilY + 6}" r="21" fill="#dfe4f2" opacity=".5"/>
+     <g opacity=".2" fill="#8a94b0">
+       <circle cx="386" cy="${P.soleilY}" r="4.2"/>
+       <circle cx="398" cy="${P.soleilY + 12}" r="3"/>
+       <circle cx="390" cy="${P.soleilY + 16}" r="2.2"/>
+     </g>
+     <circle cx="383" cy="${P.soleilY - 2}" r="18.5" fill="${P.ciel[0]}"/>
+     </g>`
+  : `<g>
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-10:14)}" r="118"
+       fill="${P.soleil}" opacity=".10" filter="url(#flouNuage)"/>
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-10:14)}" r="64"
+       fill="${P.soleil}" opacity=".22" filter="url(#flouNuage)"/>
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-10:14)}"
+       r="${phase==="crepuscule"?28:20}" fill="${P.soleil}" opacity=".95"/>
+     </g>`}
 
-<g opacity="${phase==="nuit"?.22:.5}">
-  <g class="nuageA">
-    <ellipse cx="120" cy="72" rx="46" ry="14" fill="#fff" opacity=".5"/>
-    <ellipse cx="150" cy="66" rx="34" ry="13" fill="#fff" opacity=".42"/>
-    <ellipse cx="96" cy="78" rx="28" ry="10" fill="#fff" opacity=".36"/>
+<!-- nuages : trois plans, volume par superposition de bulbes -->
+<g class="cieux">
+  <!-- plan lointain, très diffus -->
+  <g class="nuageLoin" opacity="${phase==="nuit"?.10:.26}">
+    ${nuageVolumetrique(84, 84, 1.28, .44)}
+    ${nuageVolumetrique(396, 48, 1.0, .36)}
+    ${nuageVolumetrique(248, 22, .86, .28)}
   </g>
-  <g class="nuageB">
-    <ellipse cx="344" cy="122" rx="54" ry="12" fill="#fff" opacity=".3"/>
-    <ellipse cx="376" cy="116" rx="30" ry="11" fill="#fff" opacity=".26"/>
+  <!-- plan médian -->
+  <g class="nuageA" opacity="${phase==="nuit"?.18:.62}">
+    ${nuageVolumetrique(126, 138, 1.08, .7)}
+    ${nuageVolumetrique(384, 168, .82, .56)}
+  </g>
+  <!-- plan proche, plus contrasté -->
+  <g class="nuageB" opacity="${phase==="nuit"?.14:.5}">
+    ${nuageVolumetrique(328, 100, 1.26, .66)}
+    ${nuageVolumetrique(48, 184, .92, .48)}
   </g>
 </g>
 
+<g transform="translate(0 140)">
 <!-- ═══ VILLE ═══ -->
 <g opacity=".55">
   <path d="M0 208 L28 208 L28 176 L56 176 L56 196 L92 196 L92 164 L124 164 L124 200
@@ -181,7 +251,8 @@ ${phase === "nuit"
     fenetreVoisin(422 + c*26, 192 + r*38, 15, 22, P, lum && Math.random()<.55)).join("")).join("")}
   <rect x="404" y="176" width="4" height="208" fill="${P.toit}" opacity=".7"/>
 </g>
-<rect x="0" y="180" width="480" height="120" fill="${P.brume}" opacity="${P.brumeOpac}"/>
+<rect x="0" y="150" width="480" height="150" fill="${P.brume}" opacity="${P.brumeOpac}"/>
+<rect x="0" y="120" width="480" height="90" fill="${P.brume}" opacity="${(P.brumeOpac*.55).toFixed(3)}"/>
 
 <!-- ═══ LE CINÉMA ═══ -->
 <g>
@@ -443,8 +514,16 @@ ${E.tapis ? `<g>
 <!-- ═══ ROUTE ═══ -->
 <g>
   <path d="M0 466 L480 466 L480 520 L0 520 Z" fill="url(#routeG)"/>
+  <path d="M0 520 L480 520 L480 560 L0 560 Z" fill="url(#routeLoinG)"/>
+  <path d="M0 520 L480 520 L480 528 L0 528 Z" fill="#000" opacity=".14"/>
   <g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".14" : ".3"}" stroke-width="3"
      stroke-dasharray="26 22"><path d="M0 500 L480 500"/></g>
+  <g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".08" : ".16"}" stroke-width="4"
+     stroke-dasharray="34 30"><path d="M0 540 L480 540"/></g>
+  <g opacity=".22">
+    <ellipse cx="150" cy="532" rx="60" ry="8" fill="#000"/>
+    <ellipse cx="370" cy="552" rx="72" ry="9" fill="#000"/>
+  </g>
   <ellipse cx="72" cy="478" rx="15" ry="5" fill="#000" opacity=".3"/>
   <ellipse cx="72" cy="477" rx="13" ry="4" fill="${P.route[0]}"/>
   ${enseigneVive ? `<g opacity=".2" filter="url(#flouFort)">
@@ -548,13 +627,52 @@ ${E.projecteursCiel && lum ? `<g class="projecteurs" opacity=".5">
   </g>
 </g>` : ""}
 
-<g id="planLoin"></g>
-<g id="planMilieu"></g>
-<g id="planProche"></g>
+</g>
+<g transform="translate(0 140)">
+  <g id="planLoin"></g><g id="planMilieu"></g><g id="planProche"></g>
+</g>
 
-<rect width="480" height="520" fill="url(#grain)" opacity=".5" pointer-events="none"/>
-<rect width="480" height="520" fill="url(#vignetteG)" pointer-events="none"/>
+<rect width="480" height="660" fill="url(#grain)" opacity=".5" pointer-events="none"/>
+<rect width="480" height="660" fill="url(#vignetteG)" pointer-events="none"/>
 </svg>`;
+}
+
+
+/* ============================================================
+   NUAGE VOLUMÉTRIQUE
+   Un nuage n'est pas trois ellipses posées côte à côte : c'est
+   une masse dont le dessous est plus dense et le dessus mangé
+   par la lumière. On empile des bulbes de tailles décroissantes,
+   on pose une ombre sourde en bas, un liseré clair en haut.
+   ============================================================ */
+function nuageVolumetrique(cx, cy, echelle = 1, densite = .7){
+  const e = echelle;
+  const bulbes = [
+    {dx:-46, dy:  6, r:24}, {dx:-22, dy: -8, r:32}, {dx:  6, dy:-14, r:36},
+    {dx: 34, dy: -4, r:28}, {dx: 58, dy:  8, r:20}, {dx: 16, dy: 10, r:26},
+    {dx:-34, dy: 12, r:19}
+  ];
+  const corps = bulbes.map(b =>
+    `<ellipse cx="${(cx + b.dx*e).toFixed(1)}" cy="${(cy + b.dy*e).toFixed(1)}"
+      rx="${(b.r*e).toFixed(1)}" ry="${(b.r*e*.74).toFixed(1)}" fill="#fff"/>`).join("");
+
+  /* la base : une barre floue qui aplatit le nuage par le dessous */
+  const base = `<ellipse cx="${cx}" cy="${(cy + 16*e).toFixed(1)}"
+    rx="${(72*e).toFixed(1)}" ry="${(13*e).toFixed(1)}" fill="#fff"/>`;
+
+  return `<g opacity="${densite.toFixed(2)}">
+    <g filter="url(#flouNuage)" opacity=".55">
+      <ellipse cx="${cx}" cy="${(cy + 20*e).toFixed(1)}" rx="${(78*e).toFixed(1)}"
+        ry="${(18*e).toFixed(1)}" fill="url(#nuageOmbreG)"/>
+    </g>
+    <g filter="url(#flouNuageDoux)">${base}${corps}</g>
+    <g opacity=".5">
+      <ellipse cx="${(cx + 6*e).toFixed(1)}" cy="${(cy - 20*e).toFixed(1)}"
+        rx="${(34*e).toFixed(1)}" ry="${(13*e).toFixed(1)}" fill="url(#nuageG)"/>
+      <ellipse cx="${(cx - 24*e).toFixed(1)}" cy="${(cy - 13*e).toFixed(1)}"
+        rx="${(24*e).toFixed(1)}" ry="${(10*e).toFixed(1)}" fill="url(#nuageG)"/>
+    </g>
+  </g>`;
 }
 
 /* vitrine : toujours vitrée, le caisson s'anoblit avec les niveaux */
@@ -599,5 +717,7 @@ function ampoulesChenillard(x1, x2, y, n, r = 2.4){
 export {
   ampoulesChenillard,
   dessineFacadeEvolutive,
+  nuageVolumetrique,
   vitrineEtat
 };
+
