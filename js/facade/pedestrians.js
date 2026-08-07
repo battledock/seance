@@ -13,9 +13,9 @@
 const SVG_NS2 = "http://www.w3.org/2000/svg";
 
 const PLANS_R = [
-  {id:"planLoin",   y:400, k:0.92, opac:.62, duree:[19,25], poids:.32, flou:true},
-  {id:"planMilieu", y:428, k:1.24, opac:.86, duree:[14,19], poids:.34, flou:false},
-  {id:"planProche", y:456, k:1.62, opac:1,   duree:[10,14], poids:.34, flou:false}
+  {id:"planLoin",   y:400, k:0.92, opac:.62, duree:[26,34], poids:.32, flou:true},
+  {id:"planMilieu", y:428, k:1.24, opac:.86, duree:[20,27], poids:.34, flou:false},
+  {id:"planProche", y:456, k:1.62, opac:1,   duree:[15,21], poids:.34, flou:false}
 ];
 
 const TEINTES_R = {
@@ -255,15 +255,30 @@ function spawnPassant(mouille){
   const entre = Math.random() < .28 && plan.id !== "planLoin";
 
 
-  const g = document.createElementNS(SVG_NS2, "g");
   const x0 = versDroite ? -50 : 530;
   const x1 = entre ? 240 : (versDroite ? 530 : -50);
+  const g = document.createElementNS(SVG_NS2, "g");
   const duree = plan.duree[0] + Math.random()*(plan.duree[1]-plan.duree[0]);
 
-  /* la cadence suit la vitesse : qui marche vite fait des pas courts et rapides.
-     Une foulée complète, deux appuis. */
-  const cadence = Number((1.02 * (duree/14) / plan.k).toFixed(2));
-  const phase = Number((-Math.random() * cadence).toFixed(2));
+  /* ------------------------------------------------------------
+     ACCORDER LE PAS AU DÉPLACEMENT
+
+     Le pied ne doit pas glisser sur le trottoir. On mesure donc
+     le chemin parcouru, on le divise par la longueur d'une
+     foulée — ce que les jambes couvrent réellement, environ
+     douze unités à l'échelle du personnage — et on en déduit
+     combien de temps dure chaque foulée.
+
+     Sans ce calcul, les jambes battaient à un rythme arbitraire
+     pendant que le corps filait : les passants dansaient sur
+     place au lieu de marcher.
+     ------------------------------------------------------------ */
+  const FOULEE = 12.4;                       /* unités couvertes par cycle */
+  const trajet = Math.abs(x1 - x0);
+  const foulees = Math.max(1, trajet / (FOULEE * plan.k));
+  const corpulence = 0.94 + Math.random()*0.12;   /* petite variation de pas */
+  const cadence = Number((duree / foulees * corpulence).toFixed(3));
+  const phase = Number((-Math.random() * cadence).toFixed(3));
   const s = silhouette2(cadence, phase);
 
   g.setAttribute("class", "passantR" + (plan.flou ? " lointain" : ""));
@@ -311,4 +326,5 @@ export {
   silhouette2,
   spawnPassant
 };
+
 
