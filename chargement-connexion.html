@@ -207,7 +207,7 @@ let derniereVanne = Date.now();
 const timer = setInterval(()=>{
   /* le pourcentage suit les étapes réellement terminées */
   const cible = Math.round((etapesFaites / TOTAL_ETAPES) * 100);
-  if(p < cible) p = Math.min(cible, p + 4);
+  if(p < cible) p = Math.min(cible, p + 14);
 
   if(Date.now()-derniereVanne > 3000){
     elVanne.textContent = VANNES[Math.floor(Math.random()*VANNES.length)];
@@ -215,16 +215,25 @@ const timer = setInterval(()=>{
   }
   elPct.textContent = "BOBINAGE… " + Math.floor(p) + "%";
 
-  if(p >= 100 && !fini && Date.now()-debut >= DUREE_MIN){
+  /* ------------------------------------------------------------
+     ON PART DÈS QUE C'EST PRÊT
+
+     Cette condition comparait le temps écoulé à DUREE_MIN — une
+     constante qui n'existe que dans chargement.html, pas ici. À
+     chaque tic, une fois la barre pleine, la ligne levait une
+     ReferenceError : la redirection n'arrivait jamais et l'écran
+     restait bloqué à 90 %. Ce n'était pas « trop long », c'était
+     infini.
+
+     On enlève aussi l'attente artificielle qui suivait : quand les
+     données sont là, on entre dans le cinéma.
+     ------------------------------------------------------------ */
+  if(p >= 100 && !fini){
     fini = true;
     clearInterval(timer);
-    elVanne.textContent = "« Silence dans la salle… PROJECTION ! »";
-    setTimeout(()=>{
-      document.body.classList.add("sort");
-      setTimeout(()=>location.replace(DESTINATION), 700);
-    }, 600);
+    location.replace(DESTINATION);
   }
-},120);
+},50);
 </script>
 </body>
 </html>
