@@ -1,24 +1,24 @@
 /* Socle commun à toutes les pages.
    Une page n'importe que base.css et sa feuille propre. */
 
-@import "variables.css?v=144ee666";
-@import "header.css?v=144ee666";
-@import "navigation.css?v=144ee666";
-@import "components.css?v=144ee666";
-@import "animations.css?v=144ee666";
+@import "variables.css?v=93089721";
+@import "header.css?v=93089721";
+@import "navigation.css?v=93089721";
+@import "components.css?v=93089721";
+@import "animations.css?v=93089721";
 
 /* ---- écrans ---- */
-@import "cinema.css?v=144ee666";
-@import "dayprep.css?v=144ee666";
-@import "screenings.css?v=144ee666";
-@import "rooms.css?v=144ee666";
-@import "studio.css?v=144ee666";
-@import "report.css?v=144ee666";
-@import "office.css?v=144ee666";
-@import "progress.css?v=144ee666";
-@import "customization.css?v=144ee666";
-@import "profile.css?v=144ee666";
-@import "community.css?v=144ee666";
-@import "events.css?v=144ee666";
-@import "visit.css?v=144ee666";
-@import "public-cinema.css?v=144ee666";
+@import "cinema.css?v=93089721";
+@import "dayprep.css?v=93089721";
+@import "screenings.css?v=93089721";
+@import "rooms.css?v=93089721";
+@import "studio.css?v=93089721";
+@import "report.css?v=93089721";
+@import "office.css?v=93089721";
+@import "progress.css?v=93089721";
+@import "customization.css?v=93089721";
+@import "profile.css?v=93089721";
+@import "community.css?v=93089721";
+@import "events.css?v=93089721";
+@import "visit.css?v=93089721";
+@import "public-cinema.css?v=93089721";

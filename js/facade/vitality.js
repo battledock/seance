@@ -1,11 +1,11 @@
-import { parleBob, spawnSpectateur } from "../cinema.js?v=144ee666";
-import { proprete } from "../engine/simulation.js?v=144ee666";
-import { SVG_NS, meteoDuJour, ouvreLesPortes, planifie } from "./life.js?v=144ee666";
-import { silhouette2 } from "./pedestrians.js?v=144ee666";
-import { Etat } from "../game-state.js?v=144ee666";
-import { niveauActuel } from "../progression.js?v=144ee666";
-import { salles } from "../rooms.js?v=144ee666";
-import { intervalle } from "../screenings.js?v=144ee666";
+import { parleBob, spawnSpectateur } from "../cinema.js?v=93089721";
+import { proprete } from "../engine/simulation.js?v=93089721";
+import { SVG_NS, meteoDuJour, ouvreLesPortes, planifie } from "./life.js?v=93089721";
+import { silhouette2 } from "./pedestrians.js?v=93089721";
+import { Etat } from "../game-state.js?v=93089721";
+import { niveauActuel } from "../progression.js?v=93089721";
+import { salles } from "../rooms.js?v=93089721";
+import { intervalle } from "../screenings.js?v=93089721";
 
 /* ============================================================
    VITALITÉ — la façade raconte l'état réel du cinéma.
