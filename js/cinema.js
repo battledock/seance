@@ -66,6 +66,7 @@ async function initAccueil(){
 
   /* ---- la façade remplit l'écran ---- */
   rendFacadeImmersive();
+  surveilleTaille();
 
   /* ---- classe de phase sur le conteneur ---- */
   majPhaseClasse();
@@ -117,13 +118,50 @@ function majHudArgent(){
   if(el && Etat.cinema) el.textContent = fmtArgent(Etat.cinema.argent);
 }
 
-/* ---- la façade immersive ---- */
+/* ------------------------------------------------------------
+   LA FAÇADE IMMERSIVE
+
+   Le dessin ne s'adapte plus par rognage : on mesure la zone
+   réellement disponible et le rendu recompose son cadre. Sur un
+   téléphone très allongé, le ciel et la route s'étirent ; sur un
+   écran court, ils se resserrent. Le cinéma, lui, garde toujours
+   la même présence.
+   ------------------------------------------------------------ */
+function ratioScene(){
+  const cible = document.getElementById("sceneFacade");
+  if(!cible) return 0.48;
+  const r = cible.getBoundingClientRect();
+  if(!r.width || !r.height) return 0.48;
+  return r.width / r.height;
+}
+
 function rendFacadeImmersive(){
   const c = Etat.cinema;
   const cible = document.getElementById("sceneFacade");
   if(!cible) return;
   const niveau = (typeof niveauActuel === "function") ? niveauActuel() : 1;
-  dessineFacade(c, {cible:"sceneFacade", phase: phaseSelonHeure(), niveau});
+  dessineFacade(c, {
+    cible: "sceneFacade",
+    phase: phaseSelonHeure(),
+    niveau,
+    ratio: ratioScene()
+  });
+}
+
+/* la rotation ou le repli de la barre d'adresse change la zone :
+   on redessine, mais pas à chaque pixel */
+let minuteurRedessin = null;
+function surveilleTaille(){
+  const relance = ()=>{
+    clearTimeout(minuteurRedessin);
+    minuteurRedessin = setTimeout(()=>{
+      rendFacadeImmersive();
+      if(typeof animeLeCinema === "function") animeLeCinema();
+      if(typeof animeLaVitalite === "function") animeLaVitalite();
+    }, 240);
+  };
+  window.addEventListener("resize", relance);
+  window.addEventListener("orientationchange", relance);
 }
 
 /* ---- classe de phase pour adapter le HUD ---- */
@@ -377,7 +415,8 @@ function dessineFacade(c, opts = {}){
     : (typeof niveauActuel === "function" ? niveauActuel() : 1);
   cible.innerHTML = dessineFacadeEvolutive({
     phase: opts.phase || phaseSelonHeure(),
-    niveau, nom: c.nom, logo: c.logo, seances
+    niveau, nom: c.nom, logo: c.logo, seances,
+    ratio: opts.ratio
   });
 }
 
@@ -643,3 +682,4 @@ export {
   rendSeances, rendStatut, rendVueCine, rendreFacadePublique,
   seancesFacade, spawnSpectateur, statsDuJour, vueCourante
 };
+
