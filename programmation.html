@@ -56,8 +56,14 @@
     <button role="tab" data-vue="evenements" aria-selected="false">Événements</button>
   </nav>
 
-  <!-- le carrousel : une affiche par séance du jour -->
-  <div class="carrousel">
+  <!-- LE HALL — on est à l'intérieur du cinéma, devant les cadres.
+       Toucher un cadre ouvre sa séance, un cadre vide en programme
+       une nouvelle. Les vues « prochains films » et « événements »
+       reprennent le carrousel classique, caché ici. -->
+  <div class="sceneHall" id="sceneHall"></div>
+
+  <!-- le carrousel reste pour les deux autres vues -->
+  <div class="carrousel" id="carrousel">
     <button class="flecheC g" id="flecheG" aria-label="Précédent">‹</button>
     <button class="flecheC d" id="flecheD" aria-label="Suivant">›</button>
     <div class="pisteAffiches" id="pisteAffiches"></div>
@@ -104,3 +110,4 @@
 <script type="module" src="js/pages/programmation.js?v=93089721"></script>
 </body>
 </html>
+
