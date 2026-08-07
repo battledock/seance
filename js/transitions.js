@@ -1,35 +1,27 @@
-/* Transitions entre les pièces du bâtiment.
-   Le clic sur un lien interne joue un fondu avant la navigation. */
+/* ============================================================
+   LES TRANSITIONS ENTRE PAGES — retirées
 
-const MOUVEMENT_REDUIT = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+   Un clic sur la navigation posait un voile presque noir sur
+   l'écran, attendait 240 ms, puis seulement changeait de page.
+   L'intention était d'adoucir le passage d'une pièce à l'autre ;
+   l'effet réel était un écran noir de deux dixièmes de seconde
+   avant chaque page, et une impression de lenteur à chaque
+   déplacement dans le bâtiment.
 
-/* arrivée dans la pièce */
-export function entreeDePage(){
-  if(MOUVEMENT_REDUIT) return;
-  const c = document.querySelector(".contenu");
-  if(c) c.classList.add("entreeLieu");
-}
+   Le navigateur sait déjà passer d'une page à l'autre. On le
+   laisse faire : les liens redeviennent des liens ordinaires.
 
-/* départ vers une autre pièce */
+   Les fonctions restent exportées — plusieurs pages les
+   importent — mais elles ne font plus rien.
+   ============================================================ */
+
+/* arrivée dans la pièce : plus d'animation d'entrée */
+export function entreeDePage(){}
+
+/* départ vers une autre pièce : navigation directe */
 export function quitteLieu(href){
-  if(MOUVEMENT_REDUIT){ location.href = href; return; }
-  const v = document.createElement("div");
-  v.className = "voileLieu";
-  document.body.appendChild(v);
-  requestAnimationFrame(()=>v.classList.add("ferme"));
-  setTimeout(()=>{ location.href = href; }, 240);
+  if(href) location.href = href;
 }
 
-/* interception des liens internes */
-export function installeTransitions(){
-  if(MOUVEMENT_REDUIT) return;
-  document.addEventListener("click", (e)=>{
-    const a = e.target.closest("a[href]");
-    if(!a) return;
-    const href = a.getAttribute("href");
-    if(!href || href.startsWith("#") || href.startsWith("http") || a.target) return;
-    if(e.metaKey || e.ctrlKey || e.shiftKey) return;
-    e.preventDefault();
-    quitteLieu(href);
-  }, true);
-}
+/* plus d'interception des liens : le navigateur s'en charge */
+export function installeTransitions(){}
