@@ -129,7 +129,9 @@ function dessineFacadeEvolutive(opts = {}){
     <stop offset="0" stop-color="${P.trottoir[0]}"/><stop offset="1" stop-color="${P.trottoir[1]}"/>
   </linearGradient>
   <linearGradient id="routeG" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="${P.route[0]}"/><stop offset="1" stop-color="${P.route[1]}"/>
+    <stop offset="0" stop-color="${P.route[0]}"/>
+    <stop offset=".42" stop-color="${P.route[1]}"/>
+    <stop offset="1" stop-color="${P.routeBas || P.route[1]}"/>
   </linearGradient>
   <linearGradient id="cielHautG" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="${P.cielHaut || P.ciel[0]}"/>
@@ -566,9 +568,7 @@ ${E.tapis ? `<g>
 
 <!-- ═══ ROUTE ═══ -->
 <g>
-  <path d="M0 466 L480 466 L480 ${BASCULE} L0 ${BASCULE} Z" fill="url(#routeG)"/>
-  <path d="M0 ${BASCULE} L480 ${BASCULE} L480 ${BASROUTE} L0 ${BASROUTE} Z" fill="url(#routeLoinG)"/>
-  <path d="M0 ${BASCULE} L480 ${BASCULE} L480 ${BASCULE + 8} L0 ${BASCULE + 8} Z" fill="#000" opacity=".14"/>
+  <path d="M0 466 L480 466 L480 ${BASROUTE} L0 ${BASROUTE} Z" fill="url(#routeG)"/>
   <g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".14" : ".3"}" stroke-width="3"
      stroke-dasharray="26 22"><path d="M0 ${Math.round(466 + HROUTE*.30)} L480 ${Math.round(466 + HROUTE*.30)}"/></g>
   ${HROUTE > 96 ? `<g stroke="#c8c0a8" stroke-opacity="${E.usure > .6 ? ".08" : ".16"}" stroke-width="4"
@@ -774,5 +774,6 @@ export {
   nuageVolumetrique,
   vitrineEtat
 };
+
 
 
