@@ -196,7 +196,6 @@ function dessineFacadeEvolutive(opts = {}){
   const CIEL = G.ciel;
   const BASROUTE = H - DY;       /* bas du cadre, en coordonnées locales */
   const HROUTE = BASROUTE - 466; /* hauteur de route disponible */
-  const BASCULE = Math.round(466 + HROUTE * .42);
   const P = PALETTES[phase];
   const E = etatBatiment(opts.niveau || 1);
   const M = murSelonEtat(P, E);
@@ -268,10 +267,6 @@ function dessineFacadeEvolutive(opts = {}){
     <stop offset="0" stop-color="${P.cielHaut || P.ciel[0]}"/>
     <stop offset=".62" stop-color="${P.ciel[0]}" stop-opacity=".55"/>
     <stop offset="1" stop-color="${P.ciel[0]}" stop-opacity="0"/>
-  </linearGradient>
-  <linearGradient id="routeLoinG" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="${P.route[1]}"/>
-    <stop offset="1" stop-color="${P.routeBas || P.route[1]}"/>
   </linearGradient>
   <radialGradient id="nuageG" cx=".4" cy=".38" r=".72">
     <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
@@ -1050,6 +1045,7 @@ export {
   nuageVolumetrique,
   vitrineEtat
 };
+
 
 
 
