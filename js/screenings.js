@@ -38,14 +38,28 @@ let brouillon    = null;   /* séance en cours d'édition */
 /* ---------- initialisation ---------- */
 let vueProg = "affiche";
 let evenementsProg = [];
+let evenementsProgLe = 0;   /* quand la liste a été relue */
 
+/* ------------------------------------------------------------
+   LE CHARGEMENT DE LA PAGE
+
+   Sept appels s'enchaînaient, chacun attendant la fin du
+   précédent : sur un téléphone, cela faisait sept allers-retours
+   bout à bout. La plupart ne dépendent pas les uns des autres et
+   peuvent partir ensemble.
+
+   Seul chargeSeances doit venir après chargeSallesProg : il relit
+   les prévisions, qui ont besoin des salles pour être affichées.
+   ------------------------------------------------------------ */
 async function initProgrammation(){
-  await chargeCatalogue();
-  await chargePrevisions();
-  await chargeMatin();
-  await chargeJournee();
-  await chargeSallesProg();
-  await chargeFilmsMaison();
+  await Promise.all([
+    chargeCatalogue(),
+    chargeMatin(),
+    chargeJournee(),
+    chargeSallesProg(),
+    chargeFilmsMaison()
+  ]);
+  /* les séances relisent les prévisions au passage */
   await chargeSeances();
   brancheSegments();
   installeFleches();
@@ -702,11 +716,24 @@ function resumeAvantOuverture(){
   /* loyer et salaires tombent tous les jours : les annoncer avant l'ouverture
      évite de découvrir au bilan une dépense qu'on n'a pas vue venir */
   const charges = prepDuJour && prepDuJour.charges;
-  const recettePrevue = p
-    ? Math.round((Number(p.total_bas) + Number(p.total_haut)) / 2
-        * (seancesJour.reduce((t,s)=>t + Number(s.prix||0), 0) / Math.max(1, seancesJour.length)))
+  /* ------------------------------------------------------------
+     LA RECETTE ATTENDUE VIENT DU SERVEUR
+
+     get_day_forecast calcule déjà la recette séance par séance,
+     avec le prix réel de chaque billet et la fréquentation prévue.
+     On lisait ces chiffres puis on les jetait pour refaire un
+     calcul de coin de table — spectateurs moyens × prix moyen —
+     qui ne tombait jamais sur le bilan du soir. Le joueur voyait
+     « journée attendue +180 € » et découvrait +140 € au bilan.
+
+     On prend donc directement ce que le serveur annonce.
+     ------------------------------------------------------------ */
+  const recettePrevue = p ? Number(p.recette_estimee || 0) : 0;
+  /* le serveur déduit déjà les licences dans benefice_estime ; il reste
+     les charges du jour, qu'il ne connaît pas à ce stade */
+  const beneficePrevu = p
+    ? Number(p.benefice_estime || 0) - Number(charges ? charges.total : 0)
     : 0;
-  const beneficePrevu = recettePrevue - licences - Number(charges ? charges.total : 0);
 
   return `<div class="resumeOuvre">
     <div class="roTitre">Prêt à ouvrir</div>
@@ -878,12 +905,18 @@ async function rendVueEvenements(){
   if(!piste || !tab) return;
   document.getElementById("zoneValidation").innerHTML = "";
 
-  if(!evenementsProg.length){
-    piste.innerHTML = `<div class="pisteVide">On regarde…</div>`;
+  /* On relit la liste si elle est vide OU si elle date de plus d'une
+     minute : un festival qui se termine disparaissait sinon seulement
+     au rechargement de la page. */
+  const perimee = !evenementsProg.length ||
+                  (Date.now() - evenementsProgLe) > 60000;
+  if(perimee){
+    if(!evenementsProg.length) piste.innerHTML = `<div class="pisteVide">On regarde…</div>`;
     try{
       const r = await rpc("get_active_community_events");   /* sans paramètre */
       evenementsProg = Array.isArray(r) ? r : (r?.evenements || []);
     }catch(e){ evenementsProg = []; }
+    evenementsProgLe = Date.now();
   }
 
   if(!evenementsProg.length){
@@ -1049,4 +1082,5 @@ Object.assign(window, {
   supprimeSeance,
   valideSeance
 });
+
 
