@@ -253,9 +253,34 @@ async function requete(chemin, options = {}, reessai = true){
     });
   }catch(e){
     clearTimeout(minuteur);
+    /* ------------------------------------------------------------
+       UN DÉCROCHAGE RÉSEAU N'EST PAS UNE PANNE
+
+       Sur un téléphone en 4G, une requête rate régulièrement pour
+       des raisons qui n'ont rien à voir avec le jeu : passage d'une
+       antenne à l'autre, ascenseur, économie d'énergie. On lançait
+       alors l'erreur immédiatement, tout le chargement s'effondrait
+       et le joueur restait devant « la machine a toussé » sans
+       aucun moyen de repartir.
+
+       On réessaie donc deux fois, en espaçant les tentatives. La
+       plupart des coupures durent moins d'une seconde.
+       ------------------------------------------------------------ */
+    const transitoire = (e.name === "AbortError") || (e.name === "TypeError");
+    if(transitoire && (options.essai || 0) < 2){
+      const attente = 400 * Math.pow(2, options.essai || 0);   /* 400 ms puis 800 ms */
+      await new Promise(r => setTimeout(r, attente));
+      return requete(chemin, {...options, essai: (options.essai || 0) + 1}, reessai);
+    }
     throw new ErreurJeu(e.name === "AbortError" ? "DELAI" : "RESEAU");
   }
   clearTimeout(minuteur);
+
+  /* le serveur a hoqueté : même principe, on laisse une seconde chance */
+  if(rep.status >= 500 && (options.essai || 0) < 2){
+    await new Promise(r => setTimeout(r, 400 * Math.pow(2, options.essai || 0)));
+    return requete(chemin, {...options, essai: (options.essai || 0) + 1}, reessai);
+  }
 
   /* jeton expiré : on renouvelle et on rejoue une fois */
   if(rep.status === 401 && reessai){
