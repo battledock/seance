@@ -38,7 +38,7 @@ function dessineFacadeEvolutive(opts = {}){
         opacity="${(.18 + E.usure*.22).toFixed(2)}"/>` : "";
 
   return `
-<svg viewBox="0 0 480 660" class="facadeRiche" xmlns="http://www.w3.org/2000/svg"
+<svg viewBox="0 0 480 580" class="facadeRiche" xmlns="http://www.w3.org/2000/svg"
   preserveAspectRatio="xMidYMax slice"
   role="img" aria-label="Façade du cinéma ${nomBrut}, ${E.age.nom}">
 <defs>
@@ -153,19 +153,19 @@ function dessineFacadeEvolutive(opts = {}){
 </defs>
 
 <!-- ═══ CIEL ═══ -->
-<rect width="480" height="660" fill="url(#cielG)"/>
-<rect width="480" height="330" fill="url(#cielHautG)"/>
+<rect width="480" height="580" fill="url(#cielG)"/>
+<rect width="480" height="250" fill="url(#cielHautG)"/>
 
 ${phase === "nuit" ? `
 <g class="voieLactee" opacity=".16">
-  <ellipse cx="300" cy="104" rx="240" ry="40" fill="#8ea4d8" filter="url(#flouNuage)"
-    transform="rotate(-24 300 104)"/>
-  <ellipse cx="240" cy="140" rx="180" ry="26" fill="#a8b4e0" filter="url(#flouNuage)"
-    transform="rotate(-20 240 140)" opacity=".7"/>
+  <ellipse cx="300" cy="76" rx="240" ry="34" fill="#8ea4d8" filter="url(#flouNuage)"
+    transform="rotate(-24 300 76)"/>
+  <ellipse cx="240" cy="106" rx="180" ry="22" fill="#a8b4e0" filter="url(#flouNuage)"
+    transform="rotate(-20 240 106)" opacity=".7"/>
 </g>
 <g class="etoiles">${[...Array(120)].map((_,i)=>{
   const x = (Math.random()*480).toFixed(0);
-  const y = (Math.random()*290).toFixed(0);
+  const y = (Math.random()*225).toFixed(0);
   const r = (0.35 + Math.random()*1.05).toFixed(2);
   const o = (.22 + Math.random()*.7).toFixed(2);
   const teinte = Math.random() < .12 ? "#cfe0ff" : Math.random() < .2 ? "#ffeccf" : "#fff";
@@ -174,7 +174,7 @@ ${phase === "nuit" ? `
 }).join("")}</g>
 <g class="etoilesVives">${[...Array(7)].map((_,i)=>{
   const x = (40 + Math.random()*400).toFixed(0);
-  const y = (18 + Math.random()*195).toFixed(0);
+  const y = (14 + Math.random()*150).toFixed(0);
   return `<g style="animation-delay:${(i*.9).toFixed(1)}s">
     <circle cx="${x}" cy="${y}" r="1.5" fill="#fff"/>
     <circle cx="${x}" cy="${y}" r="5.5" fill="#dfe8ff" opacity=".18" filter="url(#flouNuageDoux)"/>
@@ -185,23 +185,23 @@ ${phase === "nuit" ? `
 
 ${phase === "nuit"
   ? `<g>
-     <circle cx="392" cy="${P.soleilY + 6}" r="76" fill="#dfe8ff" opacity=".07" filter="url(#flouNuage)"/>
-     <circle cx="392" cy="${P.soleilY + 6}" r="44" fill="#eef2ff" opacity=".13" filter="url(#flouNuage)"/>
-     <circle cx="392" cy="${P.soleilY + 6}" r="21" fill="#f2f5ff"/>
-     <circle cx="392" cy="${P.soleilY + 6}" r="21" fill="#dfe4f2" opacity=".5"/>
+     <circle cx="392" cy="${P.soleilY - 26}" r="76" fill="#dfe8ff" opacity=".07" filter="url(#flouNuage)"/>
+     <circle cx="392" cy="${P.soleilY - 26}" r="44" fill="#eef2ff" opacity=".13" filter="url(#flouNuage)"/>
+     <circle cx="392" cy="${P.soleilY - 26}" r="21" fill="#f2f5ff"/>
+     <circle cx="392" cy="${P.soleilY - 26}" r="21" fill="#dfe4f2" opacity=".5"/>
      <g opacity=".2" fill="#8a94b0">
-       <circle cx="386" cy="${P.soleilY}" r="4.2"/>
-       <circle cx="398" cy="${P.soleilY + 12}" r="3"/>
-       <circle cx="390" cy="${P.soleilY + 16}" r="2.2"/>
+       <circle cx="386" cy="${P.soleilY - 32}" r="4.2"/>
+       <circle cx="398" cy="${P.soleilY - 20}" r="3"/>
+       <circle cx="390" cy="${P.soleilY - 16}" r="2.2"/>
      </g>
-     <circle cx="383" cy="${P.soleilY - 2}" r="18.5" fill="${P.ciel[0]}"/>
+     <circle cx="383" cy="${P.soleilY - 34}" r="18.5" fill="${P.ciel[0]}"/>
      </g>`
   : `<g>
-     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-10:14)}" r="118"
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-42:-18)}" r="118"
        fill="${P.soleil}" opacity=".10" filter="url(#flouNuage)"/>
-     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-10:14)}" r="64"
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-42:-18)}" r="64"
        fill="${P.soleil}" opacity=".22" filter="url(#flouNuage)"/>
-     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-10:14)}"
+     <circle cx="${phase==="crepuscule"?96:368}" cy="${P.soleilY + (phase==="crepuscule"?-42:-18)}"
        r="${phase==="crepuscule"?28:20}" fill="${P.soleil}" opacity=".95"/>
      </g>`}
 
@@ -209,23 +209,23 @@ ${phase === "nuit"
 <g class="cieux">
   <!-- plan lointain, très diffus -->
   <g class="nuageLoin" opacity="${phase==="nuit"?.10:.26}">
-    ${nuageVolumetrique(84, 84, 1.28, .44)}
-    ${nuageVolumetrique(396, 48, 1.0, .36)}
-    ${nuageVolumetrique(248, 22, .86, .28)}
+    ${nuageVolumetrique(80, 62, 1.2, .42)}
+    ${nuageVolumetrique(398, 34, .95, .34)}
+    ${nuageVolumetrique(250, 16, .8, .26)}
   </g>
   <!-- plan médian -->
   <g class="nuageA" opacity="${phase==="nuit"?.18:.62}">
-    ${nuageVolumetrique(126, 138, 1.08, .7)}
-    ${nuageVolumetrique(384, 168, .82, .56)}
+    ${nuageVolumetrique(120, 104, 1.02, .66)}
+    ${nuageVolumetrique(380, 128, .78, .52)}
   </g>
   <!-- plan proche, plus contrasté -->
   <g class="nuageB" opacity="${phase==="nuit"?.14:.5}">
-    ${nuageVolumetrique(328, 100, 1.26, .66)}
-    ${nuageVolumetrique(48, 184, .92, .48)}
+    ${nuageVolumetrique(332, 74, 1.18, .62)}
+    ${nuageVolumetrique(44, 140, .88, .45)}
   </g>
 </g>
 
-<g transform="translate(0 140)">
+<g transform="translate(0 76)">
 <!-- ═══ VILLE ═══ -->
 <g opacity=".55">
   <path d="M0 208 L28 208 L28 176 L56 176 L56 196 L92 196 L92 164 L124 164 L124 200
@@ -628,12 +628,12 @@ ${E.projecteursCiel && lum ? `<g class="projecteurs" opacity=".5">
 </g>` : ""}
 
 </g>
-<g transform="translate(0 140)">
+<g transform="translate(0 76)">
   <g id="planLoin"></g><g id="planMilieu"></g><g id="planProche"></g>
 </g>
 
-<rect width="480" height="660" fill="url(#grain)" opacity=".5" pointer-events="none"/>
-<rect width="480" height="660" fill="url(#vignetteG)" pointer-events="none"/>
+<rect width="480" height="580" fill="url(#grain)" opacity=".5" pointer-events="none"/>
+<rect width="480" height="580" fill="url(#vignetteG)" pointer-events="none"/>
 </svg>`;
 }
 
