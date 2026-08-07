@@ -15,10 +15,10 @@
    des ressources, rechargement propre.
    ============================================================ */
 
-import { videLeCache } from "./supabase-client.js?v=93089721";
+import { videLeCache } from "./supabase-client.js?v=becf21cb";
 
 /* le tampon courant : injecté par le cache-bust à chaque build */
-const VERSION = "93089721";
+const VERSION = "becf21cb";
 
 /* on retient la dernière version vue pour repérer un saut */
 try{

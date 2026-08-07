@@ -1,10 +1,10 @@
-import { rendreFacadePublique } from "../../cinema.js?v=93089721";
-import { Etat, chargeSallesEtat } from "../../game-state.js?v=93089721";
-import { salles } from "../../rooms.js?v=93089721";
-import { appelSecurise, rpc, sbFetch } from "../../supabase-client.js?v=93089721";
-import { celebreTrophee } from "../../ui/celebration.js?v=93089721";
-import { EMBLEMES, echappe, embleme, texteSur } from "../../ui/emblems.js?v=93089721";
-import { icone } from "../../ui/icons.js?v=93089721";
+import { rendreFacadePublique } from "../../cinema.js?v=becf21cb";
+import { Etat, chargeSallesEtat } from "../../game-state.js?v=becf21cb";
+import { salles } from "../../rooms.js?v=becf21cb";
+import { appelSecurise, rpc, sbFetch } from "../../supabase-client.js?v=becf21cb";
+import { celebreTrophee } from "../../ui/celebration.js?v=becf21cb";
+import { EMBLEMES, echappe, embleme, texteSur } from "../../ui/emblems.js?v=becf21cb";
+import { icone } from "../../ui/icons.js?v=becf21cb";
 
 /* ============================================================
    PROFIL PERSONNEL — ce que les autres verront

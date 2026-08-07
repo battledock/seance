@@ -1,11 +1,11 @@
 /* Point d'entrée de preparation.html */
 
-import { demarreChargement, finChargement, filetChargement } from "../ui/loading.js?v=93089721";
-import { initAmbiance } from "../ambiance.js?v=93089721";
-import { initialiserJeu } from "../game-state.js?v=93089721";
-import { messageErreur } from "../supabase-client.js?v=93089721";
-import { initPreparation } from "../day-prep.js?v=93089721";
-import "../facade/life.js?v=93089721";
+import { demarreChargement, finChargement, filetChargement } from "../ui/loading.js?v=becf21cb";
+import { initAmbiance } from "../ambiance.js?v=becf21cb";
+import { initialiserJeu } from "../game-state.js?v=becf21cb";
+import { messageErreur } from "../supabase-client.js?v=becf21cb";
+import { initPreparation } from "../day-prep.js?v=becf21cb";
+import "../facade/life.js?v=becf21cb";
 
 demarreChargement();
 filetChargement();

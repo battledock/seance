@@ -12,18 +12,17 @@ import {
   horairesDisponibles,
   minutesEnHeure,
   obtenirLimiteSeances
-} from "./data/films.js?v=93089721";
-import { niveauEquipement } from "./data/upgrades.js?v=93089721";
-import { chargeJournee, ouvreCinema, statutJournee } from "./engine/day.js?v=93089721";
-import { Etat, fmtArgent } from "./game-state.js?v=93089721";
-import { bobCompact } from "./navigation.js?v=93089721";
-import { accomplitMission, debloque } from "./progression.js?v=93089721";
-import { toastSocial } from "./social.js?v=93089721";
-import { appelSecurise, messageErreur, rpc, sbFetch } from "./supabase-client.js?v=93089721";
-import { echappe, texteSur } from "./ui/emblems.js?v=93089721";
-import { dessineHall } from "./facade/hall.js?v=93089721";
-import { afficheDuFilm } from "./ui/genre-posters.js?v=93089721";
-import { icone } from "./ui/icons.js?v=93089721";
+} from "./data/films.js?v=becf21cb";
+import { niveauEquipement } from "./data/upgrades.js?v=becf21cb";
+import { chargeJournee, ouvreCinema, statutJournee } from "./engine/day.js?v=becf21cb";
+import { Etat, fmtArgent } from "./game-state.js?v=becf21cb";
+import { bobCompact } from "./navigation.js?v=becf21cb";
+import { accomplitMission, debloque } from "./progression.js?v=becf21cb";
+import { toastSocial } from "./social.js?v=becf21cb";
+import { appelSecurise, messageErreur, rpc, sbFetch } from "./supabase-client.js?v=becf21cb";
+import { echappe, texteSur } from "./ui/emblems.js?v=becf21cb";
+import { afficheDuFilm } from "./ui/genre-posters.js?v=becf21cb";
+import { icone } from "./ui/icons.js?v=becf21cb";
 
 /* ============================================================
    PROGRAMMATION DES SÉANCES
@@ -130,15 +129,11 @@ async function rendVue(){
   const bj = document.getElementById("badgeJourTxt");
   if(bj) bj.textContent = "Jour " + (Etat.cinema?.jour || 1);
 
-  /* la vue « à l'affiche » se joue dans le hall ; les deux autres
-     gardent le carrousel d'affiches, qu'on montre ou qu'on cache */
-  const hall = document.getElementById("sceneHall");
+  /* le carrousel d'affiches ne sert qu'aux deux autres vues */
   const carr = document.getElementById("carrousel");
-  const dansLeHall = vueProg === "affiche";
-  if(hall) hall.style.display = dansLeHall ? "" : "none";
-  if(carr) carr.classList.toggle("masque", dansLeHall);
+  if(carr) carr.classList.toggle("masque", vueProg === "affiche");
 
-  if(dansLeHall){ rendVueAffiche(); }
+  if(vueProg === "affiche"){ rendVueAffiche(); }
   else if(vueProg === "catalogue"){ rendVueCatalogue(); }
   else{ await rendVueEvenements(); }
 
@@ -638,194 +633,215 @@ function modifieSeance(id){
    la scène deviendrait illisible sur un téléphone, et le tableau
    en dessous reprend de toute façon le détail complet.
    ------------------------------------------------------------ */
-function rendHall(valide, limite){
-  const scene = document.getElementById("sceneHall");
-  if(!scene) return;
+/* ============================================================
+   VUE 1 — À L'AFFICHE : les séances du jour
 
-  const triees = [...seancesJour].sort((a,b)=>compareHeures(a.heure, b.heure));
-  const creneaux = triees.map(s=>{
-    const f = filmParId(s.film_id);
-    return {
-      id: s.id,
-      heure: s.heure,
-      film: f ? {titre: f.titre, genre: f.genre} : {titre: s.film_id, genre: ""},
-      salle: s.salle || "",
-      passee: seanceCommencee(s)
-    };
-  });
+   La page montrait une scène de hall qui occupait la moitié de
+   l'écran, puis un tableau, puis un résumé. Trois représentations
+   des mêmes séances, dont deux ne disaient pas la même chose : le
+   tableau affichait une estimation locale pendant que le résumé
+   lisait le serveur, et les deux se contredisaient.
 
-  /* des cadres vides pour ce qu'il reste à programmer */
-  const restants = Math.max(0, Math.min(limite, 5) - creneaux.length);
-  for(let i = 0; i < restants; i++){
-    creneaux.push({id:null, heure: prochainCreneauLibre(creneaux), film:null, salle:null});
-  }
-  /* un hall vide montre quand même un cadre, sinon la scène paraît cassée */
-  if(creneaux.length === 0) creneaux.push({id:null, heure:"—", film:null, salle:null});
+   Il n'y a plus qu'une liste. Une séance = une carte, avec son
+   horaire, son film, sa prévision, les raisons de cette prévision,
+   et ses deux actions en clair : modifier, retirer.
 
-  scene.innerHTML = dessineHall(creneaux);
-  scene.classList.toggle("verrouille", !!valide);
+   Le bouton « retirer » manquait complètement : supprimeSeance()
+   existait, était exportée, mais aucun élément ne l'appelait. On
+   ne pouvait donc pas défaire une séance une fois posée.
+   ============================================================ */
 
-  if(!valide) brancheCadres(scene);
+/* la prévision du serveur pour une séance, ou une estimation de
+   secours tant qu'elle n'est pas arrivée */
+function chiffresSeance(s){
+  const pv = previsionDe(s.id);
+  const cap = capaciteSalle(s.salle_id) || 0;
+  if(pv) return {
+    bas: pv.prevision_basse, haut: pv.prevision_haute, cap: pv.capacite,
+    taux: pv.taux_estime, tendance: pv.tendance, facteurs: pv.facteurs || [],
+    serveur: true
+  };
+  const est = estimeAudience(s);
+  return {
+    bas: est, haut: est, cap,
+    taux: cap ? Math.min(100, Math.round(est / cap * 100)) : 0,
+    tendance: null, facteurs: [], serveur: false
+  };
 }
 
-/* un horaire plausible pour le prochain cadre vide, à titre indicatif */
-function prochainCreneauLibre(deja){
-  const pris = new Set(deja.map(c=>c.heure));
-  return horairesDisponibles().find(h=>!pris.has(h)) || "—";
+function carteSeance(s, verrouille){
+  const f = filmParId(s.film_id);
+  const titre = f ? f.titre : s.film_id;
+  const c = chiffresSeance(s);
+  const passee = seanceCommencee(s);
+  const plus  = c.facteurs.filter(x=>x.signe === "+").slice(0,2);
+  const moins = c.facteurs.filter(x=>x.signe === "-").slice(0,2);
+
+  return `<article class="carteSeance ${passee ? "encours" : ""}">
+    <div class="csHaut" ${verrouille ? "" : `onclick="modifieSeance('${s.id}')"`}>
+      <div class="csHeure"><b>${echappe(s.heure)}</b></div>
+      <div class="csMid">
+        <b>${echappe(titre)}</b>
+        <span>${echappe(f ? f.genre : "")} • ${fmtDuree(s.duree_min||0)} • ${echappe(s.salle||"Salle")}</span>
+      </div>
+      <div class="csDr">
+        <b class="${classeTaux(c.taux)}">${c.bas === c.haut ? c.bas : c.bas + "–" + c.haut}</b>
+        <span>sur ${c.cap}</span>
+      </div>
+    </div>
+
+    ${(plus.length || moins.length) ? `<div class="csRaisons">
+      ${plus.map(x=>`<span class="p">+ ${echappe(x.texte)}</span>`).join("")}
+      ${moins.map(x=>`<span class="m">− ${echappe(x.texte)}</span>`).join("")}
+    </div>` : ""}
+
+    ${verrouille
+      ? `<div class="csVerrou">${icone("etoile")} Séance en cours</div>`
+      : `<div class="csBas">
+          <button onclick="modifieSeance('${s.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+            Modifier</button>
+          <button class="sup" onclick="demandeRetrait('${s.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+            Retirer</button>
+        </div>`}
+  </article>`;
 }
 
-/* toucher un cadre : plein → on modifie la séance, vide → on choisit un film */
-function brancheCadres(scene){
-  scene.querySelectorAll(".cadreHall").forEach(el=>{
-    const ouvre = () => {
-      const sid = el.dataset.seance;
-      if(sid) modifieSeance(sid);
-      else allerAuCatalogue();
-    };
-    el.addEventListener("click", ouvre);
-    el.addEventListener("keydown", e=>{
-      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); ouvre(); }
-    });
-  });
+/* On confirme avant de retirer : une séance représente une licence
+   déjà engagée, et le geste est irréversible. */
+function demandeRetrait(id){
+  const s = seancesJour.find(x=>String(x.id)===String(id));
+  if(!s) return;
+  const f = filmParId(s.film_id);
+  const titre = f ? f.titre : "cette séance";
+  const anciens = document.getElementById("voileRetrait");
+  if(anciens) anciens.remove();
+
+  const o = document.createElement("div");
+  o.className = "voileRetrait";
+  o.id = "voileRetrait";
+  o.innerHTML = `<div class="boiteRetrait">
+    <h3>Retirer « ${echappe(titre)} » ?</h3>
+    <p>La séance de ${echappe(s.heure)} disparaît du programme.
+       La licence n'est pas payée tant que le cinéma n'a pas ouvert.</p>
+    <div class="brActions">
+      <button class="brAnnuler" onclick="fermeRetrait()">Garder</button>
+      <button class="brOui" onclick="fermeRetrait(); supprimeSeance('${s.id}')">Retirer</button>
+    </div>
+  </div>`;
+  document.body.appendChild(o);
+  requestAnimationFrame(()=>o.classList.add("ouvert"));
+}
+function fermeRetrait(){
+  const o = document.getElementById("voileRetrait");
+  if(!o) return;
+  o.classList.remove("ouvert");
+  setTimeout(()=>o.remove(), 200);
 }
 
 function rendVueAffiche(){
   const limite = limiteSeances();
-  const valide = journeeLancee();   /* verrouillé seulement une fois ouvert */
-
-  /* ------------------------------------------------------------
-     LE HALL
-
-     On dessine la scène plutôt que le carrousel : un cadre par
-     créneau, rempli si une séance y est programmée. Les cadres
-     libres invitent à en ajouter une, dans la limite du nombre
-     de séances que les salles permettent.
-     ------------------------------------------------------------ */
-  rendHall(valide, limite);
-
-  /* le tableau reprend le détail, ligne à ligne */
+  const verrouille = journeeLancee();
   const tab = document.getElementById("tableauProg");
+  if(!tab) return;
+
+  const entete = `<div class="ligneJourProg">
+    <h1>${verrouille ? "Le cinéma est ouvert" : "Aujourd'hui"}</h1>
+    <span class="badgeJourProg">Jour ${Etat.cinema?.jour || 1}
+      · ${seancesJour.length}/${limite} séance${limite > 1 ? "s" : ""}</span>
+  </div>`;
+
   if(seancesJour.length === 0){
-    tab.innerHTML = `<div class="videProg">Rien à l'affiche pour l'instant.<br>
-      <small>Choisis un film dans « Prochains films » pour ouvrir ta première séance.</small></div>
-      ${boutonsProg(valide)}`;
-    document.getElementById("zoneValidation").innerHTML = "";
+    tab.innerHTML = entete + `
+      <div class="videProg">
+        <p>Le projecteur est froid.</p>
+        <small>Choisis un film pour ouvrir ta première séance.</small>
+      </div>
+      <button class="btnAjoutProg" onclick="allerAuCatalogue()">+ Ajouter une séance</button>
+      ${blocBob()}`;
+    rendValidation(verrouille);
     return;
   }
 
-  const totalLicence = seancesJour.reduce((t,s)=>t + Number(s.cout_licence||0), 0);
-  const totalAudience = seancesJour.reduce((t,s)=>t + estimeAudience(s), 0);
+  const cartes = seancesJour.map(s=>carteSeance(s, verrouille)).join("");
+  const ajout = (!verrouille && seancesJour.length < limite)
+    ? `<button class="btnAjoutProg" onclick="allerAuCatalogue()">+ Ajouter une séance</button>`
+    : "";
 
-  tab.innerHTML = seancesJour.map(s=>{
-    const f = filmParId(s.film_id);
-    const cap = capaciteSalle(s.salle_id);
-    const taux = cap ? Math.min(100, Math.round(estimeAudience(s) / cap * 100)) : 0;
-    const pv = previsionDe(s.id);
-    return `<div class="rangProg ${valide?'verrouille':''}"
-      onclick="${valide ? '' : `modifieSeance('${s.id}')`}">
-      <span class="rpHeure">${echappe(s.heure)}</span>
-      <span class="rpMid">
-        <b>${echappe((f ? f.titre : s.film_id).toUpperCase())}</b>
-        <span>${echappe(f ? f.genre : "")} • ${fmtDuree(s.duree_min||0)} • ${echappe(s.salle||"Salle")}</span>
-      </span>
-      <span class="rpDr">
-        ${pv ? `<b class="${classeTendance(pv.tendance)}">${pv.prevision_basse}–${pv.prevision_haute}</b>
-               <span>sur ${pv.capacite}</span>`
-             : `<b class="${classeTaux(taux)}">${taux}%</b><span>${cap} places</span>`}
-      </span>
-      <span class="rpChev">${valide ? icone("etoile") : "›"}</span>
-      ${pv ? `<span class="rpRaisons">
-        ${(pv.facteurs || []).filter(x=>x.signe === "+").slice(0,2)
-          .map(x=>`<span class="rPlus">+ ${echappe(x.texte)}</span>`).join("")}
-        ${(pv.facteurs || []).filter(x=>x.signe === "-").slice(0,2)
-          .map(x=>`<span class="rMoins">− ${echappe(x.texte)}</span>`).join("")}
-      </span>` : ""}
-    </div>`;
-  }).join("") + `
-    <div class="bilanProg">
-      <span>${seancesJour.length} / ${limite} séances</span>
-      <span>Licences <b>${fmtArgent(totalLicence)}</b></span>
-      <span>Potentiel <b>≈ ${totalAudience}</b></span>
-    </div>
-    ${boutonsProg(valide)}
-    ${seancesJour.length && !journeeLancee() ? resumeAvantOuverture() : ""}`;
-
-  rendValidation(valide);
+  tab.innerHTML = entete + cartes + ajout + resumeAvantOuverture() + blocBob();
+  rendValidation(verrouille);
 }
 
-/* Plus de « valider » : on ajoute des séances tant qu'on veut, puis
-   on ouvre. Ouvrir vaut validation — c'est le serveur qui s'en charge. */
-function boutonsProg(valide){
-  if(journeeLancee()) return "";
-  const plein = seancesJour.length >= limiteSeances();
-  return `<div class="actionsProg">
-    ${plein ? "" : `<button class="btnVideProg" onclick="allerAuCatalogue()">
-      + Ajouter une séance</button>`}
-  </div>`;
-}
+/* ------------------------------------------------------------
+   LE RÉSUMÉ
 
-/* le résumé d'avant-ouverture, posé sous le programme */
+   Il annonçait « 0 à 0 spectateurs attendus » et une journée à
+   perte alors que le serveur prévoyait une centaine d'entrées et
+   un bénéfice. Les chiffres étaient recalculés localement à partir
+   d'une moyenne de prix, au lieu d'être lus tels quels.
+
+   Tout vient maintenant de get_day_forecast, qui calcule séance
+   par séance avec le prix réel de chaque billet. Le résumé et le
+   bilan du soir parlent donc enfin de la même journée.
+   ------------------------------------------------------------ */
 function resumeAvantOuverture(){
+  if(journeeLancee()) return "";
   const p = previsionsJour;
-  const sit = prepDuJour && prepDuJour.situation;
-  const alertes = (prepDuJour && prepDuJour.alertes || []).filter(a=>Number(a.urgence) >= 3);
-  const licences = seancesJour.reduce((t,s)=>t + Number(s.cout_licence||0), 0);
-  const payable = Number(Etat.cinema.argent) >= licences;
-  /* loyer et salaires tombent tous les jours : les annoncer avant l'ouverture
-     évite de découvrir au bilan une dépense qu'on n'a pas vue venir */
-  const charges = prepDuJour && prepDuJour.charges;
-  /* ------------------------------------------------------------
-     LA RECETTE ATTENDUE VIENT DU SERVEUR
+  const charges = prepDuJour && prepDuJour.charges ? Number(prepDuJour.charges.total || 0) : 0;
 
-     get_day_forecast calcule déjà la recette séance par séance,
-     avec le prix réel de chaque billet et la fréquentation prévue.
-     On lisait ces chiffres puis on les jetait pour refaire un
-     calcul de coin de table — spectateurs moyens × prix moyen —
-     qui ne tombait jamais sur le bilan du soir. Le joueur voyait
-     « journée attendue +180 € » et découvrait +140 € au bilan.
+  if(!p){
+    return `<section class="bilanProg">
+      <h2>Prêt à ouvrir</h2>
+      <div class="bpSous">Les prévisions arrivent…</div>
+      <button class="btnPortesProg" onclick="lanceLaJournee()">Ouvrir les portes</button>
+    </section>`;
+  }
 
-     On prend donc directement ce que le serveur annonce.
-     ------------------------------------------------------------ */
-  const recettePrevue = p ? Number(p.recette_estimee || 0) : 0;
-  /* le serveur déduit déjà les licences dans benefice_estime ; il reste
-     les charges du jour, qu'il ne connaît pas à ce stade */
-  const beneficePrevu = p
-    ? Number(p.benefice_estime || 0) - Number(charges ? charges.total : 0)
-    : 0;
+  const bas      = Number(p.total_bas || 0);
+  const haut     = Number(p.total_haut || 0);
+  const recette  = Number(p.recette_estimee || 0);
+  const licences = Number(p.cout_licences || 0);
+  const argent   = Number(p.argent_disponible ?? Etat.cinema?.argent ?? 0);
+  const payable  = p.licences_payables !== false;
+  const benefice = recette - licences - charges;
+  const manque   = Math.max(0, licences - argent);
 
-  return `<div class="resumeOuvre">
-    <div class="roTitre">Prêt à ouvrir</div>
-    <div class="roLigne">${icone("pellicule")}
-      <span>${seancesJour.length} séance${seancesJour.length>1?"s":""} au programme</span></div>
-    ${p ? `<div class="roLigne">${icone("spectateurs")}
-      <span>${p.total_bas} à ${p.total_haut} spectateurs attendus</span></div>` : ""}
-    <div class="roLigne ${payable ? "" : "alerte"}">${icone("piece")}
-      <span>${fmtArgent(licences)} de licences${payable ? "" : " — il manque "
-        + fmtArgent(licences - Number(Etat.cinema.argent))}</span></div>
-    ${charges ? `<div class="roLigne">${icone("batiment")}
-      <span>${fmtArgent(charges.total)} de charges — ${echappe(charges.detail || "")}</span></div>
-      <div class="roLigne bilanAttendu ${beneficePrevu >= 0 ? "" : "alerte"}">
-        ${icone("etoile")}
-        <span>Journée attendue : <b>${beneficePrevu >= 0 ? "+" : ""}${fmtArgent(beneficePrevu)}</b>
-          ${beneficePrevu >= 0 ? "" : " — le compte n'y sera pas"}</span></div>` : ""}
-    ${sit ? `<div class="roLigne">${icone("cloche")}
-      <span>${sit.statut === "resolue" ? "Dossier du jour traité"
-             : sit.statut === "ignoree" ? "Dossier laissé de côté"
-             : "Un dossier attend encore"}</span></div>` : ""}
-    ${alertes.length
-      ? alertes.map(a=>`<div class="roLigne alerte">${icone("outil")}
-          <span>${echappe(a.texte)}</span></div>`).join("")
-      : `<div class="roLigne">${icone("outil")}<span>Salles en état</span></div>`}
+  return `<section class="bilanProg">
+    <h2>Prêt à ouvrir</h2>
+    <div class="bpSous">Ce que le quartier devrait donner aujourd'hui</div>
+
+    <div class="bpLigne"><span>Spectateurs attendus</span><b>${bas} à ${haut}</b></div>
+    <div class="bpLigne"><span>Recette estimée</span><b class="vert">${fmtArgent(recette)}</b></div>
+    <div class="bpLigne">
+      <span>Licences à payer${manque ? `<small>il manque ${fmtArgent(manque)}</small>` : ""}</span>
+      <b class="${payable ? "" : "rouge"}">− ${fmtArgent(licences)}</b></div>
+    ${charges ? `<div class="bpLigne"><span>Charges du jour</span>
+      <b>− ${fmtArgent(charges)}</b></div>` : ""}
+
+    <div class="bpResultat ${benefice >= 0 ? "bon" : "mauvais"}">
+      <b>${benefice >= 0 ? "+" : "−"} ${fmtArgent(Math.abs(benefice))}</b>
+      <span>${benefice >= 0
+        ? "la journée devrait être bénéficiaire"
+        : "la journée s'annonce déficitaire"}</span>
+    </div>
 
     <button class="btnPortesProg" ${payable ? "" : "disabled"} onclick="lanceLaJournee()">
-      ${icone("porte")} Ouvrir les portes</button>
+      ${payable ? "Ouvrir les portes" : "Licences impayables"}</button>
+  </section>`;
+}
+
+/* le mot de Bob, sous le résumé */
+function blocBob(){
+  return `<div class="blocBobProg">
+    <div class="bbTete">${icone("etoile")}</div>
+    <p><b>Bob — homme à tout faire</b>${echappe(conseilProg())}</p>
   </div>`;
 }
 
-/* Attention au nom : « ouvreLesPortes » existe déjà dans facade/life.js
-   où elle anime les battants du dessin. Deux fonctions homonymes dans
-   deux modules, et le générateur en expose une seule — le bouton
-   appelait l'animation de la façade au lieu de lancer la journée. */
 async function lanceLaJournee(){
   const b = document.querySelector(".btnPortesProg");
   if(b){ b.disabled = true; b.textContent = "On ouvre…"; }
@@ -1113,6 +1129,8 @@ export {
   seanceCommencee,
   seancesJour,
   supprimeSeance,
+  demandeRetrait,
+  fermeRetrait,
   trieSeances,
   valideSeance,
   verifieSeance,
@@ -1131,8 +1149,10 @@ Object.assign(window, {
   changePrixDirect,
   choisitHoraire,
   choisitSalle,
+  demandeRetrait,
   fermeAffiche,
   fermePanneau,
+  fermeRetrait,
   lanceLaJournee,
   modifieSeance,
   ouvrePanneau,
@@ -1140,6 +1160,7 @@ Object.assign(window, {
   supprimeSeance,
   valideSeance
 });
+
 
 
 

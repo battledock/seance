@@ -1,15 +1,15 @@
 /* Point d'entrée de jeu.html — composition immersive */
 
-import { initAmbiance } from "../ambiance.js?v=93089721";
-import { initialiserJeu, Etat } from "../game-state.js?v=93089721";
-import { messageErreur } from "../supabase-client.js?v=93089721";
-import { initAccueil } from "../cinema.js?v=93089721";
-import { majStatutHeader } from "../navigation.js?v=93089721";
-import { majBarreXPHeader } from "../progression.js?v=93089721";
-import "../facade/lobby.js?v=93089721";
-import "../ui/room-view.js?v=93089721";
-import "../facade/life.js?v=93089721";
-import "../facade/vitality.js?v=93089721";
+import { initAmbiance } from "../ambiance.js?v=becf21cb";
+import { initialiserJeu, Etat } from "../game-state.js?v=becf21cb";
+import { messageErreur } from "../supabase-client.js?v=becf21cb";
+import { initAccueil } from "../cinema.js?v=becf21cb";
+import { majStatutHeader } from "../navigation.js?v=becf21cb";
+import { majBarreXPHeader } from "../progression.js?v=becf21cb";
+import "../facade/lobby.js?v=becf21cb";
+import "../ui/room-view.js?v=becf21cb";
+import "../facade/life.js?v=becf21cb";
+import "../facade/vitality.js?v=becf21cb";
 
 /* marquer le body AVANT le chargement pour que le CSS
    masque le header classique sans utiliser :has() */

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=93089721">
+  <link rel="stylesheet" href="css/base.css?v=becf21cb">
   <style>
     /* Style minimal du voile : il doit couvrir l'écran avant même
        que base.css soit arrivé, sinon on aperçoit la page nue. */
@@ -37,11 +37,7 @@
   <div class="vcPiste"><i></i></div>
 </div>
 
-<main class="contenu salleProg">
-  <div class="tentureP g" aria-hidden="true"></div>
-  <div class="tentureP d" aria-hidden="true"></div>
-  <div class="appliqueP g" aria-hidden="true"><i></i></div>
-  <div class="appliqueP d" aria-hidden="true"><i></i></div>
+<main class="contenu salleProg progClaire">
 
   <!-- le fronton lumineux -->
   <div class="fronton">
@@ -56,27 +52,12 @@
     <button role="tab" data-vue="evenements" aria-selected="false">Événements</button>
   </nav>
 
-  <!-- LE HALL — on est à l'intérieur du cinéma, devant les cadres.
-       Toucher un cadre ouvre sa séance, un cadre vide en programme
-       une nouvelle. Les vues « prochains films » et « événements »
-       reprennent le carrousel classique, caché ici. -->
-  <div class="sceneHall" id="sceneHall"></div>
-
-  <!-- le carrousel reste pour les deux autres vues -->
+  <!-- le carrousel d'affiches sert aux vues « prochains films »
+       et « événements » ; la vue du jour est une simple liste -->
   <div class="carrousel" id="carrousel">
     <button class="flecheC g" id="flecheG" aria-label="Précédent">‹</button>
     <button class="flecheC d" id="flecheD" aria-label="Suivant">›</button>
     <div class="pisteAffiches" id="pisteAffiches"></div>
-  </div>
-
-  <!-- la plaque du jour -->
-  <div class="ligneJour">
-    <div class="plaqueJour" id="plaqueJour">Aujourd'hui</div>
-    <div class="badgeJour">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/>
-        <path d="M3 10h18M8 3v4M16 3v4"/></svg>
-      <span id="badgeJourTxt">Jour 1</span>
-    </div>
   </div>
 
   <!-- le tableau détaillé -->
@@ -107,7 +88,8 @@
   </div>
 </main>
 
-<script type="module" src="js/pages/programmation.js?v=93089721"></script>
+<script type="module" src="js/pages/programmation.js?v=becf21cb"></script>
 </body>
 </html>
+
 

@@ -1,7 +1,7 @@
 /* Façade d'accès aux données : tout ce qui parle au serveur passe par ici.
    Les pages n'appellent jamais sbFetch ou rpc directement. */
 
-import { sbFetch, rpc, appelSecurise, idOperation } from "./supabase-client.js?v=93089721";
+import { sbFetch, rpc, appelSecurise, idOperation } from "./supabase-client.js?v=becf21cb";
 
 /* ---------- lectures ---------- */
 export const lireCinema      = id => sbFetch(`cinemas?id=eq.${id}&select=*`);
