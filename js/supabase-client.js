@@ -83,20 +83,28 @@ function messageErreur(e){
 /* ------------------------------------------------------------
    VIDER LE CACHE ET REPARTIR PROPRE
 
-   Les fichiers portent un tampon de version, ce qui suffit dans
-   presque tous les cas. Reste le cas où c'est la PAGE elle-même
-   qui est en cache : elle pointe alors vers d'anciens tampons, et
-   le jeu tourne avec un mélange d'ancien et de neuf.
+   Les fichiers portent un tampon de version, ce qui suffit tant
+   qu'on pense à le changer. Deux situations lui échappent :
 
-   On ne peut pas forcer un navigateur à vider son cache depuis du
-   JavaScript. Ce qu'on peut faire :
-     · supprimer les caches applicatifs et les service workers ;
-     · recharger la page avec une adresse jamais vue, ce qui oblige
-       à la retélécharger, et avec elle les bons tampons.
+     · la PAGE elle-même est en cache. Elle pointe alors vers
+       d'anciens tampons, et le jeu tourne avec un mélange.
+     · un fichier a changé SANS que son tampon bouge. Recharger
+       la page ne sert alors à rien : l'adresse est identique,
+       le navigateur ressert sa copie.
+
+   Le second cas est le plus courant, et c'est celui que l'ancienne
+   version de cette fonction ne traitait pas. Recharger la page
+   avec une adresse neuve ne rafraîchit que le HTML ; les feuilles
+   de style et les modules gardent leur adresse, donc leur copie.
+
+   La parade : redemander chaque ressource déjà chargée avec
+   l'ordre « cache: reload ». Le navigateur va la rechercher sur
+   le réseau et remplace son entrée. Ensuite seulement on recharge.
 
    La session n'est pas touchée : le joueur reste connecté.
    ------------------------------------------------------------ */
 async function videLeCache(){
+  /* 1. les caches applicatifs et les service workers, s'il y en a */
   try{
     if(window.caches && caches.keys){
       const noms = await caches.keys();
@@ -110,8 +118,31 @@ async function videLeCache(){
     }
   }catch(e){}
 
-  /* une adresse jamais vue : le navigateur ne peut pas la servir
-     depuis son cache, et la page fraîche porte les bons tampons */
+  /* 2. le vrai nettoyage : forcer le retéléchargement de tout ce
+        que la page a chargé depuis notre propre domaine */
+  try{
+    const vues = new Set();
+    if(window.performance && performance.getEntriesByType){
+      performance.getEntriesByType("resource").forEach(e=>{
+        if(e.initiatorType === "xmlhttprequest" || e.initiatorType === "fetch") return;
+        try{
+          const u = new URL(e.name, location.href);
+          if(u.origin !== location.origin) return;
+          if(!/\.(css|js|html)(\?|$)/.test(u.pathname + u.search)) return;
+          vues.add(u.href);
+        }catch(err){}
+      });
+    }
+    /* le socle, même s'il n'apparaît pas dans la liste */
+    vues.add(new URL("css/base.css", location.href).href);
+    vues.add(location.href.split("#")[0]);
+
+    await Promise.all([...vues].map(u =>
+      fetch(u, {cache: "reload", credentials: "same-origin"}).catch(()=>{})
+    ));
+  }catch(e){}
+
+  /* 3. et enfin la page, sous une adresse jamais vue */
   const base = location.pathname;
   location.replace(base + "?frais=" + Date.now());
 }
@@ -332,3 +363,4 @@ Object.assign(window, {
   proposeVidageCache,
   videLeCache
 });
+
