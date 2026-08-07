@@ -40,89 +40,74 @@
    ───────────────────────────────────────────────────────── */
 html{touch-action:manipulation;-webkit-text-size-adjust:100%}
 body{
-  -webkit-user-select:none; user-select:none;
-  -webkit-touch-callout:none;          /* pas de menu au appui long */
-  overscroll-behavior:none;            /* pas de rebond ni de rechargement */
+  margin:0;background:#e6e0d4;color:#1a1210;
+  font-family:'Outfit',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
 }
-input, textarea, [contenteditable]{
-  -webkit-user-select:text; user-select:text;
-  -webkit-touch-callout:default;
+
+/* ------------------------------------------------------------
+   LA CARTE POSTALE
+
+   Une photo du cinéma, le titre, une phrase, deux boutons.
+   Le fond clair est celui du reste du jeu ; le léger biais et
+   l'ombre portée suffisent à évoquer l'objet posé sur une table.
+   ------------------------------------------------------------ */
+.scene{width:100%;max-width:360px}
+
+.carte{
+  background:#fdfaf3;border-radius:5px;
+  padding:15px 15px 17px;
+  box-shadow:0 14px 34px rgba(40,26,20,.24), 0 2px 5px rgba(40,26,20,.1);
+  transform:rotate(-1.1deg);
+  animation:poseCarte .6s cubic-bezier(.2,.9,.3,1) both;
 }
-/* les images et le décor ne se font pas attraper */
-svg, .rideau, .lambrequin, .cadre{-webkit-user-drag:none;user-drag:none;pointer-events:none}
-.cadre{pointer-events:auto}
-html,body{height:100%}
-body{font-family:'Outfit',system-ui,sans-serif;background:var(--papier);color:var(--encre);
-  overflow:hidden}
+@keyframes poseCarte{
+  from{opacity:0;transform:translateY(20px) rotate(-3deg)}
+  to{opacity:1;transform:rotate(-1.1deg)}
+}
 
-.scene{position:relative;height:100dvh;max-width:520px;margin:0 auto;
-  display:flex;flex-direction:column;background:var(--ivoire);overflow:hidden}
+.cpImage{height:196px;border-radius:2px;overflow:hidden;position:relative;background:#c8dce4}
+.cpImage svg{width:100%;height:100%;display:block}
 
-/* ═════════ LES RIDEAUX ═════════ */
-.rideau{position:absolute;top:0;bottom:0;width:15vw;max-width:74px;min-width:40px;z-index:3;
-  pointer-events:none}
-.rideau svg{width:100%;height:100%;display:block}
-.rideau.g{left:0}
-.rideau.d{right:0;transform:scaleX(-1)}
-/* le lambrequin, en haut */
-.lambrequin{position:absolute;top:0;left:0;right:0;height:74px;z-index:4;pointer-events:none}
-.lambrequin svg{width:100%;height:100%;display:block}
+.cpTitre{
+  font-family:'Marcellus',Georgia,serif;font-weight:400;
+  font-size:30px;letter-spacing:.2em;text-indent:.2em;
+  color:#1a1210;text-align:center;margin:16px 0 0;
+}
+.cpMot{
+  font-size:11.5px;color:#6a5f56;line-height:1.65;text-align:center;
+  margin-top:9px;font-style:italic;
+}
+.cpTrait{height:1px;background:#e6ded0;margin:15px 0 13px}
 
-/* ═════════ L'ENSEIGNE ═════════ */
-.enseigne{position:relative;z-index:5;margin:26px auto 0;padding:9px 26px;border-radius:9px;
-  background:linear-gradient(180deg,#221319,#160c12);border:2px solid var(--or);
-  box-shadow:0 6px 22px rgba(36,26,18,.4);text-align:center}
-.enseigne b{display:block;font-family:'Marcellus',serif;font-size:21px;letter-spacing:.26em;
-  text-transform:uppercase;color:#ffe9b0;line-height:1.1}
-.enseigne span{display:block;font-size:8px;font-weight:300;letter-spacing:.19em;
-  text-transform:uppercase;color:var(--orClair);opacity:.75;margin-top:3px}
-.ampoules{position:absolute;left:6px;right:6px;display:flex;justify-content:space-between}
-.ampoules.h{top:-4px}.ampoules.b{bottom:-4px}
-.ampoules i{width:5px;height:5px;border-radius:50%;background:#f7dd9a;
-  box-shadow:0 0 5px rgba(247,221,154,.9);animation:clg 3s ease-in-out infinite}
-.ampoules i:nth-child(2n){animation-delay:.75s}
-.ampoules i:nth-child(3n){animation-delay:1.5s}
-@keyframes clg{0%,100%{opacity:.35}50%{opacity:1}}
+.btnJouer{
+  width:100%;padding:15px;border:none;border-radius:11px;cursor:pointer;
+  background:#8a1c2c;color:#ffeec4;
+  font-family:'Marcellus',Georgia,serif;font-size:14.5px;letter-spacing:.1em;
+  box-shadow:0 3px 12px rgba(138,28,44,.24);
+}
+.btnJouer:active{transform:translateY(1px);box-shadow:0 1px 6px rgba(138,28,44,.24)}
 
-/* ═════════ LE CARROUSEL ═════════ */
-.piste{flex:1;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  touch-action:pan-x;overscroll-behavior-x:contain;
-  scrollbar-width:none;position:relative;z-index:2}
-.piste::-webkit-scrollbar{display:none}
-.volet{flex:none;width:100%;scroll-snap-align:center;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;
-  padding:18px max(18vw,58px) 6px}
-.cadre{width:100%;max-width:290px;border-radius:16px;overflow:hidden;line-height:0;
-  background:#fff;border:2px solid var(--orSombre);
-  box-shadow:0 12px 30px rgba(36,26,18,.22)}
-.cadre svg{width:100%;display:block}
-.volet h2{font-family:'Marcellus',serif;font-size:23px;line-height:1.2;letter-spacing:.05em;
-  color:var(--encre);margin-top:20px}
-.volet p{font-size:14px;line-height:1.65;color:var(--texte);margin-top:11px;max-width:290px;
-  font-weight:300}
+.lien{
+  display:block;width:100%;margin-top:8px;padding:13px;
+  background:#fff;border:1px solid #ddd2c4;border-radius:11px;cursor:pointer;
+  font-family:'Outfit',system-ui,sans-serif;font-size:12.5px;color:#5a5048;
+}
+.lien:active{background:#faf7f2}
 
-/* ═════════ LE PIED ═════════ */
-.pied{position:relative;z-index:5;padding:0 max(15vw,44px)
-  calc(18px + env(safe-area-inset-bottom))}
-.points{display:flex;justify-content:center;gap:7px;padding:14px 0 14px}
-.points i{width:7px;height:7px;border-radius:50%;background:rgba(36,26,18,.16);transition:.3s}
-.points i.on{background:var(--or);width:22px;border-radius:4px}
-.btnJouer{width:100%;padding:18px;border:none;border-radius:15px;cursor:pointer;
-  position:relative;overflow:hidden;background:linear-gradient(180deg,#ffe89a,#c9982f);
-  color:#2a1704;font-family:'Marcellus',serif;font-size:17px;letter-spacing:.13em;
-  text-transform:uppercase;box-shadow:0 6px 0 var(--orSombre),0 12px 26px rgba(138,108,42,.3);
-  transition:transform .12s,box-shadow .12s}
-.btnJouer:active{transform:translateY(5px);box-shadow:0 1px 0 var(--orSombre)}
-.btnJouer::after{content:"";position:absolute;top:-60%;left:-40%;width:36%;height:220%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
-  transform:rotate(18deg);animation:reflet 5s ease-in-out infinite}
-@keyframes reflet{0%,72%{left:-40%}88%,100%{left:130%}}
-.lien{display:block;width:100%;margin-top:9px;padding:11px;background:none;border:none;
-  cursor:pointer;color:var(--gris);font-size:12.5px;font-weight:300;text-decoration:underline}
-.mention{text-align:center;font-size:9.5px;font-weight:300;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--gris);margin-top:6px}
+.mention{
+  text-align:center;font-size:9px;color:#b0a494;
+  margin-top:11px;letter-spacing:.05em;
+}
 
-/* ═════════ LA FEUILLE D'IDENTIFICATION ═════════ */
+@media (max-height:640px){
+  .cpImage{height:150px}
+  .cpTitre{font-size:26px;margin-top:13px}
+}
+
 .voileAuth{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;
   background:rgba(20,12,10,.55);animation:paraitre .25s ease-out}
 @keyframes paraitre{from{opacity:0}to{opacity:1}}
@@ -164,237 +149,95 @@ body{font-family:'Outfit',system-ui,sans-serif;background:var(--papier);color:va
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-height:640px){
-  .volet h2{font-size:20px;margin-top:14px}
-  .volet p{font-size:13px;margin-top:8px}
-  .cadre{max-width:230px}
-  .enseigne{margin-top:16px;padding:7px 20px}
-  .enseigne b{font-size:16px}
+  
+  
+  
+  
+  
 }
 </style>
 </head>
 <body>
 
 <div class="scene">
+  <!-- ------------------------------------------------------------
+       LA CARTE POSTALE
 
-  <!-- le lambrequin et les deux rideaux encadrent toute la scène -->
-  <div class="lambrequin">
-    <svg viewBox="0 0 440 74" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="lamb" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#a02a3c"/><stop offset=".55" stop-color="#7c1424"/>
-          <stop offset="1" stop-color="#5a0e1a"/></linearGradient>
-        <linearGradient id="orL" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#f7dd9a"/><stop offset="1" stop-color="#8a6c2a"/></linearGradient>
-      </defs>
-      <path d="M0 0 L440 0 L440 40 Q385 62 330 42 Q275 22 220 44 Q165 66 110 44 Q55 22 0 42 Z"
-        fill="url(#lamb)"/>
-      <g fill="#000" opacity=".14">
-        <path d="M36 0 l0 46 M78 0 l0 40 M124 0 l0 48 M170 0 l0 42 M216 0 l0 48
-                 M262 0 l0 42 M308 0 l0 48 M354 0 l0 40 M400 0 l0 46"
-          stroke="#000" stroke-width="7" stroke-opacity=".1"/></g>
-      <path d="M0 42 Q55 22 110 44 Q165 66 220 44 Q275 22 330 42 Q385 62 440 40"
-        fill="none" stroke="url(#orL)" stroke-width="3"/>
-      <g fill="url(#orL)">
-        <circle cx="110" cy="45" r="4"/><circle cx="220" cy="45" r="4.5"/>
-        <circle cx="330" cy="43" r="4"/></g>
-    </svg>
-  </div>
+       L'entrée était une scène de théâtre : lambrequin, rideaux de
+       velours, enseigne à ampoules. Beaucoup de décor pour une page
+       dont le rôle est d'expliquer le jeu en trois secondes.
 
-  <div class="rideau g">
-    <svg viewBox="0 0 74 600" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <linearGradient id="vel" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#5a0e1a"/><stop offset=".3" stop-color="#9a2634"/>
-          <stop offset=".62" stop-color="#7c1424"/><stop offset="1" stop-color="#4a0c16"/></linearGradient>
-      </defs>
-      <path d="M0 0 L74 0 Q60 300 74 600 L0 600 Z" fill="url(#vel)"/>
-      <g stroke="#000" stroke-opacity=".22" stroke-width="2" fill="none">
-        <path d="M14 0 Q8 300 14 600"/><path d="M30 0 Q22 300 30 600"/>
-        <path d="M46 0 Q38 300 46 600"/><path d="M62 0 Q52 300 62 600"/>
-      </g>
-      <g stroke="#c4405a" stroke-opacity=".28" stroke-width="1.4" fill="none">
-        <path d="M22 0 Q15 300 22 600"/><path d="M54 0 Q45 300 54 600"/>
-      </g>
-    </svg>
-  </div>
-  <div class="rideau d">
-    <svg viewBox="0 0 74 600" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 0 L74 0 Q60 300 74 600 L0 600 Z" fill="url(#vel)"/>
-      <g stroke="#000" stroke-opacity=".22" stroke-width="2" fill="none">
-        <path d="M14 0 Q8 300 14 600"/><path d="M30 0 Q22 300 30 600"/>
-        <path d="M46 0 Q38 300 46 600"/><path d="M62 0 Q52 300 62 600"/>
-      </g>
-      <g stroke="#c4405a" stroke-opacity=".28" stroke-width="1.4" fill="none">
-        <path d="M22 0 Q15 300 22 600"/><path d="M54 0 Q45 300 54 600"/>
-      </g>
-    </svg>
-  </div>
+       On la remplace par une carte postale : une photo du cinéma,
+       le titre, une phrase manuscrite, deux boutons. Fond clair,
+       comme le reste du jeu depuis la refonte.
+       ------------------------------------------------------------ -->
+  <div class="carte">
+    <div class="cpImage">
+      <svg viewBox="0 0 260 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="cpCiel" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#8ec0d8"/><stop offset=".62" stop-color="#c8dce4"/>
+            <stop offset="1" stop-color="#e2dac6"/></linearGradient>
+          <linearGradient id="cpMur" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f2e8d6"/><stop offset="1" stop-color="#e0d5c0"/></linearGradient>
+          <radialGradient id="cpHalo" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stop-color="#f0c96a" stop-opacity=".42"/>
+            <stop offset="1" stop-color="#f0c96a" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="260" height="132" fill="url(#cpCiel)"/>
+        <g fill="#fff" opacity=".5">
+          <ellipse cx="46" cy="26" rx="26" ry="9"/><ellipse cx="58" cy="21" rx="17" ry="8"/>
+          <ellipse cx="208" cy="18" rx="22" ry="8"/></g>
+        <rect x="0" y="84" width="260" height="48" fill="#d8cdb8"/>
+        <rect x="10" y="40" width="54" height="48" fill="#e6dbc8"/>
+        <rect x="196" y="36" width="54" height="52" fill="#e6dbc8"/>
+        <g fill="#cbbea7">
+          <rect x="18" y="48" width="9" height="11"/><rect x="34" y="48" width="9" height="11"/>
+          <rect x="18" y="65" width="9" height="11"/><rect x="34" y="65" width="9" height="11"/>
+          <rect x="205" y="44" width="9" height="11"/><rect x="221" y="44" width="9" height="11"/>
+          <rect x="205" y="61" width="9" height="11"/><rect x="221" y="61" width="9" height="11"/></g>
+        <rect x="62" y="28" width="136" height="60" fill="url(#cpMur)"/>
+        <rect x="62" y="24" width="136" height="6" rx="1.5" fill="#d6c9b4"/>
+        <ellipse cx="130" cy="44" rx="72" ry="22" fill="url(#cpHalo)"/>
+        <rect x="76" y="34" width="108" height="20" rx="2" fill="#2a1810"/>
+        <rect x="76" y="34" width="108" height="20" rx="2" fill="none"
+          stroke="#caa24a" stroke-width="1.6"/>
+        <text x="130" y="48" text-anchor="middle" font-family="Marcellus,Georgia,serif"
+          font-size="10" fill="#ffeec4" letter-spacing="3.4">CINÉMA</text>
+        <g fill="#e8b94a">
+          <circle cx="84" cy="31" r="1.5"/><circle cx="99" cy="31" r="1.5"/>
+          <circle cx="114" cy="31" r="1.5"/><circle cx="130" cy="31" r="1.5"/>
+          <circle cx="146" cy="31" r="1.5"/><circle cx="161" cy="31" r="1.5"/>
+          <circle cx="176" cy="31" r="1.5"/></g>
+        <rect x="68" y="60" width="124" height="5" rx="1.5" fill="#c9a24a" opacity=".5"/>
+        <rect x="76" y="68" width="22" height="20" fill="#c8bba6"/>
+        <rect x="118" y="66" width="24" height="22" fill="#8a1c2c" opacity=".78"/>
+        <rect x="162" y="68" width="22" height="20" fill="#c8bba6"/>
+        <g fill="#b8a890"><circle cx="56" cy="70" r="2.6"/><circle cx="204" cy="70" r="2.6"/></g>
+      </svg>
+    </div>
 
-  <div class="enseigne">
-    <span class="ampoules h" id="ampH"></span>
-    <b>Séance</b><span>faites vivre votre cinéma</span>
-    <span class="ampoules b" id="ampB"></span>
-  </div>
+    <h1 class="cpTitre">Séance</h1>
+    <p class="cpMot">« Il y a un vieux cinéma au bout de la rue.<br>
+      Personne n'y va plus. Tu devrais le voir. »</p>
 
-  <div class="piste" id="piste"></div>
+    <div class="cpTrait"></div>
 
-  <div class="pied">
-    <div class="points" id="points"></div>
     <button class="btnJouer">Ouvrir mon cinéma</button>
     <button class="lien">J'ai déjà un cinéma</button>
     <div class="mention">Gratuit · sans installation</div>
   </div>
-
 </div>
 
 <script>
 /* ═══════════ les quatre vignettes ═══════════ */
-function vFacade(){
-  return `<svg viewBox="0 0 300 210" aria-hidden="true">
-    <defs>
-      <linearGradient id="ci" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#1a0c16"/><stop offset="1" stop-color="#4a1824"/></linearGradient>
-      <linearGradient id="mu" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#4a3430"/><stop offset=".4" stop-color="#8a6448"/>
-        <stop offset="1" stop-color="#48332c"/></linearGradient>
-      <linearGradient id="o1" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#f7dd9a"/><stop offset="1" stop-color="#8a6c2a"/></linearGradient>
-      <radialGradient id="h1" cx=".5" cy=".5" r=".5">
-        <stop offset="0" stop-color="#ffdf9a" stop-opacity=".5"/>
-        <stop offset="1" stop-color="#ffdf9a" stop-opacity="0"/></radialGradient>
-    </defs>
-    <rect width="300" height="210" fill="url(#ci)"/>
-    <g fill="#fff" opacity=".5"><circle cx="34" cy="22" r="1"/><circle cx="96" cy="14" r=".8"/>
-      <circle cx="238" cy="20" r="1"/><circle cx="176" cy="10" r=".7"/></g>
-    <g fill="#241420"><path d="M0 88 L30 88 L30 64 L60 64 L60 84 L88 84 L88 108 L0 108 Z"/>
-      <path d="M218 84 L248 84 L248 60 L278 60 L278 80 L300 80 L300 108 L218 108 Z"/></g>
-    <g fill="#f0c96a" opacity=".6"><rect x="9" y="92" width="8" height="10"/>
-      <rect x="38" y="70" width="8" height="10"/><rect x="66" y="90" width="8" height="10"/>
-      <rect x="226" y="90" width="8" height="10"/><rect x="256" y="66" width="8" height="10"/></g>
-    <ellipse cx="150" cy="150" rx="140" ry="52" fill="url(#h1)"/>
-    <rect x="28" y="102" width="244" height="14" fill="#5a4238"/>
-    <rect x="46" y="90" width="208" height="12" fill="#5a4238"/>
-    <rect x="28" y="114" width="244" height="3" fill="url(#o1)"/>
-    <rect x="28" y="117" width="244" height="93" fill="url(#mu)"/>
-    <rect x="54" y="124" width="192" height="34" rx="3" fill="#1c1014" stroke="url(#o1)" stroke-width="2.2"/>
-    <rect x="59" y="129" width="182" height="24" fill="url(#h1)"/>
-    <text x="150" y="147" text-anchor="middle" font-family="Marcellus, Georgia" font-size="17"
-      letter-spacing="5" fill="#ffe9b0">CINÉMA</text>
-    <g fill="#f7dd9a">${[...Array(8)].map((_,i)=>
-      `<circle cx="${60+i*26}" cy="124" r="2.4"/>`).join("")}</g>
-    <path d="M40 172 L260 172 L254 188 L46 188 Z" fill="#8a7458"/>
-    <rect x="40" y="169" width="220" height="4" fill="url(#o1)"/>
-    <text x="150" y="184" text-anchor="middle" font-family="Courier New" font-size="8"
-      letter-spacing="2" fill="#3a2a18">CE SOIR · 20H30</text>
-    <g><rect x="58" y="192" width="44" height="18" fill="#3a2038"/>
-       <rect x="198" y="192" width="44" height="18" fill="#4a2028"/>
-       <rect x="61" y="195" width="38" height="15" fill="#f0c96a" opacity=".2"/>
-       <rect x="201" y="195" width="38" height="15" fill="#f0c96a" opacity=".2"/></g>
-    <rect x="124" y="190" width="52" height="20" fill="#3a4048"/>
-    <rect x="127" y="193" width="23" height="17" fill="#f0c96a" opacity=".26"/>
-    <rect x="152" y="193" width="23" height="17" fill="#f0c96a" opacity=".26"/>
-  </svg>`;
-}
 
-function vAffiches(){
-  const G=[["#8c2331","#f0d89a","AVENTURE"],["#2e5a7a","#cfe4f0","DRAME"],
-           ["#7a5a2a","#f7e8c0","COMÉDIE"]];
-  return `<svg viewBox="0 0 300 210" aria-hidden="true">
-    <rect width="300" height="210" fill="#f2ece0"/>
-    <rect y="168" width="300" height="42" fill="#8c2331"/>
-    ${G.map(([f,c,t],i)=>`<g transform="translate(${20+i*92} 18) rotate(${(i-1)*3} 42 74)">
-      <rect width="84" height="126" rx="4" fill="${f}" stroke="#8a6c2a" stroke-width="2"/>
-      <circle cx="42" cy="40" r="18" fill="${c}" opacity=".55"/>
-      <path d="M9 88 L42 58 L75 88 Z" fill="${c}" opacity=".4"/>
-      <rect x="12" y="97" width="60" height="4" rx="2" fill="${c}" opacity=".85"/>
-      <rect x="20" y="106" width="44" height="3" rx="1.5" fill="${c}" opacity=".5"/>
-      <text x="42" y="120" text-anchor="middle" font-family="Outfit, sans-serif" font-size="6"
-        letter-spacing="1.2" fill="${c}">${t}</text></g>`).join("")}
-    <text x="150" y="194" text-anchor="middle" font-family="Outfit, sans-serif" font-size="10"
-      letter-spacing="2" fill="#f0d89a">DEUX SORTIES CHAQUE MERCREDI</text>
-  </svg>`;
-}
 
-function vJournal(){
-  return `<svg viewBox="0 0 300 210" aria-hidden="true">
-    <rect width="300" height="210" fill="#e8dfc8"/>
-    <rect x="12" y="12" width="276" height="186" rx="6" fill="#fdfbf3"
-      stroke="#8a6c2a" stroke-width="2"/>
-    <text x="28" y="42" font-family="Marcellus, Georgia" font-size="16" letter-spacing="3"
-      fill="#571520">JOUR 12</text>
-    <text x="272" y="40" text-anchor="end" font-family="Outfit, sans-serif" font-size="7"
-      letter-spacing="1.6" fill="#665a42">CINÉMA FAMILIAL</text>
-    <line x1="28" y1="52" x2="272" y2="52" stroke="#241a12" stroke-opacity=".2" stroke-width="2"/>
-    <circle cx="42" cy="76" r="15" fill="#f0c9a0"/>
-    <path d="M28 70 Q42 54 56 70 L56 66 Q42 50 28 66 Z" fill="#571520"/>
-    <rect x="35" y="60" width="14" height="5" rx="1.6" fill="#e8b84b"/>
-    <text x="66" y="72" font-family="Georgia" font-size="10.5" font-style="italic"
-      fill="#3a2a1c">Bonjour patron.</text>
-    <text x="66" y="87" font-family="Georgia" font-size="10.5" font-style="italic"
-      fill="#3a2a1c">Il pleut sur le quartier.</text>
-    ${[112,142,172].map((y,i)=>`
-      <line x1="28" y1="${y-12}" x2="272" y2="${y-12}" stroke="#241a12" stroke-opacity=".14"
-        stroke-dasharray="3 3"/>
-      <circle cx="37" cy="${y-2}" r="3.4" fill="#8a6c2a"/>
-      <rect x="50" y="${y-8}" width="${[168,142,112][i]}" height="6" rx="3"
-        fill="#241a12" opacity=".68"/>
-      <rect x="50" y="${y+2}" width="${[104,90,132][i]}" height="4" rx="2"
-        fill="#665a42" opacity=".55"/>`).join("")}
-  </svg>`;
-}
 
-function vSalle(){
-  return `<svg viewBox="0 0 300 210" aria-hidden="true">
-    <defs><linearGradient id="ec" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fffdf2"/><stop offset="1" stop-color="#cbbb92"/></linearGradient>
-      <linearGradient id="fa" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0" stop-color="#ffe9b0" stop-opacity="0"/>
-        <stop offset="1" stop-color="#ffe9b0" stop-opacity=".22"/></linearGradient></defs>
-    <rect width="300" height="210" fill="#1c1018"/>
-    <rect x="38" y="16" width="224" height="74" rx="2" fill="url(#ec)"/>
-    <rect x="32" y="10" width="236" height="86" rx="3" fill="none" stroke="#caa24a" stroke-width="2.4"/>
-    <path d="M30 10 q-13 43 0 86 l-14 0 l0 -86 Z" fill="#7c1c2e"/>
-    <path d="M270 10 q13 43 0 86 l14 0 l0 -86 Z" fill="#7c1c2e"/>
-    <path d="M150 210 L44 96 L256 96 Z" fill="url(#fa)"/>
-    <path d="M0 180 L300 180 L300 210 L0 210 Z" fill="#4a1220"/>
-    ${[{y:118,k:.58,n:8},{y:140,k:.76,n:7},{y:166,k:.98,n:6}].map(r=>
-      `<g>${[...Array(r.n)].map((_,i)=>{const l=282/r.n,x=9+i*l+l/2;
-        return `<g transform="translate(${x.toFixed(0)} ${r.y}) scale(${r.k})">
-          <path d="M-8 -16 q8 -3 16 0 l0 14 l-16 0 Z" fill="#a82b3d"/>
-          <rect x="-9" y="-3" width="18" height="5" rx="2" fill="#c4404f"/>
-          ${i%3 ? `<circle cy="-19" r="3.4" fill="#e4b892"/>` : ""}</g>`;}).join("")}</g>`).join("")}
-  </svg>`;
-}
 
-const VOLETS = [
-  {img:vFacade(), titre:"Un cinéma à faire vivre",
-   texte:"Soixante places, un projecteur qui chauffe, et un vieux projectionniste qui a des avis sur tout."},
-  {img:vAffiches(), titre:"Deux sorties par semaine",
-   texte:"Les prendre à leur sortie coûte cher. Attendre, c'est risquer la salle vide. À toi de choisir."},
-  {img:vJournal(), titre:"Chaque matin, un dossier",
-   texte:"Une école qui appelle, la pluie qui remplit la salle, un projecteur qui fatigue. Jamais deux matins pareils."},
-  {img:vSalle(), titre:"Le palace, plus tard",
-   texte:"Fauteuils, écran, son, tapis rouge. Dix âges séparent le hangar du soir de première."}
-];
-
-document.getElementById("piste").innerHTML = VOLETS.map(v=>`
-  <div class="volet">
-    <div class="cadre">${v.img}</div>
-    <h2>${v.titre}</h2>
-    <p>${v.texte}</p>
-  </div>`).join("");
-
-document.getElementById("points").innerHTML =
-  VOLETS.map((_,i)=>`<i class="${i===0?'on':''}"></i>`).join("");
-
-const piste = document.getElementById("piste");
-const pts = document.querySelectorAll("#points i");
-piste.addEventListener("scroll", ()=>{
-  const i = Math.round(piste.scrollLeft / piste.clientWidth);
-  pts.forEach((p,k)=>p.classList.toggle("on", k === i));
-}, {passive:true});
-pts.forEach((p,i)=>p.addEventListener("click", ()=>
-  piste.scrollTo({left: i * piste.clientWidth, behavior:"smooth"})));
+/* Le carrousel de volets et ses quatre illustrations vivaient ici.
+   La carte postale dit la même chose en un écran : plus rien à faire
+   défiler, plus de points de pagination à synchroniser. */
 
 /* ═══════════ L'IDENTIFICATION ═══════════ */
 const SB_URL = "https://zpfkekiavlfphialvphi.supabase.co";
@@ -553,10 +396,6 @@ document.querySelector(".lien").onclick = ()=>ouvreAuth("connexion");
 /* déjà connecté : on file directement à la projection */
 if(localStorage.getItem("rex_session")) location.href = "chargement.html";
 
-/* les ampoules de l'enseigne */
-const n = 9;
-document.getElementById("ampH").innerHTML = Array(n).fill("<i></i>").join("");
-document.getElementById("ampB").innerHTML = Array(n).fill("<i></i>").join("");
 </script>
 </body>
 </html>
