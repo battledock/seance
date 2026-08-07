@@ -297,7 +297,18 @@ function chercheConflit({salle_id, heure, duree, ignorerId}){
   return null;
 }
 
-/* estimation indicative d'audience — NE DISTRIBUE AUCUN ARGENT (temporaire) */
+/* ------------------------------------------------------------
+   ESTIMATION LOCALE D'AUDIENCE — un simple repère
+
+   Le chiffre qui fait foi vient du serveur (previsionDe). Cette
+   estimation n'est qu'un repère affiché tant que la prévision
+   serveur n'est pas encore chargée, ou pour le total indicatif.
+   Elle ne distribue aucun argent et ne décide de rien.
+
+   (L'ancien code multipliait par Etat.cinema.mult_frequentation,
+   une colonne qui n'existe pas : le facteur valait donc toujours 1
+   et masquait un bug silencieux. On l'a retiré.)
+   ------------------------------------------------------------ */
 function estimeAudience(s){
   const f = filmParId(s.film_id); if(!f) return 0;
   const salle = sallesDispo.find(x=>String(x.id)===String(s.salle_id)) || {capacite:80, confort:1};
@@ -308,7 +319,7 @@ function estimeAudience(s){
   else if(heure > 21*60+30) bonusHeure = .68;
   const elast = Math.max(.35, Math.min(1.25, 1.35 - (s.prix||PRIX_DEFAUT)/16));
   const base = (f.popularite/100) * salle.capacite * bonusHeure * elast;
-  return Math.max(0, Math.round(base * (Etat.cinema.mult_frequentation||1)));
+  return Math.max(0, Math.round(base));
 }
 
 /* ---------- Bob ---------- */
@@ -522,6 +533,8 @@ function verifieSeance(b){
   if(!filmDebloque(f)) return `« ${f.titre} » se débloque au niveau ${f.niveauRequis}.`;
   const salle = sallesDispo.find(s=>String(s.id)===String(b.salle_id));
   if(!salle) return "Cette salle n'appartient pas à ton cinéma.";
+  if(salle.travaux_fin && new Date(salle.travaux_fin).getTime() > Date.now())
+    return `${salle.nom} est en travaux, on ne peut pas y programmer de séance.`;
   if(b.prix < PRIX_MIN || b.prix > PRIX_MAX) return `Le prix doit être entre ${PRIX_MIN} et ${PRIX_MAX} €.`;
   if(!horairesDisponibles().includes(b.heure)) return "Horaire non disponible.";
   if(chercheConflit({salle_id:b.salle_id, heure:b.heure, duree:f.duree, ignorerId:b.id})) return "Créneau déjà occupé dans cette salle.";
@@ -552,9 +565,12 @@ async function valideSeance(){
   };
 
   if(brouillon.id){
-    await sbFetch("seances?id=eq."+brouillon.id, {method:"PATCH", body:corps, prefer:"return=minimal"});
+    /* on demande au serveur de renvoyer la ligne : ce qu'on affiche est
+       exactement ce qui a été enregistré, jamais une reconstruction locale */
+    const res = await sbFetch("seances?id=eq."+brouillon.id, {method:"PATCH", body:corps, prefer:"return=representation"});
+    if(!Array.isArray(res) || !res.length){ bulleConseil("La modification n'est pas passée. Réessaie."); return; }
     const i = seancesJour.findIndex(s=>String(s.id)===String(brouillon.id));
-    seancesJour[i] = {...seancesJour[i], ...corps};
+    if(i >= 0) seancesJour[i] = res[0];
     bulleConseil(`« ${f.titre} » déplacé à ${brouillon.heure}. Le marquee suit.`);
   }else{
     const res = await sbFetch("seances", {method:"POST", body:corps});
@@ -1033,3 +1049,4 @@ Object.assign(window, {
   supprimeSeance,
   valideSeance
 });
+
