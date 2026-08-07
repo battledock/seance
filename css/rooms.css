@@ -432,3 +432,40 @@
 .avantApres.complet .aaVolet{max-width:180px}
 .aaEffets{margin-top:14px}
 .btnTravaux{width:100%;margin-top:14px;padding:14px;font-size:12.5px}
+
+
+/* ============================================================
+   FINITIONS DE LA PAGE DES SALLES
+   ============================================================ */
+
+/* Cinq équipements dans une grille à deux colonnes : le dernier
+   restait seul avec un vide à côté de lui. Quand le compte est
+   impair, la dernière carte prend toute la largeur — la colonne
+   vide disparaît et la carte respire. */
+.equipements > .equip:last-child:nth-child(odd){
+  grid-column:1 / -1;
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+.equipements > .equip:last-child:nth-child(odd) b{margin-top:0}
+.equipements > .equip:last-child:nth-child(odd) .ico{flex:none}
+.equipements > .equip:last-child:nth-child(odd) .points{margin-top:0}
+
+/* Les cartes défilaient sous l'en-tête collant et se faisaient
+   trancher en plein titre. On leur laisse de quoi passer dessous
+   sans être coupées à un endroit qui ressemble à un bug. */
+.equipements .equip,
+.grilleEquip{scroll-margin-top:88px}
+
+/* Les trois anneaux : le trait était fin et la valeur peu lisible
+   sur un fond clair. On épaissit légèrement et on ancre le chiffre. */
+.chiffre svg{width:64px;height:64px;display:block;margin:0 auto}
+.chiffre b{font-size:23px;letter-spacing:-.01em}
+.chiffre span{font-size:9.5px;letter-spacing:.12em}
+
+/* Une action indisponible doit se lire comme telle, pas comme un
+   bouton ordinaire qui ne répond pas. */
+.equip.bloque{opacity:.5}
+.equip.bloque .prix{color:#8a8078}
+.equip.max .prix{color:#2f7d4a}
