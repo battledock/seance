@@ -26,34 +26,45 @@ body.sort{animation:sortie .7s forwards}
 .titre{font-size:15px;letter-spacing:.26em;text-transform:uppercase;color:#f7dd9a}
 .pct{font-family:'Courier New',monospace;font-size:13px;letter-spacing:.2em;color:#caa24a;min-height:16px}
 .vanne{font-family:'Courier New',monospace;font-size:12px;color:#c9a48c;text-align:center;max-width:78vw;line-height:1.6;min-height:38px}
+
+/* ------------------------------------------------------------
+   LE CHARGEMENT
+
+   Il y avait une bobine qui tournait, une barre de progression,
+   un pourcentage et une vanne différente toutes les trois
+   secondes. Beaucoup de spectacle pour dire « patiente ».
+
+   Blanc franc, un mot, trois points. On n'annonce plus de
+   pourcentage : il était faux la moitié du temps, et une barre
+   qui stagne inquiète plus qu'elle ne rassure.
+   ------------------------------------------------------------ */
+html,body{background:#fff !important}
+body{margin:0;min-height:100vh;min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',system-ui,sans-serif}
+.chg{font-family:'Marcellus',Georgia,serif;font-size:18px;
+  letter-spacing:.24em;text-indent:.24em;color:#3a3230}
+.chg i{font-style:normal;opacity:0;animation:chgPoint 1.4s infinite}
+.chg i:nth-child(2){animation-delay:.22s}
+.chg i:nth-child(3){animation-delay:.44s}
+@keyframes chgPoint{0%,66%,100%{opacity:0}22%,60%{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .chg i{animation:none;opacity:1}
+}
 </style>
 </head>
 <body>
-
-<svg style="width:min(56vw,220px);height:auto;display:block" viewBox="0 0 220 160">
-  <path class="pelli" d="M60 88 Q110 118 160 88" stroke="#caa24a" stroke-width="7" fill="none"/>
-  <g class="tourne">
-    <circle cx="60" cy="60" r="46" fill="#1c070d" stroke="#caa24a" stroke-width="4"/>
-    <circle cx="60" cy="60" r="9" fill="#caa24a"/>
-    <g>
-      <circle cx="60" cy="28" r="9" fill="#0d0306"/><circle cx="88" cy="76" r="9" fill="#0d0306"/><circle cx="32" cy="76" r="9" fill="#0d0306"/>
-    </g>
-    <circle cx="60" cy="60" r="30" fill="none" stroke="#571520" stroke-width="10"/>
-  </g>
-  <g class="tourne" style="animation-duration:1.1s">
-    <circle cx="160" cy="74" r="32" fill="#1c070d" stroke="#caa24a" stroke-width="4"/>
-    <circle cx="160" cy="74" r="7" fill="#caa24a"/>
-    <g fill="#0d0306">
-      <circle cx="160" cy="52" r="6.5"/><circle cx="179" cy="85" r="6.5"/><circle cx="141" cy="85" r="6.5"/>
-    </g>
-  </g>
-</svg>
-
-<div class="titre">Le Rex du Quartier</div>
-<div class="pct" id="pct">BOBINAGE… 0%</div>
-<div class="vanne" id="vanne">« Sens de rotation ? Aucune idée. Ça tourne, c'est déjà Cannes. »</div>
+<div class="chg">Chargement<i>.</i><i>.</i><i>.</i></div>
 
 <script>
+
+/* Les éléments d'habillage (pourcentage, vanne, barre) ont disparu
+   avec la refonte du chargement. Plutôt que de parsemer le script
+   de vérifications, on rend ces accès inoffensifs : un objet muet
+   qui accepte tout ce qu'on lui écrit. */
+const __muet = new Proxy({}, {get:()=>(()=>{}), set:()=>true});
+function __el(id){ return document.getElementById(id) || __muet; }
+
 /* garde : pas de session → retour au guichet */
 if(!localStorage.getItem("rex_session")) location.replace("index.html");
 
@@ -69,8 +80,8 @@ const VANNES = [
 ];
 const VANNE_GLISSE = "« 87%… retour à 40. La bobine a glissé, on en parle plus. »";
 
-const elPct = document.getElementById("pct");
-const elVanne = document.getElementById("vanne");
+const elPct = __el("pct");
+const elVanne = __el("vanne");
 elVanne.textContent = VANNES[Math.floor(Math.random()*VANNES.length)];
 
 let p = 0, aGlisse = false, fini = false;
