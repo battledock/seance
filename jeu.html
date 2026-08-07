@@ -10,7 +10,8 @@
   <link rel="stylesheet" href="css/base.css?v=2ab9afab">
   <style>
     body{margin:0;background:#0a0406}
-    .contenu,.entete,.navBas{opacity:0}
+    .sceneJeu,.navBas{opacity:0;transition:opacity .38s ease}
+    body.pret .sceneJeu,body.pret .navBas{opacity:1}
     #voileChargement{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;
       align-items:center;justify-content:center;gap:20px;
       background:radial-gradient(ellipse at 50% 42%,#2a1018,#0a0406 72%)}
@@ -36,8 +37,6 @@
 </div>
 
 <main class="sceneJeu">
-
-  <!-- HUD transparent superposé au ciel -->
   <div class="hudJeu" id="hudJeu">
     <div class="hudGauche">
       <span class="hudNom" id="hudNom"></span>
@@ -48,13 +47,8 @@
       <span class="hudXp"><span class="hudXpBarre" id="hudXpBarre"></span></span>
     </div>
   </div>
-
-  <!-- La façade occupe tout l'écran -->
   <div class="sceneFacade" id="sceneFacade"></div>
-
-  <!-- Dégradé bas pour fondu vers la nav -->
   <div class="sceneFade" aria-hidden="true"></div>
-
 </main>
 
 <script type="module" src="js/pages/jeu.js?v=2ab9afab"></script>
