@@ -12,10 +12,21 @@
    ============================================================ */
 const SVG_NS2 = "http://www.w3.org/2000/svg";
 
+/* ------------------------------------------------------------
+   LES TROIS PLANS DE PROFONDEUR
+
+   L'éloignement se disait par la transparence : les passants du
+   fond étaient à 62 % d'opacité et on voyait la façade au travers.
+   Des fantômes, pas des gens loin.
+
+   La distance se lit maintenant à la taille, au léger voile
+   atmosphérique du décor et au contraste — les corps, eux,
+   restent opaques.
+   ------------------------------------------------------------ */
 const PLANS_R = [
-  {id:"planLoin",   y:400, k:0.92, opac:.62, duree:[26,34], poids:.32, flou:true},
-  {id:"planMilieu", y:428, k:1.24, opac:.86, duree:[20,27], poids:.34, flou:false},
-  {id:"planProche", y:456, k:1.62, opac:1,   duree:[15,21], poids:.34, flou:false}
+  {id:"planLoin",   y:400, k:0.92, opac:1, duree:[26,34], poids:.32, flou:false},
+  {id:"planMilieu", y:428, k:1.24, opac:1, duree:[20,27], poids:.34, flou:false},
+  {id:"planProche", y:456, k:1.62, opac:1, duree:[15,21], poids:.34, flou:false}
 ];
 
 const TEINTES_R = {
@@ -284,7 +295,16 @@ function spawnPassant(mouille){
      pendant que le corps filait : les passants dansaient sur
      place au lieu de marcher.
      ------------------------------------------------------------ */
-  const FOULEE = 12.4;                       /* unités couvertes par cycle */
+  /* Longueur réelle d'une foulée, mesurée sur le squelette : la cuisse
+     fait 8,6 et le tibia 7,4 ; avec un balancement de +34° à −28°, le
+     pied va de +8,05 à −8,79, soit 16,8 unités par cycle.
+
+     La valeur précédente, 12,4, était sous-estimée d'un bon tiers : on
+     comptait donc trop de foulées pour le chemin à parcourir, les jambes
+     s'agitaient plus vite que le corps n'avançait, et les pieds
+     patinaient vers l'arrière. De loin, les passants semblaient marcher
+     à reculons. */
+  const FOULEE = 16.8;                       /* unités couvertes par cycle */
   const trajet = Math.abs(x1 - x0);
   const foulees = Math.max(1, trajet / (FOULEE * plan.k));
   const corpulence = 0.94 + Math.random()*0.12;   /* petite variation de pas */
@@ -337,6 +357,7 @@ export {
   silhouette2,
   spawnPassant
 };
+
 
 
 
