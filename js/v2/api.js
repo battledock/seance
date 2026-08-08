@@ -216,6 +216,12 @@ const seuilRentabilite = () =>
   appel("v2_seuil", {p_cinema_id: V2.cinemaId});
 /* La confiserie : deuxième pilier du métier, longtemps calculé
    sans jamais être montré ni pilotable. */
+/* Ce qu'une salle produit et ce que son état lui coûte : les
+   jauges seules ne disaient pas s'il fallait agrandir, équiper
+   ou simplement nettoyer. */
+const sallesDetail = () =>
+  appel("v2_salles_detail", {p_cinema_id: V2.cinemaId});
+
 const confiserieEtat = () =>
   appel("v2_confiserie_etat", {p_cinema_id: V2.cinemaId});
 const installerComptoir = () =>
@@ -333,7 +339,7 @@ export {
   chargeTarifsEquipement, creerCinema, signerLicence, rendreLicence, poserSeance, retirerSeance,
   peutOuvrir, synchronise, faireRelache, ouvrirLesPortes,
   decompteEtoiles, seuilRentabilite, echeances, historique,
-  confiserieEtat, installerComptoir, ameliorerConfiserie, nettoyer, reparer, agrandir,
+  confiserieEtat, installerComptoir, ameliorerConfiserie, sallesDetail, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
 };
