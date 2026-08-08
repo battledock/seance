@@ -39,6 +39,7 @@
       <div class="gT2" id="gResume"></div>
     </div>
     <div class="eCorps"><div id="grille"></div>
+      <div class="bas" id="partage"></div>
       <button class="btnSoiree" id="btnSoiree">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
           stroke-linecap="round" stroke-linejoin="round">
@@ -154,8 +155,10 @@ import {
   messageErreurV2, requeteTable
 } from "./js/v2/api.js?v=becf21cb";
 import { rendFacade, rendFronton, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
-import { rendGrille, rendResume, rendPiedGrille, echappe } from "./js/v2/grille.js?v=becf21cb";
-import { rendCatalogue, ouvrePanneau } from "./js/v2/films.js?v=becf21cb";
+import { rendGrille, rendResume, rendPiedGrille, rendPartage, echappe }
+  from "./js/v2/grille.js?v=becf21cb";
+import { rendCatalogue, ouvrePanneau, chargePoidsGenre }
+  from "./js/v2/films.js?v=becf21cb";
 import { rendBarreNav } from "./js/v2/icones.js?v=becf21cb";
 import { ouvreSoirees } from "./js/v2/soirees.js?v=becf21cb";
 
@@ -171,6 +174,7 @@ const $ = id => document.getElementById(id);
 const eur = n => Math.round(Number(n) || 0).toLocaleString("fr") + " €";
 let vue = "cinema", onglet = "nouveautes";
 let etat = null, offre = null, prevision = null, peut = null, tarifsEq = null;
+let creneauxJour = null;
 
 /* ---------- messages ---------- */
 let minuteurToast = null;
@@ -1242,7 +1246,7 @@ async function ouvreCase({salleId, heure, seanceId, place}){
   const salle = (etat.salles || []).find(s => s.id === salleId);
   if(!salle) return;
   ouvrePanneau({
-    salle, heure, seanceId, place, offre,
+    salle, heure, seanceId, place, offre, creneaux: creneauxJour,
     surPoser: async (sortieId, dejaSigne, duree) => {
       if(!dejaSigne){
         const s = await signerLicence(sortieId, duree);
@@ -1344,6 +1348,9 @@ async function rafraichit(sansOffre){
   if(!sansOffre) offre = await chargeOffre();
   const sd = await sallesDetail();
   sallesDet = sd.ok && Array.isArray(sd.data) ? sd.data : null;
+  const cr = await lireCreneaux();
+  creneauxJour = cr.ok ? cr.data : null;
+  const pb = await partageBassin();
 
   /* Chaque vue se dessine dans son propre filet : si l'une casse,
      les autres restent lisibles. Sans ça, une erreur dans le
@@ -1357,7 +1364,8 @@ async function rafraichit(sansOffre){
   dessine("alertes",   rendAlertes);
   dessine("ouvrir",    rendBoutonOuvrir);
   dessine("resume",    () => rendResume($("gResume"), prevision));
-  dessine("grille",    () => rendGrille($("grille"), etat, prevision, ouvreCase));
+  dessine("grille",    () => rendGrille($("grille"), etat, prevision, ouvreCase, creneauxJour));
+  dessine("partage",   () => rendPartage($("partage"), pb.ok ? pb.data : null));
   dessine("pied",      () => rendPiedGrille($("gPied"), prevision, peut, ouvrir));
   dessine("catalogue", () => rendCatalogue($("catalogue"), offre, onglet, signer));
   dessine("salles",    rendSalles);
@@ -1382,6 +1390,10 @@ async function signer(sortieId, duree){
     const c = await monCinema();
     if(!c){ location.replace("v2-nouveau.html"); return; }
     tarifsEq = await chargeTarifsEquipement().catch(() => null);
+    /* les poids par genre, chargés une fois : ils qualifient
+       chaque film du panneau sans rappeler le serveur */
+    const pg = await poidsGenres();
+    if(pg.ok) chargePoidsGenre(pg.data);
     /* on remet le monde à l'heure avant d'afficher quoi que ce soit */
     await synchronise().catch(() => null);
     await rafraichit();
