@@ -372,12 +372,15 @@ async function envoie(){
         user_id: data.user?.id,
         pseudo: data.user?.user_metadata?.pseudo || pseudo || ""
       }));
-      localStorage.setItem("rex_dest", inscrit ? "inscription.html" : "jeu.html");
+      /* Le jeu a été refondu : plus de chargement intermédiaire, on
+         entre directement. v2.html renvoie lui-même vers la création
+         si le joueur n'a pas encore de cinéma. */
+      localStorage.setItem("rex_dest", "v2.html");
       parle(REPLIQUES.bienvenue);
       setTimeout(()=>{
         document.body.classList.add("fondu");
         document.body.style.opacity = "0";
-        setTimeout(()=>{ location.href = "chargement.html"; }, 820);
+        setTimeout(()=>{ location.href = "v2.html"; }, 820);
       }, 700);
       return;
     }
@@ -394,8 +397,9 @@ document.querySelector(".btnJouer").onclick = ()=>ouvreAuth("inscription");
 document.querySelector(".lien").onclick = ()=>ouvreAuth("connexion");
 
 /* déjà connecté : on file directement à la projection */
-if(localStorage.getItem("rex_session")) location.href = "chargement.html";
+if(localStorage.getItem("rex_session")) location.href = "v2.html";
 
 </script>
 </body>
 </html>
+
