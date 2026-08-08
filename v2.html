@@ -1230,11 +1230,11 @@ function rendEcheances(l){
 const fmt = v => (Number(v) || 0).toFixed(2).replace(".", ",") + " €";
 
 /* ---------- la programmation ---------- */
-async function ouvreCase({salleId, heure, seanceId}){
+async function ouvreCase({salleId, heure, seanceId, place}){
   const salle = (etat.salles || []).find(s => s.id === salleId);
   if(!salle) return;
   ouvrePanneau({
-    salle, heure, seanceId, offre,
+    salle, heure, seanceId, place, offre,
     surPoser: async (sortieId, dejaSigne, duree) => {
       if(!dejaSigne){
         const s = await signerLicence(sortieId, duree);
