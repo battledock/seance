@@ -64,7 +64,15 @@
 
   <!-- ═══════ COMPTE ═══════ -->
   <section class="vue clair masque" id="vueCompte">
-    <div class="eTop"><b>Le compte</b><span id="kSous">—</span></div>
+    <header class="fronton">
+      <div class="frontonScene" id="frontonScene"></div>
+      <div class="frontonVoile"></div>
+      <div class="frontonTxt">
+        <div class="fNomCine" id="fNomCine">—</div>
+        <div class="fLieu" id="fLieu">—</div>
+        <div class="fEtoiles" id="fEtoilesEntete"></div>
+      </div>
+    </header>
     <div class="eCorps" id="compte"></div>
   </section>
 
@@ -136,7 +144,7 @@ import {
   decompteEtoiles, seuilRentabilite, echeances, historique,
   messageErreurV2, requeteTable
 } from "./js/v2/api.js?v=becf21cb";
-import { rendFacade, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
+import { rendFacade, rendFronton, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
 import { rendGrille, rendResume, rendPiedGrille, echappe } from "./js/v2/grille.js?v=becf21cb";
 import { rendCatalogue, ouvrePanneau } from "./js/v2/films.js?v=becf21cb";
 import { rendBarreNav } from "./js/v2/icones.js?v=becf21cb";
@@ -657,10 +665,21 @@ let compteCharge = false;
 function rendCompte(){
   const c = etat.cinema;
   const t = etat.tarifs || {};
-  /* La trésorerie est déjà en permanence sur la façade : la
-     répéter ici ne servait à rien. On met à la place ce qu'on ne
-     voit nulle part ailleurs une fois le bilan refermé. */
-  $("kSous").textContent = `jour ${c.jour}`;
+  /* Le compte s'ouvre sur le cinéma lui-même : sa façade telle
+     qu'elle est aujourd'hui, son nom, son quartier, ses étoiles.
+     Les chiffres viennent après, dans les fiches. */
+  rendFronton($("frontonScene"), etat,
+    (prevision?.seances || []).map(x => ({heure:x.heure, titre:x.titre, genre:x.genre})));
+  $("fNomCine").textContent = c.nom;
+  $("fLieu").textContent = `${QUARTIERS_NOM[c.quartier] || c.quartier} · jour ${c.jour}`;
+  let ee = "";
+  for(let i = 1; i <= 5; i++){
+    const p = i <= Math.round(c.etoiles);
+    ee += `<svg viewBox="0 0 24 24" fill="${p ? "#f0c96a" : "none"}"
+      stroke="${p ? "#f0c96a" : "rgba(255,255,255,.24)"}" stroke-width="1.8">
+      <path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3l-5-4.9 7-.9z"/></svg>`;
+  }
+  $("fEtoilesEntete").innerHTML = ee;
 
   /* Quatre analyses, quatre fiches. Chacune donne déjà son
      chiffre et ce qu'il faut en retenir : on n'ouvre que si l'on
@@ -741,6 +760,11 @@ function rendCompte(){
   remplitCompte();
 }
 
+const QUARTIERS_NOM = {
+  quartier_populaire:"Quartier populaire", quartier_etudiant:"Quartier étudiant",
+  quartier_bourgeois:"Quartier bourgeois", quartier_familial:"Quartier familial"
+};
+
 const FLECHE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
   stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
   style="width:16px;height:16px"><path d="M9 5l7 7-7 7"/></svg>`;
@@ -763,15 +787,7 @@ async function remplitCompte(){
   ]);
   if(d.ok) rendEtoiles(d.data);
   if(sl.ok) rendSeuil(sl.data);
-  const j = Array.isArray(hi) ? hi : [];
-  rendCourbe(j);
-  if(j.length){
-    const v = Number(j[0].resultat || 0);
-    $("kSous").textContent = `jour ${etat.cinema.jour} · hier ${
-      v >= 0 ? "+" : "−"}${eur(Math.abs(v))} · ${j[0].spectateurs} spectateurs`;
-  } else {
-    $("kSous").textContent = `jour ${etat.cinema.jour} · aucune journée jouée`;
-  }
+  rendCourbe(Array.isArray(hi) ? hi : []);
   if(ec.ok) rendEcheances(ec.data || []);
 }
 
