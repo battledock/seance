@@ -783,3 +783,118 @@ body.sombre{background:#0d0a0e}
 .creneau.mauvais{background:linear-gradient(135deg,#fbeee6,#f7e2d4);border-color:#eecdb9}
 .creneau.mauvais svg{color:#c07a5a}
 .creneau.mauvais p{color:#a8543a}
+
+/* ── la bande de semaine ──
+   Un mardi ne vaut pas un samedi : l'affluence va de 0,72 à 1,34.
+   Le jour courant est marqué par un bandeau de pleine hauteur, pas
+   par une barre proportionnelle — sinon un lundi creux devient
+   invisible justement le jour où l'on en a besoin. */
+.sem:empty{display:none}
+.sem{background:#fff;border-radius:14px;padding:13px 14px 12px;margin-bottom:11px;
+  box-shadow:0 1px 2px rgba(40,30,20,.05),0 5px 14px rgba(40,30,20,.03)}
+.semT{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  margin-bottom:11px}
+.semT b{font-family:'Marcellus',serif;font-size:16px;color:#1a1410;text-transform:capitalize}
+.semT span{font-size:10.5px;color:#a89a88;text-align:right;line-height:1.35}
+.semVue{position:relative;height:64px;margin:0 -2px}
+.semVue svg{width:100%;height:100%;display:block;overflow:visible}
+.semJours{display:flex;margin-top:2px}
+.semJours .j{flex:1;text-align:center}
+.semJours .j .n{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#b0a08a;
+  font-weight:500}
+.semJours .j.on .n{color:#8a1c2c;font-weight:600}
+.semJours .j.passe .n{color:#d0c6b8}
+.semJours .j .m{display:block;font-size:8px;color:#c9a24a;margin-top:2px;height:10px}
+.semNote{font-size:10.5px;color:#8a7a6a;margin-top:9px;line-height:1.45}
+.semNote b{color:#5a4a3a}
+
+/* ── la classe qui réserve ── */
+.sco{border-radius:16px;overflow:hidden;background:#fff;margin-bottom:11px;
+  box-shadow:0 3px 14px rgba(40,30,20,.14)}
+.scoScene{position:relative;height:158px;overflow:hidden;background:#cfe0ea}
+.scoScene svg{width:100%;height:100%;display:block}
+.scoVoile{position:absolute;left:0;right:0;top:0;height:88px;
+  background:linear-gradient(180deg,rgba(16,22,30,.78),rgba(16,22,30,.34) 56%,transparent)}
+.scoTxt{position:absolute;left:0;right:0;top:12px;padding:0 15px}
+.scoTxt .kick{font-size:8px;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(255,255,255,.86)}
+.scoTxt h3{font-family:'Marcellus',serif;font-size:19px;color:#fff;margin-top:4px;
+  line-height:1.12;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.scoTxt p{font-size:10.5px;color:rgba(255,255,255,.88);margin-top:4px;
+  text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.scoCorps{padding:13px 14px 14px}
+.scoLg{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;
+  font-size:12px;color:#4a423c;gap:12px}
+.scoLg+.scoLg{border-top:1px solid #f6f2ec}
+.scoLg b{font-weight:600;font-size:13px;color:#1a1410;text-align:right}
+.scoLg b.v{color:#2a8a4a}
+.scoLg small{display:block;font-size:9.5px;color:#a89a88;margin-top:1px}
+.scoNote{background:linear-gradient(135deg,#eaf3ec,#dff0e6);border:1px solid #c2e0cd;
+  border-radius:11px;padding:11px 12px;font-size:10.5px;color:#3a6a4c;line-height:1.5;
+  margin-top:11px}
+.scoActions{display:flex;gap:8px;margin-top:12px}
+.scoActions button{flex:1;border-radius:12px;padding:13px;cursor:pointer;border:none}
+.scoOui{background:linear-gradient(180deg,#7a1a28,#5a1018);color:#ffeec4;
+  font-family:'Marcellus',serif;font-size:13px;letter-spacing:.06em}
+.scoNon{background:#fff;border:1px solid #ddd2c4;color:#8a8078;
+  font-family:'Outfit',sans-serif;font-size:12px}
+.scoActions button:disabled{opacity:.5}
+
+/* la case scolaire dans la grille */
+.cell.scolaire{border:1.5px solid #7aa8c8;
+  background:linear-gradient(160deg,#eaf2f8,#d4e6f0)}
+.cell.scolaire b{color:#2a5a7a;font-size:8px;line-height:1.1;font-weight:600}
+.cell.scolaire .pt{font-size:9.5px;color:#4a7a9a;font-weight:600}
+
+/* ── les engagements ── */
+.eng:empty{display:none}
+.eng{background:#fff;border-radius:14px;padding:13px 14px;margin-top:11px;
+  box-shadow:0 1px 2px rgba(40,30,20,.05),0 5px 14px rgba(40,30,20,.03)}
+.engT{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#b0a08a;
+  margin-bottom:10px}
+.engL{display:flex;align-items:center;gap:11px;padding:9px 0}
+.engL+.engL{border-top:1px solid #f6f2ec}
+.engL .pts{display:flex;gap:3px;flex:none}
+.engL .pts i{width:9px;height:9px;border-radius:50%;background:#e8e0d2;display:block}
+.engL .pts i.on{background:#2a8a4a}
+.engL .pts i.manque{background:#e0b0a0}
+.engL .nm{flex:1;min-width:0}
+.engL .nm b{display:block;font-size:12px;color:#2a231c;font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.engL .nm small{display:block;font-size:9.5px;color:#a89a88;margin-top:1px}
+.engL .st{font-size:11px;font-weight:600;flex:none;white-space:nowrap}
+.engL .st.ok{color:#2a8a4a}.engL .st.non{color:#c05a3a}
+
+/* ── les raccourcis ── */
+.raccourcis{display:flex;gap:8px;margin-top:11px}
+.raccourcis button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  background:#fff;border:1.5px dashed #d4c8b8;border-radius:13px;padding:12px 8px;
+  font-family:inherit;font-size:11.5px;color:#8a6a2a;cursor:pointer;font-weight:500}
+.raccourcis button svg{width:16px;height:16px;flex:none}
+.raccourcis button:active{background:#faf7f2}
+
+/* ── les avant-séances ── */
+.pub:empty{display:none}
+.pub{background:#fff;border-radius:14px;padding:15px;margin-top:11px;
+  box-shadow:0 1px 2px rgba(40,30,20,.05),0 5px 14px rgba(40,30,20,.03)}
+.pubT{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  margin-bottom:12px}
+.pubT b{font-family:'Marcellus',serif;font-size:15px;color:#1a1410}
+.pubT span{font-size:10.5px;color:#a89a88}
+.pubCrans{display:flex;gap:5px;margin-bottom:11px}
+.pubCrans button{flex:1;border:1px solid #e6ded2;background:#faf8f4;border-radius:10px;
+  padding:10px 4px;font-family:inherit;cursor:pointer;text-align:center}
+.pubCrans button.on{background:#571520;border-color:#571520}
+.pubCrans button b{display:block;font-family:'Marcellus',serif;font-size:14px;color:#1a1410}
+.pubCrans button.on b{color:#f7dd9a}
+.pubCrans button small{display:block;font-size:8px;color:#a89a88;margin-top:2px}
+.pubCrans button.on small{color:rgba(247,221,154,.62)}
+.patience{height:9px;border-radius:5px;background:#f0ebe2;overflow:hidden;display:flex;gap:1px}
+.patience i{display:block;height:100%}
+.pubNote{font-size:10.5px;color:#8a7a6a;margin-top:9px;line-height:1.5}
+.pubNote b{color:#5a4a3a}
+.pubNote.alerte{color:#a8543a}
+.pubLg{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;
+  font-size:12px;color:#4a423c;border-top:1px solid #f6f2ec;margin-top:10px}
+.pubLg b{font-weight:600;font-size:13px;color:#1a1410;white-space:nowrap}
+.pubLg b.v{color:#2a8a4a}.pubLg b.r{color:#c05a3a}
