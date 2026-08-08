@@ -83,12 +83,42 @@
 
 <div id="toast" class="toast"></div>
 
+<!-- ═══════ CONSTRUIRE UNE SALLE ═══════ -->
+<div class="voilePanneau" id="panConstruire">
+  <div class="feuille">
+    <div class="poignee"></div>
+    <div class="fTete">
+      <div class="fInfo"><b>Agrandir le cinéma</b><span id="consSous">—</span></div>
+      <button class="fX" data-ferme="panConstruire" aria-label="Fermer">✕</button>
+    </div>
+    <div class="fCorps" id="consListe"></div>
+  </div>
+</div>
+
+<!-- ═══════ RÉVISER LES TARIFS ═══════ -->
+<div class="voilePanneau" id="panTarifs">
+  <div class="feuille">
+    <div class="poignee"></div>
+    <div class="fTete">
+      <div class="fInfo"><b>Vos cinq tarifs</b>
+        <span>Chaque public a sa sensibilité au prix</span></div>
+      <button class="fX" data-ferme="panTarifs" aria-label="Fermer">✕</button>
+    </div>
+    <div class="fCorps" id="tarifsListe"></div>
+    <div class="fPied">
+      <div class="tApercu" id="tApercu"></div>
+      <button class="fValider" id="tValider">Valider pour quinze jours</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import {
   V2, chargeEtat, monCinema, chargeOffre, previsionJournee, peutOuvrir,
   ouvrirLesPortes, signerLicence, poserSeance, retirerSeance,
   nettoyer, reparer, agrandir, ameliorer, reapprovisionner, embaucher,
   chargeTarifsEquipement, apercuAgrandissement,
+  constructionsPossibles, construire, reviserTarifs,
   messageErreurV2, requeteTable
 } from "./js/v2/api.js?v=becf21cb";
 import { rendFacade, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
@@ -235,6 +265,12 @@ function rendSalles(){
     </div>`;
   }).join("");
 
+  /* Construire est la vraie décision de croissance : elle mérite
+     sa place au bas de la liste, pas un onglet séparé. */
+  $("salles").insertAdjacentHTML("beforeend",
+    `<button class="construire" id="btnConstruire">+ Construire une salle</button>`);
+  $("btnConstruire").addEventListener("click", ouvreConstruction);
+
   $("salles").querySelectorAll("[data-eq]").forEach(b =>
     b.addEventListener("click", () => agit(() => ameliorer(b.dataset.salle, b.dataset.eq))));
   $("salles").querySelectorAll("[data-act]").forEach(b =>
@@ -249,6 +285,218 @@ function rendSalles(){
       const f = {nettoyer, reparer, agrandir}[b.dataset.act];
       agit(() => f(b.dataset.salle));
     }));
+}
+
+/* ============================================================
+   CONSTRUIRE UNE SALLE
+
+   Cinq formats. Les plus rares demandent de la réputation, pas
+   un niveau : on ne confie pas un grand format à un cinéma qui
+   ne tient pas ses salles. Chaque blocage dit sa raison.
+   ============================================================ */
+function coupeSalle(type){
+  const C = {
+    standard:{rangs:5, base:6, ecran:{w:150,h:44}, dossier:"#8a2436", assise:"#6a1a2a",
+      mur:"#241a1e", sol:"#1a1216", halo:"#ffd98a", op:.14, courbe:.10},
+    premium: {rangs:4, base:5, ecran:{w:160,h:48}, dossier:"#7a2a4a", assise:"#5a1c36",
+      mur:"#281a24", sol:"#1e141c", halo:"#ffcfa0", op:.18, courbe:.16},
+    vip:     {rangs:3, base:4, ecran:{w:148,h:46}, dossier:"#8a4a7a", assise:"#6a3458",
+      mur:"#2a1c28", sol:"#201620", halo:"#ffd0e0", op:.22, courbe:.22},
+    "4dx":   {rangs:4, base:5, ecran:{w:166,h:50}, dossier:"#2a6a8a", assise:"#1c4a68",
+      mur:"#16222c", sol:"#101820", halo:"#9ad8ff", op:.20, courbe:.14},
+    imax:    {rangs:7, base:8, ecran:{w:236,h:58}, dossier:"#7a2030", assise:"#5a1422",
+      mur:"#1a1014", sol:"#120c10", halo:"#ffe0b0", op:.16, courbe:.06}
+  }[type] || null;
+  if(!C) return "";
+  const W = 290, H = 112, cx = W / 2;
+  let sieges = "";
+  for(let r = C.rangs - 1; r >= 0; r--){
+    const t = r / Math.max(1, C.rangs - 1);
+    const ech = 1 - t * 0.46;
+    const zone = H - (C.ecran.h + 20);
+    const y = H - 8 - t * zone * 0.96;
+    const nb = C.base + Math.round(r * 1.4);
+    const lw = 13 * ech, gap = 3 * ech;
+    const x0 = cx - (nb * (lw + gap) - gap) / 2;
+    const hd = 10 * ech, ha = 3.6 * ech;
+    for(let i = 0; i < nb; i++){
+      const d = (i - (nb - 1) / 2) / Math.max(1, (nb - 1) / 2);
+      const yy = y + d * d * C.courbe * 12 * ech;
+      const x = x0 + i * (lw + gap);
+      sieges += `<g opacity="${(0.52 + t * 0.42).toFixed(2)}">
+        <rect x="${x.toFixed(1)}" y="${(yy - hd).toFixed(1)}" width="${lw.toFixed(1)}"
+          height="${hd.toFixed(1)}" rx="${(2.2*ech).toFixed(1)}" fill="${C.dossier}"/>
+        <rect x="${(x + lw*.12).toFixed(1)}" y="${(yy - hd + 1.1*ech).toFixed(1)}"
+          width="${(lw*.76).toFixed(1)}" height="${(hd*.5).toFixed(1)}"
+          rx="${(1.4*ech).toFixed(1)}" fill="#fff" opacity=".10"/>
+        <rect x="${(x - .8*ech).toFixed(1)}" y="${yy.toFixed(1)}"
+          width="${(lw + 1.6*ech).toFixed(1)}" height="${ha.toFixed(1)}"
+          rx="${(1.1*ech).toFixed(1)}" fill="${C.assise}"/></g>`;
+    }
+  }
+  const ew = C.ecran.w, eh = C.ecran.h, ex = cx - ew/2, ey = 10;
+  const g = "g" + type.replace(/[^a-z0-9]/g,"");
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="m${g}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${C.mur}"/><stop offset="1" stop-color="${C.sol}"/></linearGradient>
+      <linearGradient id="e${g}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f4efe2"/><stop offset=".55" stop-color="#ddd6c4"/>
+        <stop offset="1" stop-color="#c4bca8"/></linearGradient>
+      <radialGradient id="h${g}" cx=".5" cy=".28" r=".62">
+        <stop offset="0" stop-color="${C.halo}" stop-opacity="${C.op}"/>
+        <stop offset="1" stop-color="${C.halo}" stop-opacity="0"/></radialGradient>
+      <linearGradient id="f${g}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${C.halo}" stop-opacity=".22"/>
+        <stop offset="1" stop-color="${C.halo}" stop-opacity="0"/></linearGradient>
+    </defs>
+    <rect width="${W}" height="${H}" fill="url(#m${g})"/>
+    <path d="M0 0 L${ex-14} ${ey-3} L${ex-14} ${ey+eh+9} L0 ${H} Z" fill="#000" opacity=".26"/>
+    <path d="M${W} 0 L${ex+ew+14} ${ey-3} L${ex+ew+14} ${ey+eh+9} L${W} ${H} Z"
+      fill="#000" opacity=".26"/>
+    <path d="M${cx} 0 L${ex+6} ${ey+eh+4} L${ex+ew-6} ${ey+eh+4} Z" fill="url(#f${g})"/>
+    <ellipse cx="${cx}" cy="${ey+eh/2}" rx="${ew*.82}" ry="${eh*1.15}" fill="url(#h${g})"/>
+    <rect x="${ex-4}" y="${ey-4}" width="${ew+8}" height="${eh+8}" rx="2" fill="#0d0a0c"/>
+    <rect x="${ex}" y="${ey}" width="${ew}" height="${eh}" rx="1" fill="url(#e${g})"/>
+    <path d="M${ex} ${ey+eh} L${ex+ew*.34} ${ey} L${ex+ew*.52} ${ey}
+             L${ex+ew*.12} ${ey+eh} Z" fill="#fff" opacity=".16"/>
+    <rect x="${ex-4}" y="${ey-4}" width="${ew+8}" height="${eh+8}" rx="2" fill="none"
+      stroke="#caa24a" stroke-width="1.2" opacity=".55"/>
+    ${sieges}</svg>`;
+}
+
+async function ouvreConstruction(){
+  const p = $("panConstruire");
+  p.classList.add("ouvert");
+  $("consListe").innerHTML = `<div class="cVide">Un instant…</div>`;
+  const r = await constructionsPossibles();
+  if(r.erreur){ dit(messageErreurV2(r), true); return; }
+  const l = r.data || [];
+  const n = (etat.salles || []).length;
+  $("consSous").textContent = `${n} salle${n>1?"s":""} sur 8 · `
+    + `${Number(etat.cinema.etoiles).toFixed(1).replace(".",",")} étoiles · ${eur(etat.cinema.tresorerie)}`;
+
+  $("consListe").innerHTML = l.map(t => `
+    <div class="typeS ${t.possible ? "" : "bloque"}">
+      <div class="typeVue">${coupeSalle(t.type)}
+        <span class="typeBadge">${t.places} places</span></div>
+      <div class="typeCorps">
+        <div class="typeT"><b>${echappe(t.nom)}</b><span class="px">${eur(t.cout)}</span></div>
+        <p class="typeD">${echappe(t.description)}</p>
+        <div class="typeStats">
+          <div><b>${t.places}</b><span>places</span></div>
+          <div><b>${t.bonus_prix > 0 ? "+" + fmt(t.bonus_prix) : "—"}</b><span>tarif</span></div>
+          <div><b>${t.embauches}</b><span>embauches</span></div>
+        </div>
+        ${t.possible
+          ? `<button class="typeAct" data-type="${t.type}">Construire · ${eur(t.cout)}</button>`
+          : `<div class="typeBloc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                <rect x="4" y="11" width="16" height="10" rx="2"/>
+                <path d="M8 11V7a4 4 0 018 0v4"/></svg>
+              ${echappe(t.blocage || "")}</div>`}
+      </div>
+    </div>`).join("");
+
+  $("consListe").querySelectorAll("[data-type]").forEach(b =>
+    b.addEventListener("click", async () => {
+      b.disabled = true; b.textContent = "Les travaux commencent…";
+      const c = await construire(b.dataset.type);
+      if(c.erreur){ dit(messageErreurV2(c), true); b.disabled = false; return; }
+      ferme("panConstruire");
+      dit(`${c.data.type} · ${c.data.equipe.manque > 0
+        ? c.data.equipe.manque + " embauche(s) à prévoir" : "prête bientôt"}`);
+      await rafraichit(true);
+    }));
+}
+
+/* ============================================================
+   LA GRILLE TARIFAIRE
+
+   Cinq tarifs, révisables une fois toutes les deux semaines. Le
+   prix moyen n'est pas un réglage : il naît du mélange des
+   publics du quartier. On le montre pendant qu'on bouge les
+   curseurs, pour que la conséquence soit visible avant de
+   valider.
+   ============================================================ */
+const PUBLICS = [
+  {c:"plein",    n:"Plein tarif", hint:"26 à 59 ans",  sens:"faible"},
+  {c:"etudiant", n:"Étudiant",    hint:"moins de 26 ans", sens:"très forte"},
+  {c:"senior",   n:"Senior",      hint:"60 ans et plus",  sens:"forte"},
+  {c:"enfant",   n:"Enfant",      hint:"moins de 14 ans", sens:"forte"},
+  {c:"matinee",  n:"Matinée",     hint:"avant 13 h",      sens:"très forte"}
+];
+let brouillon = null;
+
+function ouvreTarifs(){
+  const t = etat.tarifs || {};
+  if(!t.revisable){
+    dit(`Vos tarifs sont fixés jusqu'au jour ${t.revisable_au_jour}.`, true);
+    return;
+  }
+  brouillon = {plein:+t.plein, etudiant:+t.etudiant, senior:+t.senior,
+               enfant:+t.enfant, matinee:+t.matinee};
+  $("panTarifs").classList.add("ouvert");
+  rendTarifs();
+}
+
+function rendTarifs(){
+  $("tarifsListe").innerHTML = PUBLICS.map(p => `
+    <div class="tarif">
+      <div class="tTete"><div class="g"><div class="nm">${p.n}</div>
+        <div class="part">${p.hint} · sensibilité ${p.sens}</div></div>
+        <div class="px" id="px_${p.c}">${fmt(brouillon[p.c])}</div></div>
+      <input type="range" min="4" max="20" step="0.5" value="${brouillon[p.c]}"
+        data-t="${p.c}">
+    </div>`).join("");
+  $("tarifsListe").querySelectorAll("[data-t]").forEach(i =>
+    i.addEventListener("input", () => {
+      brouillon[i.dataset.t] = parseFloat(i.value);
+      $("px_" + i.dataset.t).textContent = fmt(brouillon[i.dataset.t]);
+      majApercuTarifs();
+    }));
+  majApercuTarifs();
+}
+
+/* les parts du quartier, pour montrer le prix moyen sans
+   solliciter le serveur à chaque mouvement de curseur */
+const PARTS = {
+  quartier_populaire: {plein:.34, etudiant:.22, senior:.18, enfant:.26},
+  quartier_etudiant:  {plein:.26, etudiant:.48, senior:.10, enfant:.16},
+  quartier_bourgeois: {plein:.52, etudiant:.14, senior:.24, enfant:.10},
+  quartier_familial:  {plein:.38, etudiant:.12, senior:.16, enfant:.34}
+};
+function majApercuTarifs(){
+  const parts = PARTS[etat.cinema.quartier] || PARTS.quartier_populaire;
+  let moyen = 0;
+  for(const k in parts) moyen += brouillon[k] * parts[k];
+  const actuel = Number(etat.tarifs?.prix_moyen || 0);
+  const d = moyen - actuel;
+  $("tApercu").innerHTML = `
+    <div class="tAp"><b>${fmt(moyen)}</b><span>prix moyen</span></div>
+    <div class="tAp"><b>${fmt(brouillon.matinee)}</b><span>en matinée</span></div>
+    <div class="tAp"><b class="${d >= 0 ? "" : "v"}">${d >= 0 ? "+" : "−"}${
+      fmt(Math.abs(d))}</b><span>écart</span></div>`;
+}
+
+async function validerTarifs(){
+  const b = $("tValider");
+  b.disabled = true; b.textContent = "On affiche les nouveaux prix…";
+  const r = await reviserTarifs(brouillon);
+  if(r.erreur){
+    dit(messageErreurV2(r), true);
+    b.disabled = false; b.textContent = "Valider pour quinze jours";
+    return;
+  }
+  ferme("panTarifs");
+  dit(`Grille validée · prix moyen ${fmt(r.data.prix_moyen_soiree)}`);
+  await rafraichit(true);
+  b.disabled = false; b.textContent = "Valider pour quinze jours";
+}
+
+function ferme(id){
+  const p = $(id);
+  p.classList.remove("ouvert");
 }
 
 async function agit(fn){
@@ -278,7 +526,8 @@ function rendCompte(){
     </div>
     <div class="bloc">
       <div class="blocT"><b>La grille tarifaire</b><span>${
-        t.revisable ? "révisable" : "fixée jusqu'au jour " + t.revisable_au_jour}</span></div>
+        t.revisable ? "révisable dès maintenant"
+          : "fixée jusqu'au jour " + t.revisable_au_jour}</span></div>
       <div class="tGrid">
         <div class="tCase"><div class="nm">Plein</div><div class="px">${fmt(t.plein)}</div></div>
         <div class="tCase"><div class="nm">Étudiant</div><div class="px">${fmt(t.etudiant)}</div></div>
@@ -288,7 +537,12 @@ function rendCompte(){
           <div class="px">${fmt(t.prix_moyen)}</div>
           <div class="hint">il naît du mélange, on ne le règle pas</div></div>
       </div>
+      <button class="btnTarifs" id="btnTarifs" ${t.revisable ? "" : "disabled"}>
+        ${t.revisable ? "Réviser les tarifs"
+          : `Révision possible au jour ${t.revisable_au_jour}`}</button>
     </div>`;
+  const bt = $("btnTarifs");
+  if(bt) bt.addEventListener("click", ouvreTarifs);
 }
 const fmt = v => (Number(v) || 0).toFixed(2).replace(".", ",") + " €";
 
@@ -409,6 +663,13 @@ async function signer(sortieId, duree){
         $("catalogue").scrollTo({left:0, behavior:"smooth"});
       }));
     $("btnOuvrir").addEventListener("click", ouvrir);
+    document.querySelectorAll("[data-ferme]").forEach(b =>
+      b.addEventListener("click", () => ferme(b.dataset.ferme)));
+    /* toucher le voile ferme aussi : c'est le geste attendu */
+    for(const id of ["panConstruire", "panTarifs"]){
+      $(id).addEventListener("click", e => { if(e.target === $(id)) ferme(id); });
+    }
+    $("tValider").addEventListener("click", validerTarifs);
     surveilleTaille($("scene"), refaitFacade);
     document.body.classList.add("sombre");
   }catch(e){
