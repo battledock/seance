@@ -398,3 +398,4 @@ body.sombre .nav button.on{color:#f7dd9a}
   font-family:'Marcellus',serif;font-size:14.5px;letter-spacing:.1em;cursor:pointer;
   background:linear-gradient(180deg,#7a1a28,#5a1018);color:#ffeec4}
 .fValider:disabled{background:#e2dbd0;color:#a89a88}
+.cell.ferme .sousF{font-size:8px;color:#c8bcaa;margin-top:2px}
