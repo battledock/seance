@@ -64,11 +64,7 @@
 
   <!-- ═══════ COMPTE ═══════ -->
   <section class="vue clair masque" id="vueCompte">
-    <div class="cptTop">
-      <div class="cptT1"><div class="g">
-        <div class="kick">Trésorerie</div>
-        <div class="val" id="kTreso">—</div></div></div>
-    </div>
+    <div class="eTop"><b>Le compte</b><span id="kSous">—</span></div>
     <div class="eCorps" id="compte"></div>
   </section>
 
@@ -648,9 +644,11 @@ let compteCharge = false;
 
 function rendCompte(){
   const c = etat.cinema;
-  $("kTreso").textContent = eur(c.tresorerie);
-  $("kTreso").className = "val" + (c.tresorerie < 0 ? " dette" : "");
   const t = etat.tarifs || {};
+  /* La trésorerie est déjà en permanence sur la façade : la
+     répéter ici ne servait à rien. On met à la place ce qu'on ne
+     voit nulle part ailleurs une fois le bilan refermé. */
+  $("kSous").textContent = `jour ${c.jour}`;
 
   $("compte").innerHTML = `
     <div class="bloc" id="blocEtoiles"><div class="cVide">Un instant…</div></div>
@@ -699,7 +697,15 @@ async function remplitCompte(){
   ]);
   if(d.ok) rendEtoiles(d.data);
   if(sl.ok) rendSeuil(sl.data);
-  rendCourbe(Array.isArray(hi) ? hi : []);
+  const j = Array.isArray(hi) ? hi : [];
+  rendCourbe(j);
+  if(j.length){
+    const v = Number(j[0].resultat || 0);
+    $("kSous").textContent = `jour ${etat.cinema.jour} · hier ${
+      v >= 0 ? "+" : "−"}${eur(Math.abs(v))} · ${j[0].spectateurs} spectateurs`;
+  } else {
+    $("kSous").textContent = `jour ${etat.cinema.jour} · aucune journée jouée`;
+  }
   if(ec.ok) rendEcheances(ec.data || []);
 }
 
