@@ -148,7 +148,21 @@ function rendCatalogue(cible, offre, onglet, surSigner){
    moyenne, le chiffre de cette heure-là dans cette salle-là.
    ============================================================ */
 
-function ouvrePanneau({salle, heure, seanceId, place, offre,
+/* on garde les poids par genre, chargés une fois, pour qualifier
+   chaque film de la liste sans rappeler le serveur */
+let POIDS_GENRE = null;
+function niveauPour(f, heure){
+  const g = f.genre_palette || f.genre;
+  const p = POIDS_GENRE?.[g];
+  if(!p) return null;
+  const v = p[heure];
+  if(v == null) return null;
+  return v >= 1.05 ? "ideal" : v >= .85 ? "bon" : v >= .62 ? "correct"
+       : v >= .42 ? "faible" : "tres_faible";
+}
+function chargePoidsGenre(m){ POIDS_GENRE = m; }
+
+function ouvrePanneau({salle, heure, seanceId, place, offre, creneaux,
                        surPoser, surRetirer, surFermer}){
   const anciens = document.getElementById("panneauProg");
   if(anciens) anciens.remove();
@@ -182,6 +196,7 @@ function ouvrePanneau({salle, heure, seanceId, place, offre,
         <button class="fX" aria-label="Fermer">✕</button>
       </div>
       <div class="fCorps">
+        ${conseilCreneau(heure, creneaux)}
         ${groupes.length === 0
           ? `<div class="cVide">Aucun film disponible pour ce créneau.</div>`
           : groupes.map(g => `
@@ -204,7 +219,8 @@ function ouvrePanneau({salle, heure, seanceId, place, offre,
                   <span class="meta">${echappe(f.genre || "")} · ${
                     Math.floor((f.duree||0)/60)}h${String((f.duree||0)%60).padStart(2,"0")}${
                     f.studio ? " · " + echappe(f.studio) : ""}</span>
-                  <span class="tags">${etiquettes(f, trop, salle, tropLong, place)}</span></span>
+                  <span class="tags">${etiquettes(f, trop, salle, tropLong, place,
+                    niveauPour(f, heure))}</span></span>
                 <span class="chPrev">${pasSorti
                   ? `<b class="ind">—</b><span>dans ${f.jours_avant} j</span>`
                   : trop
@@ -251,8 +267,29 @@ function ouvrePanneau({salle, heure, seanceId, place, offre,
   return {ferme};
 }
 
-function etiquettes(f, trop, salle, tropLong, place){
+/* Ce que ce créneau vaut, dit avant la liste : c'est
+   l'information qui décide, et elle manquait. */
+function conseilCreneau(heure, creneaux){
+  const c = (creneaux?.creneaux || []).find(x => x.heure === heure);
+  if(!c || !c.conseil) return "";
+  const faible = c.niveau === "faible" || c.niveau === "tres_faible";
+  return `<div class="creneau ${faible ? "mauvais" : ""}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+      stroke-linecap="round">${faible
+        ? `<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/>`
+        : `<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9V16h7v-2.1A6 6 0 0012 3z"/>`}
+    </svg>
+    <p>${echappe(c.conseil)}</p></div>`;
+}
+
+/* le poids du créneau pour CE film : ideal, bon, correct, faible */
+const NIVEAUX = {ideal:["v","Créneau idéal"], bon:["v","Bon créneau"],
+                 correct:["n","Créneau correct"], faible:["r","Mauvais créneau"],
+                 tres_faible:["r","Très mauvais créneau"]};
+
+function etiquettes(f, trop, salle, tropLong, place, niveau){
   const t = [];
+  if(niveau && NIVEAUX[niveau]) t.push(NIVEAUX[niveau]);
   if(tropLong){
     const b = (f.duree || 100) + 20;
     t.push(["r", `demande ${Math.floor(b/60)}h${String(b%60).padStart(2,"0")}`]);
@@ -269,4 +306,4 @@ function etiquettes(f, trop, salle, tropLong, place){
   return t.slice(0,3).map(x => `<span class="tg ${x[0]}">${x[1]}</span>`).join("");
 }
 
-export { rendCatalogue, ouvrePanneau, carteFilm, eur };
+export { rendCatalogue, ouvrePanneau, carteFilm, eur, chargePoidsGenre };
