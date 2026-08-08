@@ -413,3 +413,40 @@ body.sombre .pointNav{background:#e8785a;border-color:#120e14}
   background:linear-gradient(180deg,#7a1a28,#5a1018);color:#ffeec4}
 .fValider:disabled{background:#e2dbd0;color:#a89a88}
 .cell.ferme .sousF{font-size:8px;color:#c8bcaa;margin-top:2px}
+
+/* ── l'équipe ── */
+.lgClic{width:100%;background:none;border:none;font-family:inherit;text-align:left;
+  cursor:pointer;padding:9px 0;border-bottom:1px solid #f2ede6;display:flex;
+  justify-content:space-between;align-items:baseline;font-size:12.5px;color:#4a423c}
+.lgClic:last-child{border-bottom:none}
+.lgClic b{font-weight:600;font-size:13.5px;white-space:nowrap}
+.lgClic b.v{color:#2a8a4a}.lgClic b.r{color:#c05a3a}
+.lgClic small{display:block;font-size:9.5px;color:#a89a90;margin-top:1px}
+.eqBilan{border-radius:12px;padding:13px 14px;margin-bottom:4px}
+.eqBilan.ok{background:#e8f4ec;border:1px solid #c2e0cd}
+.eqBilan.court{background:#fdf3ea;border:1px solid #f0dcc4}
+.eqBilan b{display:block;font-family:'Marcellus',serif;font-size:14px;color:#1a1410}
+.eqBilan span{display:block;font-size:11.5px;color:#7a726a;margin-top:4px;line-height:1.45}
+.eqLigne,.eqAdd{display:flex;align-items:center;gap:11px;background:#fff;
+  border:1px solid #ece5db;border-radius:13px;padding:12px 13px;margin-bottom:8px;
+  width:100%;font-family:inherit;text-align:left}
+.eqAdd{cursor:pointer;border-style:dashed;background:#fdfbf7}
+.eqAdd:active{transform:scale(.99)}
+.eqAdd:disabled{opacity:.5}
+.eqNom{flex:1;min-width:0}
+.eqNom b{display:block;font-family:'Marcellus',serif;font-size:13.5px;color:#1a1410}
+.eqNom small{display:block;font-size:10px;color:#a89a88;line-height:1.4;margin-top:2px}
+.eqSal,.eqPlus{font-size:12.5px;font-weight:600;color:#1a1410;text-align:right;flex:none;
+  white-space:nowrap}
+.eqPlus{color:#8a1c2c}
+.eqSal i,.eqPlus i{display:block;font-style:normal;font-size:9px;font-weight:400;
+  color:#b0a08a;margin-top:1px}
+.eqX{flex:none;background:#fff;border:1px solid #e8d6d0;border-radius:9px;padding:7px 10px;
+  font-family:inherit;font-size:10px;color:#b04a3a;cursor:pointer}
+.eqX:disabled{color:#b0a08a;border-color:#eee7dc;background:#f7f3ec;cursor:default}
+
+/* ── construction : quand rien n'est possible ── */
+.consVide{background:#fdf6ee;border:1px solid #f2e4cc;border-radius:13px;
+  padding:14px 15px;margin-bottom:12px}
+.consVide b{display:block;font-family:'Marcellus',serif;font-size:14px;color:#8a6a2a}
+.consVide span{display:block;font-size:11.5px;color:#7a6a4a;line-height:1.5;margin-top:5px}
