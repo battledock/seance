@@ -143,6 +143,7 @@ import {
   constructionsPossibles, construire, reviserTarifs,
   decompteEtoiles, seuilRentabilite, echeances, historique,
   confiserieEtat, installerComptoir, ameliorerConfiserie, reapprovisionner as reap,
+  sallesDetail,
   messageErreurV2, requeteTable
 } from "./js/v2/api.js?v=becf21cb";
 import { rendFacade, rendFronton, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
@@ -244,76 +245,27 @@ const EQUIPEMENTS = [
   ["fauteuils","Fauteuils"], ["ecran","Écran"], ["son","Son"],
   ["projecteur","Projecteur"], ["decoration","Décoration"]
 ];
+/* ── les salles ──
+   Le rendement d'abord : ce que la salle a produit dit s'il faut
+   agrandir. Puis sa qualité en un chiffre, traduite en
+   spectateurs perdus — un facteur de 0,65 ne parle à personne,
+   « une salle parfaite attirerait 137 % de plus » se comprend. */
+let sallesDet = null;
+
 function rendSalles(){
-  const s = etat.salles || [];
+  const s = sallesDet || etat.salles || [];
   $("sSousTitre").textContent =
     `${s.length} salle${s.length>1?"s":""} · ${s.reduce((t,x)=>t+x.places,0)} places · `
     + `${etat.equipe?.en_poste ?? 0} employés`;
 
-  $("salles").innerHTML = s.map(x => {
-    /* ce que coûterait le prochain palier de chaque équipement,
-       et ce qu'il apporterait — un achat doit se décider avant,
-       pas se découvrir une fois payé */
-    const lignes = EQUIPEMENTS.map(([c,n]) => {
-      const niv = x[c] || 0;
-      const suivant = tarifsEq?.[c]?.[niv + 1];
-      const cher = suivant && suivant.cout > etat.cinema.tresorerie;
-      return `<div class="eq">
-        <span class="nmEq"><b>${n}</b>${suivant
-          ? `<small>${echappe(suivant.nom)}</small>` : `<small>au maximum</small>`}</span>
-        <span class="niv">${[1,2,3,4,5].map(i =>
-          `<i class="${i <= niv ? "on" : ""}"></i>`).join("")}</span>
-        <button class="px ${cher ? "cher" : ""}" data-salle="${x.id}" data-eq="${c}"
-          ${niv >= 5 || cher ? "disabled" : ""}>${
-            niv >= 5 ? "max" : suivant ? eur(suivant.cout) : "—"}</button>
-      </div>`;
-    }).join("");
+  $("salles").innerHTML = s.map(x => carteSalle(x)).join("")
+    + `<button class="construire" id="btnConstruire">+ Construire une salle</button>`;
 
-    const coutNettoyage = Math.round(x.places * 0.55 + (100 - x.proprete) * 1.2);
-    const coutReparation = Math.round((100 - x.etat) * (8 + x.places * 0.12));
-    const coutAgrandir = Math.round(2200 + (x.places - 50) * 46);
-
-    return `<div class="carteSalle">
-      <div class="salleTete">
-        <div class="salleInfo"><b>${echappe(x.nom)}</b>
-          <div class="meta">${x.places} places · ${x.type}</div>
-          ${x.en_travaux
-            ? `<span class="tag travaux">Fermée · rouvre au jour ${x.rouvre_au_jour}</span>`
-            : ""}</div>
-      </div>
-      <div class="jauges">
-        <div class="jg"><div class="lb"><span>Propreté</span><b>${x.proprete} %</b></div>
-          <div class="barre"><i style="width:${x.proprete}%;background:${
-            x.proprete >= 70 ? "#2a8a4a" : x.proprete >= 45 ? "#c9a24a" : "#c05a3a"}"></i></div></div>
-        <div class="jg"><div class="lb"><span>État</span><b>${x.etat} %</b></div>
-          <div class="barre"><i style="width:${x.etat}%;background:${
-            x.etat >= 70 ? "#2a8a4a" : x.etat >= 45 ? "#c9a24a" : "#c05a3a"}"></i></div></div>
-      </div>
-      <div class="equipList">${lignes}</div>
-      <div class="actions">
-        <button data-act="nettoyer" data-salle="${x.id}" ${x.proprete >= 98 ? "disabled" : ""}>
-          Nettoyer<small>${x.proprete >= 98 ? "déjà propre" : eur(coutNettoyage)}</small></button>
-        <button data-act="reparer" data-salle="${x.id}"
-          ${x.etat >= 98 || x.en_travaux ? "disabled" : ""}>
-          Réparer<small>${x.en_travaux ? "en travaux"
-            : x.etat >= 98 ? "en bon état" : eur(coutReparation)}</small></button>
-        <button data-act="agrandir" data-salle="${x.id}" ${x.en_travaux ? "disabled" : ""}>
-          Agrandir<small>${x.en_travaux ? "en travaux" : "+15 pl. · " + eur(coutAgrandir)}</small></button>
-      </div>
-    </div>`;
-  }).join("");
-
-  /* Construire est la vraie décision de croissance : elle mérite
-     sa place au bas de la liste, pas un onglet séparé. */
-  $("salles").insertAdjacentHTML("beforeend",
-    `<button class="construire" id="btnConstruire">+ Construire une salle</button>`);
   $("btnConstruire").addEventListener("click", ouvreConstruction);
-
   $("salles").querySelectorAll("[data-eq]").forEach(b =>
     b.addEventListener("click", () => agit(() => ameliorer(b.dataset.salle, b.dataset.eq))));
   $("salles").querySelectorAll("[data-act]").forEach(b =>
     b.addEventListener("click", async () => {
-      /* agrandir engage du personnel : on prévient avant */
       if(b.dataset.act === "agrandir"){
         const a = await apercuAgrandissement(b.dataset.salle);
         if(a.ok && a.data.embauches_necessaires > 0){
@@ -323,6 +275,110 @@ function rendSalles(){
       const f = {nettoyer, reparer, agrandir}[b.dataset.act];
       agit(() => f(b.dataset.salle));
     }));
+}
+
+const TYPES_NOM = {standard:"standard", premium:"premium", vip:"VIP",
+                   "4dx":"4DX", imax:"grand format"};
+
+function carteSalle(x){
+  const r = x.rendement || {};
+  const q = Number(x.qualite ?? 1);
+  const qMax = Number(x.qualite_max ?? 1.54);
+  const qPropre = Number(x.qualite_propre ?? q);
+  const gainMax = Math.round((qMax / q - 1) * 100);
+  /* l'écart entre la salle telle qu'elle est et la même salle
+     impeccable : c'est le prix exact de la négligence */
+  const perteEntretien = Math.round((qPropre / q - 1) * 100);
+  const sale = x.proprete < 55;
+  const use = x.etat < 55;
+  const pctQ = Math.min(100, q / qMax * 100);
+  const coul = q >= 1 ? "#2a8a4a" : q >= 0.75 ? "#caa24a" : "#c05a3a";
+
+  return `<div class="carteSalle">
+    <div class="sTete">
+      <div class="sVue">${coupeSalle(x.type) || ""}</div>
+      <div class="sInfo"><b>${echappe(x.nom)}</b>
+        <div class="meta">${x.places} places · ${TYPES_NOM[x.type] || x.type}${
+          x.bonus_prix > 0 ? " · tarif +" + fmt(x.bonus_prix) : ""}</div>
+        ${x.en_travaux
+          ? `<span class="sTag travaux">Fermée · rouvre au jour ${x.rouvre_au_jour}</span>`
+          : sale ? `<span class="sTag travaux">Salle sale</span>`
+          : x.usure < 1 ? `<span class="sTag vip">Usure faible</span>`
+          : x.usure > 1.4 ? `<span class="sTag">Usure rapide</span>` : ""}</div>
+    </div>
+
+    ${r.seances > 0 ? `<div class="sRend">
+      <div><b>${(r.spectateurs || 0).toLocaleString("fr")}</b><span>spectateurs</span></div>
+      <div><b class="${r.refuses > 0 ? "r" : ""}">${r.refuses || 0}</b><span>refusés</span></div>
+      <div><b>${r.remplissage || 0} %</b><span>remplissage</span></div>
+      <div><b>${eur(r.recette)}</b><span>recette</span></div>
+    </div>` : ""}
+
+    <div class="sQual">
+      <div class="sQualT"><span class="lb">Ce que votre salle vaut</span>
+        <b style="color:${coul}">${q.toFixed(2).replace(".", ",")}</b></div>
+      <div class="sQualB"><i style="width:${pctQ.toFixed(0)}%;
+        background:linear-gradient(90deg,${eclaircir(coul)},${coul})"></i>
+        <span class="ref" style="left:65%"></span></div>
+      <div class="sQualN"${perteEntretien >= 8 ? ' style="color:#a8543a"' : ""}>${
+        perteEntretien >= 8
+        ? `L'état de la salle vous coûte <b>${perteEntretien} % de fréquentation</b>,
+           soit ${Math.max(1, Math.round(x.places * 0.6 * perteEntretien / 100))} spectateurs
+           par séance. Remettre en ordre coûte ${eur(x.cout_nettoyage + (use ? x.cout_reparation : 0))}.`
+        : `Une salle parfaitement équipée et tenue attirerait
+           <b>${gainMax} % de spectateurs de plus</b>. Le repère marque une salle correcte.`}</div>
+    </div>
+
+    <div class="sJ">
+      <div class="g"><div class="lb"><span>Propreté</span><b>${x.proprete} %</b></div>
+        <div class="barre"><i style="width:${x.proprete}%;background:${
+          x.proprete >= 70 ? "#2a8a4a" : x.proprete >= 45 ? "#c9a24a" : "#c05a3a"}"></i></div>
+        <div class="dans">${x.jours_avant_sale > 0
+          ? `à nettoyer dans ${x.jours_avant_sale} jour${x.jours_avant_sale>1?"s":""}`
+          : "à nettoyer maintenant"}</div></div>
+      <div class="g"><div class="lb"><span>État</span><b>${x.etat} %</b></div>
+        <div class="barre"><i style="width:${x.etat}%;background:${
+          x.etat >= 70 ? "#2a8a4a" : x.etat >= 45 ? "#c9a24a" : "#c05a3a"}"></i></div>
+        <div class="dans">${x.jours_avant_usee > 14 ? "bon pour longtemps"
+          : x.jours_avant_usee > 0 ? `à revoir dans ${x.jours_avant_usee} jours`
+          : "à réparer"}</div></div>
+    </div>
+
+    <div class="sEq">${EQUIPEMENTS.map(([c, n]) => {
+      const niv = x[c] || 0;
+      const suiv = tarifsEq?.[c]?.[niv + 1];
+      const cher = suiv && suiv.cout > etat.cinema.tresorerie;
+      return `<div class="eqL">
+        <span class="nm"><b>${n}</b><small>${suiv ? echappe(suiv.nom) : "au maximum"}</small></span>
+        <span class="niv">${[1,2,3,4,5].map(i =>
+          `<i class="${i <= niv ? "on" : ""}"></i>`).join("")}</span>
+        <button class="px ${niv >= 5 ? "max" : cher ? "cher" : ""}"
+          data-salle="${x.id}" data-eq="${c}" ${niv >= 5 || cher ? "disabled" : ""}
+          >${niv >= 5 ? "au max" : suiv ? eur(suiv.cout) : "—"}</button>
+      </div>`;
+    }).join("")}</div>
+
+    <div class="sAct">
+      <button data-act="nettoyer" data-salle="${x.id}"
+        class="${sale ? "urgent" : ""}" ${x.proprete >= 98 || x.en_travaux ? "disabled" : ""}>
+        Nettoyer<small>${x.en_travaux ? "en travaux"
+          : x.proprete >= 98 ? "déjà propre" : eur(x.cout_nettoyage)}</small></button>
+      <button data-act="reparer" data-salle="${x.id}"
+        class="${use ? "urgent" : ""}" ${x.etat >= 98 || x.en_travaux ? "disabled" : ""}>
+        Réparer<small>${x.en_travaux ? "en travaux"
+          : x.etat >= 98 ? "en bon état" : eur(x.cout_reparation)}</small></button>
+      <button data-act="agrandir" data-salle="${x.id}" ${x.en_travaux ? "disabled" : ""}>
+        Agrandir<small>${x.en_travaux ? "en travaux"
+          : "+15 pl. · " + eur(x.cout_agrandissement)}</small></button>
+    </div>
+  </div>`;
+}
+
+/* un dégradé lisible : la même teinte, un ton au-dessus */
+function eclaircir(hex){
+  const n = parseInt(hex.slice(1), 16);
+  return "#" + ((Math.min(255,(n>>16)+46)<<16)
+    | (Math.min(255,((n>>8)&255)+42)<<8) | Math.min(255,(n&255)+38)).toString(16).padStart(6,"0");
 }
 
 /* ============================================================
@@ -1278,6 +1334,8 @@ async function rafraichit(sansOffre){
   prevision = await previsionJournee();
   peut = (await peutOuvrir()).data || null;
   if(!sansOffre) offre = await chargeOffre();
+  const sd = await sallesDetail();
+  sallesDet = sd.ok && Array.isArray(sd.data) ? sd.data : null;
 
   /* Chaque vue se dessine dans son propre filet : si l'une casse,
      les autres restent lisibles. Sans ça, une erreur dans le
