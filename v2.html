@@ -389,9 +389,15 @@ async function ouvreConstruction(){
   const p = $("panConstruire");
   p.classList.add("ouvert");
   $("consListe").innerHTML = `<div class="cVide">Un instant…</div>`;
-  const r = await constructionsPossibles();
-  if(r.erreur){ dit(messageErreurV2(r), true); return; }
-  const l = r.data || [];
+  /* cette fonction rend le tableau directement, pas une enveloppe
+     {ok, data} : le traiter comme les autres vidait la liste et
+     faisait sortir un minimum infini. */
+  const l = await constructionsPossibles();
+  if(!Array.isArray(l) || l.length === 0){
+    $("consListe").innerHTML =
+      `<div class="cVide">Impossible de charger les formats de salle.</div>`;
+    return;
+  }
   const n = (etat.salles || []).length;
   $("consSous").textContent = `${n} salle${n>1?"s":""} sur 8 · `
     + `${Number(etat.cinema.etoiles).toFixed(1).replace(".",",")} étoiles · ${eur(etat.cinema.tresorerie)}`;
@@ -400,7 +406,7 @@ async function ouvreConstruction(){
      dit franchement ce qui manque, et à partir de quand ce sera
      possible. */
   const faisables = l.filter(t => t.possible).length;
-  const moinsCher = l.reduce((m, t) => t.cout < m ? t.cout : m, Infinity);
+  const moinsCher = Math.min(...l.map(t => Number(t.cout) || 0).filter(v => v > 0));
   const entete = faisables > 0 ? "" : `
     <div class="consVide">
       <b>Rien n'est encore à votre portée</b>
