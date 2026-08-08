@@ -207,6 +207,23 @@ const faireRelache = () =>
 const synchronise = () =>
   appel("v2_synchronise", {p_cinema_id: V2.cinemaId});
 
+/* Ce que le compte doit expliquer : d'où viennent les étoiles,
+   combien de spectateurs couvrent les charges, et ce qui arrive
+   dans les jours à venir. */
+const decompteEtoiles = () =>
+  appel("v2_decompte_etoiles", {p_cinema_id: V2.cinemaId});
+const seuilRentabilite = () =>
+  appel("v2_seuil", {p_cinema_id: V2.cinemaId});
+const echeances = () =>
+  appel("v2_echeances", {p_cinema_id: V2.cinemaId});
+
+/* L'historique des journées closes, pour la courbe. */
+async function historique(n){
+  return requeteTable("v2_journees?statut=eq.jouee"
+    + "&select=jour,spectateurs,refuses,recette_guichet,resultat"
+    + "&order=jour.desc&limit=" + (n || 30));
+}
+
 const peutOuvrir = () =>
   appel("v2_peut_ouvrir", {p_cinema_id: V2.cinemaId});
 
@@ -301,7 +318,8 @@ export {
   V2, appel, chargeEtat, monCinema, chargeOffre, chargePostesInstallation,
   chargeSeancesDuJour, previsionJournee, bilan, constructionsPossibles,
   chargeTarifsEquipement, creerCinema, signerLicence, rendreLicence, poserSeance, retirerSeance,
-  peutOuvrir, synchronise, faireRelache, ouvrirLesPortes, nettoyer, reparer, agrandir,
+  peutOuvrir, synchronise, faireRelache, ouvrirLesPortes,
+  decompteEtoiles, seuilRentabilite, echeances, historique, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
 };
