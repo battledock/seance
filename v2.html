@@ -89,6 +89,18 @@
   </div>
 </div>
 
+<!-- ═══════ L'ÉQUIPE ═══════ -->
+<div class="voilePanneau" id="panEquipe">
+  <div class="feuille">
+    <div class="poignee"></div>
+    <div class="fTete">
+      <div class="fInfo"><b>Votre équipe</b><span id="eqSous">—</span></div>
+      <button class="fX" data-ferme="panEquipe" aria-label="Fermer">✕</button>
+    </div>
+    <div class="fCorps" id="eqCorps"></div>
+  </div>
+</div>
+
 <!-- ═══════ RÉVISER LES TARIFS ═══════ -->
 <div class="voilePanneau" id="panTarifs">
   <div class="feuille">
@@ -110,7 +122,7 @@
 import {
   V2, chargeEtat, monCinema, chargeOffre, previsionJournee, peutOuvrir, synchronise, faireRelache,
   ouvrirLesPortes, signerLicence, poserSeance, retirerSeance,
-  nettoyer, reparer, agrandir, ameliorer, reapprovisionner, embaucher,
+  nettoyer, reparer, agrandir, ameliorer, reapprovisionner, embaucher, congedier,
   chargeTarifsEquipement, apercuAgrandissement,
   constructionsPossibles, construire, reviserTarifs,
   messageErreurV2, requeteTable
@@ -194,14 +206,14 @@ function rendBoutonOuvrir(){
   const tout = peut?.raison === "TOUT_EN_TRAVAUX";
 
   b.disabled = false;
-  b.dataset.mode = ok ? "ouvrir" : tout ? "relache" : "bloque";
+  b.dataset.mode = ok ? "ouvrir" : tout ? "relache" : "programmer";
   b.textContent = ok ? "Ouvrir les portes"
     : tout ? "Faire relâche"
-    : "Programmez une séance";
-  if(!ok && !tout) b.disabled = true;
+    : "Composer la journée";
 
   $("sousOuvrir").textContent = tout
     ? "Toutes vos salles sont en chantier. Les charges tombent quand même."
+    : !ok ? "Aucune séance à l'affiche aujourd'hui"
     : prevision && prevision.seances?.length
     ? `${prevision.seances.length} séance${prevision.seances.length>1?"s":""} · `
       + `${prevision.spectateurs} spectateurs attendus`
@@ -384,7 +396,20 @@ async function ouvreConstruction(){
   $("consSous").textContent = `${n} salle${n>1?"s":""} sur 8 · `
     + `${Number(etat.cinema.etoiles).toFixed(1).replace(".",",")} étoiles · ${eur(etat.cinema.tresorerie)}`;
 
-  $("consListe").innerHTML = l.map(t => `
+  /* Un panneau où rien n'est cliquable ressemble à une panne. On
+     dit franchement ce qui manque, et à partir de quand ce sera
+     possible. */
+  const faisables = l.filter(t => t.possible).length;
+  const moinsCher = l.reduce((m, t) => t.cout < m ? t.cout : m, Infinity);
+  const entete = faisables > 0 ? "" : `
+    <div class="consVide">
+      <b>Rien n'est encore à votre portée</b>
+      <span>La salle la moins chère coûte ${eur(moinsCher)} et vous avez
+        ${eur(etat.cinema.tresorerie)}. Une salle de plus double votre capacité —
+        c'est le plus gros pas du jeu, il se prépare.</span>
+    </div>`;
+
+  $("consListe").innerHTML = entete + l.map(t => `
     <div class="typeS ${t.possible ? "" : "bloque"}">
       <div class="typeVue">${coupeSalle(t.type)}
         <span class="typeBadge">${t.places} places</span></div>
@@ -415,6 +440,99 @@ async function ouvreConstruction(){
       dit(`${c.data.type} · ${c.data.equipe.manque > 0
         ? c.data.equipe.manque + " embauche(s) à prévoir" : "prête bientôt"}`);
       await rafraichit(true);
+    }));
+}
+
+/* ============================================================
+   L'ÉQUIPE
+
+   Deux postes sont obligatoires pour ouvrir : la caisse et le
+   ménage. Les autres se choisissent. Manquer de personnel
+   n'empêche pas d'ouvrir, mais allonge les files et pèse sur la
+   note — un cinéma mal tenu se voit.
+
+   Chaque poste dit ce qu'il apporte, parce qu'embaucher est une
+   dépense quotidienne et qu'on doit pouvoir la justifier.
+   ============================================================ */
+const POSTES_DISPO = [
+  {c:"caisse",     n:"Caisse",       s:48,
+   d:"Vend les billets. Sans elle, la file décourage une partie du public."},
+  {c:"menage",     n:"Ménage",       s:42,
+   d:"Nettoie entre les séances. La propreté est le premier facteur de votre note."},
+  {c:"projection", n:"Projection",   s:58,
+   d:"Un projectionniste par salle au-delà de la première."},
+  {c:"securite",   n:"Sécurité",     s:52,
+   d:"Rassure les séances tardives et les grosses affluences."},
+  {c:"confiserie", n:"Confiserie",   s:45,
+   d:"Tient le comptoir. Sans personne, une partie des ventes se perd."}
+];
+
+async function ouvreEquipe(){
+  $("panEquipe").classList.add("ouvert");
+  $("eqCorps").innerHTML = `<div class="cVide">Un instant…</div>`;
+  const l = await requeteTable(
+    "v2_personnel?select=id,poste,salaire,obligatoire&order=embauche_le")
+    .catch(() => null);
+  if(!l){ dit("Impossible de lire votre équipe.", true); return; }
+  rendEquipe(l);
+}
+
+function rendEquipe(l){
+  const eq = etat.equipe || {};
+  const masse = l.reduce((t, p) => t + Number(p.salaire), 0);
+  $("eqSous").textContent =
+    `${l.length} personne${l.length>1?"s":""} · ${eur(masse)} par jour`;
+
+  const compte = {};
+  for(const p of l) compte[p.poste] = (compte[p.poste] || 0) + 1;
+
+  $("eqCorps").innerHTML = `
+    <div class="eqBilan ${eq.manque > 0 ? "court" : "ok"}">
+      <b>${eq.manque > 0
+        ? `Il vous manque ${eq.manque} personne${eq.manque>1?"s":""}`
+        : "Votre équipe suffit"}</b>
+      <span>${eq.manque > 0
+        ? "Les files s'allongent et votre note en souffre."
+        : `Pour ${(etat.salles||[]).reduce((t,x)=>t+x.places,0)} places, il en faut ${eq.requis}.`}</span>
+    </div>
+
+    <div class="groupe">En poste</div>
+    ${l.map(p => {
+      const inf = POSTES_DISPO.find(x => x.c === p.poste) || {n:p.poste, d:""};
+      return `<div class="eqLigne">
+        <span class="eqNom"><b>${inf.n}</b><small>${echappe(inf.d)}</small></span>
+        <span class="eqSal">${eur(p.salaire)}<i>par jour</i></span>
+        <button class="eqX" data-vire="${p.id}" ${p.obligatoire ? "disabled" : ""}
+          title="${p.obligatoire ? "Poste obligatoire" : "Congédier"}">
+          ${p.obligatoire ? "requis" : "congédier"}</button>
+      </div>`;
+    }).join("")}
+
+    <div class="groupe">Embaucher</div>
+    ${POSTES_DISPO.map(p => `
+      <button class="eqAdd" data-embauche="${p.c}">
+        <span class="eqNom"><b>${p.n}</b><small>${p.d}</small></span>
+        <span class="eqPlus">+ ${eur(p.s)}<i>par jour</i></span>
+      </button>`).join("")}`;
+
+  $("eqCorps").querySelectorAll("[data-embauche]").forEach(b =>
+    b.addEventListener("click", async () => {
+      b.disabled = true;
+      const r = await embaucher(b.dataset.embauche);
+      if(r.erreur){ dit(messageErreurV2(r), true); b.disabled = false; return; }
+      dit("Embauché.");
+      await rafraichit(true);
+      ouvreEquipe();
+    }));
+
+  $("eqCorps").querySelectorAll("[data-vire]").forEach(b =>
+    b.addEventListener("click", async () => {
+      b.disabled = true;
+      const r = await congedier(b.dataset.vire);
+      if(r.erreur){ dit(messageErreurV2(r), true); b.disabled = false; return; }
+      dit("C'est fait.");
+      await rafraichit(true);
+      ouvreEquipe();
     }));
 }
 
@@ -529,8 +647,13 @@ function rendCompte(){
         <b>${c.bassin}</b></div>
       <div class="lg"><span>Réputation<small>cible ${c.etoiles_cible} étoiles</small></span>
         <b>${Number(c.etoiles).toFixed(1).replace(".",",")}</b></div>
-      <div class="lg"><span>Équipe</span><b>${etat.equipe?.en_poste ?? 0} / ${
-        etat.equipe?.requis ?? 0}</b></div>
+      <button class="lg lgClic" id="lgEquipe">
+        <span>Équipe<small>${(etat.equipe?.manque ?? 0) > 0
+          ? `il en manque ${etat.equipe.manque}`
+          : "effectif suffisant"}</small></span>
+        <b class="${(etat.equipe?.manque ?? 0) > 0 ? "r" : "v"}">${
+          etat.equipe?.en_poste ?? 0} employé${(etat.equipe?.en_poste ?? 0) > 1 ? "s" : ""}</b>
+      </button>
     </div>
     <div class="bloc">
       <div class="blocT"><b>La grille tarifaire</b><span>${
@@ -551,6 +674,8 @@ function rendCompte(){
     </div>`;
   const bt = $("btnTarifs");
   if(bt) bt.addEventListener("click", ouvreTarifs);
+  const be = $("lgEquipe");
+  if(be) be.addEventListener("click", ouvreEquipe);
 }
 const fmt = v => (Number(v) || 0).toFixed(2).replace(".", ",") + " €";
 
@@ -582,6 +707,8 @@ async function ouvreCase({salleId, heure, seanceId}){
 /* ---------- l'ouverture des portes ---------- */
 async function ouvrir(){
   const b = $("btnOuvrir");
+  /* rien au programme : le bouton conduit là où l'on programme */
+  if(b.dataset.mode === "programmer"){ montre("grille"); return; }
   /* si tout est en chantier, le même bouton fait passer la journée */
   if(b.dataset.mode === "relache"){
     b.disabled = true; b.textContent = "Portes closes…";
@@ -608,11 +735,12 @@ async function ouvrir(){
    où aller sans y aller. */
 function alertesBarre(){
   const a = {};
+  /* La grille n'appelle qu'une chose : rien n'est programmé et
+     la journée attend. Compter les créneaux vides n'apprenait
+     rien — un cinéma n'a pas vocation à remplir ses cinq
+     créneaux tous les jours. */
   const salles = (etat.salles || []).filter(s => !s.en_travaux);
-  const posees = (prevision?.seances || []).length;
-  const libres = salles.length * 5 - posees;
-  if(posees === 0 && salles.length) a.grille = true;
-  else if(libres > 0) a.grille = libres;
+  if(salles.length && (prevision?.seances || []).length === 0) a.grille = true;
 
   const nouv = (offre?.nouveautes || []).filter(f => f.jours_avant === 0).length;
   if(nouv > 0) a.films = nouv;
@@ -710,7 +838,7 @@ async function signer(sortieId, duree){
     document.querySelectorAll("[data-ferme]").forEach(b =>
       b.addEventListener("click", () => ferme(b.dataset.ferme)));
     /* toucher le voile ferme aussi : c'est le geste attendu */
-    for(const id of ["panConstruire", "panTarifs"]){
+    for(const id of ["panConstruire", "panTarifs", "panEquipe"]){
       $(id).addEventListener("click", e => { if(e.target === $(id)) ferme(id); });
     }
     $("tValider").addEventListener("click", validerTarifs);
