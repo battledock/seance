@@ -85,6 +85,18 @@
   </div>
 </div>
 
+<!-- ═══════ UNE ANALYSE EN DÉTAIL ═══════ -->
+<div class="voilePanneau" id="panFiche">
+  <div class="feuille">
+    <div class="poignee"></div>
+    <div class="fTete">
+      <div class="fInfo"><b id="ficheTitre">—</b><span id="ficheSous">—</span></div>
+      <button class="fX" data-ferme="panFiche" aria-label="Fermer">✕</button>
+    </div>
+    <div class="fCorps" id="ficheCorps"></div>
+  </div>
+</div>
+
 <!-- ═══════ L'ÉQUIPE ═══════ -->
 <div class="voilePanneau" id="panEquipe">
   <div class="feuille">
@@ -650,11 +662,46 @@ function rendCompte(){
      voit nulle part ailleurs une fois le bilan refermé. */
   $("kSous").textContent = `jour ${c.jour}`;
 
+  /* Quatre analyses, quatre fiches. Chacune donne déjà son
+     chiffre et ce qu'il faut en retenir : on n'ouvre que si l'on
+     veut comprendre le détail. */
   $("compte").innerHTML = `
-    <div class="bloc" id="blocEtoiles"><div class="cVide">Un instant…</div></div>
-    <div class="bloc" id="blocSeuil"><div class="cVide">Un instant…</div></div>
-    <div class="bloc" id="blocCourbe"><div class="cVide">Un instant…</div></div>
-    <div class="bloc" id="blocEcheances"><div class="cVide">Un instant…</div></div>
+    <button class="fiche" data-fiche="etoiles">
+      <span class="vign" style="background:#fdf3dc;color:#b8973a">
+        <svg viewBox="0 0 24 24" fill="#e0b84a" stroke="#e0b84a" stroke-width="1.6"
+          stroke-linejoin="round"><path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3l-5-4.9 7-.9z"/></svg></span>
+      <span class="tx"><b>Vos étoiles</b><small id="fEtoilesSous">…</small></span>
+      <span class="val"><b id="fEtoilesVal" style="color:#8a6a1a">—</b><span>sur 5</span></span>
+      <span class="fl">${FLECHE}</span></button>
+
+    <button class="fiche" data-fiche="seuil">
+      <span class="vign" style="background:#eaf3ec;color:#2a8a4a">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span>
+      <span class="tx"><b>Seuil de rentabilité</b><small id="fSeuilSous">…</small></span>
+      <span class="val"><b id="fSeuilVal" style="color:#2a8a4a">—</b><span>spectateurs</span></span>
+      <span class="fl">${FLECHE}</span></button>
+
+    <button class="fiche" data-fiche="courbe">
+      <span class="vign" style="background:#f7efe2;color:#a8862a">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3.6 4v14.4a1.6 1.6 0 0 0 1.6 1.6H21"/>
+          <path d="M6.6 15.6l3-4.4 2.6 2.2 2.4-5 4 3.4"/></svg></span>
+      <span class="tx"><b>Votre historique</b><small id="fCourbeSous">…</small></span>
+      <span class="val"><b id="fCourbeVal" style="color:#2a8a4a">—</b><span>euros</span></span>
+      <span class="fl">${FLECHE}</span></button>
+
+    <button class="fiche" data-fiche="echeances">
+      <span class="vign" style="background:#f0edf7;color:#6a5aa0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3.4" y="5.4" width="17.2" height="15" rx="2"/>
+          <path d="M3.4 10h17.2M8 3.4v4M16 3.4v4"/></svg></span>
+      <span class="tx"><b>Les prochains jours</b><small id="fEchSous">…</small></span>
+      <span class="val"><b id="fEchVal" style="color:#6a5aa0">—</b><span>échéances</span></span>
+      <span class="fl">${FLECHE}</span></button>
+
     <div class="bloc">
       <div class="blocT"><b>La grille tarifaire</b><span>${
         t.revisable ? "révisable dès maintenant"
@@ -672,6 +719,7 @@ function rendCompte(){
         ${t.revisable ? "Réviser les tarifs"
           : `Révision possible au jour ${t.revisable_au_jour}`}</button>
     </div>
+
     <div class="bloc">
       <div class="blocT"><b>Votre équipe</b><span>${eur(etat.charges_jour)} de charges par jour</span></div>
       <button class="lg lgClic" id="lgEquipe">
@@ -687,8 +735,26 @@ function rendCompte(){
   if(bt) bt.addEventListener("click", ouvreTarifs);
   const be = $("lgEquipe");
   if(be) be.addEventListener("click", ouvreEquipe);
+  $("compte").querySelectorAll("[data-fiche]").forEach(b =>
+    b.addEventListener("click", () => ouvreFiche(b.dataset.fiche)));
 
   remplitCompte();
+}
+
+const FLECHE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+  style="width:16px;height:16px"><path d="M9 5l7 7-7 7"/></svg>`;
+
+/* ce que chaque fiche a récolté, gardé pour l'ouverture */
+const FICHES = {etoiles:null, seuil:null, courbe:null, echeances:null};
+
+function ouvreFiche(cle){
+  const d = FICHES[cle];
+  if(!d){ dit("Ces chiffres arrivent…"); return; }
+  $("panFiche").classList.add("ouvert");
+  $("ficheTitre").textContent = d.titre;
+  $("ficheSous").textContent = d.sous;
+  $("ficheCorps").innerHTML = `<div class="bloc" style="margin-bottom:0">${d.html}</div>`;
 }
 
 async function remplitCompte(){
@@ -711,8 +777,15 @@ async function remplitCompte(){
 
 /* ── d'où viennent les étoiles ── */
 function rendEtoiles(d){
-  const el = $("blocEtoiles"); if(!el) return;
   const n = Number(d.note);
+  const el = $("fEtoilesVal");
+  if(el){
+    el.textContent = String(n).replace(".", ",");
+    $("fEtoilesSous").textContent = d.levier === "aucun"
+      ? "votre cinéma est bien tenu"
+      : `${LEVIERS[d.levier] || d.levier} vous plafonne`;
+  }
+
   let et = "";
   for(let i = 1; i <= 5; i++){
     const p = i <= Math.round(n);
@@ -722,81 +795,112 @@ function rendEtoiles(d){
   }
   const coul = v => v >= .75 ? "#2a8a4a" : v >= .45 ? "#c9a24a" : "#c05a3a";
 
-  el.innerHTML = `
-    <div class="etTete">
-      <div class="etNote">${String(n).replace(".", ",")}<i>/5</i></div>
-      <div class="etCote">
-        <div class="etEtoiles">${et}</div>
-        <p>Votre quartier peut envoyer ${d.bassin_base} personnes.<br>
-           À cette note, vous n'en mobilisez que <b>${d.bassin_reel}</b>.</p>
+  FICHES.etoiles = {
+    titre: "Vos étoiles",
+    sous: `${String(n).replace(".", ",")} sur 5`,
+    html: `
+      <div class="etTete">
+        <div class="etNote">${String(n).replace(".", ",")}<i>/5</i></div>
+        <div class="etCote">
+          <div class="etEtoiles">${et}</div>
+          <p>Votre quartier peut envoyer ${d.bassin_base} personnes.<br>
+             À cette note, vous n'en mobilisez que <b>${d.bassin_reel}</b>.</p>
+        </div>
       </div>
-    </div>
-    ${(d.facteurs || []).map(f => `
-      <div class="fac">
-        <span class="nm"><b>${echappe(f.nom)}</b><small>${echappe(f.detail)}</small></span>
-        <span class="jg"><span class="barre"><i style="width:${
-          Math.min(100, f.valeur * 100)}%;background:${coul(f.valeur)}"></i></span></span>
-        <span class="vl" style="color:${coul(f.valeur)}">${echappe(f.affiche)}</span>
-      </div>`).join("")}
-    ${d.levier === "aucun" ? "" : `
-      <div class="levier">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-          stroke-linecap="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
-        <p><b>Ce qui vous plafonne : ${LEVIERS[d.levier] || d.levier}.</b>
-           ${echappe(d.conseil)}</p>
-      </div>`}`;
+      ${(d.facteurs || []).map(f => `
+        <div class="fac">
+          <span class="nm"><b>${echappe(f.nom)}</b><small>${echappe(f.detail)}</small></span>
+          <span class="jg"><span class="barre"><i style="width:${
+            Math.min(100, f.valeur * 100)}%;background:${coul(f.valeur)}"></i></span></span>
+          <span class="vl" style="color:${coul(f.valeur)}">${echappe(f.affiche)}</span>
+        </div>`).join("")}
+      ${d.levier === "aucun" ? "" : `
+        <div class="levier">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+            stroke-linecap="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+          <p><b>Ce qui vous plafonne : ${LEVIERS[d.levier] || d.levier}.</b>
+             ${echappe(d.conseil)}</p>
+        </div>`}`
+  };
 }
+
 const LEVIERS = {equipement:"l'équipement", proprete:"la propreté",
                  service:"le service", etat:"l'état des salles"};
 
 /* ── le seuil de rentabilité ── */
 function rendSeuil(s){
-  const el = $("blocSeuil"); if(!el) return;
   const capa = Math.max(1, s.capacite_jour);
   const attendus = prevision?.spectateurs ?? null;
   const pS = Math.min(100, s.seuil / capa * 100);
   const pA = attendus == null ? null : Math.min(100, attendus / capa * 100);
 
-  el.innerHTML = `
-    <div class="blocT"><b>Il vous faut ${s.seuil} spectateur${s.seuil>1?"s":""}</b>
-      <span>par jour</span></div>
-    <div class="seuilVis">
-      <div class="piste"></div>
-      ${pA != null ? `<div class="rempli" style="width:${pA.toFixed(0)}%"></div>` : ""}
-      <div class="marque" style="left:${pS.toFixed(0)}%"></div>
-      <div class="etiq" style="left:${pS.toFixed(0)}%">seuil</div>
-      <div class="bas" style="left:${pS.toFixed(0)}%;color:#7a726a">${s.seuil}</div>
-      ${pA != null && Math.abs(pA - pS) > 12
-        ? `<div class="bas" style="left:${pA.toFixed(0)}%;color:${
-            attendus >= s.seuil ? "#2a8a4a" : "#c05a3a"}">${attendus} attendus</div>` : ""}
-    </div>
-    <div class="sLg"><span>Charges quotidiennes<small>loyer, énergie, salaires</small></span>
-      <b class="r">${eur(s.charges)}</b></div>
-    <div class="sLg"><span>Ce que vous gardez par billet<small>après taxes et distributeur (${
-      Math.round(s.taux_location_moyen * 100)} %)</small></span>
-      <b>${fmt(s.garde_par_billet)}</b></div>
-    ${s.marge_confiserie > 0
-      ? `<div class="sLg"><span>Marge confiserie par spectateur</span>
-          <b>${fmt(s.marge_confiserie)}</b></div>` : ""}
-    <div class="sLg"><span>Au-delà du seuil, chaque spectateur rapporte</span>
-      <b class="v">${fmt(s.marge_par_spectateur)}</b></div>`;
+  const el = $("fSeuilVal");
+  if(el){
+    el.textContent = s.seuil;
+    $("fSeuilSous").textContent = attendus == null
+      ? `pour couvrir ${eur(s.charges)} de charges`
+      : attendus >= s.seuil
+      ? `vous en attendez ${attendus}`
+      : `vous n'en attendez que ${attendus}`;
+    el.style.color = attendus != null && attendus < s.seuil ? "#c05a3a" : "#2a8a4a";
+  }
+
+  FICHES.seuil = {
+    titre: "Seuil de rentabilité",
+    sous: `${s.seuil} spectateurs par jour`,
+    html: `
+      <div class="seuilVis">
+        <div class="piste"></div>
+        ${pA != null ? `<div class="rempli" style="width:${pA.toFixed(0)}%"></div>` : ""}
+        <div class="marque" style="left:${pS.toFixed(0)}%"></div>
+        <div class="etiq" style="left:${pS.toFixed(0)}%">seuil</div>
+        <div class="bas" style="left:${pS.toFixed(0)}%;color:#7a726a">${s.seuil}</div>
+        ${pA != null && Math.abs(pA - pS) > 12
+          ? `<div class="bas" style="left:${pA.toFixed(0)}%;color:${
+              attendus >= s.seuil ? "#2a8a4a" : "#c05a3a"}">${attendus} attendus</div>` : ""}
+      </div>
+      <div class="sLg"><span>Charges quotidiennes<small>loyer, énergie, salaires</small></span>
+        <b class="r">${eur(s.charges)}</b></div>
+      <div class="sLg"><span>Ce que vous gardez par billet<small>après taxes et distributeur (${
+        Math.round(s.taux_location_moyen * 100)} %)</small></span>
+        <b>${fmt(s.garde_par_billet)}</b></div>
+      ${s.marge_confiserie > 0
+        ? `<div class="sLg"><span>Marge confiserie par spectateur</span>
+            <b>${fmt(s.marge_confiserie)}</b></div>` : ""}
+      <div class="sLg"><span>Au-delà du seuil, chaque spectateur rapporte</span>
+        <b class="v">${fmt(s.marge_par_spectateur)}</b></div>`
+  };
 }
 
 /* ── la courbe des trente jours ── */
 function rendCourbe(h){
-  const el = $("blocCourbe"); if(!el) return;
   const j = h.slice().reverse();
+  const elv = $("fCourbeVal");
+
   if(j.length < 2){
-    el.innerHTML = `<div class="blocT"><b>Trésorerie</b><span>—</span></div>
-      <div class="cVide">Ouvrez quelques journées et votre courbe apparaîtra ici.</div>`;
+    if(elv){
+      elv.textContent = "—";
+      $("fCourbeSous").textContent = j.length
+        ? "une seule journée jouée" : "aucune journée jouée";
+    }
+    FICHES.courbe = {titre:"Votre historique", sous:"pas encore d'historique",
+      html:`<div class="cVide">Ouvrez quelques journées et votre courbe apparaîtra ici.</div>`};
     return;
   }
+
   /* on reconstitue la trésorerie à rebours depuis aujourd'hui */
   const fin = Number(etat.cinema.tresorerie);
   const vals = [];
   let v = fin;
   for(let i = j.length - 1; i >= 0; i--){ vals.unshift(v); v -= Number(j[i].resultat || 0); }
   vals.unshift(v);
+
+  const gain = fin - vals[0];
+  if(elv){
+    elv.textContent = (gain >= 0 ? "+" : "−") + Math.abs(Math.round(gain)).toLocaleString("fr");
+    elv.style.color = gain >= 0 ? "#2a8a4a" : "#c05a3a";
+    $("fCourbeSous").textContent = `${j.length} journée${j.length>1?"s":""} jouée${j.length>1?"s":""}`;
+  }
 
   const mx = Math.max(...vals), mn = Math.min(...vals);
   const X = i => i / (vals.length - 1) * 300;
@@ -806,7 +910,6 @@ function rendCourbe(h){
     const x0 = X(i), y0 = Y(vals[i]), x1 = X(i+1), y1 = Y(vals[i+1]), cx = (x0+x1)/2;
     d += ` C${cx.toFixed(1)} ${y0.toFixed(1)} ${cx.toFixed(1)} ${y1.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}`;
   }
-  /* les creux : une chute forte d'un jour à l'autre est un achat */
   const creux = [];
   for(let i = 1; i < vals.length; i++)
     if(vals[i] < vals[i-1] * 0.82) creux.push(i);
@@ -815,59 +918,69 @@ function rendCourbe(h){
   const res = j.reduce((t,x) => t + Number(x.resultat||0), 0) / j.length;
   const capa = (etat.salles||[]).reduce((t,x)=>t+x.places,0) * 5;
 
-  el.innerHTML = `
-    <div class="blocT"><b>Trésorerie</b><span>${j.length} journée${j.length>1?"s":""} jouée${
-      j.length>1?"s":""}</span></div>
-    <div class="grand">
-      <svg viewBox="0 0 300 140" preserveAspectRatio="none">
-        <defs><linearGradient id="gcpt" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#caa24a" stop-opacity=".26"/>
-          <stop offset="1" stop-color="#caa24a" stop-opacity="0"/></linearGradient></defs>
-        <g stroke="#efe8dc" stroke-width="1" vector-effect="non-scaling-stroke">
-          <line x1="0" y1="35" x2="300" y2="35"/><line x1="0" y1="70" x2="300" y2="70"/>
-          <line x1="0" y1="105" x2="300" y2="105"/></g>
-        <path d="${d} L300 140 L0 140 Z" fill="url(#gcpt)"/>
-        <path d="${d}" fill="none" stroke="#a8862a" stroke-width="2"
-          vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
-        ${creux.map(i => `<circle cx="${X(i).toFixed(1)}" cy="${Y(vals[i]).toFixed(1)}" r="3"
-          fill="#fff" stroke="#c05a3a" stroke-width="2"
-          vector-effect="non-scaling-stroke"/>`).join("")}
-        <circle cx="300" cy="${Y(vals[vals.length-1]).toFixed(1)}" r="4" fill="#a8862a"
-          stroke="#fff" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
-      </svg>
-    </div>
-    <div class="grLeg"><span>${eur(vals[0])}</span>
-      ${creux.length ? `<span style="color:#c05a3a">● les achats</span>` : "<span></span>"}
-      <span>aujourd'hui · ${eur(fin)}</span></div>
-    <div class="moy">
-      <div class="moyC"><b>${Math.round(spect)}</b><span>spect./jour</span></div>
-      <div class="moyC"><b>${capa ? Math.round(spect / capa * 100) : 0} %</b>
-        <span>remplissage</span></div>
-      <div class="moyC"><b class="${res>=0?"v":"r"}">${res>=0?"+":"−"}${
-        eur(Math.abs(res))}</b><span>par jour</span></div>
-    </div>`;
+  FICHES.courbe = {
+    titre: "Votre historique",
+    sous: `${j.length} journée${j.length>1?"s":""} · ${gain >= 0 ? "+" : "−"}${
+      eur(Math.abs(gain))}`,
+    html: `
+      <div class="grand">
+        <svg viewBox="0 0 300 140" preserveAspectRatio="none">
+          <defs><linearGradient id="gcpt" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#caa24a" stop-opacity=".26"/>
+            <stop offset="1" stop-color="#caa24a" stop-opacity="0"/></linearGradient></defs>
+          <g stroke="#efe8dc" stroke-width="1" vector-effect="non-scaling-stroke">
+            <line x1="0" y1="35" x2="300" y2="35"/><line x1="0" y1="70" x2="300" y2="70"/>
+            <line x1="0" y1="105" x2="300" y2="105"/></g>
+          <path d="${d} L300 140 L0 140 Z" fill="url(#gcpt)"/>
+          <path d="${d}" fill="none" stroke="#a8862a" stroke-width="2"
+            vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
+          ${creux.map(i => `<circle cx="${X(i).toFixed(1)}" cy="${Y(vals[i]).toFixed(1)}" r="3"
+            fill="#fff" stroke="#c05a3a" stroke-width="2"
+            vector-effect="non-scaling-stroke"/>`).join("")}
+          <circle cx="300" cy="${Y(vals[vals.length-1]).toFixed(1)}" r="4" fill="#a8862a"
+            stroke="#fff" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+        </svg>
+      </div>
+      <div class="grLeg"><span>${eur(vals[0])}</span>
+        ${creux.length ? `<span style="color:#c05a3a">● les achats</span>` : "<span></span>"}
+        <span>aujourd'hui · ${eur(fin)}</span></div>
+      <div class="moy">
+        <div class="moyC"><b>${Math.round(spect)}</b><span>spect./jour</span></div>
+        <div class="moyC"><b>${capa ? Math.round(spect / capa * 100) : 0} %</b>
+          <span>remplissage</span></div>
+        <div class="moyC"><b class="${res>=0?"v":"r"}">${res>=0?"+":"−"}${
+          eur(Math.abs(res))}</b><span>par jour</span></div>
+      </div>`
+  };
 }
 
 /* ── ce qui arrive ── */
 const COULEURS_ECH = {licence:"#c05a3a", sortie:"#c9a24a", evenement:"#8a6ac0",
                       tarifs:"#7fc99a", travaux:"#8a8078"};
 function rendEcheances(l){
-  const el = $("blocEcheances"); if(!el) return;
-  if(!l.length){
-    el.innerHTML = `<div class="blocT"><b>Les prochains jours</b><span>—</span></div>
-      <div class="cVide">Rien de particulier à l'horizon.</div>`;
-    return;
+  const elv = $("fEchVal");
+  if(elv){
+    elv.textContent = l.length || "—";
+    const p = l[0];
+    $("fEchSous").textContent = !p ? "rien de particulier à l'horizon"
+      : p.dans === 0 ? p.titre + " aujourd'hui"
+      : p.dans === 1 ? p.titre + " demain"
+      : p.titre + " dans " + p.dans + " jours";
   }
-  el.innerHTML = `
-    <div class="blocT"><b>Les prochains jours</b>
-      <span>vous êtes au jour ${etat.cinema.jour}</span></div>
-    ${l.slice(0, 6).map(e => `
-      <div class="ech">
-        <span class="pt" style="background:${COULEURS_ECH[e.genre] || "#b0a08a"}"></span>
-        <span class="j"><b>${e.jour}</b><span>${
-          e.dans === 0 ? "aujourd'hui" : e.dans === 1 ? "demain" : "dans " + e.dans + " j"}</span></span>
-        <span class="tx"><b>${echappe(e.titre)}</b><small>${echappe(e.detail)}</small></span>
-      </div>`).join("")}`;
+
+  FICHES.echeances = {
+    titre: "Les prochains jours",
+    sous: `vous êtes au jour ${etat.cinema.jour}`,
+    html: !l.length
+      ? `<div class="cVide">Rien de particulier à l'horizon.</div>`
+      : l.slice(0, 8).map(e => `
+        <div class="ech">
+          <span class="pt" style="background:${COULEURS_ECH[e.genre] || "#b0a08a"}"></span>
+          <span class="j"><b>${e.jour}</b><span>${
+            e.dans === 0 ? "aujourd'hui" : e.dans === 1 ? "demain" : "dans " + e.dans + " j"}</span></span>
+          <span class="tx"><b>${echappe(e.titre)}</b><small>${echappe(e.detail)}</small></span>
+        </div>`).join("")
+  };
 }
 
 const fmt = v => (Number(v) || 0).toFixed(2).replace(".", ",") + " €";
@@ -1031,7 +1144,7 @@ async function signer(sortieId, duree){
     document.querySelectorAll("[data-ferme]").forEach(b =>
       b.addEventListener("click", () => ferme(b.dataset.ferme)));
     /* toucher le voile ferme aussi : c'est le geste attendu */
-    for(const id of ["panConstruire", "panTarifs", "panEquipe"]){
+    for(const id of ["panConstruire", "panTarifs", "panEquipe", "panFiche"]){
       $(id).addEventListener("click", e => { if(e.target === $(id)) ferme(id); });
     }
     $("tValider").addEventListener("click", validerTarifs);
