@@ -114,7 +114,7 @@
 
 <script type="module">
 import {
-  V2, chargeEtat, monCinema, chargeOffre, previsionJournee, peutOuvrir, synchronise,
+  V2, chargeEtat, monCinema, chargeOffre, previsionJournee, peutOuvrir, synchronise, faireRelache,
   ouvrirLesPortes, signerLicence, poserSeance, retirerSeance,
   nettoyer, reparer, agrandir, ameliorer, reapprovisionner, embaucher,
   chargeTarifsEquipement, apercuAgrandissement,
@@ -196,9 +196,18 @@ function rendAlertes(){
 function rendBoutonOuvrir(){
   const b = $("btnOuvrir");
   const ok = peut?.ouvrable;
-  b.disabled = !ok;
-  b.textContent = ok ? "Ouvrir les portes" : "Programmez une séance";
-  $("sousOuvrir").textContent = prevision && prevision.seances?.length
+  const tout = peut?.raison === "TOUT_EN_TRAVAUX";
+
+  b.disabled = false;
+  b.dataset.mode = ok ? "ouvrir" : tout ? "relache" : "bloque";
+  b.textContent = ok ? "Ouvrir les portes"
+    : tout ? "Faire relâche"
+    : "Programmez une séance";
+  if(!ok && !tout) b.disabled = true;
+
+  $("sousOuvrir").textContent = tout
+    ? "Toutes vos salles sont en chantier. Les charges tombent quand même."
+    : prevision && prevision.seances?.length
     ? `${prevision.seances.length} séance${prevision.seances.length>1?"s":""} · `
       + `${prevision.spectateurs} spectateurs attendus`
       + (prevision.refuses ? ` · ${prevision.refuses} refusés` : "")
@@ -243,7 +252,9 @@ function rendSalles(){
       <div class="salleTete">
         <div class="salleInfo"><b>${echappe(x.nom)}</b>
           <div class="meta">${x.places} places · ${x.type}</div>
-          ${x.en_travaux ? `<span class="tag travaux">En travaux</span>` : ""}</div>
+          ${x.en_travaux
+            ? `<span class="tag travaux">Fermée · rouvre au jour ${x.rouvre_au_jour}</span>`
+            : ""}</div>
       </div>
       <div class="jauges">
         <div class="jg"><div class="lb"><span>Propreté</span><b>${x.proprete} %</b></div>
@@ -257,10 +268,12 @@ function rendSalles(){
       <div class="actions">
         <button data-act="nettoyer" data-salle="${x.id}" ${x.proprete >= 98 ? "disabled" : ""}>
           Nettoyer<small>${x.proprete >= 98 ? "déjà propre" : eur(coutNettoyage)}</small></button>
-        <button data-act="reparer" data-salle="${x.id}" ${x.etat >= 98 ? "disabled" : ""}>
-          Réparer<small>${x.etat >= 98 ? "en bon état" : eur(coutReparation)}</small></button>
-        <button data-act="agrandir" data-salle="${x.id}">
-          Agrandir<small>+15 pl. · ${eur(coutAgrandir)}</small></button>
+        <button data-act="reparer" data-salle="${x.id}"
+          ${x.etat >= 98 || x.en_travaux ? "disabled" : ""}>
+          Réparer<small>${x.en_travaux ? "en travaux"
+            : x.etat >= 98 ? "en bon état" : eur(coutReparation)}</small></button>
+        <button data-act="agrandir" data-salle="${x.id}" ${x.en_travaux ? "disabled" : ""}>
+          Agrandir<small>${x.en_travaux ? "en travaux" : "+15 pl. · " + eur(coutAgrandir)}</small></button>
       </div>
     </div>`;
   }).join("");
@@ -574,6 +587,15 @@ async function ouvreCase({salleId, heure, seanceId}){
 /* ---------- l'ouverture des portes ---------- */
 async function ouvrir(){
   const b = $("btnOuvrir");
+  /* si tout est en chantier, le même bouton fait passer la journée */
+  if(b.dataset.mode === "relache"){
+    b.disabled = true; b.textContent = "Portes closes…";
+    const r = await faireRelache();
+    if(r.erreur){ dit(messageErreurV2(r), true); rendBoutonOuvrir(); return; }
+    dit(`Relâche · ${Math.round(r.data.charges)} € de charges`);
+    await rafraichit();
+    return;
+  }
   b.disabled = true; b.textContent = "La séance commence…";
   /* la journée qu'on vient de clore : c'est elle que le bilan
      détaillera, pas celle qui commence */
