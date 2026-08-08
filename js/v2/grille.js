@@ -27,6 +27,34 @@ function indexePrevisions(prevision){
   return m;
 }
 
+function minutes(h){
+  return (parseInt(h, 10) || 0) * 60 + (parseInt(String(h).split("h")[1], 10) || 0);
+}
+
+/* Un film long déborde sur le créneau suivant : une séance de
+   2h32 posée à 11h occupe la salle jusqu'à 13h52 et rend le
+   créneau de 14h inutilisable.
+
+   Sans cette lecture, le joueur tape sur une case libre en
+   apparence, se fait refuser, et ne comprend pas pourquoi. */
+function occupations(prevision, salleId){
+  return (prevision?.seances || [])
+    .filter(s => s.salle_id === salleId)
+    .map(s => ({
+      debut: minutes(s.heure),
+      fin: s.fin_minutes ?? (minutes(s.heure) + (s.duree || 100) + 20),
+      titre: s.titre, heure: s.heure
+    }));
+}
+
+/* la place disponible à partir d'un créneau : jusqu'à la
+   prochaine séance, ou jusqu'à la fin de la journée */
+function fenetreLibre(occ, debut){
+  let fin = 24 * 60 + 60;
+  for(const o of occ) if(o.debut >= debut && o.debut < fin) fin = o.debut;
+  return fin - debut;
+}
+
 function rendGrille(cible, etat, prevision, surCase){
   if(!cible || !etat) return;
   const salles = etat.salles || [];
@@ -46,6 +74,7 @@ function rendGrille(cible, etat, prevision, surCase){
 
   for(const s of salles){
     const enTravaux = s.en_travaux;
+    const occ = occupations(prevision, s.id);
     html += `<div class="gSalle"><b>${echappe(s.nom)}</b>
       <span>${s.places} places</span>
       ${s.type && s.type !== "standard"
@@ -62,8 +91,22 @@ function rendGrille(cible, etat, prevision, surCase){
       }
       const p = prev.get(s.id + "|" + h);
       if(!p){
-        html += `<button class="cell" data-salle="${s.id}" data-heure="${h}">
-          <span class="plus">+</span></button>`;
+        /* la case est-elle recouverte par une séance qui déborde ? */
+        const m = minutes(h);
+        const couvre = occ.find(o => m > o.debut && m < o.fin);
+        if(couvre){
+          html += `<div class="cell couverte" title="${echappe(couvre.titre)}">
+            <span class="occ">occupé</span>
+            <span class="occT">${echappe(couvre.heure.replace("h00","h"))}</span></div>`;
+          continue;
+        }
+        /* combien de temps reste-t-il avant la séance suivante ? */
+        const place = fenetreLibre(occ, m);
+        html += `<button class="cell" data-salle="${s.id}" data-heure="${h}"
+            data-place="${place}">
+          <span class="plus">+</span>
+          ${place < 400 ? `<span class="dispo">${Math.floor(place/60)}h${
+            String(place%60).padStart(2,"0")}</span>` : ""}</button>`;
         continue;
       }
       const taux = p.taux_remplissage || 0;
@@ -87,7 +130,8 @@ function rendGrille(cible, etat, prevision, surCase){
     b.addEventListener("click", () => surCase({
       salleId: b.dataset.salle,
       heure: b.dataset.heure,
-      seanceId: b.dataset.seance || null
+      seanceId: b.dataset.seance || null,
+      place: b.dataset.place ? Number(b.dataset.place) : null
     })));
 }
 
@@ -160,4 +204,5 @@ function messageBlocage(peut){
   return "Impossible d'ouvrir";
 }
 
-export { rendGrille, rendResume, rendPiedGrille, CRENEAUX, couleurTaux, echappe };
+export { rendGrille, rendResume, rendPiedGrille, CRENEAUX, couleurTaux,
+         echappe, minutes, occupations, fenetreLibre };
