@@ -240,9 +240,14 @@ body.sombre{background:#0d0a0e}
 .tCase.moy .px{color:#8a6a1a}
 
 /* ════════ LE PANNEAU DE PROGRAMMATION ════════ */
+/* Un calque plein écran à opacité zéro reste un calque : il
+   continue d'intercepter tous les gestes, y compris ceux destinés
+   à la barre de navigation dessous. Tant qu'il n'est pas ouvert,
+   il doit être transparent AU TOUCHER, pas seulement à l'œil. */
 .voilePanneau{position:fixed;inset:0;background:rgba(24,16,12,.52);z-index:200;
-  display:flex;align-items:flex-end;opacity:0;transition:opacity .24s}
-.voilePanneau.ouvert{opacity:1}
+  display:flex;align-items:flex-end;opacity:0;pointer-events:none;
+  transition:opacity .24s}
+.voilePanneau.ouvert{opacity:1;pointer-events:auto}
 .feuille{width:100%;max-width:440px;margin:0 auto;max-height:88%;background:#f7f4ee;
   border-radius:22px 22px 0 0;display:flex;flex-direction:column;
   transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
