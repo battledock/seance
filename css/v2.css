@@ -568,3 +568,62 @@ body.sombre .pointNav{background:#e8785a;border-color:#120e14}
   color:rgba(202,162,74,.62);margin-top:6px}
 .fEtoiles{display:flex;justify-content:center;gap:3px;margin-top:9px}
 .fEtoiles svg{width:14px;height:14px}
+
+/* ── la confiserie ──
+   Le stock d'abord, parce que c'est ce qui presse : une réserve
+   vide, ce sont des ventes perdues qu'on ne voit jamais passer. */
+.cfStock{background:linear-gradient(135deg,#fdf6e6,#faeed6);border:1px solid #f0e0c0;
+  border-radius:13px;padding:14px;margin-bottom:14px}
+.cfStock.bas{background:linear-gradient(135deg,#fbeee6,#f7e2d4);border-color:#eecdb9}
+.cfStock.neutre{background:linear-gradient(135deg,#f7f3ec,#efe9de);border-color:#e2d8c8}
+.cfStock .h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.cfStock .lb{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#a08c60}
+.cfStock .v{font-family:'Marcellus',serif;font-size:26px;color:#8a6a1a;line-height:1;
+  white-space:nowrap}
+.cfStock.bas .v{color:#b04a2a}
+.cfStock.neutre .v{color:#8a8078}
+.cfStock .jauge{height:8px;border-radius:5px;background:rgba(255,255,255,.72);
+  overflow:hidden;margin-top:11px}
+.cfStock .jauge i{display:block;height:100%;border-radius:5px;
+  background:linear-gradient(90deg,#caa24a,#8a6c2a)}
+.cfStock.bas .jauge i{background:linear-gradient(90deg,#d8907a,#b04a2a)}
+.cfStock .note{font-size:10.5px;color:#8a7a5a;margin-top:9px;line-height:1.5}
+.cfStock.bas .note{color:#a8543a}
+.cfStock.neutre .note{color:#7a726a}
+.cfTrois{display:flex;gap:8px;margin-bottom:14px}
+.cfTrois div{flex:1;background:#faf7f1;border:1px solid #eee7dc;border-radius:11px;
+  padding:10px 7px;text-align:center}
+.cfTrois b{display:block;font-size:16px;font-weight:600;color:#1a1410;line-height:1;
+  white-space:nowrap}
+.cfTrois b.v{color:#2a8a4a}
+.cfTrois span{display:block;font-size:8px;letter-spacing:.06em;text-transform:uppercase;
+  color:#b0a08a;margin-top:3px}
+.cfReap{display:flex;gap:7px;margin-bottom:16px}
+.cfReap button{flex:1;border:1px solid #e2d6c4;background:#fff;border-radius:11px;
+  padding:11px 6px;font-family:inherit;cursor:pointer;text-align:center}
+.cfReap button b{display:block;font-family:'Marcellus',serif;font-size:15px;color:#1a1410;
+  white-space:nowrap}
+.cfReap button small{display:block;font-size:9px;color:#a89a88;margin-top:2px}
+.cfReap button.reco{border-color:#caa24a;background:#fdf9ef}
+.cfReap button.reco b{color:#8a6a1a}
+.cfReap button:disabled{opacity:.5}
+.cfPlein{text-align:center;font-size:11px;color:#a89a88;padding:12px;margin-bottom:12px;
+  background:#f7f3ec;border-radius:11px}
+.cfNivT{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.cfNivT b{font-size:12px;color:#3a322a;font-weight:500}
+.cfNivT span{font-size:10px;color:#a89a88}
+.cfNiv{display:flex;gap:4px;margin-bottom:13px}
+.cfNiv i{flex:1;height:6px;border-radius:3px;background:#ece4d6}
+.cfNiv i.on{background:#caa24a}
+.cfLg{display:flex;align-items:center;gap:11px;padding:12px 0}
+.cfLg+.cfLg{border-top:1px solid #f6f2ec}
+.cfLg .ic{width:38px;height:38px;border-radius:11px;flex:none;display:flex;
+  align-items:center;justify-content:center;font-size:17px}
+.cfLg .nm{flex:1;min-width:0}
+.cfLg .nm b{display:block;font-size:12.5px;color:#2a231c;font-weight:500}
+.cfLg .nm small{display:block;font-size:10px;color:#a89a88;margin-top:2px;line-height:1.4}
+.cfLg .px{flex:none;border:1px solid #e8ddd0;background:#fff;border-radius:9px;
+  padding:8px 11px;font-family:inherit;font-size:11.5px;font-weight:600;color:#8a1c2c;
+  cursor:pointer;white-space:nowrap}
+.cfLg .px.fait{color:#2a8a4a;background:#eaf3ec;border-color:#c8e2d0;cursor:default}
+.cfLg .px.cher{color:#b0a08a;background:#f7f3ec;border-color:#eee7dc;cursor:default}
