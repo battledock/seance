@@ -284,6 +284,7 @@ const MESSAGES = {
   DECOUVERT_REFUS_DISTRIBUTEUR:"À découvert, le distributeur ne vous confie plus les gros titres.",
   DEJA_SIGNE:                 "Vous avez déjà ce film à l'affiche.",
   FILM_RETIRE:                "Ce film n'est plus en exploitation.",
+  COPIES_EPUISEES:            "Les copies de première semaine sont parties.",
   PAS_ENCORE_SORTI:           "Ce film n'est pas encore sorti.",
   LICENCE_MANQUANTE:          "Il faut d'abord signer la licence.",
   CRENEAU_OCCUPE:             "Une autre séance occupe déjà ce créneau.",
@@ -322,6 +323,10 @@ function messageErreurV2(r){
     return `Il vous manque ${Math.round(r.cout - (r.disponible ?? 0))} €.`;
   if(r.erreur === "REVISION_VERROUILLEE" && r.dans_jours)
     return `Prochaine révision dans ${r.dans_jours} jour(s).`;
+  if(r.erreur === "COPIES_EPUISEES")
+    return `Les copies de première semaine sont réservées aux salles qui se sont `
+      + `engagées avant la sortie, ou notées ${r.etoiles_requises} étoiles. `
+      + `Ce film vous sera disponible au jour ${r.disponible_au_jour}.`;
   if(r.erreur === "SALLE_EN_TRAVAUX" && r.rouvre_au_jour)
     return `La salle rouvre au jour ${r.rouvre_au_jour}.`;
   if(r.erreur === "PAS_ENCORE_SORTI" && r.dans_jours)
