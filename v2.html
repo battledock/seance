@@ -38,8 +38,21 @@
       <div class="gT1"><b>Aujourd'hui</b><span id="gJour">—</span></div>
       <div class="gT2" id="gResume"></div>
     </div>
-    <div class="eCorps"><div id="grille"></div>
+    <div class="eCorps">
+      <div class="sem" id="semaine"></div>
+      <div id="scolaires"></div>
+      <div id="grille"></div>
+      <div class="raccourcis" id="raccourcis">
+        <button id="btnHier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 109-9"/>
+          <path d="M3 4v8h8"/></svg>Reprendre hier</button>
+        <button id="btnPartout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="8" height="16" rx="1.6"/>
+          <rect x="13" y="4" width="8" height="16" rx="1.6"/></svg>Toutes les salles</button>
+      </div>
+      <div class="eng" id="engagements"></div>
       <div class="bas" id="partage"></div>
+      <div class="pub" id="avantSeance"></div>
       <button class="btnSoiree" id="btnSoiree">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
           stroke-linecap="round" stroke-linejoin="round">
@@ -153,6 +166,9 @@ import {
   confiserieEtat, installerComptoir, ameliorerConfiserie, reapprovisionner as reap,
   sallesDetail,
   creneaux as lireCreneaux, partageBassin, poidsGenres,
+  semaine as lireSemaine, engagements as lireEngagements, scolaires,
+  accepterScolaire, refuserScolaire, reglerAvantSeance,
+  reprendreHier, poserPartout,
   messageErreurV2, requeteTable
 } from "./js/v2/api.js?v=becf21cb";
 import { rendFacade, rendFronton, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
@@ -162,6 +178,8 @@ import { rendCatalogue, ouvrePanneau, chargePoidsGenre }
   from "./js/v2/films.js?v=becf21cb";
 import { rendBarreNav } from "./js/v2/icones.js?v=becf21cb";
 import { ouvreSoirees } from "./js/v2/soirees.js?v=becf21cb";
+import { rendSemaine, rendScolaires, rendEngagements, rendAvantSeance }
+  from "./js/v2/semaine.js?v=becf21cb";
 
 /* ============================================================
    L'ASSEMBLAGE
@@ -1351,7 +1369,9 @@ async function rafraichit(sansOffre){
   sallesDet = sd.ok && Array.isArray(sd.data) ? sd.data : null;
   const cr = await lireCreneaux();
   creneauxJour = cr.ok ? cr.data : null;
-  const pb = await partageBassin();
+  const [pb, sm, en, sc] = await Promise.all([
+    partageBassin(), lireSemaine(), lireEngagements(), scolaires()
+  ]);
 
   /* Chaque vue se dessine dans son propre filet : si l'une casse,
      les autres restent lisibles. Sans ça, une erreur dans le
@@ -1367,6 +1387,27 @@ async function rafraichit(sansOffre){
   dessine("resume",    () => rendResume($("gResume"), prevision));
   dessine("grille",    () => rendGrille($("grille"), etat, prevision, ouvreCase, creneauxJour));
   dessine("partage",   () => rendPartage($("partage"), pb.ok ? pb.data : null));
+  dessine("semaine",   () => rendSemaine($("semaine"), sm.ok ? sm.data : null));
+  dessine("engagements", () => rendEngagements($("engagements"), en.ok ? en.data : []));
+  dessine("scolaires", () => rendScolaires($("scolaires"), sc.ok ? sc.data : [],
+    async id => {
+      const r = await accepterScolaire(id);
+      if(r.erreur){ dit(messageErreurV2(r), true); return; }
+      dit(r.data?.note || "C'est accepté.");
+      await rafraichit(true);
+    },
+    async id => {
+      await refuserScolaire(id);
+      dit("Refusé.");
+      await rafraichit(true);
+    }));
+  dessine("pub",       () => rendAvantSeance($("avantSeance"),
+    etat.cinema.avant_seance ?? 0, prevision?.spectateurs ?? null,
+    async n => {
+      const r = await reglerAvantSeance(n);
+      if(r.erreur){ dit(messageErreurV2(r), true); return; }
+      await rafraichit(true);
+    }));
   dessine("pied",      () => rendPiedGrille($("gPied"), prevision, peut, ouvrir));
   dessine("catalogue", () => rendCatalogue($("catalogue"), offre, onglet, signer));
   dessine("salles",    rendSalles);
@@ -1408,6 +1449,41 @@ async function signer(sortieId, duree){
         $("catalogue").scrollTo({left:0, behavior:"smooth"});
       }));
     $("btnOuvrir").addEventListener("click", ouvrir);
+    $("btnHier").addEventListener("click", async () => {
+      const r = await reprendreHier();
+      if(r.erreur){ dit(messageErreurV2(r), true); return; }
+      const d = r.data;
+      dit(d.posees > 0
+        ? `${d.posees} séance${d.posees>1?"s":""} reprise${d.posees>1?"s":""}`
+          + (d.note ? " · " + d.note : "")
+        : "Rien n'a pu être repris.");
+      await rafraichit(true);
+    });
+
+    /* Poser le même film partout : on demande d'abord lequel, en
+       réutilisant le panneau de la plus grande salle. */
+    $("btnPartout").addEventListener("click", () => {
+      const s0 = (etat.salles || []).filter(x => !x.en_travaux)
+        .sort((a, b) => b.places - a.places)[0];
+      if(!s0){ dit("Aucune salle disponible.", true); return; }
+      ouvrePanneau({
+        salle: s0, heure: "19h00", seanceId: null, place: null,
+        offre, creneaux: creneauxJour,
+        surPoser: async (sortieId, dejaSigne, duree) => {
+          if(!dejaSigne){
+            const g = await signerLicence(sortieId, duree);
+            if(g.erreur){ dit(messageErreurV2(g), true); return; }
+          }
+          const p = await poserPartout(sortieId, "19h00");
+          if(p.erreur){ dit(messageErreurV2(p), true); return; }
+          dit(`${p.data.posees} salle${p.data.posees>1?"s":""} programmée${
+            p.data.posees>1?"s":""} à 19h`);
+          await rafraichit();
+        },
+        surRetirer: async () => {}
+      });
+    });
+
     $("btnSoiree").addEventListener("click", () =>
       ouvreSoirees(async (msg, grave) => {
         if(msg) dit(msg, grave);
