@@ -1,56 +1,23 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-  <title>Mon cinéma</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/base.css?v=becf21cb">
-  <style>
-    body{margin:0}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Séance</title>
+<style>
+  html,body{margin:0;height:100%;background:#fff;
+    font-family:'Outfit',system-ui,sans-serif;
+    display:flex;align-items:center;justify-content:center}
+  p{font-family:Georgia,serif;font-size:18px;letter-spacing:.24em;
+    text-indent:.24em;color:#3a3230}
+</style>
+<!-- ------------------------------------------------------------
+     L'ANCIENNE PAGE DU JEU
 
-    /* ------------------------------------------------------------
-       LE FOND PENDANT QUE LA FAÇADE ARRIVE
-
-       Il y avait un voile avec une bobine, puis deux fondus qui se
-       croisaient : c'est ce croisement qui faisait battre le ciel.
-       Tout cela a disparu, la page porte directement une couleur
-       d'attente.
-
-       Cette couleur était le ciel de l'heure. Mauvaise idée : la
-       scène ne descend pas tout à fait jusqu'à la barre du bas, et
-       le bleu débordait en une bande sous la route. On prend donc
-       la teinte sombre du bitume — invisible quand la façade est
-       posée, discrète quand elle tarde.
-       ------------------------------------------------------------ */
-    html,body{background:#14100f}
-    .sceneJeu{opacity:1;background:#14100f}
-    .navBas{opacity:0;transition:opacity .38s ease}
-    body.pret .navBas{opacity:1}
-  </style>
+     Le jeu a été entièrement refondu. Cette page ne sert plus qu'à
+     rediriger ceux qui l'ont gardée en favori ou en onglet ouvert.
+     ------------------------------------------------------------ -->
+<script>location.replace("v2.html");</script>
 </head>
-<body>
-
-<main class="sceneJeu">
-  <div class="hudJeu" id="hudJeu">
-    <div class="hudGauche">
-      <span class="hudNom" id="hudNom"></span>
-      <span class="hudNiv" id="hudNiv"></span>
-    </div>
-    <div class="hudDroite">
-      <span class="hudArgent" id="hudArgent"></span>
-      <span class="hudXp"><span class="hudXpBarre" id="hudXpBarre"></span></span>
-    </div>
-  </div>
-  <div class="sceneFacade" id="sceneFacade"></div>
-  <div class="sceneFade" aria-hidden="true"></div>
-</main>
-
-<script type="module" src="js/pages/jeu.js?v=becf21cb"></script>
-</body>
+<body><p>Chargement…</p></body>
 </html>
-
-
-
