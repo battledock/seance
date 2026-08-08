@@ -142,6 +142,7 @@ import {
   chargeTarifsEquipement, apercuAgrandissement,
   constructionsPossibles, construire, reviserTarifs,
   decompteEtoiles, seuilRentabilite, echeances, historique,
+  confiserieEtat, installerComptoir, ameliorerConfiserie, reapprovisionner as reap,
   messageErreurV2, requeteTable
 } from "./js/v2/api.js?v=becf21cb";
 import { rendFacade, rendFronton, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
@@ -711,6 +712,16 @@ function rendCompte(){
       <span class="val"><b id="fCourbeVal" style="color:#2a8a4a">—</b><span>euros</span></span>
       <span class="fl">${FLECHE}</span></button>
 
+    <button class="fiche" data-fiche="confiserie">
+      <span class="vign" style="background:#fdf0e2;color:#b8763a">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 10h16l-1 11H5L4 10z"/><path d="M8 10V7a4 4 0 018 0v3"/>
+          <path d="M9 14h6"/></svg></span>
+      <span class="tx"><b>La confiserie</b><small id="fConfSous">…</small></span>
+      <span class="val"><b id="fConfVal" style="color:#b8763a">—</b><span>de stock</span></span>
+      <span class="fl">${FLECHE}</span></button>
+
     <button class="fiche" data-fiche="echeances">
       <span class="vign" style="background:#f0edf7;color:#6a5aa0">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -802,7 +813,8 @@ const FLECHE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
   style="width:16px;height:16px"><path d="M9 5l7 7-7 7"/></svg>`;
 
 /* ce que chaque fiche a récolté, gardé pour l'ouverture */
-const FICHES = {etoiles:null, seuil:null, courbe:null, echeances:null};
+const FICHES = {etoiles:null, seuil:null, courbe:null,
+                confiserie:null, echeances:null};
 
 function ouvreFiche(cle){
   const d = FICHES[cle];
@@ -811,15 +823,41 @@ function ouvreFiche(cle){
   $("ficheTitre").textContent = d.titre;
   $("ficheSous").textContent = d.sous;
   $("ficheCorps").innerHTML = `<div class="bloc" style="margin-bottom:0">${d.html}</div>`;
+
+  /* la confiserie est la seule fiche où l'on agit */
+  $("ficheCorps").querySelectorAll("[data-reap]").forEach(b =>
+    b.addEventListener("click", async () => {
+      b.disabled = true;
+      const r = await reap(Number(b.dataset.reap));
+      if(r.erreur){ dit(messageErreurV2(r), true); b.disabled = false; return; }
+      dit(r.data?.note || "Réserve regarnie.");
+      await rafraichit(true);
+      ouvreFiche("confiserie");
+    }));
+
+  $("ficheCorps").querySelectorAll("[data-conf]").forEach(b =>
+    b.addEventListener("click", async () => {
+      b.disabled = true;
+      const quoi = b.dataset.conf;
+      const r = quoi === "installer"
+        ? await installerComptoir()
+        : await ameliorerConfiserie(quoi);
+      if(r.erreur){ dit(messageErreurV2(r), true); b.disabled = false; return; }
+      dit(r.data?.note || "C'est fait.");
+      await rafraichit(true);
+      ouvreFiche("confiserie");
+    }));
 }
 
 async function remplitCompte(){
-  const [d, sl, ec, hi] = await Promise.all([
-    decompteEtoiles(), seuilRentabilite(), echeances(), historique(30).catch(() => [])
+  const [d, sl, ec, hi, cf] = await Promise.all([
+    decompteEtoiles(), seuilRentabilite(), echeances(),
+    historique(30).catch(() => []), confiserieEtat()
   ]);
   if(d.ok) rendEtoiles(d.data);
   if(sl.ok) rendSeuil(sl.data);
   rendCourbe(Array.isArray(hi) ? hi : []);
+  if(cf.ok) rendConfiserie(cf.data);
   if(ec.ok) rendEcheances(ec.data || []);
 }
 
@@ -998,6 +1036,108 @@ function rendCourbe(h){
           <span>remplissage</span></div>
         <div class="moyC"><b class="${res>=0?"v":"r"}">${res>=0?"+":"−"}${
           eur(Math.abs(res))}</b><span>par jour</span></div>
+      </div>`
+  };
+}
+
+/* ── la confiserie ──
+   Un seau de pop-corn rapporte souvent plus que le billet. Le
+   moteur le calculait depuis le début sans qu'aucun écran ne
+   permette d'y toucher. */
+function rendConfiserie(c){
+  const elv = $("fConfVal");
+
+  if(!c.installee){
+    if(elv){
+      elv.textContent = "—";
+      elv.style.color = "#b0a08a";
+      $("fConfSous").textContent = "aucun comptoir";
+    }
+    FICHES.confiserie = {
+      titre: "La confiserie", sous: "pas de comptoir",
+      html: `
+        <div class="cfStock neutre">
+          <div class="h"><span class="lb">Aucun comptoir</span><span class="v">—</span></div>
+          <div class="note">Vos spectateurs repartent sans rien acheter. Au rythme
+            actuel, un comptoir vous rapporterait environ <b>${eur(c.gain_estime)}
+            par jour</b>${c.jours_retour
+              ? ` — il serait remboursé en ${c.jours_retour} jours` : ""}.</div>
+        </div>
+        <div class="cfAm">
+          <div class="cfLg">
+            <span class="ic" style="background:#fdf3dc">🍿</span>
+            <span class="nm"><b>Installer un comptoir</b>
+              <small>ouvre la deuxième source de revenus du métier</small></span>
+            <button class="px" data-conf="installer">${eur(c.cout_installation)}</button>
+          </div>
+        </div>`
+    };
+    return;
+  }
+
+  const bas = c.part_reserve < 35;
+  if(elv){
+    elv.textContent = eur(c.stock);
+    elv.style.color = bas ? "#c05a3a" : "#b8763a";
+    $("fConfSous").textContent = bas
+      ? (c.jours_restants <= 1 ? "rupture imminente"
+         : `plus que ${c.jours_restants} jours de vente`)
+      : `${c.taux_consommation} % des spectateurs consomment`;
+  }
+
+  /* trois montants de réassort, calés sur ce que la réserve peut
+     encore recevoir : proposer plus serait de l'argent jeté */
+  const place = Math.max(0, c.stock_max - c.stock);
+  const parJour = Math.max(1, Math.round(c.recette_estimee));
+  const paliers = [Math.round(place * 0.3), Math.round(place * 0.65), place]
+    .map(v => Math.max(0, Math.round(v / 50) * 50))
+    .filter((v, i, a) => v > 0 && a.indexOf(v) === i);
+
+  FICHES.confiserie = {
+    titre: "La confiserie",
+    sous: `comptoir niveau ${c.niveau} · ${eur(c.stock)} en réserve`,
+    html: `
+      <div class="cfStock ${bas ? "bas" : ""}">
+        <div class="h"><span class="lb">Stock en réserve</span>
+          <span class="v">${eur(c.stock)}</span></div>
+        <div class="jauge"><i style="width:${Math.min(100, c.part_reserve)}%"></i></div>
+        <div class="note">${bas
+          ? `Il ne reste que ${c.jours_restants} jour${c.jours_restants>1?"s":""} de vente.
+             En rupture, chaque spectateur qui voulait consommer repart les mains vides.`
+          : `De quoi tenir ${c.jours_restants} jours au rythme actuel.
+             Réserve de ${eur(c.stock_max)}.`}</div>
+      </div>
+
+      <div class="cfTrois">
+        <div><b>${c.taux_consommation} %</b><span>consomment</span></div>
+        <div><b>${fmt(c.marge_unite)}</b><span>par tête</span></div>
+        <div><b class="v">${eur(c.recette_estimee)}</b><span>par jour</span></div>
+      </div>
+
+      ${place > 0 ? `<div class="cfReap">
+        ${paliers.map((v, i) => `
+          <button data-reap="${v}" class="${i === 1 ? "reco" : ""}">
+            <b>${eur(v)}</b><small>${Math.floor(v / parJour)} jours</small></button>`).join("")}
+      </div>` : `<div class="cfPlein">Votre réserve est pleine.</div>`}
+
+      <div class="cfNivT"><b>Le comptoir</b><span>niveau ${c.niveau} sur 5</span></div>
+      <div class="cfNiv">${[1,2,3,4,5].map(i =>
+        `<i class="${i <= c.niveau ? "on" : ""}"></i>`).join("")}</div>
+
+      <div class="cfAm">
+        ${(c.ameliorations || []).map(a => `
+          <div class="cfLg">
+            <span class="ic" style="background:${
+              a.cle === "glaces" ? "#e8f0f7" : a.cle === "formules" ? "#f7ece2" : "#fdf3dc"}">${
+              a.cle === "glaces" ? "🍦" : a.cle === "formules" ? "🥤" : "🍿"}</span>
+            <span class="nm"><b>${echappe(a.nom)}</b>
+              <small>${a.faite ? "installé" : echappe(a.detail) + " · " + echappe(a.gain)}</small></span>
+            ${a.faite
+              ? `<span class="px fait">en place</span>`
+              : `<button class="px ${a.possible ? "" : "cher"}"
+                   ${a.possible ? `data-conf="${a.cle.startsWith("niveau") ? "comptoir" : a.cle}"` : "disabled"}
+                   >${eur(a.cout)}</button>`}
+          </div>`).join("")}
       </div>`
   };
 }
