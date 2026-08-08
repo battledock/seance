@@ -331,3 +331,65 @@ body.sombre .nav button.on{color:#f7dd9a}
   line-height:1.25}
 .actions button small{font-size:9px;color:#a89a88;font-weight:400}
 .actions button:disabled{opacity:.5;cursor:default}
+
+/* ── construire une salle ── */
+.construire{display:block;width:100%;background:#fff;border:1.5px dashed #d4c8b8;
+  border-radius:14px;padding:15px;font-family:inherit;font-size:12.5px;color:#8a6a2a;
+  cursor:pointer;font-weight:500;margin-top:4px}
+.construire:active{background:#faf7f2}
+.typeS{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:11px;
+  box-shadow:0 1px 2px rgba(40,30,20,.05),0 6px 16px rgba(40,30,20,.03)}
+.typeS.bloque{opacity:.55}
+.typeVue{height:112px;position:relative;overflow:hidden;background:#1a1014}
+.typeVue svg{width:100%;height:100%;display:block}
+.typeBadge{position:absolute;top:10px;left:11px;font-size:8.5px;letter-spacing:.09em;
+  text-transform:uppercase;background:rgba(0,0,0,.5);color:#fff;padding:4px 9px;
+  border-radius:9px;backdrop-filter:blur(4px)}
+.typeCorps{padding:13px 14px 14px}
+.typeT{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px;gap:10px}
+.typeT b{font-family:'Marcellus',serif;font-size:16px}
+.typeT .px{font-size:15px;font-weight:600;color:#571520;white-space:nowrap}
+.typeD{font-size:11.5px;color:#7a726a;line-height:1.5;margin-bottom:11px}
+.typeStats{display:flex;gap:7px;margin-bottom:11px}
+.typeStats div{flex:1;background:#faf7f1;border:1px solid #eee7dc;border-radius:10px;
+  padding:8px 6px;text-align:center}
+.typeStats b{display:block;font-size:13px;color:#1a1410;font-weight:600;line-height:1}
+.typeStats span{display:block;font-size:8px;letter-spacing:.06em;text-transform:uppercase;
+  color:#b0a08a;margin-top:3px}
+.typeAct{width:100%;border:none;border-radius:12px;padding:13px;font-family:'Marcellus',serif;
+  font-size:13.5px;letter-spacing:.08em;cursor:pointer;background:#8a1c2c;color:#ffeec4}
+.typeAct:disabled{background:#e2dbd0;color:#a89a88}
+.typeBloc{display:flex;align-items:center;gap:9px;background:#fdf6ee;border:1px solid #f2e4cc;
+  border-radius:11px;padding:11px 12px;font-size:11px;color:#8a7050;line-height:1.4}
+.typeBloc svg{width:15px;height:15px;flex:none;color:#c89a3a}
+
+/* ── réviser les tarifs ── */
+.btnTarifs{width:100%;margin-top:12px;border-radius:12px;padding:13px;
+  font-family:'Marcellus',serif;font-size:13.5px;letter-spacing:.08em;cursor:pointer;
+  border:none;background:#8a1c2c;color:#ffeec4}
+.btnTarifs:disabled{background:#f0ebe2;color:#a89a88;font-family:'Outfit',sans-serif;
+  font-size:11.5px;letter-spacing:0}
+.tarif{margin-bottom:16px}
+.tTete{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:9px;gap:10px}
+.tTete .g{flex:1;min-width:0}
+.tTete .nm{font-size:12.5px;color:#3a322a;font-weight:500}
+.tTete .part{font-size:9.5px;color:#b0a08a;margin-top:2px}
+.tTete .px{font-family:'Marcellus',serif;font-size:22px;color:#8a1c2c;line-height:1;
+  white-space:nowrap}
+.tarif input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:4px;
+  background:#ece4d6;outline:none}
+.tarif input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;
+  border-radius:50%;background:#8a1c2c;border:3px solid #fff;
+  box-shadow:0 2px 7px rgba(0,0,0,.22);cursor:pointer}
+.tApercu{display:flex;gap:8px;margin-bottom:11px}
+.tAp{flex:1;background:#f7f3ec;border:1px solid #ece5db;border-radius:11px;
+  padding:9px 7px;text-align:center}
+.tAp b{display:block;font-size:15px;font-weight:600;color:#1a1410;line-height:1;
+  white-space:nowrap}
+.tAp b.v{color:#2a8a4a}
+.tAp span{display:block;font-size:8px;letter-spacing:.06em;text-transform:uppercase;
+  color:#b0a08a;margin-top:3px}
+.fValider{width:100%;border:none;border-radius:13px;padding:15px;
+  font-family:'Marcellus',serif;font-size:14.5px;letter-spacing:.1em;cursor:pointer;
+  background:linear-gradient(180deg,#7a1a28,#5a1018);color:#ffeec4}
+.fValider:disabled{background:#e2dbd0;color:#a89a88}
