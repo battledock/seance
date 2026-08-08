@@ -10,7 +10,10 @@
    de ce qui est déjà posé, plus les heures usuelles.
    ============================================================ */
 
-const CRENEAUX = ["11h00", "14h00", "16h30", "19h00", "21h30"];
+/* Minuit est un créneau à part : quatre fois moins de monde,
+   mais deux euros cinquante de plus par billet, et un public qui
+   vient pour un genre précis. */
+const CRENEAUX = ["11h00", "14h00", "16h30", "19h00", "21h30", "00h00"];
 
 function couleurTaux(t){
   if(t >= 90) return "#2a8a4a";
@@ -28,6 +31,9 @@ function indexePrevisions(prevision){
 }
 
 function minutes(h){
+  /* minuit vaut zéro : on le place après la dernière séance du
+     soir, sinon la grille le croit au petit matin */
+  if(h === "00h00") return 24 * 60;
   return (parseInt(h, 10) || 0) * 60 + (parseInt(String(h).split("h")[1], 10) || 0);
 }
 
@@ -67,7 +73,7 @@ function rendGrille(cible, etat, prevision, surCase, creneaux){
 
   const g = document.createElement("div");
   g.className = "grille";
-  g.style.gridTemplateColumns = `66px repeat(${CRENEAUX.length}, 1fr)`;
+  g.style.gridTemplateColumns = `58px repeat(${CRENEAUX.length}, 1fr)`;
 
   /* Sous chaque heure, une barre qui dit ce que le créneau vaut.
      Sans elle, le joueur subissait un facteur de trois sans le
@@ -78,7 +84,8 @@ function rendGrille(cible, etat, prevision, surCase, creneaux){
 
   let html = `<div></div>` + CRENEAUX.map(c => {
     const q = qual.get(c);
-    return `<div class="gHead"><span class="h">${c.replace("h00","h")}</span>
+    return `<div class="gHead ${c === "00h00" ? "nuit" : ""}">
+      <span class="h">${c === "00h00" ? "minuit" : c.replace("h00","h")}</span>
       <span class="q ${q ? "n" + q.niveau : ""}"></span></div>`;
   }).join("");
 
@@ -114,7 +121,8 @@ function rendGrille(cible, etat, prevision, surCase, creneaux){
         const place = fenetreLibre(occ, m);
         const q = qual.get(h);
         const faible = q && (q.niveau === "faible" || q.niveau === "tres_faible");
-        html += `<button class="cell ${faible ? "creneauFaible" : ""}"
+        html += `<button class="cell ${faible ? "creneauFaible" : ""} ${
+            h === "00h00" ? "cellNuit" : ""}"
             data-salle="${s.id}" data-heure="${h}" data-place="${place}">
           <span class="plus">+</span>
           ${place < 400 ? `<span class="dispo">${Math.floor(place/60)}h${
