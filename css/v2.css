@@ -538,3 +538,22 @@ body.sombre .pointNav{background:#e8785a;border-color:#120e14}
 .fiche .val span{display:block;font-size:9px;letter-spacing:.05em;text-transform:uppercase;
   color:#b0a08a;margin-top:3px}
 .fiche .fl{width:16px;flex:none;color:#c8bcaa;display:flex;align-items:center}
+
+/* ── le fronton du compte ──
+   La vraie façade, recadrée sur le marquee et l'entrée. Le
+   bâtiment a l'âge des étoiles, le ciel suit l'heure, et les
+   affiches sont celles qu'on projette. */
+.fronton{position:relative;height:160px;overflow:hidden;background:#14101a;flex:none;
+  padding-top:env(safe-area-inset-top)}
+.frontonScene{position:absolute;inset:0;overflow:hidden}
+.frontonIn{position:absolute;left:0;width:100%}
+.frontonIn svg{width:100%;display:block}
+.frontonVoile{position:absolute;left:0;right:0;bottom:0;height:96px;
+  background:linear-gradient(180deg,transparent,rgba(20,16,26,.86) 52%,#14101a)}
+.frontonTxt{position:absolute;left:0;right:0;bottom:12px;text-align:center;padding:0 18px}
+.fNomCine{font-family:'Marcellus',serif;font-size:25px;color:#f7dd9a;letter-spacing:.05em;
+  line-height:1.1;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.fLieu{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(202,162,74,.62);margin-top:6px}
+.fEtoiles{display:flex;justify-content:center;gap:3px;margin-top:9px}
+.fEtoiles svg{width:14px;height:14px}
