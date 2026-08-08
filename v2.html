@@ -114,7 +114,7 @@
 
 <script type="module">
 import {
-  V2, chargeEtat, monCinema, chargeOffre, previsionJournee, peutOuvrir,
+  V2, chargeEtat, monCinema, chargeOffre, previsionJournee, peutOuvrir, synchronise,
   ouvrirLesPortes, signerLicence, poserSeance, retirerSeance,
   nettoyer, reparer, agrandir, ameliorer, reapprovisionner, embaucher,
   chargeTarifsEquipement, apercuAgrandissement,
@@ -650,6 +650,8 @@ async function signer(sortieId, duree){
     const c = await monCinema();
     if(!c){ location.replace("v2-nouveau.html"); return; }
     tarifsEq = await chargeTarifsEquipement().catch(() => null);
+    /* on remet le monde à l'heure avant d'afficher quoi que ce soit */
+    await synchronise().catch(() => null);
     await rafraichit();
 
     document.querySelectorAll("#nav button").forEach(b =>
