@@ -215,11 +215,6 @@ body.sombre{background:#0d0a0e}
   background:#fff;color:#5a5048}
 
 /* ── le compte ── */
-.cptTop{background:#fff;border-bottom:1px solid #ebe5db;flex:none;
-  padding:calc(15px + env(safe-area-inset-top)) 16px 14px}
-.cptT1 .kick{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:#b0a08a}
-.cptT1 .val{font-family:'Marcellus',serif;font-size:31px;line-height:1.05;margin-top:4px}
-.cptT1 .val.dette{color:#b04a2a}
 .bloc{background:#fff;border-radius:16px;padding:16px;margin-bottom:11px;
   box-shadow:0 1px 2px rgba(40,30,20,.05)}
 .blocT{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
