@@ -450,3 +450,75 @@ body.sombre .pointNav{background:#e8785a;border-color:#120e14}
   padding:14px 15px;margin-bottom:12px}
 .consVide b{display:block;font-family:'Marcellus',serif;font-size:14px;color:#8a6a2a}
 .consVide span{display:block;font-size:11.5px;color:#7a6a4a;line-height:1.5;margin-top:5px}
+
+/* ── le décompte des étoiles ── */
+.etTete{display:flex;align-items:center;gap:13px;padding-bottom:13px;
+  border-bottom:1px solid #f2ede6;margin-bottom:13px}
+.etNote{font-family:'Marcellus',serif;font-size:38px;color:#8a6a1a;line-height:1;flex:none}
+.etNote i{font-style:normal;font-size:15px;color:#c0b09a}
+.etCote{flex:1;min-width:0}
+.etEtoiles{display:flex;gap:2px;margin-bottom:5px}
+.etEtoiles svg{width:15px;height:15px}
+.etCote p{font-size:11px;color:#8a8078;line-height:1.45}
+.fac{display:flex;align-items:center;gap:10px;padding:9px 0}
+.fac+.fac{border-top:1px solid #f6f2ec}
+.fac .nm{flex:1;min-width:0}
+.fac .nm b{display:block;font-size:12px;color:#3a322e;font-weight:500}
+.fac .nm small{display:block;font-size:9.5px;color:#a89a88;margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fac .jg{width:76px;flex:none}
+.fac .jg .barre{height:7px;border-radius:4px;background:#f0ebe2;overflow:hidden}
+.fac .jg .barre i{display:block;height:100%;border-radius:4px}
+.fac .vl{width:42px;text-align:right;font-size:12.5px;font-weight:600;flex:none}
+.levier{background:linear-gradient(135deg,#fdf7e8,#faf0d8);border:1px solid #f0e2c2;
+  border-radius:12px;padding:12px 13px;margin-top:12px;display:flex;gap:10px}
+.levier svg{width:16px;height:16px;flex:none;color:#b8973a;margin-top:1px}
+.levier p{flex:1;font-size:11.5px;color:#7a6a4a;line-height:1.5}
+.levier p b{color:#5a4a24}
+
+/* ── le seuil de rentabilité ── */
+.seuilVis{position:relative;height:56px;margin:2px 0 12px}
+.seuilVis .piste{position:absolute;left:0;right:0;top:22px;height:12px;border-radius:7px;
+  background:#eee8de}
+.seuilVis .rempli{position:absolute;top:22px;left:0;height:12px;border-radius:7px;
+  background:linear-gradient(90deg,#caa24a,#8a6c2a)}
+.seuilVis .marque{position:absolute;top:14px;width:2px;height:28px;background:#1a1410;
+  border-radius:2px}
+.seuilVis .etiq{position:absolute;top:0;font-size:9px;letter-spacing:.05em;
+  text-transform:uppercase;color:#7a726a;transform:translateX(-50%);white-space:nowrap}
+.seuilVis .bas{position:absolute;top:40px;font-size:10.5px;font-weight:600;
+  transform:translateX(-50%);white-space:nowrap}
+.sLg{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;
+  border-bottom:1px solid #f6f2ec;font-size:12px;color:#4a423c;gap:12px}
+.sLg:last-child{border-bottom:none}
+.sLg b{font-weight:600;font-size:13px;color:#1a1410;white-space:nowrap}
+.sLg b.v{color:#2a8a4a}.sLg b.r{color:#c05a3a}
+.sLg small{display:block;font-size:9.5px;color:#a89a88;margin-top:1px}
+
+/* ── la courbe ── */
+.grand{height:140px;margin:2px -4px 0}
+.grand svg{width:100%;height:100%;overflow:visible}
+.grLeg{display:flex;justify-content:space-between;font-size:9.5px;color:#b0a08a;
+  margin-top:9px;padding:0 2px}
+.moy{display:flex;gap:8px;margin-top:14px}
+.moyC{flex:1;background:#faf7f1;border:1px solid #eee7dc;border-radius:11px;
+  padding:10px 7px;text-align:center}
+.moyC b{display:block;font-size:16px;font-weight:600;color:#1a1410;line-height:1;
+  white-space:nowrap}
+.moyC b.v{color:#2a8a4a}.moyC b.r{color:#c05a3a}
+.moyC span{display:block;font-size:8px;letter-spacing:.06em;text-transform:uppercase;
+  color:#b0a08a;margin-top:3px}
+
+/* ── les échéances ── */
+.ech{display:flex;align-items:center;gap:11px;padding:10px 0}
+.ech+.ech{border-top:1px solid #f6f2ec}
+.ech .j{width:46px;flex:none;text-align:center;background:#f4efe4;border:1px solid #eae0cc;
+  border-radius:9px;padding:6px 0}
+.ech .j b{display:block;font-size:13px;color:#7a5a14;font-weight:600;line-height:1}
+.ech .j span{display:block;font-size:8px;color:#b0a08a;margin-top:1px}
+.ech .tx{flex:1;min-width:0}
+.ech .tx b{display:block;font-size:12px;color:#1a1410;font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ech .tx small{display:block;font-size:10px;color:#a89a88;margin-top:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ech .pt{width:8px;height:8px;border-radius:50%;flex:none}
