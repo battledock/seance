@@ -240,6 +240,7 @@ const MESSAGES = {
   DECOUVERT_REFUS_DISTRIBUTEUR:"À découvert, le distributeur ne vous confie plus les gros titres.",
   DEJA_SIGNE:                 "Vous avez déjà ce film à l'affiche.",
   FILM_RETIRE:                "Ce film n'est plus en exploitation.",
+  PAS_ENCORE_SORTI:           "Ce film n'est pas encore sorti.",
   LICENCE_MANQUANTE:          "Il faut d'abord signer la licence.",
   CRENEAU_OCCUPE:             "Une autre séance occupe déjà ce créneau.",
   HEURE_IMPOSSIBLE:           "On ne projette pas à cette heure-là.",
@@ -271,6 +272,8 @@ function messageErreurV2(r){
     return `Il vous manque ${Math.round(r.cout - (r.disponible ?? 0))} €.`;
   if(r.erreur === "REVISION_VERROUILLEE" && r.dans_jours)
     return `Prochaine révision dans ${r.dans_jours} jour(s).`;
+  if(r.erreur === "PAS_ENCORE_SORTI" && r.dans_jours)
+    return `La copie arrive dans ${r.dans_jours} jour(s), au jour ${r.jour_sortie}.`;
   if(r.erreur === "CRENEAU_OCCUPE" && r.par)
     return `${r.par} occupe déjà ce créneau à ${r.a}.`;
   if(r.erreur === "ENGAGEMENT_EN_COURS" && r.libre_au_jour)
