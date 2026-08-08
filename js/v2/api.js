@@ -10,7 +10,76 @@
    réessayer les coupures transitoires.
    ============================================================ */
 
-import { appelSecurise, rpc, sessionLocale } from "./supabase-client.js?v=becf21cb";
+/* ------------------------------------------------------------
+   COUCHE RÉSEAU AUTONOME
+
+   Le v2 n'emprunte rien au v1 : supabase-client.js tire toute la
+   chaîne de l'ancien jeu — état global, authentification,
+   navigation — et nous allons le supprimer. Ce module se suffit
+   donc à lui-même : une clé, une session, un fetch qui réessaie.
+   ------------------------------------------------------------ */
+
+const SB_URL = "https://zpfkekiavlfphialvphi.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZmtla2lhdmxmcGhpYWx2cGhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc4MzIsImV4cCI6MjEwMTMwMzgzMn0.ORa4y_AMjuWbxboKm3o6Jn7ryYjkOm4mSgLa2Schv98";
+const DELAI = 12000;
+
+function sessionLocale(){
+  try{ return JSON.parse(localStorage.getItem("rex_session") || "null"); }
+  catch(e){ return null; }
+}
+
+function entetes(){
+  const s = sessionLocale();
+  return {
+    "apikey": SB_ANON,
+    "Authorization": "Bearer " + (s?.access_token || SB_ANON),
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  };
+}
+
+/* Une coupure de réseau n'est pas une panne : sur un téléphone,
+   une requête rate régulièrement pour des raisons qui n'ont rien
+   à voir avec le jeu. On réessaie deux fois avant d'abandonner. */
+async function reseau(url, options = {}, essai = 0){
+  const ctrl = new AbortController();
+  const minuteur = setTimeout(() => ctrl.abort(), DELAI);
+  let rep;
+  try{
+    rep = await fetch(url, {...options, headers: entetes(), signal: ctrl.signal});
+  }catch(e){
+    clearTimeout(minuteur);
+    const transitoire = e.name === "AbortError" || e.name === "TypeError";
+    if(transitoire && essai < 2){
+      await new Promise(r => setTimeout(r, 400 * Math.pow(2, essai)));
+      return reseau(url, options, essai + 1);
+    }
+    throw e;
+  }
+  clearTimeout(minuteur);
+  if(rep.status >= 500 && essai < 2){
+    await new Promise(r => setTimeout(r, 400 * Math.pow(2, essai)));
+    return reseau(url, options, essai + 1);
+  }
+  if(!rep.ok){
+    const t = await rep.text().catch(() => "");
+    throw new Error("HTTP " + rep.status + " " + t.slice(0, 120));
+  }
+  if(rep.status === 204) return null;
+  return rep.json();
+}
+
+const rpc = (nom, params) =>
+  reseau(SB_URL + "/rest/v1/rpc/" + nom, {method:"POST", body: JSON.stringify(params || {})});
+
+/* lecture d'une table, protégée par RLS côté serveur */
+const requeteTable = (chemin) => reseau(SB_URL + "/rest/v1/" + chemin);
+
+/* même contrat que l'ancien appelSecurise : {ok, data} ou {ok:false, message} */
+async function appelSecurise(operation){
+  try{ return {ok:true, data: await operation()}; }
+  catch(e){ return {ok:false, message: e.message || "réseau"}; }
+}
 
 /* ---------- l'état courant, tenu en mémoire ---------- */
 const V2 = {
@@ -24,7 +93,7 @@ const V2 = {
    Les fonctions serveur renvoient {erreur:"CODE"} plutôt que de
    lever : on distingue donc la panne réseau du refus métier. */
 async function appel(nom, params = {}){
-  const r = await appelSecurise(() => rpc(nom, params), {rechargeApresErreur:false});
+  const r = await appelSecurise(() => rpc(nom, params));
   if(!r.ok) return {erreur:"RESEAU", message:r.message};
   const d = r.data;
   if(d && d.erreur) return d;
@@ -49,28 +118,12 @@ async function chargeEtat(){
    qui décide entre l'écran de création et le jeu. */
 async function monCinema(){
   const r = await appelSecurise(
-    () => requeteTable("v2_cinemas?select=id,nom,jour&limit=1"),
-    {rechargeApresErreur:false});
+    () => requeteTable("v2_cinemas?select=id,nom,jour&limit=1"));
   if(!r.ok || !Array.isArray(r.data) || r.data.length === 0) return null;
   V2.cinemaId = r.data[0].id;
   return r.data[0];
 }
 
-/* lecture directe d'une table protégée par RLS */
-async function requeteTable(chemin){
-  const s = sessionLocale();
-  const rep = await fetch(
-    "https://zpfkekiavlfphialvphi.supabase.co/rest/v1/" + chemin, {
-      headers: {
-        apikey: SB_ANON,
-        Authorization: "Bearer " + (s?.access_token || SB_ANON),
-        Accept: "application/json"
-      }
-    });
-  if(!rep.ok) throw new Error("HTTP " + rep.status);
-  return rep.json();
-}
-const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwZmtla2lhdmxmcGhpYWx2cGhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc4MzIsImV4cCI6MjEwMTMwMzgzMn0.ORa4y_AMjuWbxboKm3o6Jn7ryYjkOm4mSgLa2Schv98";
 
 async function chargeOffre(){
   const r = await appel("v2_offre", {p_cinema_id: V2.cinemaId});
