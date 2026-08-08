@@ -144,15 +144,15 @@ body.sombre{background:#0d0a0e}
 .carte{flex:0 0 296px;scroll-snap-align:center;background:#fff;border:1px solid #e8e2d8;
   border-radius:16px;overflow:hidden;display:flex;flex-direction:column;
   box-shadow:0 2px 10px rgba(0,0,0,.05)}
-.cAffiche{height:158px;position:relative;padding:12px;display:flex;
-  flex-direction:column;justify-content:space-between}
-.cBadge{align-self:flex-start;font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;
+.cAffiche{height:206px;position:relative;overflow:hidden;background:#1a1410}
+.cAffFond{position:absolute;inset:0}
+.cAffFond svg{width:100%;height:100%;display:block}
+.cBadge{position:absolute;top:11px;left:11px;font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;
   background:rgba(0,0,0,.42);color:#fff;padding:4px 9px;border-radius:9px;backdrop-filter:blur(4px)}
 .cBadge.evt{background:rgba(180,40,40,.85)}
 .cSortie{position:absolute;top:12px;right:12px;font-size:8.5px;letter-spacing:.06em;
   background:rgba(0,0,0,.42);color:#fff;padding:4px 9px;border-radius:9px}
-.cTitre{font-family:'Marcellus',serif;font-size:19px;color:#fff;line-height:1.15;
-  text-shadow:0 2px 12px rgba(0,0,0,.5)}
+
 .cCorps{padding:13px 14px 14px;flex:1;display:flex;flex-direction:column}
 .cSignature{display:flex;align-items:center;gap:8px;padding-bottom:10px;
   border-bottom:1px solid #f2ede6;margin-bottom:10px}
@@ -270,7 +270,9 @@ body.sombre{background:#0d0a0e}
   text-align:left;font-family:inherit;transition:.15s}
 .choix:active{transform:scale(.99)}
 .choix:disabled{opacity:.44;cursor:default}
-.chAff{width:44px;height:60px;border-radius:7px;flex:none}
+.chAff{width:44px;height:62px;border-radius:7px;flex:none;overflow:hidden;
+  background:#1a1410;display:block}
+.chAff svg{width:100%;height:100%;display:block}
 .chInfo{flex:1;min-width:0}
 .chInfo b{display:block;font-family:'Marcellus',serif;font-size:13.5px;line-height:1.2}
 .chInfo .meta{font-size:10px;color:#a89a88;margin-top:2px}
