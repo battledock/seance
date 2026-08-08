@@ -136,6 +136,19 @@ async function chargePostesInstallation(){
   return requeteTable("v2_installation_postes?select=*&order=ordre");
 }
 
+/* Le prix du niveau suivant, pour chaque équipement. Sans lui, le
+   joueur touche « améliorer » sans savoir ce que ça coûte — et
+   découvre la dépense une fois qu'elle est faite. */
+async function chargeTarifsEquipement(){
+  const l = await requeteTable(
+    "v2_tarifs_equipement?select=equipement,niveau,cout,nom&order=equipement,niveau");
+  const m = {};
+  for(const t of l){
+    (m[t.equipement] = m[t.equipement] || {})[t.niveau] = {cout:Number(t.cout), nom:t.nom};
+  }
+  return m;
+}
+
 async function chargeSeancesDuJour(){
   if(!V2.journeeId) return [];
   return requeteTable(
@@ -268,7 +281,7 @@ function messageErreurV2(r){
 export {
   V2, appel, chargeEtat, monCinema, chargeOffre, chargePostesInstallation,
   chargeSeancesDuJour, previsionJournee, bilan, constructionsPossibles,
-  creerCinema, signerLicence, rendreLicence, poserSeance, retirerSeance,
+  chargeTarifsEquipement, creerCinema, signerLicence, rendreLicence, poserSeance, retirerSeance,
   peutOuvrir, ouvrirLesPortes, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
