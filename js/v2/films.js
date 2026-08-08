@@ -188,7 +188,9 @@ function ouvrePanneau({salle, heure, seanceId, place, offre, creneaux,
     <div class="feuille">
       <div class="poignee"></div>
       <div class="fTete">
-        <div class="fCase"><b>${heure.replace("h00","h")}</b><span>${echappe(salle.nom)}</span></div>
+        <div class="fCase ${heure === "00h00" ? "nuit" : ""}"><b>${
+          heure === "00h00" ? "minuit" : heure.replace("h00","h")}</b>
+          <span>${echappe(salle.nom)}</span></div>
         <div class="fInfo"><b>Quel film ?</b>
           <span>${salle.places} places${place != null && place < 400
             ? ` · ${Math.floor(place/60)}h${String(place%60).padStart(2,"0")} disponibles`
