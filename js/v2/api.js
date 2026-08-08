@@ -214,6 +214,15 @@ const decompteEtoiles = () =>
   appel("v2_decompte_etoiles", {p_cinema_id: V2.cinemaId});
 const seuilRentabilite = () =>
   appel("v2_seuil", {p_cinema_id: V2.cinemaId});
+/* La confiserie : deuxième pilier du métier, longtemps calculé
+   sans jamais être montré ni pilotable. */
+const confiserieEtat = () =>
+  appel("v2_confiserie_etat", {p_cinema_id: V2.cinemaId});
+const installerComptoir = () =>
+  appel("v2_installer_comptoir", {p_cinema_id: V2.cinemaId});
+const ameliorerConfiserie = (quoi) =>
+  appel("v2_ameliorer_confiserie", {p_cinema_id: V2.cinemaId, p_quoi: quoi});
+
 const echeances = () =>
   appel("v2_echeances", {p_cinema_id: V2.cinemaId});
 
@@ -290,6 +299,10 @@ const MESSAGES = {
   REVISION_VERROUILLEE:       "Vos tarifs sont fixés pour quelques jours encore.",
   TARIF_HORS_BORNES:          "Un tarif doit rester entre 4 et 30 €.",
   PAS_DE_COMPTOIR:            "Vous n'avez pas de comptoir.",
+  COMPTOIR_EXISTANT:          "Vous avez déjà un comptoir.",
+  RESERVE_PLEINE:             "Votre réserve est pleine.",
+  DEJA_INSTALLE:              "C'est déjà installé.",
+  AMELIORATION_INCONNUE:      "Cette amélioration n'existe pas.",
   DEJA_JOUEE:                 "Cette journée est déjà close.",
   POSTE_OBLIGATOIRE:          "Ce poste ne peut pas être supprimé."
 };
@@ -319,7 +332,8 @@ export {
   chargeSeancesDuJour, previsionJournee, bilan, constructionsPossibles,
   chargeTarifsEquipement, creerCinema, signerLicence, rendreLicence, poserSeance, retirerSeance,
   peutOuvrir, synchronise, faireRelache, ouvrirLesPortes,
-  decompteEtoiles, seuilRentabilite, echeances, historique, nettoyer, reparer, agrandir,
+  decompteEtoiles, seuilRentabilite, echeances, historique,
+  confiserieEtat, installerComptoir, ameliorerConfiserie, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
 };
