@@ -723,17 +723,8 @@ function rendCompte(){
 
     <div class="bloc">
       <div class="blocT"><b>La grille tarifaire</b><span>${
-        t.revisable ? "révisable dès maintenant"
-          : "fixée jusqu'au jour " + t.revisable_au_jour}</span></div>
-      <div class="tGrid">
-        <div class="tCase"><div class="nm">Plein</div><div class="px">${fmt(t.plein)}</div></div>
-        <div class="tCase"><div class="nm">Étudiant</div><div class="px">${fmt(t.etudiant)}</div></div>
-        <div class="tCase"><div class="nm">Senior</div><div class="px">${fmt(t.senior)}</div></div>
-        <div class="tCase"><div class="nm">Enfant</div><div class="px">${fmt(t.enfant)}</div></div>
-        <div class="tCase moy large"><div class="nm">Prix moyen constaté</div>
-          <div class="px">${fmt(t.prix_moyen)}</div>
-          <div class="hint">il naît du mélange, on ne le règle pas</div></div>
-      </div>
+        QUARTIERS_NOM[c.quartier] || c.quartier}</span></div>
+      ${rendGrilleTarifs(t)}
       <button class="btnTarifs" id="btnTarifs" ${t.revisable ? "" : "disabled"}>
         ${t.revisable ? "Réviser les tarifs"
           : `Révision possible au jour ${t.revisable_au_jour}`}</button>
@@ -758,6 +749,47 @@ function rendCompte(){
     b.addEventListener("click", () => ouvreFiche(b.dataset.fiche)));
 
   remplitCompte();
+}
+
+/* La composition du quartier en tête, puis chaque tarif avec sa
+   clé de couleur. On voit d'un coup quel public domine — donc
+   quel tarif est le vrai levier. Baisser le tarif enfant dans un
+   quartier étudiant ne remplit rien. */
+const PUBLICS_NOM = {
+  plein:    ["Plein tarif", "26 à 59 ans",      "#8a1c2c"],
+  etudiant: ["Étudiant",    "moins de 26 ans",  "#caa24a"],
+  senior:   ["Senior",      "60 ans et plus",   "#4a7a6a"],
+  enfant:   ["Enfant",      "moins de 14 ans",  "#c07a4a"]
+};
+
+function rendGrilleTarifs(t){
+  const parts = t.publics || [];
+  const rue = parts.map(p =>
+    `<i style="width:${p.part}%;background:${
+      (PUBLICS_NOM[p.categorie] || [,, "#b0a08a"])[2]}"></i>`).join("");
+
+  /* on suit l'ordre du quartier : le public majoritaire en premier */
+  const lignes = parts.map(p => {
+    const [nom, det, coul] = PUBLICS_NOM[p.categorie] || [p.categorie, "", "#b0a08a"];
+    return `<div class="tLg">
+      <span class="tCle" style="background:${coul}"></span>
+      <span class="tNm"><b>${nom}</b><small>${det} · ${p.part} % du quartier</small></span>
+      <span class="tPx">${fmt(t[p.categorie])}</span>
+    </div>`;
+  }).join("");
+
+  return `
+    ${rue ? `<div class="tRue">${rue}</div>` : ""}
+    ${lignes}
+    <div class="tLg">
+      <span class="tCle" style="background:#ddd4c6"></span>
+      <span class="tNm"><b>Matinée</b><small>avant 13 h · tous publics</small></span>
+      <span class="tPx">${fmt(t.matinee)}</span>
+    </div>
+    <div class="tMoy">
+      <span>Prix moyen constaté<small>il naît du mélange, on ne le règle pas</small></span>
+      <b>${fmt(t.prix_moyen)}</b>
+    </div>`;
 }
 
 const QUARTIERS_NOM = {
