@@ -92,7 +92,13 @@ function carteFilm(f, surSigner){
           f.note_public ?? "—"}</b><span>public</span></div>
       </div>
 
-      ${signe
+      ${!signe && f.jours_avant > 0
+        ? `<div class="cCond">Sortie <b>dans ${f.jours_avant} jour${
+             f.jours_avant > 1 ? "s" : ""}</b>. ${conditions(f)}
+             <br>Réserver maintenant fige le taux ; les copies partent vite.</div>
+           <button class="cSigner" data-signer="${f.sortie_id}"
+             data-duree="${f.duree_licence || 14}">Réserver la licence</button>`
+        : signe
         ? `<div class="cCond">Vous avez la licence encore
              <b>${f.jours_restants} jour${f.jours_restants>1?"s":""}</b>.
              ${f.seances_mini > 0
@@ -174,16 +180,21 @@ function ouvrePanneau({salle, heure, seanceId, offre, surPoser, surRetirer, surF
             <div class="groupe">${g.nom}</div>
             ${g.films.map(f => {
               const trop = f.places_minimum > salle.places;
+              /* la copie n'arrive qu'au jour de la sortie */
+              const pasSorti = f.jours_avant > 0;
               return `<button class="choix" data-sortie="${f.sortie_id}"
                         data-signe="${f.statut === "signe" ? 1 : 0}"
-                        data-duree="${f.duree_licence || 14}" ${trop ? "disabled" : ""}>
+                        data-duree="${f.duree_licence || 14}" ${
+                          trop || pasSorti ? "disabled" : ""}>
                 <span class="chAff">${affiche(f, false)}</span>
                 <span class="chInfo"><b>${echappe(f.titre)}</b>
                   <span class="meta">${echappe(f.genre || "")} · ${
                     Math.floor((f.duree||0)/60)}h${String((f.duree||0)%60).padStart(2,"0")}${
                     f.studio ? " · " + echappe(f.studio) : ""}</span>
                   <span class="tags">${etiquettes(f, trop, salle)}</span></span>
-                <span class="chPrev">${trop
+                <span class="chPrev">${pasSorti
+                  ? `<b class="ind">—</b><span>dans ${f.jours_avant} j</span>`
+                  : trop
                   ? `<b class="ind">—</b><span>trop petite</span>`
                   : `<b class="${classeNote(f.note_public ?? f.attente)}">${
                       f.popularite ?? f.attente ?? "—"}</b><span>popularité</span>`}</span>
@@ -227,6 +238,8 @@ function ouvrePanneau({salle, heure, seanceId, offre, surPoser, surRetirer, surF
 
 function etiquettes(f, trop, salle){
   const t = [];
+  if(f.jours_avant > 0) t.push(["r", `Sort dans ${f.jours_avant} jour${
+    f.jours_avant > 1 ? "s" : ""}`]);
   if(trop) t.push(["r", `${f.places_minimum} places minimum`]);
   if(f.statut === "signe") t.push(["n", `Licence ${f.jours_restants} j`]);
   if(f.seances_mini > 0) t.push(["r", `${f.seances_mini} séances/jour`]);
