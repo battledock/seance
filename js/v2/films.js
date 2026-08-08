@@ -12,8 +12,9 @@
 
 import { echappe } from "./grille.js?v=becf21cb";
 import { afficheDuFilm, MOTIF_FILM } from "../ui/genre-posters.js?v=becf21cb";
-import { signerLicence, poserSeance, retirerSeance, messageErreurV2 }
+import { signerLicence, poserSeance, retirerSeance, messageErreurV2, presseQuartier }
   from "./api.js?v=becf21cb";
+import { rendPresse, rendKiosque } from "./presse.js?v=becf21cb";
 
 const eur = n => Math.round(Number(n) || 0).toLocaleString("fr") + " €";
 
@@ -91,6 +92,7 @@ function carteFilm(f, surSigner){
         <div class="cN"><b class="${classeNote(f.note_public)}">${
           f.note_public ?? "—"}</b><span>public</span></div>
       </div>
+      <div class="prZone" data-presse="${f.film_id || ""}"></div>
 
       ${!signe && f.jours_avant > 0
         ? `<div class="cCond">Sortie <b>dans ${f.jours_avant} jour${
@@ -138,6 +140,45 @@ function rendCatalogue(cible, offre, onglet, surSigner){
   cible.innerHTML = l.map(f => carteFilm(f)).join("");
   cible.querySelectorAll("[data-signer]").forEach(b =>
     b.addEventListener("click", () => surSigner(b.dataset.signer, Number(b.dataset.duree))));
+
+  /* La presse arrive après coup : cinq notes par film, ça ne
+     justifie pas de retarder l'affichage des cartes. */
+  cible.querySelectorAll("[data-presse]").forEach(async z => {
+    const id = z.dataset.presse;
+    if(!id) return;
+    if(PRESSE.has(id)){ z.innerHTML = rendPresse(PRESSE.get(id)); return; }
+    const r = await presseQuartier(id);
+    if(!r.ok) return;
+    PRESSE.set(id, r.data);
+    z.innerHTML = rendPresse(r.data);
+    z.addEventListener("click", () => ouvreKiosque(id, r.data));
+  });
+}
+
+/* les revues déjà lues, gardées pour ne pas les redemander */
+const PRESSE = new Map();
+
+/* ---------- la revue dépliée ---------- */
+function ouvreKiosque(filmId, p){
+  const anc = document.getElementById("panKiosque");
+  if(anc) anc.remove();
+  const o = document.createElement("div");
+  o.id = "panKiosque";
+  o.className = "voilePanneau";
+  o.innerHTML = `<div class="feuille">
+    <div class="poignee"></div>
+    <div class="fTete">
+      <div class="fInfo"><b>La presse</b>
+        <span>cinq médias, cinq lignes</span></div>
+      <button class="fX" aria-label="Fermer">✕</button>
+    </div>
+    <div class="fCorps">${rendKiosque(p)}</div>
+  </div>`;
+  document.body.appendChild(o);
+  requestAnimationFrame(() => o.classList.add("ouvert"));
+  const ferme = () => { o.classList.remove("ouvert"); setTimeout(() => o.remove(), 260); };
+  o.querySelector(".fX").addEventListener("click", ferme);
+  o.addEventListener("click", e => { if(e.target === o) ferme(); });
 }
 
 /* ============================================================
