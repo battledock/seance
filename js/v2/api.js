@@ -225,6 +225,11 @@ const seuilRentabilite = () =>
    sans jamais les montrer. */
 /* La semaine, les classes, les engagements. Jusqu'ici un mardi
    valait un samedi : c'était le manque le plus structurel. */
+/* La presse : cinq médias, cinq lignes. La note qui compte n'est
+   pas la moyenne mais celle que vos habitants ont lue. */
+const presseQuartier = (filmId) =>
+  appel("v2_presse_quartier", {p_cinema_id: V2.cinemaId, p_film_id: filmId});
+
 const semaine = () =>
   appel("v2_semaine", {p_cinema_id: V2.cinemaId});
 const engagements = () =>
@@ -397,7 +402,7 @@ export {
   confiserieEtat, installerComptoir, ameliorerConfiserie, sallesDetail,
   soireesPossibles, apercuSoiree, organiserSoiree, annulerSoiree,
   creneaux, partageBassin, poidsGenres,
-  semaine, engagements, scolaires,
+  semaine, engagements, scolaires, presseQuartier,
   accepterScolaire, refuserScolaire, reglerAvantSeance,
   reprendreHier, poserPartout, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
