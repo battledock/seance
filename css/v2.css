@@ -517,3 +517,24 @@ body.sombre .pointNav{background:#e8785a;border-color:#120e14}
 .ech .tx small{display:block;font-size:10px;color:#a89a88;margin-top:1px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ech .pt{width:8px;height:8px;border-radius:50%;flex:none}
+
+/* ── les fiches d'analyse ──
+   Chacune donne déjà son chiffre et ce qu'il faut en retenir :
+   on n'ouvre que pour comprendre le détail. */
+.fiche{display:flex;align-items:center;gap:12px;background:#fff;border-radius:15px;
+  padding:14px;margin-bottom:9px;width:100%;text-align:left;font-family:inherit;
+  border:none;cursor:pointer;
+  box-shadow:0 1px 2px rgba(40,30,20,.05),0 5px 14px rgba(40,30,20,.03)}
+.fiche:active{transform:scale(.995)}
+.fiche .vign{width:52px;height:52px;border-radius:13px;flex:none;display:flex;
+  align-items:center;justify-content:center}
+.fiche .vign svg{width:24px;height:24px}
+.fiche .tx{flex:1;min-width:0}
+.fiche .tx b{display:block;font-family:'Marcellus',serif;font-size:14.5px;color:#1a1410}
+.fiche .tx small{display:block;font-size:10.5px;color:#8a8078;line-height:1.4;margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fiche .val{text-align:right;flex:none}
+.fiche .val b{display:block;font-size:19px;font-weight:600;line-height:1;white-space:nowrap}
+.fiche .val span{display:block;font-size:9px;letter-spacing:.05em;text-transform:uppercase;
+  color:#b0a08a;margin-top:3px}
+.fiche .fl{width:16px;flex:none;color:#c8bcaa;display:flex;align-items:center}
