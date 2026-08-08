@@ -223,6 +223,26 @@ const seuilRentabilite = () =>
 /* Ce que vaut chaque créneau, et comment les séances se
    partagent le quartier : deux systèmes que le moteur appliquait
    sans jamais les montrer. */
+/* La semaine, les classes, les engagements. Jusqu'ici un mardi
+   valait un samedi : c'était le manque le plus structurel. */
+const semaine = () =>
+  appel("v2_semaine", {p_cinema_id: V2.cinemaId});
+const engagements = () =>
+  appel("v2_engagements", {p_cinema_id: V2.cinemaId});
+const scolaires = () =>
+  appel("v2_scolaires", {p_cinema_id: V2.cinemaId});
+const accepterScolaire = (id) =>
+  appel("v2_accepter_scolaire", {p_resa_id: id});
+const refuserScolaire = (id) =>
+  appel("v2_refuser_scolaire", {p_resa_id: id});
+const reglerAvantSeance = (n) =>
+  appel("v2_regler_avant_seance", {p_cinema_id: V2.cinemaId, p_niveau: n});
+const reprendreHier = () =>
+  appel("v2_reprendre_hier", {p_cinema_id: V2.cinemaId});
+const poserPartout = (sortieId, heure) =>
+  appel("v2_poser_partout", {p_cinema_id: V2.cinemaId,
+                             p_sortie_id: sortieId, p_heure: heure});
+
 const creneaux = (genre) =>
   appel("v2_creneaux", {p_cinema_id: V2.cinemaId, p_genre: genre ?? null});
 const poidsGenres = () => appel("v2_poids_genres", {});
@@ -330,6 +350,10 @@ const MESSAGES = {
   PAS_RESERVE:                "Il fallait réserver ce film avant sa sortie.",
   PAS_LA_VEILLE:              "Une avant-première se donne la veille de la sortie.",
   AUCUNE_SALLE:               "Aucune salle disponible demain soir.",
+  PAS_DE_VEILLE:              "Aucune journée jouée hier à reprendre.",
+  JOURNEE_COMMENCEE:          "Videz la grille avant de reprendre hier.",
+  RESERVATION_INTROUVABLE:    "Cette réservation n'existe plus.",
+  NIVEAU_INVALIDE:            "Ce réglage n'existe pas.",
   AUCUNE_SOIREE:              "Aucune soirée n'est prévue.",
   PAS_DE_COMPTOIR:            "Vous n'avez pas de comptoir.",
   COMPTOIR_EXISTANT:          "Vous avez déjà un comptoir.",
@@ -372,7 +396,10 @@ export {
   decompteEtoiles, seuilRentabilite, echeances, historique,
   confiserieEtat, installerComptoir, ameliorerConfiserie, sallesDetail,
   soireesPossibles, apercuSoiree, organiserSoiree, annulerSoiree,
-  creneaux, partageBassin, poidsGenres, nettoyer, reparer, agrandir,
+  creneaux, partageBassin, poidsGenres,
+  semaine, engagements, scolaires,
+  accepterScolaire, refuserScolaire, reglerAvantSeance,
+  reprendreHier, poserPartout, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
 };
