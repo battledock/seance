@@ -94,6 +94,41 @@ function rendFacade(cible, etat, seancesAffiche){
   peupleLaRue(cible.querySelector("svg"));
 }
 
+/* ------------------------------------------------------------
+   LE FRONTON DU COMPTE
+
+   Le compte n'est pas un relevé bancaire : c'est la page du
+   cinéma. On y montre donc la vraie façade — celle qui a l'âge
+   de vos étoiles, le ciel de l'heure qu'il est, et vos affiches
+   dans les vitrines — recadrée sur le marquee et l'entrée.
+
+   Pas de passants ici : c'est un portrait, pas une scène.
+   ------------------------------------------------------------ */
+function rendFronton(cible, etat, seancesAffiche){
+  if(!cible || !etat) return;
+  const c = etat.cinema;
+
+  /* On dessine la façade à sa proportion naturelle, puis on la
+     remonte pour ne garder que la bande qui compte. Un cadrage
+     calculé sur le ratio de la bande déformerait le bâtiment. */
+  const H_NATURELLE = 700;
+  const DECALAGE = -212;
+
+  cible.innerHTML = `<div class="frontonIn" style="height:${H_NATURELLE}px;
+    top:${DECALAGE}px">${dessineFacadeEvolutive({
+      phase: phaseSelonHeure(),
+      niveau: niveauSelonEtoiles(c.etoiles),
+      nom: c.nom,
+      logo: "★",
+      seances: (seancesAffiche || []).slice(0, 3).map(s => ({
+        heure: String(s.heure || "").toUpperCase(),
+        titre: s.titre,
+        genre: s.genre || "défaut"
+      })),
+      ratio: 390 / H_NATURELLE
+    })}</div>`;
+}
+
 /* Redessiner à chaque pixel de redimensionnement coûterait cher.
    Sur mobile, la barre d'adresse qui se rétracte change la
    hauteur en permanence : on ne réagit qu'aux vrais changements. */
@@ -107,4 +142,4 @@ function surveilleTaille(cible, refaire){
   }, {passive:true});
 }
 
-export { rendFacade, surveilleTaille, phaseSelonHeure, niveauSelonEtoiles };
+export { rendFacade, rendFronton, surveilleTaille, phaseSelonHeure, niveauSelonEtoiles };
