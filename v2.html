@@ -88,6 +88,7 @@ import {
   V2, chargeEtat, monCinema, chargeOffre, previsionJournee, peutOuvrir,
   ouvrirLesPortes, signerLicence, poserSeance, retirerSeance,
   nettoyer, reparer, agrandir, ameliorer, reapprovisionner, embaucher,
+  chargeTarifsEquipement, apercuAgrandissement,
   messageErreurV2, requeteTable
 } from "./js/v2/api.js?v=becf21cb";
 import { rendFacade, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
@@ -105,7 +106,7 @@ import { rendCatalogue, ouvrePanneau } from "./js/v2/films.js?v=becf21cb";
 const $ = id => document.getElementById(id);
 const eur = n => Math.round(Number(n) || 0).toLocaleString("fr") + " €";
 let vue = "cinema", onglet = "nouveautes";
-let etat = null, offre = null, prevision = null, peut = null;
+let etat = null, offre = null, prevision = null, peut = null, tarifsEq = null;
 
 /* ---------- messages ---------- */
 let minuteurToast = null;
@@ -185,8 +186,30 @@ function rendSalles(){
     `${s.length} salle${s.length>1?"s":""} · ${s.reduce((t,x)=>t+x.places,0)} places · `
     + `${etat.equipe?.en_poste ?? 0} employés`;
 
-  $("salles").innerHTML = s.map(x => `
-    <div class="carteSalle">
+  $("salles").innerHTML = s.map(x => {
+    /* ce que coûterait le prochain palier de chaque équipement,
+       et ce qu'il apporterait — un achat doit se décider avant,
+       pas se découvrir une fois payé */
+    const lignes = EQUIPEMENTS.map(([c,n]) => {
+      const niv = x[c] || 0;
+      const suivant = tarifsEq?.[c]?.[niv + 1];
+      const cher = suivant && suivant.cout > etat.cinema.tresorerie;
+      return `<div class="eq">
+        <span class="nmEq"><b>${n}</b>${suivant
+          ? `<small>${echappe(suivant.nom)}</small>` : `<small>au maximum</small>`}</span>
+        <span class="niv">${[1,2,3,4,5].map(i =>
+          `<i class="${i <= niv ? "on" : ""}"></i>`).join("")}</span>
+        <button class="px ${cher ? "cher" : ""}" data-salle="${x.id}" data-eq="${c}"
+          ${niv >= 5 || cher ? "disabled" : ""}>${
+            niv >= 5 ? "max" : suivant ? eur(suivant.cout) : "—"}</button>
+      </div>`;
+    }).join("");
+
+    const coutNettoyage = Math.round(x.places * 0.55 + (100 - x.proprete) * 1.2);
+    const coutReparation = Math.round((100 - x.etat) * (8 + x.places * 0.12));
+    const coutAgrandir = Math.round(2200 + (x.places - 50) * 46);
+
+    return `<div class="carteSalle">
       <div class="salleTete">
         <div class="salleInfo"><b>${echappe(x.nom)}</b>
           <div class="meta">${x.places} places · ${x.type}</div>
@@ -200,26 +223,29 @@ function rendSalles(){
           <div class="barre"><i style="width:${x.etat}%;background:${
             x.etat >= 70 ? "#2a8a4a" : x.etat >= 45 ? "#c9a24a" : "#c05a3a"}"></i></div></div>
       </div>
-      <div class="equipList">
-        ${EQUIPEMENTS.map(([c,n]) => `
-          <div class="eq"><span class="nm">${n}</span>
-            <span class="niv">${[1,2,3,4,5].map(i =>
-              `<i class="${i <= x[c] ? "on" : ""}"></i>`).join("")}</span>
-            <button class="px" data-salle="${x.id}" data-eq="${c}"
-              ${x[c] >= 5 ? "disabled" : ""}>${x[c] >= 5 ? "max" : "améliorer"}</button>
-          </div>`).join("")}
-      </div>
+      <div class="equipList">${lignes}</div>
       <div class="actions">
-        <button data-act="nettoyer" data-salle="${x.id}">Nettoyer</button>
-        <button data-act="reparer" data-salle="${x.id}">Réparer</button>
-        <button data-act="agrandir" data-salle="${x.id}">Agrandir</button>
+        <button data-act="nettoyer" data-salle="${x.id}" ${x.proprete >= 98 ? "disabled" : ""}>
+          Nettoyer<small>${x.proprete >= 98 ? "déjà propre" : eur(coutNettoyage)}</small></button>
+        <button data-act="reparer" data-salle="${x.id}" ${x.etat >= 98 ? "disabled" : ""}>
+          Réparer<small>${x.etat >= 98 ? "en bon état" : eur(coutReparation)}</small></button>
+        <button data-act="agrandir" data-salle="${x.id}">
+          Agrandir<small>+15 pl. · ${eur(coutAgrandir)}</small></button>
       </div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
 
   $("salles").querySelectorAll("[data-eq]").forEach(b =>
     b.addEventListener("click", () => agit(() => ameliorer(b.dataset.salle, b.dataset.eq))));
   $("salles").querySelectorAll("[data-act]").forEach(b =>
-    b.addEventListener("click", () => {
+    b.addEventListener("click", async () => {
+      /* agrandir engage du personnel : on prévient avant */
+      if(b.dataset.act === "agrandir"){
+        const a = await apercuAgrandissement(b.dataset.salle);
+        if(a.ok && a.data.embauches_necessaires > 0){
+          if(!confirm(a.data.avertissement + "\n\nContinuer ?")) return;
+        }
+      }
       const f = {nettoyer, reparer, agrandir}[b.dataset.act];
       agit(() => f(b.dataset.salle));
     }));
@@ -330,15 +356,23 @@ async function rafraichit(sansOffre){
   peut = (await peutOuvrir()).data || null;
   if(!sansOffre) offre = await chargeOffre();
 
-  rendEntete();
-  rendAlertes();
-  rendBoutonOuvrir();
-  rendResume($("gResume"), prevision);
-  rendGrille($("grille"), etat, prevision, ouvreCase);
-  rendPiedGrille($("gPied"), prevision, peut, ouvrir);
-  rendCatalogue($("catalogue"), offre, onglet, signer);
-  rendSalles();
-  rendCompte();
+  /* Chaque vue se dessine dans son propre filet : si l'une casse,
+     les autres restent lisibles. Sans ça, une erreur dans le
+     catalogue laisse aussi les salles et le compte vides, et on
+     cherche la panne au mauvais endroit. */
+  const dessine = (nom, fn) => {
+    try{ fn(); }
+    catch(e){ console.error("[Séance v2] rendu " + nom, e); }
+  };
+  dessine("entete",    rendEntete);
+  dessine("alertes",   rendAlertes);
+  dessine("ouvrir",    rendBoutonOuvrir);
+  dessine("resume",    () => rendResume($("gResume"), prevision));
+  dessine("grille",    () => rendGrille($("grille"), etat, prevision, ouvreCase));
+  dessine("pied",      () => rendPiedGrille($("gPied"), prevision, peut, ouvrir));
+  dessine("catalogue", () => rendCatalogue($("catalogue"), offre, onglet, signer));
+  dessine("salles",    rendSalles);
+  dessine("compte",    rendCompte);
   $("gJour").textContent = "jour " + etat.cinema.jour;
   $("fSousTitre").textContent = `jour ${etat.cinema.jour} · `
     + `${Number(etat.cinema.etoiles).toFixed(1).replace(".",",")} étoiles`;
@@ -357,6 +391,7 @@ async function signer(sortieId, duree){
   try{
     const c = await monCinema();
     if(!c){ location.replace("v2-nouveau.html"); return; }
+    tarifsEq = await chargeTarifsEquipement().catch(() => null);
     await rafraichit();
 
     document.querySelectorAll("#nav button").forEach(b =>
