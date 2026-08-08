@@ -911,3 +911,71 @@ body.sombre{background:#0d0a0e}
 .cell.cellNuit.creneauFaible{background:#f4f0f6;border-color:#ddd4e4}
 .fCase.nuit{background:#efeaf8;border-color:#d8cfe8}
 .fCase.nuit b{color:#5a4a8a;font-size:11px}
+
+/* ── la presse ──
+   Une note unique ne veut rien dire : un même film récolte 26 chez
+   la revue exigeante et 66 chez le site populaire. C'est le
+   désaccord qui porte l'information — et la note qui compte est
+   celle que vos habitants ont lue. */
+.prZone:empty{display:none}
+.pr{background:#faf7f1;border:1px solid #eee7dc;border-radius:12px;padding:11px 12px;
+  margin-bottom:11px;cursor:pointer}
+.pr:active{background:#f6f2ea}
+.prT{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  margin-bottom:9px}
+.prT .lb{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:#a89a88}
+.prT b{font-family:'Marcellus',serif;font-size:18px;color:#1a1410;white-space:nowrap}
+.prT b.h{color:#2a8a4a}.prT b.m{color:#b08820}.prT b.b{color:#c05a3a}
+.prT b i{font-style:normal;font-size:10px;color:#a89a88;margin-left:5px;
+  font-family:'Outfit',sans-serif}
+
+.regle{position:relative;height:38px;margin:0 2px}
+.regle .axe{position:absolute;left:0;right:0;top:21px;height:4px;border-radius:3px;
+  background:linear-gradient(90deg,#e0b0a0,#e8d8b0 46%,#a8ceb4)}
+.regle .moy{position:absolute;top:15px;width:2px;height:16px;background:#1a1410;
+  border-radius:2px;opacity:.45}
+.regle .etq{position:absolute;top:0;font-size:8px;color:#a89a88;white-space:nowrap}
+.regle .etq.d{transform:translateX(-2px)}
+.regle .etq.g{transform:translateX(-100%) translateX(-4px)}
+.regle .prPt{position:absolute;top:11px;width:24px;height:24px;border-radius:50%;
+  transform:translateX(-12px);display:flex;align-items:center;justify-content:center;
+  font-size:8.5px;font-weight:600;color:#fff;border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.prLeg{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.prLeg span{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#8a8078}
+.prLeg i{width:8px;height:8px;border-radius:2px;display:block;flex:none}
+.prNote{font-size:10px;color:#8a7a6a;margin-top:9px;line-height:1.45}
+.prNote b{color:#5a4a3a}
+.prNote.divise{color:#a8543a}
+
+/* la revue dépliée */
+.kTitre{font-family:'Marcellus',serif;font-size:16px;color:#1a1410;margin-bottom:12px}
+.kTitre span{display:block;font-family:'Outfit',sans-serif;font-size:10.5px;
+  color:#a89a88;margin-top:3px}
+.kiosque{display:flex;flex-direction:column;gap:9px}
+.journal{display:flex;gap:11px;background:#fff;border:1px solid #ece5db;border-radius:13px;
+  padding:12px;overflow:hidden}
+.journal.faible{opacity:.62}
+.journal .ent{flex:1;min-width:0}
+.jNom{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.jNom b{font-family:'Marcellus',serif;font-size:13.5px;color:#1a1410}
+.jNom span{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:#b0a08a}
+.jLigne{font-size:10px;color:#8a8078;line-height:1.45;margin-top:4px}
+.jPoids{display:flex;align-items:center;gap:6px;margin-top:7px}
+.jPoids .b{flex:1;height:5px;border-radius:3px;background:#f0ebe2;overflow:hidden;
+  max-width:120px}
+.jPoids .b i{display:block;height:100%;border-radius:3px}
+.jPoids .t{font-size:9px;color:#a89a88}
+.jNote{flex:none;width:52px;text-align:center}
+.jNote b{display:block;font-family:'Marcellus',serif;font-size:24px;line-height:1;
+  color:#c8bcaa}
+.jNote b.h{color:#2a8a4a}.jNote b.m{color:#b08820}.jNote b.b{color:#c05a3a}
+.jNote span{display:block;font-size:8px;letter-spacing:.05em;text-transform:uppercase;
+  color:#b0a08a;margin-top:3px}
+.chez{background:linear-gradient(135deg,#fdf7e8,#faf0d8);border:1px solid #f0e2c2;
+  border-radius:12px;padding:13px 14px;margin-top:11px}
+.chez .h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.chez .lb{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#a08c60}
+.chez .v{font-family:'Marcellus',serif;font-size:24px;color:#8a6a1a;white-space:nowrap}
+.chez .n{font-size:10.5px;color:#8a7a5a;margin-top:8px;line-height:1.5}
+.chez .n b{color:#5a4a24}
