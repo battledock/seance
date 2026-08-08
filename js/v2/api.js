@@ -198,6 +198,12 @@ const retirerSeance = (seanceId) =>
 /* Le monde tourne même quand le joueur ne joue pas : des films
    sortent aux dates prévues. On rattrape au chargement, sinon un
    titre réservé reste à zéro jusqu'à la prochaine clôture. */
+/* Toutes les salles en chantier : on n'est pas fautif, on est en
+   travaux. Faire relâche fait passer la journée — les charges
+   tombent quand même, comme dans la vraie vie. */
+const faireRelache = () =>
+  appel("v2_faire_relache", {p_cinema_id: V2.cinemaId});
+
 const synchronise = () =>
   appel("v2_synchronise", {p_cinema_id: V2.cinemaId});
 
@@ -251,6 +257,8 @@ const MESSAGES = {
   CRENEAU_OCCUPE:             "Une autre séance occupe déjà ce créneau.",
   HEURE_IMPOSSIBLE:           "On ne projette pas à cette heure-là.",
   SALLE_EN_TRAVAUX:           "La salle est en travaux.",
+  TOUT_EN_TRAVAUX:            "Toutes vos salles sont en chantier.",
+  SEANCES_PROGRAMMEES:        "Retirez vos séances avant de faire relâche.",
   SALLE_FERMEE:               "Cette salle est fermée.",
   ENGAGEMENT_EN_COURS:        "Le distributeur vous engage encore quelques jours.",
   ENGAGEMENT_NON_TENU:        "Il manque des séances imposées par le distributeur.",
@@ -278,6 +286,8 @@ function messageErreurV2(r){
     return `Il vous manque ${Math.round(r.cout - (r.disponible ?? 0))} €.`;
   if(r.erreur === "REVISION_VERROUILLEE" && r.dans_jours)
     return `Prochaine révision dans ${r.dans_jours} jour(s).`;
+  if(r.erreur === "SALLE_EN_TRAVAUX" && r.rouvre_au_jour)
+    return `La salle rouvre au jour ${r.rouvre_au_jour}.`;
   if(r.erreur === "PAS_ENCORE_SORTI" && r.dans_jours)
     return `La copie arrive dans ${r.dans_jours} jour(s), au jour ${r.jour_sortie}.`;
   if(r.erreur === "CRENEAU_OCCUPE" && r.par)
@@ -291,7 +301,7 @@ export {
   V2, appel, chargeEtat, monCinema, chargeOffre, chargePostesInstallation,
   chargeSeancesDuJour, previsionJournee, bilan, constructionsPossibles,
   chargeTarifsEquipement, creerCinema, signerLicence, rendreLicence, poserSeance, retirerSeance,
-  peutOuvrir, synchronise, ouvrirLesPortes, nettoyer, reparer, agrandir,
+  peutOuvrir, synchronise, faireRelache, ouvrirLesPortes, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
 };
