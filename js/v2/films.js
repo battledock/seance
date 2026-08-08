@@ -94,8 +94,13 @@ function carteFilm(f, surSigner){
 
       ${!signe && f.jours_avant > 0
         ? `<div class="cCond">Sortie <b>dans ${f.jours_avant} jour${
-             f.jours_avant > 1 ? "s" : ""}</b>. ${conditions(f)}
-             <br>Réserver maintenant fige le taux ; les copies partent vite.</div>
+             f.jours_avant > 1 ? "s" : ""}</b>. ${conditions(f)}</div>
+           ${f.taux_si_reserve != null ? `<div class="cPari">
+             <b>Réserver maintenant : ${Math.round(f.taux_si_reserve * 100)} % de location</b>
+             <span>contre ${Math.round(f.taux_apres * 100)} % après la sortie. Vous vous
+               engagez sans connaître l'accueil du public${f.copies_rares
+                 ? ", et les copies de première semaine partent en priorité aux salles engagées"
+                 : ""}.</span></div>` : ""}
            <button class="cSigner" data-signer="${f.sortie_id}"
              data-duree="${f.duree_licence || 14}">Réserver la licence</button>`
         : signe
