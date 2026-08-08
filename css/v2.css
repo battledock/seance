@@ -737,3 +737,51 @@ body.sombre .pointNav{background:#e8785a;border-color:#120e14}
 .soBilan b.v{color:#2a8a4a}.soBilan b.r{color:#c05a3a}
 .soBilan span{display:block;font-size:8px;letter-spacing:.06em;text-transform:uppercase;
   color:#b0a08a;margin-top:3px}
+
+/* ── la qualification des créneaux ──
+   Une barre sous chaque heure : le moteur applique un facteur de
+   trois selon l'heure et le genre, et le joueur le subissait
+   sans jamais le voir. */
+.gHead{text-align:center;padding-bottom:4px}
+.gHead .h{font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:#a89a90;
+  font-weight:500}
+.gHead .q{display:block;height:3px;border-radius:2px;margin:4px 3px 0;background:#e8e0d2}
+.gHead .q.nideal{background:#2a8a4a}
+.gHead .q.nbon{background:#7fc99a}
+.gHead .q.ncorrect{background:#c9a24a}
+.gHead .q.nfaible{background:#d8907a}
+.gHead .q.ntres_faible{background:#c05a3a}
+.cell.creneauFaible{background:#faf3f0;border-color:#e8ccc2}
+.cell.creneauFaible .plus{color:#d8a898}
+.cell.plein .cr{position:absolute;top:3px;right:3px;font-size:7px;padding:1px 4px;
+  border-radius:6px;background:rgba(0,0,0,.3);letter-spacing:.03em}
+.cell{position:relative}
+
+/* ── le partage du bassin ── */
+#partage:empty{display:none}
+#partage{margin-top:13px;padding:14px 15px;background:#fff;border-radius:14px;
+  box-shadow:0 1px 2px rgba(40,30,20,.05),0 5px 14px rgba(40,30,20,.03)}
+.basT{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px;
+  gap:10px}
+.basT .lb{font-size:11px;color:#5a524a}
+.basT b{font-family:'Marcellus',serif;font-size:18px;color:#8a6a1a;white-space:nowrap}
+.basB{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:1px}
+.basB i{display:block;position:relative;min-width:2px}
+.basB i span{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-size:8.5px;color:#fff;font-weight:600;white-space:nowrap}
+.basB .reste{background:#eee8de}
+.basB .reste span{color:#a89a88;font-weight:400}
+.basLeg{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px}
+.basLeg span{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#8a8078}
+.basLeg i{width:8px;height:8px;border-radius:2px;display:block;flex:none}
+.basNote{font-size:10.5px;color:#8a7a6a;margin-top:10px;line-height:1.5}
+.basNote.alerte{color:#a8543a}
+
+/* ── le conseil de créneau dans le panneau ── */
+.creneau{display:flex;gap:10px;background:linear-gradient(135deg,#fdf7e8,#faf0d8);
+  border:1px solid #f0e2c2;border-radius:12px;padding:11px 12px;margin-bottom:12px}
+.creneau svg{width:16px;height:16px;flex:none;color:#b8973a;margin-top:1px}
+.creneau p{flex:1;font-size:11px;color:#7a6a4a;line-height:1.5}
+.creneau.mauvais{background:linear-gradient(135deg,#fbeee6,#f7e2d4);border-color:#eecdb9}
+.creneau.mauvais svg{color:#c07a5a}
+.creneau.mauvais p{color:#a8543a}
