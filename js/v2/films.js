@@ -143,7 +143,8 @@ function rendCatalogue(cible, offre, onglet, surSigner){
    moyenne, le chiffre de cette heure-là dans cette salle-là.
    ============================================================ */
 
-function ouvrePanneau({salle, heure, seanceId, offre, surPoser, surRetirer, surFermer}){
+function ouvrePanneau({salle, heure, seanceId, place, offre,
+                       surPoser, surRetirer, surFermer}){
   const anciens = document.getElementById("panneauProg");
   if(anciens) anciens.remove();
 
@@ -170,7 +171,9 @@ function ouvrePanneau({salle, heure, seanceId, offre, surPoser, surRetirer, surF
       <div class="fTete">
         <div class="fCase"><b>${heure.replace("h00","h")}</b><span>${echappe(salle.nom)}</span></div>
         <div class="fInfo"><b>Quel film ?</b>
-          <span>${salle.places} places</span></div>
+          <span>${salle.places} places${place != null && place < 400
+            ? ` · ${Math.floor(place/60)}h${String(place%60).padStart(2,"0")} disponibles`
+            : ""}</span></div>
         <button class="fX" aria-label="Fermer">✕</button>
       </div>
       <div class="fCorps">
@@ -182,20 +185,27 @@ function ouvrePanneau({salle, heure, seanceId, offre, surPoser, surRetirer, surF
               const trop = f.places_minimum > salle.places;
               /* la copie n'arrive qu'au jour de la sortie */
               const pasSorti = f.jours_avant > 0;
+              /* le film tient-il avant la séance suivante ?
+                 Un film de 2h32 plus vingt minutes de nettoyage
+                 ne rentre pas dans un intervalle de deux heures. */
+              const besoin = (f.duree || 100) + 20;
+              const tropLong = place != null && besoin > place;
               return `<button class="choix" data-sortie="${f.sortie_id}"
                         data-signe="${f.statut === "signe" ? 1 : 0}"
                         data-duree="${f.duree_licence || 14}" ${
-                          trop || pasSorti ? "disabled" : ""}>
+                          trop || pasSorti || tropLong ? "disabled" : ""}>
                 <span class="chAff">${affiche(f, false)}</span>
                 <span class="chInfo"><b>${echappe(f.titre)}</b>
                   <span class="meta">${echappe(f.genre || "")} · ${
                     Math.floor((f.duree||0)/60)}h${String((f.duree||0)%60).padStart(2,"0")}${
                     f.studio ? " · " + echappe(f.studio) : ""}</span>
-                  <span class="tags">${etiquettes(f, trop, salle)}</span></span>
+                  <span class="tags">${etiquettes(f, trop, salle, tropLong, place)}</span></span>
                 <span class="chPrev">${pasSorti
                   ? `<b class="ind">—</b><span>dans ${f.jours_avant} j</span>`
                   : trop
                   ? `<b class="ind">—</b><span>trop petite</span>`
+                  : tropLong
+                  ? `<b class="ind">—</b><span>trop long</span>`
                   : `<b class="${classeNote(f.note_public ?? f.attente)}">${
                       f.popularite ?? f.attente ?? "—"}</b><span>popularité</span>`}</span>
               </button>`;
@@ -236,8 +246,12 @@ function ouvrePanneau({salle, heure, seanceId, offre, surPoser, surRetirer, surF
   return {ferme};
 }
 
-function etiquettes(f, trop, salle){
+function etiquettes(f, trop, salle, tropLong, place){
   const t = [];
+  if(tropLong){
+    const b = (f.duree || 100) + 20;
+    t.push(["r", `demande ${Math.floor(b/60)}h${String(b%60).padStart(2,"0")}`]);
+  }
   if(f.jours_avant > 0) t.push(["r", `Sort dans ${f.jours_avant} jour${
     f.jours_avant > 1 ? "s" : ""}`]);
   if(trop) t.push(["r", `${f.places_minimum} places minimum`]);
