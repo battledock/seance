@@ -898,3 +898,16 @@ body.sombre{background:#0d0a0e}
   font-size:12px;color:#4a423c;border-top:1px solid #f6f2ec;margin-top:10px}
 .pubLg b{font-weight:600;font-size:13px;color:#1a1410;white-space:nowrap}
 .pubLg b.v{color:#2a8a4a}.pubLg b.r{color:#c05a3a}
+
+/* ── la séance de minuit ──
+   Un créneau à part : quatre fois moins de monde, mais deux euros
+   cinquante de plus par billet, et un public qui vient pour un
+   genre précis. L'horreur y triomphe, l'animation n'y a rien à
+   faire — personne n'amène ses enfants à minuit. */
+.gHead.nuit .h{color:#6a5aa0;font-weight:600}
+.cell.cellNuit{background:linear-gradient(160deg,#f0edf7,#e6e0f0);border-color:#cfc6e2}
+.cell.cellNuit .plus{color:#9a8ac0}
+.cell.cellNuit .dispo{color:#a89ac8}
+.cell.cellNuit.creneauFaible{background:#f4f0f6;border-color:#ddd4e4}
+.fCase.nuit{background:#efeaf8;border-color:#d8cfe8}
+.fCase.nuit b{color:#5a4a8a;font-size:11px}
