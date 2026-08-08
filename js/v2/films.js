@@ -11,10 +11,34 @@
    ============================================================ */
 
 import { echappe } from "./grille.js?v=becf21cb";
+import { afficheDuFilm, MOTIF_FILM } from "../ui/genre-posters.js?v=becf21cb";
 import { signerLicence, poserSeance, retirerSeance, messageErreurV2 }
   from "./api.js?v=becf21cb";
 
 const eur = n => Math.round(Number(n) || 0).toLocaleString("fr") + " €";
+
+/* ------------------------------------------------------------
+   LES AFFICHES
+
+   Le jeu possède un générateur qui dessine un motif, compose le
+   titre et choisit une palette. Il travaille à partir d'une table
+   d'identifiants : on lui déclare les nôtres au premier passage.
+
+   Un dégradé de deux couleurs, c'était une case vide. Une vraie
+   affiche, c'est ce qu'un joueur reconnaît de loin — et il finit
+   par reconnaître aussi le studio qui l'a produite.
+   ------------------------------------------------------------ */
+function affiche(f, avecTitre){
+  if(!f) return "";
+  if(f.motif && f.film_id) MOTIF_FILM[f.film_id] = f.motif;
+  return afficheDuFilm({
+    id: f.film_id || f.sortie_id,
+    titre: f.titre,
+    /* le générateur ne connaît pas tous nos genres : le serveur
+       nous dit lequel utiliser pour la palette */
+    genre: f.genre_palette || f.genre
+  }, avecTitre);
+}
 
 function classeNote(n){
   if(n == null) return "";
@@ -42,12 +66,12 @@ function carteFilm(f, surSigner){
   const signe = f.statut === "signe";
 
   return `<article class="carte" data-sortie="${f.sortie_id || ""}">
-    <div class="cAffiche" style="background:linear-gradient(160deg,${aff[1]},${aff[0]})">
+    <div class="cAffiche">
+      <div class="cAffFond">${affiche(f, true)}</div>
       <span class="cBadge ${evt ? "evt" : ""}">${echappe(badge)}</span>
       ${nouveau && f.jours_avant > 0
         ? `<span class="cSortie">dans ${f.jours_avant} jour${f.jours_avant>1?"s":""}</span>`
         : ""}
-      <span class="cTitre">${echappe(f.titre)}</span>
     </div>
     <div class="cCorps">
       ${f.studio ? `<div class="cSignature">
@@ -153,8 +177,7 @@ function ouvrePanneau({salle, heure, seanceId, offre, surPoser, surRetirer, surF
               return `<button class="choix" data-sortie="${f.sortie_id}"
                         data-signe="${f.statut === "signe" ? 1 : 0}"
                         data-duree="${f.duree_licence || 14}" ${trop ? "disabled" : ""}>
-                <span class="chAff" style="background:linear-gradient(160deg,${
-                  (f.affiche||["#4a3a5c","#7a6a9c"])[1]},${(f.affiche||["#4a3a5c","#7a6a9c"])[0]})"></span>
+                <span class="chAff">${affiche(f, false)}</span>
                 <span class="chInfo"><b>${echappe(f.titre)}</b>
                   <span class="meta">${echappe(f.genre || "")} · ${
                     Math.floor((f.duree||0)/60)}h${String((f.duree||0)%60).padStart(2,"0")}${
