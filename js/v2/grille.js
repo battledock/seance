@@ -55,7 +55,7 @@ function fenetreLibre(occ, debut){
   return fin - debut;
 }
 
-function rendGrille(cible, etat, prevision, surCase){
+function rendGrille(cible, etat, prevision, surCase, creneaux){
   if(!cible || !etat) return;
   const salles = etat.salles || [];
   const prev = indexePrevisions(prevision);
@@ -69,8 +69,18 @@ function rendGrille(cible, etat, prevision, surCase){
   g.className = "grille";
   g.style.gridTemplateColumns = `66px repeat(${CRENEAUX.length}, 1fr)`;
 
-  let html = `<div></div>` +
-    CRENEAUX.map(c => `<div class="gHead">${c.replace("h00","h")}</div>`).join("");
+  /* Sous chaque heure, une barre qui dit ce que le créneau vaut.
+     Sans elle, le joueur subissait un facteur de trois sans le
+     voir : une animation à 21h30 perd les deux tiers de son
+     public parce que les enfants dorment. */
+  const qual = new Map();
+  for(const c of (creneaux?.creneaux || [])) qual.set(c.heure, c);
+
+  let html = `<div></div>` + CRENEAUX.map(c => {
+    const q = qual.get(c);
+    return `<div class="gHead"><span class="h">${c.replace("h00","h")}</span>
+      <span class="q ${q ? "n" + q.niveau : ""}"></span></div>`;
+  }).join("");
 
   for(const s of salles){
     const enTravaux = s.en_travaux;
@@ -102,11 +112,15 @@ function rendGrille(cible, etat, prevision, surCase){
         }
         /* combien de temps reste-t-il avant la séance suivante ? */
         const place = fenetreLibre(occ, m);
-        html += `<button class="cell" data-salle="${s.id}" data-heure="${h}"
-            data-place="${place}">
+        const q = qual.get(h);
+        const faible = q && (q.niveau === "faible" || q.niveau === "tres_faible");
+        html += `<button class="cell ${faible ? "creneauFaible" : ""}"
+            data-salle="${s.id}" data-heure="${h}" data-place="${place}">
           <span class="plus">+</span>
           ${place < 400 ? `<span class="dispo">${Math.floor(place/60)}h${
-            String(place%60).padStart(2,"0")}</span>` : ""}</button>`;
+            String(place%60).padStart(2,"0")}</span>`
+            : faible ? `<span class="dispo">${
+              q.niveau === "tres_faible" ? "très faible" : "faible"}</span>` : ""}</button>`;
         continue;
       }
       const taux = p.taux_remplissage || 0;
@@ -114,6 +128,8 @@ function rendGrille(cible, etat, prevision, surCase){
       html += `<button class="cell plein" data-salle="${s.id}" data-heure="${h}"
           data-seance="${p.seance_id}"
           style="background:linear-gradient(160deg,${eclaircit(col)},${col})">
+        ${p.taux_location ? `<span class="cr">${
+          Math.round(p.taux_location * 100)}%</span>` : ""}
         <b>${echappe(p.titre)}</b>
         <span class="bas"><span class="taux">${taux}%</span>
           <span class="sur">${p.entrent}/${p.places}</span></span>
@@ -148,6 +164,36 @@ function echappe(t){
   return String(t == null ? "" : t)
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+/* ---------- le partage du bassin ----------
+   Les séances se répartissent les mêmes habitants : programmer
+   quatre fois le même film ne quadruple pas le public, il le
+   divise. C'est la deuxième moitié des surprises. */
+function rendPartage(cible, p){
+  if(!cible) return;
+  if(!p || !(p.films || []).length){ cible.innerHTML = ""; return; }
+
+  const COUL = ["#8a1c2c","#caa24a","#4a7a6a","#c07a4a","#6a5aa0"];
+  const parts = p.films.map((f, i) => ({...f, coul: COUL[i % COUL.length]}));
+  const reste = Math.max(0, 100 - parts.reduce((t, f) => t + f.part, 0));
+
+  cible.innerHTML = `
+    <div class="basT"><span class="lb">Le quartier peut envoyer</span>
+      <b>${p.bassin} personnes</b></div>
+    <div class="basB">
+      ${parts.map(f => `<i style="background:${f.coul};width:${f.part}%"
+        ><span>${f.part >= 9 ? echappe(f.titre.split(" ")[0].slice(0, 7)) : ""}</span></i>`).join("")}
+      ${reste > 2 ? `<i class="reste" style="width:${reste}%"><span>${
+        reste >= 22 ? p.restants + " encore disponibles" : ""}</span></i>` : ""}
+    </div>
+    <div class="basLeg">
+      ${parts.map(f => `<span><i style="background:${f.coul}"></i>${
+        echappe(f.titre)} · ${f.spectateurs}${
+        f.seances > 1 ? ` sur ${f.seances} séances` : ""}</span>`).join("")}
+      ${reste > 2 ? `<span><i style="background:#eee8de"></i>reste ${p.restants}</span>` : ""}
+    </div>
+    ${p.note ? `<div class="basNote ${p.sature ? "alerte" : ""}">${echappe(p.note)}</div>` : ""}`;
 }
 
 /* ---------- le bandeau de chiffres ---------- */
@@ -204,5 +250,5 @@ function messageBlocage(peut){
   return "Impossible d'ouvrir";
 }
 
-export { rendGrille, rendResume, rendPiedGrille, CRENEAUX, couleurTaux,
-         echappe, minutes, occupations, fenetreLibre };
+export { rendGrille, rendResume, rendPiedGrille, rendPartage, CRENEAUX,
+         couleurTaux, echappe, minutes, occupations, fenetreLibre };
