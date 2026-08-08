@@ -56,7 +56,9 @@ function rendGrille(cible, etat, prevision, surCase){
         html += `<div class="cell ferme"><span>fermée</span></div>`; continue;
       }
       if(enTravaux){
-        html += `<div class="cell ferme"><span>travaux</span></div>`; continue;
+        html += `<div class="cell ferme"><span>travaux</span>${
+          s.rouvre_au_jour ? `<span class="sousF">jour ${s.rouvre_au_jour}</span>` : ""}</div>`;
+        continue;
       }
       const p = prev.get(s.id + "|" + h);
       if(!p){
