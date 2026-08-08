@@ -72,13 +72,7 @@
     <div class="eCorps" id="compte"></div>
   </section>
 
-  <nav class="nav" id="nav">
-    <button data-v="cinema" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13"/><rect x="10" y="14" width="4" height="7"/></svg>Cinéma</button>
-    <button data-v="grille"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 4v17"/></svg>Grille</button>
-    <button data-v="films"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg>Films</button>
-    <button data-v="salles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="10" width="18" height="8" rx="2"/><path d="M5 10V7h14v3"/></svg>Salles</button>
-    <button data-v="compte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>Compte</button>
-  </nav>
+  <nav class="nav" id="nav"></nav>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -124,6 +118,7 @@ import {
 import { rendFacade, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
 import { rendGrille, rendResume, rendPiedGrille, echappe } from "./js/v2/grille.js?v=becf21cb";
 import { rendCatalogue, ouvrePanneau } from "./js/v2/films.js?v=becf21cb";
+import { rendBarreNav } from "./js/v2/icones.js?v=becf21cb";
 
 /* ============================================================
    L'ASSEMBLAGE
@@ -608,12 +603,38 @@ async function ouvrir(){
 }
 
 /* ---------- navigation ---------- */
+/* La barre ne se contente pas de ranger : elle signale. Un
+   créneau libre, une nouveauté du jour, une salle sale — on sait
+   où aller sans y aller. */
+function alertesBarre(){
+  const a = {};
+  const salles = (etat.salles || []).filter(s => !s.en_travaux);
+  const posees = (prevision?.seances || []).length;
+  const libres = salles.length * 5 - posees;
+  if(posees === 0 && salles.length) a.grille = true;
+  else if(libres > 0) a.grille = libres;
+
+  const nouv = (offre?.nouveautes || []).filter(f => f.jours_avant === 0).length;
+  if(nouv > 0) a.films = nouv;
+
+  const sales = (etat.salles || []).filter(s => s.proprete < 55 || s.etat < 55).length;
+  if(sales > 0) a.salles = sales;
+
+  if(etat.cinema.tresorerie < 0) a.compte = true;
+  return a;
+}
+
+function rendBarre(){
+  rendBarreNav($("nav"), vue, alertesBarre());
+  $("nav").querySelectorAll("button[data-v]").forEach(b =>
+    b.addEventListener("click", () => montre(b.dataset.v)));
+}
+
 function montre(v){
   vue = v;
   for(const s of document.querySelectorAll(".vue")) s.classList.add("masque");
   $("vue" + v[0].toUpperCase() + v.slice(1)).classList.remove("masque");
-  document.querySelectorAll("#nav button").forEach(b =>
-    b.classList.toggle("on", b.dataset.v === v));
+  rendBarre();
   document.body.classList.toggle("sombre", v === "cinema");
   if(v === "cinema") refaitFacade();
 }
@@ -653,6 +674,7 @@ async function rafraichit(sansOffre){
   dessine("catalogue", () => rendCatalogue($("catalogue"), offre, onglet, signer));
   dessine("salles",    rendSalles);
   dessine("compte",    rendCompte);
+  dessine("barre",     rendBarre);
   $("gJour").textContent = "jour " + etat.cinema.jour;
   $("fSousTitre").textContent = `jour ${etat.cinema.jour} · `
     + `${Number(etat.cinema.etoiles).toFixed(1).replace(".",",")} étoiles`;
@@ -676,8 +698,6 @@ async function signer(sortieId, duree){
     await synchronise().catch(() => null);
     await rafraichit();
 
-    document.querySelectorAll("#nav button").forEach(b =>
-      b.addEventListener("click", () => montre(b.dataset.v)));
     $("cOnglets").querySelectorAll("button").forEach(b =>
       b.addEventListener("click", () => {
         onglet = b.dataset.o;
