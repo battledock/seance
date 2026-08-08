@@ -339,20 +339,20 @@ body.sombre{background:#0d0a0e}
   font-size:12px;color:#b04a3a;cursor:pointer}
 
 /* ════════ NAVIGATION ════════ */
-/* La barre suit l'écran : sombre sur la façade, claire ailleurs.
+/* La barre reste la même partout. La faire basculer en sombre
+   sur la façade créait un clignotement à chaque changement
+   d'onglet — un repère fixe vaut mieux qu'un effet.
    Les pastilles disent où quelque chose attend — un créneau
    libre, une nouveauté, une salle sale. */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:440px;margin:0 auto;
   height:calc(64px + env(safe-area-inset-bottom));
   padding-bottom:env(safe-area-inset-bottom);
-  display:flex;z-index:100;background:#fbf8f3;border-top:1px solid #e8e0d2}
-body.sombre .nav{background:#120e14;border-top-color:rgba(202,162,74,.16)}
+  display:flex;z-index:100;background:#fbf8f3;border-top:1px solid #e8e0d2;
+  box-shadow:0 -2px 12px rgba(0,0,0,.14)}
 .nav button{flex:1;background:none;border:none;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:5px;color:#b3a695;font-family:inherit;
   font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
 .nav button.on{color:#8a1c2c}
-body.sombre .nav button{color:rgba(202,162,74,.36)}
-body.sombre .nav button.on{color:#f7dd9a}
 .icNav{position:relative;display:flex;align-items:center;justify-content:center}
 .icNav svg{display:block}
 
@@ -361,10 +361,8 @@ body.sombre .nav button.on{color:#f7dd9a}
   border-radius:9px;background:#8a1c2c;color:#ffeec4;font-size:9px;font-weight:600;
   display:flex;align-items:center;justify-content:center;letter-spacing:0;
   border:2px solid #fbf8f3}
-body.sombre .badgeNav{background:#caa24a;color:#241a10;border-color:#120e14}
 .pointNav{position:absolute;top:-2px;right:-6px;width:7px;height:7px;border-radius:50%;
   background:#c05a3a;border:2px solid #fbf8f3}
-body.sombre .pointNav{background:#e8785a;border-color:#120e14}
 
 /* ════════ MESSAGES ════════ */
 .toast{position:fixed;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));
