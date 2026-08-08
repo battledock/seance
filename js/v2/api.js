@@ -220,6 +220,15 @@ const seuilRentabilite = () =>
    jauges seules ne disaient pas s'il fallait agrandir, équiper
    ou simplement nettoyer. */
 /* Les soirées : avant-premières et galas. */
+/* Ce que vaut chaque créneau, et comment les séances se
+   partagent le quartier : deux systèmes que le moteur appliquait
+   sans jamais les montrer. */
+const creneaux = (genre) =>
+  appel("v2_creneaux", {p_cinema_id: V2.cinemaId, p_genre: genre ?? null});
+const poidsGenres = () => appel("v2_poids_genres", {});
+const partageBassin = () =>
+  appel("v2_partage_bassin", {p_journee_id: V2.journeeId});
+
 const soireesPossibles = () =>
   appel("v2_soirees_possibles", {p_cinema_id: V2.cinemaId});
 const apercuSoiree = (sortieId, genre, options) =>
@@ -362,7 +371,8 @@ export {
   peutOuvrir, synchronise, faireRelache, ouvrirLesPortes,
   decompteEtoiles, seuilRentabilite, echeances, historique,
   confiserieEtat, installerComptoir, ameliorerConfiserie, sallesDetail,
-  soireesPossibles, apercuSoiree, organiserSoiree, annulerSoiree, nettoyer, reparer, agrandir,
+  soireesPossibles, apercuSoiree, organiserSoiree, annulerSoiree,
+  creneaux, partageBassin, poidsGenres, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
 };
