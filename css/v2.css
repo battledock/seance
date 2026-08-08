@@ -683,3 +683,57 @@ body.sombre .pointNav{background:#e8785a;border-color:#120e14}
   border-radius:9px;padding:10px 11px;margin-bottom:11px}
 .cPari b{display:block;font-size:11.5px;color:#1f7a44;font-weight:600}
 .cPari span{display:block;font-size:10px;color:#5a7a66;line-height:1.45;margin-top:4px}
+
+/* ── les soirées ──
+   Une scène dessinée plutôt qu'un bandeau : on doit voir la file
+   d'attente, le tapis rouge — et surtout voir quand personne
+   ne vient. */
+.btnSoiree{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  margin-top:11px;background:#fff;border:1.5px dashed #d4c8b8;border-radius:14px;
+  padding:14px;font-family:inherit;font-size:12.5px;color:#8a6a2a;cursor:pointer;
+  font-weight:500}
+.btnSoiree svg{width:17px;height:17px}
+.btnSoiree:active{background:#faf7f2}
+.soCarte{border-radius:15px;overflow:hidden;background:#fff;margin-bottom:11px;
+  box-shadow:0 3px 14px rgba(40,20,30,.14)}
+.soCarte.eteinte .soScene{filter:grayscale(.65) brightness(.62)}
+.soScene{position:relative;height:172px;overflow:hidden;background:#0d0a12}
+.soScene svg{width:100%;height:100%;display:block}
+.soVoile{position:absolute;left:0;right:0;top:0;height:96px;
+  background:linear-gradient(180deg,rgba(10,7,14,.88),rgba(10,7,14,.5) 52%,transparent)}
+.soTxt{position:absolute;left:0;right:0;top:12px;padding:0 15px}
+.soTxt .kick{font-size:8px;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(240,201,106,.78)}
+.soTxt h3{font-family:'Marcellus',serif;font-size:21px;color:#f7dd9a;margin-top:4px;
+  line-height:1.08;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.soTxt p{font-size:10.5px;color:rgba(255,255,255,.66);margin-top:4px;line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.soCorps2{padding:13px 14px 14px}
+.soLg{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;
+  font-size:12px;color:#4a423c;gap:12px}
+.soLg+.soLg{border-top:1px solid #f6f2ec}
+.soLg b{font-weight:600;font-size:13px;color:#1a1410;white-space:nowrap}
+.soLg b.v{color:#2a8a4a}.soLg b.r{color:#c05a3a}
+.soLg small{display:block;font-size:9.5px;color:#a89a88;margin-top:1px}
+.soGo{width:100%;margin-top:12px;border:none;border-radius:12px;padding:13px;
+  font-family:'Marcellus',serif;font-size:13px;letter-spacing:.07em;cursor:pointer;
+  background:linear-gradient(180deg,#7a1a28,#5a1018);color:#ffeec4}
+.soGo:disabled{background:#e2dbd0;color:#a89a88}
+.soRetour{width:100%;margin-top:8px;background:none;border:none;padding:9px;
+  font-family:inherit;font-size:11.5px;color:#a89a88;cursor:pointer}
+.soBloc{display:flex;gap:9px;background:#fdf6ee;border:1px solid #f2e4cc;border-radius:11px;
+  padding:12px 13px;font-size:11px;color:#8a7050;line-height:1.5}
+.soBloc svg{width:15px;height:15px;flex:none;color:#c89a3a;margin-top:1px}
+.soDeja{text-align:center;padding:24px 16px}
+.soDeja b{display:block;font-family:'Marcellus',serif;font-size:15px;color:#1a1410}
+.soDeja span{display:block;font-size:11.5px;color:#8a8078;margin-top:6px}
+.soAnnuler{margin-top:14px;background:none;border:1px solid #e8d6d0;border-radius:11px;
+  padding:10px 18px;font-family:inherit;font-size:11.5px;color:#b04a3a;cursor:pointer}
+.soBilan{display:flex;gap:8px;margin-top:12px}
+.soBilan div{flex:1;background:#faf7f1;border:1px solid #eee7dc;border-radius:11px;
+  padding:9px 6px;text-align:center}
+.soBilan b{display:block;font-size:14px;font-weight:600;color:#1a1410;line-height:1;
+  white-space:nowrap}
+.soBilan b.v{color:#2a8a4a}.soBilan b.r{color:#c05a3a}
+.soBilan span{display:block;font-size:8px;letter-spacing:.06em;text-transform:uppercase;
+  color:#b0a08a;margin-top:3px}
