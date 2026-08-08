@@ -219,6 +219,18 @@ const seuilRentabilite = () =>
 /* Ce qu'une salle produit et ce que son état lui coûte : les
    jauges seules ne disaient pas s'il fallait agrandir, équiper
    ou simplement nettoyer. */
+/* Les soirées : avant-premières et galas. */
+const soireesPossibles = () =>
+  appel("v2_soirees_possibles", {p_cinema_id: V2.cinemaId});
+const apercuSoiree = (sortieId, genre, options) =>
+  appel("v2_apercu_soiree", {p_cinema_id: V2.cinemaId, p_sortie_id: sortieId,
+                             p_genre: genre, p_options: options || []});
+const organiserSoiree = (sortieId, genre, options) =>
+  appel("v2_organiser_soiree", {p_cinema_id: V2.cinemaId, p_sortie_id: sortieId,
+                                p_genre: genre, p_options: options || []});
+const annulerSoiree = () =>
+  appel("v2_annuler_soiree", {p_cinema_id: V2.cinemaId});
+
 const sallesDetail = () =>
   appel("v2_salles_detail", {p_cinema_id: V2.cinemaId});
 
@@ -305,6 +317,11 @@ const MESSAGES = {
   DEJA_EN_ETAT:               "La salle est en bon état.",
   REVISION_VERROUILLEE:       "Vos tarifs sont fixés pour quelques jours encore.",
   TARIF_HORS_BORNES:          "Un tarif doit rester entre 4 et 30 €.",
+  SOIREE_DEJA_PREVUE:         "Une soirée est déjà prévue demain.",
+  PAS_RESERVE:                "Il fallait réserver ce film avant sa sortie.",
+  PAS_LA_VEILLE:              "Une avant-première se donne la veille de la sortie.",
+  AUCUNE_SALLE:               "Aucune salle disponible demain soir.",
+  AUCUNE_SOIREE:              "Aucune soirée n'est prévue.",
   PAS_DE_COMPTOIR:            "Vous n'avez pas de comptoir.",
   COMPTOIR_EXISTANT:          "Vous avez déjà un comptoir.",
   RESERVE_PLEINE:             "Votre réserve est pleine.",
@@ -344,7 +361,8 @@ export {
   chargeTarifsEquipement, creerCinema, signerLicence, rendreLicence, poserSeance, retirerSeance,
   peutOuvrir, synchronise, faireRelache, ouvrirLesPortes,
   decompteEtoiles, seuilRentabilite, echeances, historique,
-  confiserieEtat, installerComptoir, ameliorerConfiserie, sallesDetail, nettoyer, reparer, agrandir,
+  confiserieEtat, installerComptoir, ameliorerConfiserie, sallesDetail,
+  soireesPossibles, apercuSoiree, organiserSoiree, annulerSoiree, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
 };
