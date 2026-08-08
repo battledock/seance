@@ -321,9 +321,13 @@ async function ouvreCase({salleId, heure, seanceId}){
 async function ouvrir(){
   const b = $("btnOuvrir");
   b.disabled = true; b.textContent = "La séance commence…";
+  /* la journée qu'on vient de clore : c'est elle que le bilan
+     détaillera, pas celle qui commence */
+  const journeeClose = V2.journeeId;
   const r = await ouvrirLesPortes();
   if(r.erreur){ dit(messageErreurV2(r), true); rendBoutonOuvrir(); return; }
   sessionStorage.setItem("v2_bilan", JSON.stringify(r.data));
+  if(journeeClose) sessionStorage.setItem("v2_journee", journeeClose);
   location.href = "v2-bilan.html";
 }
 
