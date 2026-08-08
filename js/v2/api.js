@@ -195,6 +195,12 @@ const poserSeance = (salleId, sortieId, heure) =>
 const retirerSeance = (seanceId) =>
   appel("v2_retirer_seance", {p_seance_id: seanceId});
 
+/* Le monde tourne même quand le joueur ne joue pas : des films
+   sortent aux dates prévues. On rattrape au chargement, sinon un
+   titre réservé reste à zéro jusqu'à la prochaine clôture. */
+const synchronise = () =>
+  appel("v2_synchronise", {p_cinema_id: V2.cinemaId});
+
 const peutOuvrir = () =>
   appel("v2_peut_ouvrir", {p_cinema_id: V2.cinemaId});
 
@@ -285,7 +291,7 @@ export {
   V2, appel, chargeEtat, monCinema, chargeOffre, chargePostesInstallation,
   chargeSeancesDuJour, previsionJournee, bilan, constructionsPossibles,
   chargeTarifsEquipement, creerCinema, signerLicence, rendreLicence, poserSeance, retirerSeance,
-  peutOuvrir, ouvrirLesPortes, nettoyer, reparer, agrandir,
+  peutOuvrir, synchronise, ouvrirLesPortes, nettoyer, reparer, agrandir,
   apercuAgrandissement, ameliorer, construire, embaucher, congedier,
   reapprovisionner, reviserTarifs, messageErreurV2, requeteTable
 };
