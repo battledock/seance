@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#120e14">
+<title>Séance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/v2.css?v=becf21cb">
+</head>
+<body>
+
+<div id="chg"><span class="m">Chargement<i>.</i><i>.</i><i>.</i></span></div>
+
+<div id="app" class="app">
+
+  <!-- ═══════ CINÉMA ═══════ -->
+  <section class="vue" id="vueCinema">
+    <div class="fScene" id="scene"></div>
+    <div class="fTop">
+      <div class="fL1"><span class="fNom" id="hNom">—</span>
+        <span class="fArg" id="hArgent">—</span></div>
+      <div class="fL2"><span class="fEt" id="hEtoiles"></span>
+        <span class="fJour" id="hJour">—</span></div>
+    </div>
+    <div class="fBas">
+      <div id="alertes"></div>
+      <button class="fGo" id="btnOuvrir">Ouvrir les portes</button>
+      <div class="fSous" id="sousOuvrir"></div>
+    </div>
+  </section>
+
+  <!-- ═══════ GRILLE ═══════ -->
+  <section class="vue clair masque" id="vueGrille">
+    <div class="eTop">
+      <div class="gT1"><b>Aujourd'hui</b><span id="gJour">—</span></div>
+      <div class="gT2" id="gResume"></div>
+    </div>
+    <div class="eCorps"><div id="grille"></div></div>
+    <div class="gBas" id="gPied"></div>
+  </section>
+
+  <!-- ═══════ FILMS ═══════ -->
+  <section class="vue clair masque" id="vueFilms">
+    <div class="eTop">
+      <b>Ce qu'on vous propose</b>
+      <span id="fSousTitre">—</span>
+      <div class="cOnglets" id="cOnglets">
+        <button data-o="nouveautes" class="on">Nouveautés</button>
+        <button data-o="selection">En salle</button>
+        <button data-o="miennes">Mes films</button>
+      </div>
+    </div>
+    <div class="cPiste" id="catalogue"></div>
+  </section>
+
+  <!-- ═══════ SALLES ═══════ -->
+  <section class="vue clair masque" id="vueSalles">
+    <div class="eTop"><b>Vos salles</b><span id="sSousTitre">—</span></div>
+    <div class="eCorps" id="salles"></div>
+  </section>
+
+  <!-- ═══════ COMPTE ═══════ -->
+  <section class="vue clair masque" id="vueCompte">
+    <div class="cptTop">
+      <div class="cptT1"><div class="g">
+        <div class="kick">Trésorerie</div>
+        <div class="val" id="kTreso">—</div></div></div>
+    </div>
+    <div class="eCorps" id="compte"></div>
+  </section>
+
+  <nav class="nav" id="nav">
+    <button data-v="cinema" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13"/><rect x="10" y="14" width="4" height="7"/></svg>Cinéma</button>
+    <button data-v="grille"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 4v17"/></svg>Grille</button>
+    <button data-v="films"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/></svg>Films</button>
+    <button data-v="salles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="10" width="18" height="8" rx="2"/><path d="M5 10V7h14v3"/></svg>Salles</button>
+    <button data-v="compte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>Compte</button>
+  </nav>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+import {
+  V2, chargeEtat, monCinema, chargeOffre, previsionJournee, peutOuvrir,
+  ouvrirLesPortes, signerLicence, poserSeance, retirerSeance,
+  nettoyer, reparer, agrandir, ameliorer, reapprovisionner, embaucher,
+  messageErreurV2, requeteTable
+} from "./js/v2/api.js?v=becf21cb";
+import { rendFacade, surveilleTaille } from "./js/v2/facade.js?v=becf21cb";
+import { rendGrille, rendResume, rendPiedGrille, echappe } from "./js/v2/grille.js?v=becf21cb";
+import { rendCatalogue, ouvrePanneau } from "./js/v2/films.js?v=becf21cb";
+
+/* ============================================================
+   L'ASSEMBLAGE
+
+   Cinq vues, un état. On recharge l'état après chaque action qui
+   modifie le monde, et on ne redessine que ce qui a changé : la
+   façade coûte cher, on ne la refait pas pour un nettoyage.
+   ============================================================ */
+
+const $ = id => document.getElementById(id);
+const eur = n => Math.round(Number(n) || 0).toLocaleString("fr") + " €";
+let vue = "cinema", onglet = "nouveautes";
+let etat = null, offre = null, prevision = null, peut = null;
+
+/* ---------- messages ---------- */
+let minuteurToast = null;
+function dit(msg, grave){
+  const t = $("toast");
+  t.textContent = msg;
+  t.className = "toast on" + (grave ? " grave" : "");
+  clearTimeout(minuteurToast);
+  minuteurToast = setTimeout(() => t.className = "toast", 2800);
+}
+
+/* ---------- l'en-tête de la façade ---------- */
+function rendEntete(){
+  const c = etat.cinema;
+  $("hNom").textContent = c.nom;
+  $("hArgent").textContent = eur(c.tresorerie);
+  $("hArgent").className = "fArg" + (c.tresorerie < 0 ? " dette" : "");
+  $("hJour").textContent = "Jour " + c.jour;
+
+  const n = Math.round(c.etoiles);
+  let h = "";
+  for(let i = 1; i <= 5; i++){
+    const p = i <= n;
+    h += `<svg viewBox="0 0 24 24" fill="${p ? "#f0c96a" : "none"}"
+      stroke="${p ? "#f0c96a" : "rgba(255,255,255,.3)"}" stroke-width="1.8">
+      <path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3l-5-4.9 7-.9z"/></svg>`;
+  }
+  $("hEtoiles").innerHTML = h + `<i>${Number(c.etoiles).toFixed(1).replace(".",",")}</i>`;
+}
+
+/* ---------- les alertes ---------- */
+const ACTIONS = {
+  nettoyer:        {t:"Nettoyer",       f:(a) => nettoyer(a.salle_id)},
+  reparer:         {t:"Réparer",        f:(a) => reparer(a.salle_id)},
+  embaucher:       {t:"Embaucher",      f:() => embaucher("caisse")},
+  reapprovisionner:{t:"Réassortir",     f:() => reapprovisionner(600)}
+};
+function rendAlertes(){
+  const l = (etat.alertes || []).slice(0, 2);
+  $("alertes").innerHTML = l.map((a, i) => `
+    <div class="fAl ${a.gravite === "haute" ? "haute" : ""}">
+      <span class="pt"></span><p>${echappe(a.texte)}</p>
+      ${ACTIONS[a.action] ? `<button data-a="${i}">${ACTIONS[a.action].t}</button>` : ""}
+    </div>`).join("");
+
+  $("alertes").querySelectorAll("[data-a]").forEach(b =>
+    b.addEventListener("click", async () => {
+      const a = l[Number(b.dataset.a)];
+      b.disabled = true; b.textContent = "…";
+      const r = await ACTIONS[a.action].f(a);
+      if(r.erreur){ dit(messageErreurV2(r), true); b.disabled = false; }
+      else { dit("C'est fait."); await rafraichit(true); }
+    }));
+}
+
+/* ---------- l'ouverture ---------- */
+function rendBoutonOuvrir(){
+  const b = $("btnOuvrir");
+  const ok = peut?.ouvrable;
+  b.disabled = !ok;
+  b.textContent = ok ? "Ouvrir les portes" : "Programmez une séance";
+  $("sousOuvrir").textContent = prevision && prevision.seances?.length
+    ? `${prevision.seances.length} séance${prevision.seances.length>1?"s":""} · `
+      + `${prevision.spectateurs} spectateurs attendus`
+      + (prevision.refuses ? ` · ${prevision.refuses} refusés` : "")
+    : "Rien au programme aujourd'hui";
+}
+
+/* ---------- les salles ---------- */
+const EQUIPEMENTS = [
+  ["fauteuils","Fauteuils"], ["ecran","Écran"], ["son","Son"],
+  ["projecteur","Projecteur"], ["decoration","Décoration"]
+];
+function rendSalles(){
+  const s = etat.salles || [];
+  $("sSousTitre").textContent =
+    `${s.length} salle${s.length>1?"s":""} · ${s.reduce((t,x)=>t+x.places,0)} places · `
+    + `${etat.equipe?.en_poste ?? 0} employés`;
+
+  $("salles").innerHTML = s.map(x => `
+    <div class="carteSalle">
+      <div class="salleTete">
+        <div class="salleInfo"><b>${echappe(x.nom)}</b>
+          <div class="meta">${x.places} places · ${x.type}</div>
+          ${x.en_travaux ? `<span class="tag travaux">En travaux</span>` : ""}</div>
+      </div>
+      <div class="jauges">
+        <div class="jg"><div class="lb"><span>Propreté</span><b>${x.proprete} %</b></div>
+          <div class="barre"><i style="width:${x.proprete}%;background:${
+            x.proprete >= 70 ? "#2a8a4a" : x.proprete >= 45 ? "#c9a24a" : "#c05a3a"}"></i></div></div>
+        <div class="jg"><div class="lb"><span>État</span><b>${x.etat} %</b></div>
+          <div class="barre"><i style="width:${x.etat}%;background:${
+            x.etat >= 70 ? "#2a8a4a" : x.etat >= 45 ? "#c9a24a" : "#c05a3a"}"></i></div></div>
+      </div>
+      <div class="equipList">
+        ${EQUIPEMENTS.map(([c,n]) => `
+          <div class="eq"><span class="nm">${n}</span>
+            <span class="niv">${[1,2,3,4,5].map(i =>
+              `<i class="${i <= x[c] ? "on" : ""}"></i>`).join("")}</span>
+            <button class="px" data-salle="${x.id}" data-eq="${c}"
+              ${x[c] >= 5 ? "disabled" : ""}>${x[c] >= 5 ? "max" : "améliorer"}</button>
+          </div>`).join("")}
+      </div>
+      <div class="actions">
+        <button data-act="nettoyer" data-salle="${x.id}">Nettoyer</button>
+        <button data-act="reparer" data-salle="${x.id}">Réparer</button>
+        <button data-act="agrandir" data-salle="${x.id}">Agrandir</button>
+      </div>
+    </div>`).join("");
+
+  $("salles").querySelectorAll("[data-eq]").forEach(b =>
+    b.addEventListener("click", () => agit(() => ameliorer(b.dataset.salle, b.dataset.eq))));
+  $("salles").querySelectorAll("[data-act]").forEach(b =>
+    b.addEventListener("click", () => {
+      const f = {nettoyer, reparer, agrandir}[b.dataset.act];
+      agit(() => f(b.dataset.salle));
+    }));
+}
+
+async function agit(fn){
+  const r = await fn();
+  if(r.erreur){ dit(messageErreurV2(r), true); return false; }
+  dit("C'est fait.");
+  await rafraichit(true);
+  return true;
+}
+
+/* ---------- le compte ---------- */
+function rendCompte(){
+  const c = etat.cinema;
+  $("kTreso").textContent = eur(c.tresorerie);
+  $("kTreso").className = "val" + (c.tresorerie < 0 ? " dette" : "");
+  const t = etat.tarifs || {};
+  $("compte").innerHTML = `
+    <div class="bloc">
+      <div class="blocT"><b>Aujourd'hui</b><span>jour ${c.jour}</span></div>
+      <div class="lg"><span>Charges quotidiennes</span><b>${eur(etat.charges_jour)}</b></div>
+      <div class="lg"><span>Bassin d'audience<small>ce que le quartier peut envoyer</small></span>
+        <b>${c.bassin}</b></div>
+      <div class="lg"><span>Réputation<small>cible ${c.etoiles_cible} étoiles</small></span>
+        <b>${Number(c.etoiles).toFixed(1).replace(".",",")}</b></div>
+      <div class="lg"><span>Équipe</span><b>${etat.equipe?.en_poste ?? 0} / ${
+        etat.equipe?.requis ?? 0}</b></div>
+    </div>
+    <div class="bloc">
+      <div class="blocT"><b>La grille tarifaire</b><span>${
+        t.revisable ? "révisable" : "fixée jusqu'au jour " + t.revisable_au_jour}</span></div>
+      <div class="tGrid">
+        <div class="tCase"><div class="nm">Plein</div><div class="px">${fmt(t.plein)}</div></div>
+        <div class="tCase"><div class="nm">Étudiant</div><div class="px">${fmt(t.etudiant)}</div></div>
+        <div class="tCase"><div class="nm">Senior</div><div class="px">${fmt(t.senior)}</div></div>
+        <div class="tCase"><div class="nm">Enfant</div><div class="px">${fmt(t.enfant)}</div></div>
+        <div class="tCase moy large"><div class="nm">Prix moyen constaté</div>
+          <div class="px">${fmt(t.prix_moyen)}</div>
+          <div class="hint">il naît du mélange, on ne le règle pas</div></div>
+      </div>
+    </div>`;
+}
+const fmt = v => (Number(v) || 0).toFixed(2).replace(".", ",") + " €";
+
+/* ---------- la programmation ---------- */
+async function ouvreCase({salleId, heure, seanceId}){
+  const salle = (etat.salles || []).find(s => s.id === salleId);
+  if(!salle) return;
+  ouvrePanneau({
+    salle, heure, seanceId, offre,
+    surPoser: async (sortieId, dejaSigne, duree) => {
+      if(!dejaSigne){
+        const s = await signerLicence(sortieId, duree);
+        if(s.erreur){ dit(messageErreurV2(s), true); return; }
+      }
+      const p = await poserSeance(salleId, sortieId, heure);
+      if(p.erreur){ dit(messageErreurV2(p), true); return; }
+      dit(`${p.data.titre} à ${heure}`);
+      await rafraichit();
+    },
+    surRetirer: async (id) => {
+      const r = await retirerSeance(id);
+      if(r.erreur){ dit(messageErreurV2(r), true); return; }
+      dit("Créneau libéré.");
+      await rafraichit();
+    }
+  });
+}
+
+/* ---------- l'ouverture des portes ---------- */
+async function ouvrir(){
+  const b = $("btnOuvrir");
+  b.disabled = true; b.textContent = "La séance commence…";
+  const r = await ouvrirLesPortes();
+  if(r.erreur){ dit(messageErreurV2(r), true); rendBoutonOuvrir(); return; }
+  sessionStorage.setItem("v2_bilan", JSON.stringify(r.data));
+  location.href = "v2-bilan.html";
+}
+
+/* ---------- navigation ---------- */
+function montre(v){
+  vue = v;
+  for(const s of document.querySelectorAll(".vue")) s.classList.add("masque");
+  $("vue" + v[0].toUpperCase() + v.slice(1)).classList.remove("masque");
+  document.querySelectorAll("#nav button").forEach(b =>
+    b.classList.toggle("on", b.dataset.v === v));
+  document.body.classList.toggle("sombre", v === "cinema");
+  if(v === "cinema") refaitFacade();
+}
+
+/* ---------- rafraîchissement ---------- */
+let facadeFaite = false;
+function refaitFacade(){
+  if(!etat) return;
+  const seances = (prevision?.seances || []).map(s => ({
+    heure: s.heure, titre: s.titre, genre: s.genre
+  }));
+  rendFacade($("scene"), etat, seances);
+  facadeFaite = true;
+}
+
+async function rafraichit(sansOffre){
+  etat = await chargeEtat();
+  if(!etat) return;
+  prevision = await previsionJournee();
+  peut = (await peutOuvrir()).data || null;
+  if(!sansOffre) offre = await chargeOffre();
+
+  rendEntete();
+  rendAlertes();
+  rendBoutonOuvrir();
+  rendResume($("gResume"), prevision);
+  rendGrille($("grille"), etat, prevision, ouvreCase);
+  rendPiedGrille($("gPied"), prevision, peut, ouvrir);
+  rendCatalogue($("catalogue"), offre, onglet, signer);
+  rendSalles();
+  rendCompte();
+  $("gJour").textContent = "jour " + etat.cinema.jour;
+  $("fSousTitre").textContent = `jour ${etat.cinema.jour} · `
+    + `${Number(etat.cinema.etoiles).toFixed(1).replace(".",",")} étoiles`;
+  if(vue === "cinema") refaitFacade();
+}
+
+async function signer(sortieId, duree){
+  const r = await signerLicence(sortieId, duree);
+  if(r.erreur){ dit(messageErreurV2(r), true); return; }
+  dit(`${r.data.titre} · licence signée`);
+  await rafraichit();
+}
+
+/* ---------- démarrage ---------- */
+(async function(){
+  try{
+    const c = await monCinema();
+    if(!c){ location.replace("v2-nouveau.html"); return; }
+    await rafraichit();
+
+    document.querySelectorAll("#nav button").forEach(b =>
+      b.addEventListener("click", () => montre(b.dataset.v)));
+    $("cOnglets").querySelectorAll("button").forEach(b =>
+      b.addEventListener("click", () => {
+        onglet = b.dataset.o;
+        $("cOnglets").querySelectorAll("button").forEach(x =>
+          x.classList.toggle("on", x === b));
+        rendCatalogue($("catalogue"), offre, onglet, signer);
+        $("catalogue").scrollTo({left:0, behavior:"smooth"});
+      }));
+    $("btnOuvrir").addEventListener("click", ouvrir);
+    surveilleTaille($("scene"), refaitFacade);
+    document.body.classList.add("sombre");
+  }catch(e){
+    console.error("[Séance v2]", e);
+    dit("Impossible de joindre le serveur.", true);
+  }finally{
+    const v = $("chg");
+    v.classList.add("sorti");
+    setTimeout(() => v.remove(), 300);
+  }
+})();
+</script>
+</body>
+</html>
