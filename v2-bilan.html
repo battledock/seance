@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ee">
+<title>Séance — le bilan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/v2.css?v=becf21cb">
+<style>
+/* ── le bilan du soir ──
+   Le résultat en grand, la raison en une phrase, puis le détail.
+   On lit d'abord si la journée a été bonne, ensuite pourquoi. */
+body{background:linear-gradient(180deg,#f7f4ee,#efeae1)}
+.bil{max-width:440px;margin:0 auto;min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column}
+.bilScroll{flex:1;overflow-y:auto;padding-bottom:24px}
+.bilScroll::-webkit-scrollbar{display:none}
+
+.bilHero{background:linear-gradient(165deg,#fff,#fdfaf4);
+  padding:calc(26px + env(safe-area-inset-top)) 20px 22px;text-align:center;
+  border-bottom:1px solid #ece5da;position:relative;overflow:hidden}
+.bilHero::before{content:"";position:absolute;top:-70px;left:50%;transform:translateX(-50%);
+  width:280px;height:190px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(202,162,74,.16),transparent 68%)}
+.bilJour{position:relative;font-size:9px;letter-spacing:.24em;text-transform:uppercase;
+  color:#b0a08a}
+.bilChiffre{position:relative;font-family:'Marcellus',serif;font-size:50px;color:#1f7a44;
+  line-height:1;margin-top:10px;letter-spacing:-.02em;
+  animation:monte .5s cubic-bezier(.2,.9,.3,1) both}
+.bilChiffre.neg{color:#b04a2a}
+@keyframes monte{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.bilSous{position:relative;font-size:12px;color:#8a8078;margin-top:9px}
+.bilPuces{position:relative;display:flex;justify-content:center;gap:8px;margin-top:15px;
+  flex-wrap:wrap}
+.bilPuce{background:#faf6ee;border:1px solid #ece2d2;border-radius:20px;
+  padding:7px 13px;display:flex;align-items:center;gap:6px}
+.bilPuce b{font-size:13px;color:#1a1410;font-weight:600}
+.bilPuce span{font-size:9.5px;color:#a89a88}
+
+.bilMot{margin:14px 14px 0;background:#fff;border-radius:14px;padding:14px 15px;
+  display:flex;gap:11px;box-shadow:0 1px 2px rgba(40,30,20,.05)}
+.bilMot .ic{width:30px;height:30px;border-radius:50%;flex:none;background:#571520;
+  display:flex;align-items:center;justify-content:center}
+.bilMot .ic svg{width:15px;height:15px;color:#f0c96a}
+.bilMot p{flex:1;font-size:12.5px;color:#4a423a;line-height:1.55}
+.bilMot p b{display:block;font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+  color:#b0a08a;margin-bottom:3px;font-weight:600}
+
+.bilSec{font-family:'Marcellus',serif;font-size:14px;color:#1a1410;margin:18px 16px 9px}
+.bilList{margin:0 14px}
+.bilS{background:#fff;border-radius:13px;padding:12px 13px;margin-bottom:8px;
+  display:flex;align-items:center;gap:12px;box-shadow:0 1px 2px rgba(40,30,20,.045)}
+.bilS .h{background:#f4efe4;border:1px solid #eae0cc;border-radius:9px;width:54px;
+  padding:7px 0;text-align:center;flex:none}
+.bilS .h b{font-size:11.5px;color:#7a5a14;font-weight:600}
+.bilS .i{flex:1;min-width:0}
+.bilS .i b{display:block;font-family:'Marcellus',serif;font-size:13px;color:#1a1410;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bilS .i span{font-size:10px;color:#a89a88}
+.bilS .i .jauge{display:block;width:100%;height:4px;border-radius:3px;background:#f0ebe2;
+  margin-top:7px;overflow:hidden}
+.bilS .i .jauge i{display:block;height:100%;border-radius:3px}
+.bilS .r{text-align:right;flex:none;min-width:56px}
+.bilS .r b{display:block;font-size:16px;font-weight:600;line-height:1;white-space:nowrap}
+.bilS .r b.h{color:#2a8a4a}.bilS .r b.m{color:#b08820}.bilS .r b.b{color:#c05a3a}
+.bilS .r span{font-size:9.5px;color:#b0a08a;margin-top:2px;display:block}
+
+.bilCompte{margin:0 14px}
+.bilGo{margin:16px 14px calc(16px + env(safe-area-inset-bottom))}
+.bilGo button{width:100%;border:none;border-radius:14px;padding:16px;
+  font-family:'Marcellus',serif;font-size:15px;letter-spacing:.11em;cursor:pointer;
+  background:linear-gradient(180deg,#7a1a28,#5a1018);color:#ffeec4;
+  box-shadow:0 4px 14px rgba(90,16,24,.26)}
+</style>
+</head>
+<body>
+
+<div id="chg"><span class="m">Chargement<i>.</i><i>.</i><i>.</i></span></div>
+
+<div class="bil">
+  <div class="bilScroll">
+    <div class="bilHero">
+      <div class="bilJour" id="bJour">—</div>
+      <div class="bilChiffre" id="bChiffre">—</div>
+      <div class="bilSous" id="bSous">—</div>
+      <div class="bilPuces" id="bPuces"></div>
+    </div>
+
+    <div class="bilMot">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3l-5-4.9 7-.9z"/></svg></span>
+      <p><b>Ce qu'il faut retenir</b><span id="bMot">—</span></p>
+    </div>
+
+    <div class="bilSec" id="bSecSeances">Vos séances</div>
+    <div class="bilList" id="bSeances"></div>
+
+    <div class="bilSec">Le compte de la journée</div>
+    <div class="bilCompte"><div class="bloc" style="margin-bottom:0" id="bCompte"></div></div>
+
+    <div class="bilGo"><button id="bSuite">Passer au jour suivant</button></div>
+  </div>
+</div>
+
+<script type="module">
+import { monCinema, bilan, messageErreurV2 } from "./js/v2/api.js?v=becf21cb";
+
+/* ============================================================
+   LE BILAN
+
+   On lit le résultat en grand, puis la phrase qui l'explique,
+   puis le détail séance par séance. Le diagnostic doit sauter
+   aux yeux avant qu'on ait lu un seul chiffre.
+   ============================================================ */
+
+const $ = id => document.getElementById(id);
+const eur = n => Math.round(Number(n) || 0).toLocaleString("fr") + " €";
+
+function classeTaux(t){ return t >= 65 ? "h" : t >= 40 ? "m" : "b"; }
+function couleurTaux(t){ return t >= 65 ? "#2a8a4a" : t >= 40 ? "#c9a24a" : "#c05a3a"; }
+
+function rend(b){
+  const r = Number(b.detail?.resultat ?? b.resultat ?? 0);
+  $("bJour").textContent = `Jour ${b.jour} · les portes sont fermées`;
+  $("bChiffre").textContent = (r >= 0 ? "+ " : "− ") + eur(Math.abs(r));
+  $("bChiffre").className = "bilChiffre" + (r < 0 ? " neg" : "");
+  $("bSous").textContent = r >= 0
+    ? "la caisse est plus lourde qu'hier soir"
+    : "la journée vous a coûté de l'argent";
+
+  const d = b.detail || {};
+  $("bPuces").innerHTML = [
+    [b.spectateurs, "spectateurs"],
+    [b.refuses, "refusés"],
+    [d.confiserie != null ? eur(d.confiserie) : null, "confiserie"]
+  ].filter(x => x[0] != null).map(x =>
+    `<span class="bilPuce"><b>${x[0]}</b><span>${x[1]}</span></span>`).join("");
+
+  $("bMot").textContent = b.mot || "";
+
+  const s = b.seances || [];
+  $("bSecSeances").textContent = s.length === 1
+    ? "Votre séance" : `Vos ${s.length} séances`;
+  $("bSeances").innerHTML = s.map(x => `
+    <div class="bilS">
+      <span class="h"><b>${x.heure.replace("h00","h")}</b></span>
+      <span class="i"><b>${echappe(x.titre)}</b>
+        <span>${echappe(x.salle)} · ${x.places} places</span>
+        <span class="jauge"><i style="width:${Math.min(100, x.taux)}%;
+          background:${couleurTaux(x.taux)}"></i></span></span>
+      <span class="r"><b class="${classeTaux(x.taux)}">${x.taux} %</b>
+        <span>${x.spectateurs} entrées</span></span>
+    </div>`).join("");
+
+  const lignes = [
+    ["Recette guichet", d.recette_guichet, "", `${b.spectateurs} entrées`],
+    ["Taxes", -(d.taxes || 0), "r", "TVA, TSA, SACEM"],
+    ["Part distributeur", -(d.part_distributeur || 0), "r", ""],
+    ["Confiserie", d.confiserie, "v", ""],
+    ["Charges et salaires", -(d.charges || 0), "r", ""]
+  ];
+  $("bCompte").innerHTML = lignes.filter(l => l[1]).map(([n, v, c, s2]) => `
+    <div class="lg"><span>${n}${s2 ? `<small>${s2}</small>` : ""}</span>
+      <b class="${c}">${v < 0 ? "− " : ""}${eur(Math.abs(v))}</b></div>`).join("");
+}
+
+function echappe(t){
+  return String(t == null ? "" : t)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+(async function(){
+  try{
+    /* La clôture a déjà renvoyé son résumé au moment de l'ouverture :
+       on s'en sert pour afficher tout de suite, puis on demande le
+       bilan détaillé qui contient les séances. */
+    const brut = sessionStorage.getItem("v2_bilan");
+    const c = await monCinema();
+    if(!c){ location.replace("v2-nouveau.html"); return; }
+
+    /* le bilan porte sur la journée qui vient de se jouer */
+    const journeeId = sessionStorage.getItem("v2_journee");
+    let b = null;
+    if(journeeId) b = await bilan(journeeId);
+
+    if(!b && brut){
+      /* filet : si le détail n'est pas joignable, on montre au moins
+         ce que la clôture a renvoyé */
+      const x = JSON.parse(brut);
+      b = {jour: x.jour ?? "—", spectateurs: x.spectateurs, refuses: x.refuses,
+           mot: "", seances: [],
+           detail: {recette_guichet:x.recette_guichet, taxes:x.taxes,
+             part_distributeur:x.location, confiserie:x.confiserie,
+             charges:x.charges, resultat:x.resultat}};
+    }
+    if(!b){ location.replace("v2.html"); return; }
+    rend(b);
+    $("bSuite").addEventListener("click", () => {
+      sessionStorage.removeItem("v2_bilan");
+      sessionStorage.removeItem("v2_journee");
+      location.replace("v2.html");
+    });
+  }catch(e){
+    console.error("[Séance v2] bilan", e);
+    location.replace("v2.html");
+  }finally{
+    const v = $("chg");
+    if(v){ v.classList.add("sorti"); setTimeout(() => v.remove(), 300); }
+  }
+})();
+</script>
+</body>
+</html>
