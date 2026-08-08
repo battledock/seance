@@ -663,3 +663,14 @@ body.sombre .pointNav{background:#e8785a;border-color:#120e14}
   cursor:pointer;white-space:nowrap}
 .cfLg .px.fait{color:#2a8a4a;background:#eaf3ec;border-color:#c8e2d0;cursor:default}
 .cfLg .px.cher{color:#b0a08a;background:#f7f3ec;border-color:#eee7dc;cursor:default}
+
+/* ── un créneau recouvert par une séance qui déborde ──
+   Un film de 2h32 plus le ménage occupe la salle jusqu'au
+   créneau suivant. Laisser la case cliquable ne produisait
+   qu'un refus incompréhensible. */
+.cell.couverte{border-style:solid;border-color:#eae2d6;background:#f4efe6;cursor:default;
+  gap:1px}
+.cell.couverte .occ{font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#b0a08a}
+.cell.couverte .occT{font-size:9px;color:#c8bcaa}
+.cell .dispo{font-size:8px;color:#b8ac9c;margin-top:1px}
