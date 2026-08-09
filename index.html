@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050d16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Battledock — Port de Marseille</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nuit:#050d16;
+  --eau:#0a1c2e;
+  --quai:#122b42;
+  --acier:#1e3d59;
+  --brume:#7fa3c0;
+  --sable:#e8e2d4;
+  --ocre:#e0913a;
+  --ocre-fonce:#a3611f;
+  --rouille:#c1502e;
+  --erreur:#e05c4a;
+  --ok:#4fb286;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--nuit);
+  color:var(--sable);
+  font-family:'Barlow',system-ui,sans-serif;
+  overflow-x:hidden;
+  overscroll-behavior:none;
+}
+
+/* ---------- FOND ---------- */
+#fond{
+  position:fixed;inset:0;
+  width:100%;height:100%;
+  z-index:0;
+  pointer-events:none;
+}
+#fond svg{width:100%;height:100%;display:block}
+
+.voile{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(120% 60% at 50% 8%, rgba(224,145,58,.10), transparent 60%),
+    linear-gradient(180deg, rgba(5,13,22,.15) 0%, rgba(5,13,22,.55) 45%, rgba(5,13,22,.93) 78%, var(--nuit) 100%);
+}
+
+/* ---------- STRUCTURE ---------- */
+.ecran{
+  position:relative;z-index:2;
+  min-height:100dvh;
+  display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top) + 44px) 24px calc(env(safe-area-inset-bottom) + 28px);
+}
+.haut{flex:1;display:flex;flex-direction:column;justify-content:flex-start}
+
+.marque{text-align:center}
+.marque .sur{
+  font-size:10px;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--brume);margin-bottom:10px;padding-left:.42em;
+}
+.marque h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(48px,15vw,68px);
+  line-height:.88;letter-spacing:.02em;
+  color:var(--sable);
+}
+.marque .sous{
+  margin-top:12px;font-size:13px;color:var(--brume);
+  letter-spacing:.02em;
+}
+
+/* ---------- CARTE ---------- */
+.carte{
+  margin-top:auto;
+  background:rgba(10,24,38,.72);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(127,163,192,.16);
+  border-radius:18px;
+  padding:6px 20px 22px;
+}
+
+.onglets{
+  display:flex;gap:4px;
+  margin:0 -6px 20px;
+  border-bottom:1px solid rgba(127,163,192,.14);
+}
+.onglet{
+  flex:1;background:none;border:0;
+  font-family:'Barlow',sans-serif;
+  font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--brume);
+  padding:16px 0 13px;cursor:pointer;
+  position:relative;transition:color .2s;
+}
+.onglet[aria-selected="true"]{color:var(--sable)}
+.onglet[aria-selected="true"]::after{
+  content:"";position:absolute;left:14%;right:14%;bottom:-1px;
+  height:2px;background:var(--ocre);border-radius:2px;
+}
+
+.champ{margin-bottom:15px}
+.champ label{
+  display:block;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--brume);margin-bottom:7px;
+}
+.boite{position:relative;display:flex;align-items:center}
+.champ input{
+  width:100%;
+  background:rgba(5,13,22,.55);
+  border:1px solid rgba(127,163,192,.2);
+  border-radius:10px;
+  padding:14px 15px;
+  font-family:'Barlow',sans-serif;font-size:16px;
+  color:var(--sable);
+  transition:border-color .2s, background .2s;
+}
+.champ input::placeholder{color:rgba(127,163,192,.45)}
+.champ input:focus{
+  outline:none;
+  border-color:var(--ocre);
+  background:rgba(5,13,22,.8);
+}
+.champ input:disabled{opacity:.5}
+.oeil{
+  position:absolute;right:4px;
+  background:none;border:0;padding:10px 12px;
+  color:var(--brume);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;
+}
+
+.aide{margin-top:6px;font-size:11px;color:rgba(127,163,192,.7)}
+
+.principal{
+  width:100%;
+  margin-top:6px;
+  background:var(--ocre);
+  border:0;border-radius:10px;
+  padding:16px;
+  font-family:'Barlow',sans-serif;
+  font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:#1a0f02;
+  cursor:pointer;
+  transition:transform .12s, background .2s;
+}
+.principal:active{transform:scale(.985);background:var(--ocre-fonce)}
+.principal:disabled{opacity:.55;cursor:default}
+
+.bascule{
+  margin-top:16px;text-align:center;
+  font-size:13px;color:var(--brume);
+}
+.bascule button{
+  background:none;border:0;padding:0;
+  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;
+  color:var(--ocre);cursor:pointer;text-decoration:underline;text-underline-offset:3px;
+}
+
+.message{
+  display:none;
+  margin-bottom:14px;
+  padding:11px 13px;border-radius:9px;
+  font-size:13px;line-height:1.4;
+}
+.message.visible{display:block}
+.message.erreur{background:rgba(224,92,74,.12);border:1px solid rgba(224,92,74,.35);color:#f0a99f}
+.message.ok{background:rgba(79,178,134,.12);border:1px solid rgba(79,178,134,.35);color:#9adcbf}
+
+.pied{
+  margin-top:18px;text-align:center;
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(127,163,192,.42);
+}
+
+.masque{display:none}
+
+/* ---------- ANIMATION ---------- */
+@keyframes clignote{0%,42%{opacity:1}50%,92%{opacity:.08}100%{opacity:1}}
+@keyframes clignote-lent{0%,60%{opacity:.9}70%,100%{opacity:.15}}
+@keyframes houle{0%{transform:translateX(0)}50%{transform:translateX(-14px)}100%{transform:translateX(0)}}
+.feu{animation:clignote 4s infinite}
+.feu-2{animation:clignote-lent 6.5s infinite}
+.vague{animation:houle 9s ease-in-out infinite}
+.vague-2{animation:houle 13s ease-in-out infinite reverse}
+
+@media (prefers-reduced-motion:reduce){
+  .feu,.feu-2,.vague,.vague-2{animation:none}
+}
+@media (min-width:520px){
+  .ecran{max-width:440px;margin:0 auto}
+}
+</style>
+</head>
+<body>
+
+<div id="fond">
+<svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#030b15"/>
+      <stop offset="26%" stop-color="#081d31"/>
+      <stop offset="48%" stop-color="#15374e"/>
+      <stop offset="64%" stop-color="#2f5266"/>
+      <stop offset="78%" stop-color="#6a6474"/>
+      <stop offset="92%" stop-color="#a5766a"/>
+      <stop offset="100%" stop-color="#c98f52"/>
+    </linearGradient>
+    <linearGradient id="mer" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2b4a5c"/>
+      <stop offset="18%" stop-color="#123048"/>
+      <stop offset="55%" stop-color="#081c2d"/>
+      <stop offset="100%" stop-color="#040a12"/>
+    </linearGradient>
+    <linearGradient id="chemin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8ae5e" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#e8ae5e" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="colline" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#233d52"/>
+      <stop offset="100%" stop-color="#0d2032"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f0b769" stop-opacity=".45"/>
+      <stop offset="100%" stop-color="#f0b769" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="cadre"><rect width="390" height="844"/></clipPath>
+    <clipPath id="sousEau"><rect y="472" width="390" height="372"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#cadre)">
+    <rect width="390" height="844" fill="url(#ciel)"/>
+
+    <g fill="#ffffff">
+      <circle cx="34" cy="46" r="1" opacity=".75"/>
+      <circle cx="88" cy="28" r=".8" opacity=".5"/>
+      <circle cx="142" cy="64" r="1.1" opacity=".8"/>
+      <circle cx="206" cy="36" r=".7" opacity=".45"/>
+      <circle cx="262" cy="80" r="1" opacity=".6"/>
+      <circle cx="326" cy="44" r=".9" opacity=".55"/>
+      <circle cx="356" cy="104" r=".7" opacity=".4"/>
+      <circle cx="66" cy="118" r=".8" opacity=".4"/>
+      <circle cx="178" cy="110" r=".6" opacity=".3"/>
+      <circle cx="292" cy="142" r=".8" opacity=".35"/>
+      <circle cx="118" cy="164" r=".6" opacity=".25"/>
+      <circle cx="240" cy="176" r=".7" opacity=".22"/>
+    </g>
+
+    <ellipse cx="195" cy="452" rx="230" ry="120" fill="url(#halo)"/>
+
+    <path d="M0 386 L38 372 L62 380 L92 350 L118 362 L150 334 L182 350 L214 326 L248 344 L282 320 L318 338 L352 316 L390 330 L390 480 L0 480 Z" fill="url(#colline)"/>
+    <path d="M0 412 L44 398 L76 408 L116 384 L156 396 L196 374 L238 390 L280 368 L322 384 L362 366 L390 376 L390 480 L0 480 Z" fill="#0a1c2c" opacity=".92"/>
+    <g fill="#e8c58c" opacity=".45">
+      <rect x="54" y="392" width="1.5" height="1.5"/>
+      <rect x="124" y="368" width="1.5" height="1.5"/>
+      <rect x="188" y="358" width="1.5" height="1.5"/>
+      <rect x="252" y="352" width="1.5" height="1.5"/>
+      <rect x="318" y="348" width="1.5" height="1.5"/>
+      <rect x="96" y="404" width="1.5" height="1.5"/>
+      <rect x="272" y="392" width="1.5" height="1.5"/>
+    </g>
+
+    <g transform="translate(178 258)">
+      <rect x="4" y="38" width="20" height="34" fill="#0a1826"/>
+      <rect x="0" y="28" width="28" height="12" fill="#0a1826"/>
+      <rect x="9" y="8" width="10" height="21" fill="#0a1826"/>
+      <circle cx="14" cy="5" r="4.5" fill="#d9a141" opacity=".9"/>
+      <circle cx="14" cy="5" r="11" fill="url(#halo)"/>
+      <rect x="13" y="-6" width="2" height="7" fill="#0a1826"/>
+    </g>
+
+    <path d="M0 472 L390 472 L390 844 L0 844 Z" fill="url(#mer)"/>
+    <path d="M150 472 L240 472 L330 844 L60 844 Z" fill="url(#chemin)"/>
+
+    <g clip-path="url(#sousEau)" opacity=".28">
+      <g fill="#e8c58c">
+        <rect x="188" y="474" width="14" height="2"/>
+        <rect x="184" y="480" width="22" height="2"/>
+        <rect x="190" y="487" width="11" height="2"/>
+        <rect x="181" y="495" width="26" height="2"/>
+        <rect x="187" y="505" width="16" height="2"/>
+        <rect x="178" y="517" width="30" height="2"/>
+        <rect x="189" y="531" width="13" height="2"/>
+      </g>
+      <g fill="#e05c4a">
+        <rect x="162" y="476" width="6" height="2"/>
+        <rect x="160" y="486" width="10" height="2"/>
+        <rect x="163" y="499" width="5" height="2"/>
+      </g>
+      <g fill="#e8c58c">
+        <rect x="78" y="478" width="5" height="2"/>
+        <rect x="76" y="488" width="9" height="2"/>
+        <rect x="298" y="480" width="5" height="2"/>
+        <rect x="296" y="492" width="9" height="2"/>
+      </g>
+    </g>
+
+    <g stroke="#3f6f95" stroke-width="1" fill="none" opacity=".45">
+      <path class="vague" d="M-30 506 q30 -5 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/>
+      <path class="vague-2" d="M-30 536 q34 5 68 0 t68 0 t68 0 t68 0 t68 0 t68 0"/>
+      <path class="vague" d="M-30 574 q28 -6 56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0"/>
+      <path class="vague-2" d="M-30 620 q40 6 80 0 t80 0 t80 0 t80 0 t80 0"/>
+      <path class="vague" d="M-30 676 q46 -7 92 0 t92 0 t92 0 t92 0"/>
+      <path class="vague-2" d="M-30 744 q52 8 104 0 t104 0 t104 0 t104 0"/>
+    </g>
+    <g stroke="#f0b769" stroke-width="1.6" fill="none" opacity=".2">
+      <path class="vague-2" d="M128 592 q24 -5 48 0 t48 0 t48 0"/>
+      <path class="vague" d="M104 668 q30 6 60 0 t60 0 t60 0"/>
+      <path class="vague-2" d="M86 756 q36 -6 72 0 t72 0 t72 0"/>
+    </g>
+
+    <g fill="#07131e">
+      <rect x="0" y="452" width="390" height="22"/>
+      <rect x="14" y="474" width="7" height="30"/>
+      <rect x="88" y="474" width="7" height="30"/>
+      <rect x="162" y="474" width="7" height="30"/>
+      <rect x="236" y="474" width="7" height="30"/>
+      <rect x="310" y="474" width="7" height="30"/>
+      <rect x="372" y="474" width="7" height="30"/>
+    </g>
+    <rect x="0" y="450" width="390" height="2" fill="#2c536e" opacity=".5"/>
+
+    <g fill="#0a1928">
+      <rect x="10" y="400" width="30" height="52"/>
+      <rect x="42" y="416" width="22" height="36"/>
+      <rect x="66" y="428" width="16" height="24"/>
+      <rect x="284" y="406" width="32" height="46"/>
+      <rect x="318" y="420" width="24" height="32"/>
+      <rect x="346" y="412" width="20" height="40"/>
+    </g>
+    <g fill="#e8c58c" opacity=".62">
+      <rect x="16" y="408" width="3" height="4"/>
+      <rect x="26" y="408" width="3" height="4"/>
+      <rect x="16" y="420" width="3" height="4"/>
+      <rect x="30" y="432" width="3" height="4"/>
+      <rect x="48" y="424" width="3" height="4"/>
+      <rect x="56" y="436" width="3" height="4"/>
+      <rect x="70" y="436" width="3" height="4"/>
+      <rect x="290" y="414" width="3" height="4"/>
+      <rect x="302" y="414" width="3" height="4"/>
+      <rect x="290" y="428" width="3" height="4"/>
+      <rect x="324" y="430" width="3" height="4"/>
+      <rect x="334" y="440" width="3" height="4"/>
+      <rect x="352" y="422" width="3" height="4"/>
+      <rect x="352" y="436" width="3" height="4"/>
+    </g>
+
+    <g stroke="#0a1928" stroke-width="5" fill="none" stroke-linecap="square">
+      <path d="M96 452 L96 330 L168 330"/>
+      <path d="M96 330 L58 330"/>
+      <path d="M96 358 L134 330"/>
+      <path d="M96 358 L64 330"/>
+      <path d="M82 452 L110 452"/>
+    </g>
+    <rect x="86" y="316" width="20" height="16" fill="#0a1928"/>
+    <g stroke="#0a1928" stroke-width="2" fill="none">
+      <path d="M146 330 L146 374"/>
+    </g>
+    <rect x="137" y="374" width="19" height="15" fill="#0a1928"/>
+    <circle class="feu" cx="168" cy="327" r="3" fill="#e05c4a"/>
+    <circle class="feu-2" cx="58" cy="327" r="2.4" fill="#e05c4a"/>
+
+    <g stroke="#0a1928" stroke-width="4" fill="none" stroke-linecap="square">
+      <path d="M252 452 L252 364 L204 364"/>
+      <path d="M252 364 L282 364"/>
+      <path d="M252 386 L228 364"/>
+      <path d="M242 452 L262 452"/>
+    </g>
+    <rect x="244" y="352" width="16" height="13" fill="#0a1928"/>
+    <g stroke="#0a1928" stroke-width="1.8" fill="none">
+      <path d="M216 364 L216 394"/>
+    </g>
+    <rect x="209" y="394" width="15" height="12" fill="#0a1928"/>
+    <circle class="feu-2" cx="204" cy="362" r="2.4" fill="#e05c4a"/>
+
+    <g stroke="#0a1928" stroke-width="3" fill="none" stroke-linecap="square">
+      <path d="M330 452 L330 392 L300 392"/>
+      <path d="M330 392 L352 392"/>
+      <path d="M330 408 L314 392"/>
+    </g>
+    <circle class="feu" cx="300" cy="390" r="2" fill="#e05c4a"/>
+
+    <g>
+      <rect x="126" y="436" width="26" height="13" fill="#123049"/>
+      <rect x="154" y="436" width="26" height="13" fill="#0f2a3c"/>
+      <rect x="182" y="436" width="26" height="13" fill="#2b3f4a"/>
+      <rect x="140" y="422" width="26" height="13" fill="#3a3b46"/>
+      <rect x="168" y="422" width="26" height="13" fill="#123049"/>
+      <rect x="154" y="408" width="26" height="13" fill="#0f2a3c"/>
+      <rect x="60" y="440" width="24" height="12" fill="#2b3f4a"/>
+      <rect x="272" y="440" width="24" height="12" fill="#123049"/>
+      <rect x="296" y="440" width="24" height="12" fill="#3a3b46"/>
+    </g>
+    <g stroke="#050d16" stroke-width=".8" opacity=".55">
+      <path d="M132 436 v13 M138 436 v13 M144 436 v13 M160 436 v13 M166 436 v13 M172 436 v13 M188 436 v13 M194 436 v13 M200 436 v13 M146 422 v13 M152 422 v13 M158 422 v13 M174 422 v13 M180 422 v13 M186 422 v13 M160 408 v13 M166 408 v13 M172 408 v13 M66 440 v12 M72 440 v12 M278 440 v12 M284 440 v12 M302 440 v12 M308 440 v12"/>
+    </g>
+
+    <g>
+      <path d="M28 490 L146 490 L136 512 L40 512 Z" fill="#091724"/>
+      <rect x="52" y="470" width="58" height="20" fill="#0c2033"/>
+      <rect x="58" y="454" width="16" height="16" fill="#0c2033"/>
+      <rect x="80" y="460" width="10" height="10" fill="#0c2033"/>
+      <g fill="#e8c58c" opacity=".7">
+        <rect x="58" y="476" width="4" height="4"/>
+        <rect x="70" y="476" width="4" height="4"/>
+        <rect x="82" y="476" width="4" height="4"/>
+        <rect x="94" y="476" width="4" height="4"/>
+        <rect x="62" y="460" width="3" height="3"/>
+      </g>
+      <circle class="feu-2" cx="66" cy="450" r="2.2" fill="#4fb286"/>
+      <rect x="46" y="512" width="84" height="3" fill="#e8c58c" opacity=".12"/>
+    </g>
+
+    <g>
+      <path d="M258 504 L344 504 L336 520 L266 520 Z" fill="#091724"/>
+      <rect x="276" y="490" width="38" height="14" fill="#0c2033"/>
+      <rect x="280" y="480" width="11" height="11" fill="#0c2033"/>
+      <g fill="#e8c58c" opacity=".6">
+        <rect x="282" y="494" width="3" height="3"/>
+        <rect x="292" y="494" width="3" height="3"/>
+        <rect x="302" y="494" width="3" height="3"/>
+      </g>
+      <circle class="feu" cx="286" cy="476" r="1.8" fill="#e05c4a"/>
+    </g>
+
+    <g>
+      <path d="M96 566 L206 566 L194 596 L110 596 Z" fill="#050f19"/>
+      <rect x="124" y="540" width="54" height="26" fill="#081724"/>
+      <rect x="132" y="520" width="14" height="20" fill="#081724"/>
+      <g fill="#f0d3a0" opacity=".8">
+        <rect x="130" y="548" width="5" height="5"/>
+        <rect x="142" y="548" width="5" height="5"/>
+        <rect x="154" y="548" width="5" height="5"/>
+        <rect x="166" y="548" width="5" height="5"/>
+        <rect x="130" y="558" width="5" height="4"/>
+        <rect x="154" y="558" width="5" height="4"/>
+      </g>
+      <circle class="feu" cx="139" cy="516" r="2.4" fill="#e8c58c"/>
+      <rect x="106" y="596" width="92" height="4" fill="#f0d3a0" opacity=".14"/>
+      <rect x="122" y="602" width="60" height="3" fill="#f0d3a0" opacity=".08"/>
+    </g>
+
+    <g opacity=".9">
+      <path d="M256 636 L316 636 L308 652 L264 652 Z" fill="#050f19"/>
+      <rect x="270" y="622" width="26" height="14" fill="#081724"/>
+      <g fill="#f0d3a0" opacity=".7">
+        <rect x="274" y="626" width="4" height="4"/>
+        <rect x="284" y="626" width="4" height="4"/>
+      </g>
+      <rect x="262" y="652" width="48" height="3" fill="#f0d3a0" opacity=".1"/>
+    </g>
+
+    <g fill="#081724">
+      <rect x="52" y="700" width="6" height="46"/>
+      <rect x="158" y="716" width="6" height="52"/>
+      <rect x="286" y="694" width="6" height="44"/>
+      <rect x="342" y="742" width="6" height="56"/>
+    </g>
+    <g fill="#f0b769" opacity=".22">
+      <rect x="52" y="746" width="6" height="30"/>
+      <rect x="158" y="768" width="6" height="34"/>
+      <rect x="286" y="738" width="6" height="26"/>
+    </g>
+  </g>
+</svg>
+</div>
+
+<div class="voile"></div>
+
+<main class="ecran">
+  <div class="haut">
+    <div class="marque">
+      <p class="sur">Port de Marseille</p>
+      <h1>Battledock</h1>
+    </div>
+  </div>
+
+  <section class="carte">
+    <div class="onglets" role="tablist">
+      <button class="onglet" id="ong-inscription" role="tab" aria-selected="true" aria-controls="form-inscription">Inscription</button>
+      <button class="onglet" id="ong-connexion" role="tab" aria-selected="false" aria-controls="form-connexion">Connexion</button>
+    </div>
+
+    <div class="message" id="message" role="status" aria-live="polite"></div>
+
+    <!-- INSCRIPTION -->
+    <div id="form-inscription" role="tabpanel" aria-labelledby="ong-inscription">
+      <div class="champ">
+        <label for="i-email">Adresse e-mail</label>
+        <div class="boite">
+          <input type="email" id="i-email" autocomplete="email" inputmode="email" placeholder="ton adresse mail" enterkeyhint="next">
+        </div>
+      </div>
+
+      <div class="champ">
+        <label for="i-mdp">Mot de passe</label>
+        <div class="boite">
+          <input type="password" id="i-mdp" autocomplete="new-password" placeholder="8 caractères minimum" enterkeyhint="go">
+          <button type="button" class="oeil" data-cible="i-mdp">Voir</button>
+        </div>
+      </div>
+
+      <button class="principal" id="btn-inscription">Prendre son poste</button>
+
+      <p class="bascule">Déjà un matricule ? <button type="button" data-aller="connexion">Se connecter</button></p>
+    </div>
+
+    <!-- CONNEXION -->
+    <div id="form-connexion" class="masque" role="tabpanel" aria-labelledby="ong-connexion">
+      <div class="champ">
+        <label for="c-email">Adresse e-mail</label>
+        <div class="boite">
+          <input type="email" id="c-email" autocomplete="email" inputmode="email" placeholder="ton adresse mail" enterkeyhint="next">
+        </div>
+      </div>
+
+      <div class="champ">
+        <label for="c-mdp">Mot de passe</label>
+        <div class="boite">
+          <input type="password" id="c-mdp" autocomplete="current-password" placeholder="••••••••" enterkeyhint="go">
+          <button type="button" class="oeil" data-cible="c-mdp">Voir</button>
+        </div>
+      </div>
+
+      <button class="principal" id="btn-connexion">Pointer</button>
+
+      <p class="bascule">Pas encore embauché ? <button type="button" data-aller="inscription">Créer un compte</button></p>
+    </div>
+
+    <p class="pied">version 1.0 · 09.08.26 · 15h00</p>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = 'https://zpfkekiavlfphialvphi.supabase.co';
+const SUPABASE_KEY = 'sb_publishable__dfR2lEOwKjhhtavvJEvGw_KVACZnHP';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = id => document.getElementById(id);
+
+const vues = {
+  inscription: { onglet: $('ong-inscription'), form: $('form-inscription') },
+  connexion:   { onglet: $('ong-connexion'),   form: $('form-connexion') }
+};
+
+function afficher(nom){
+  for (const [cle, v] of Object.entries(vues)){
+    const actif = cle === nom;
+    v.onglet.setAttribute('aria-selected', actif);
+    v.form.classList.toggle('masque', !actif);
+  }
+  cacherMessage();
+}
+
+Object.entries(vues).forEach(([cle, v]) => v.onglet.addEventListener('click', () => afficher(cle)));
+document.querySelectorAll('[data-aller]').forEach(b =>
+  b.addEventListener('click', () => afficher(b.dataset.aller))
+);
+
+document.querySelectorAll('.oeil').forEach(b => {
+  b.addEventListener('click', () => {
+    const champ = $(b.dataset.cible);
+    const cache = champ.type === 'password';
+    champ.type = cache ? 'text' : 'password';
+    b.textContent = cache ? 'Cacher' : 'Voir';
+  });
+});
+
+const boiteMsg = $('message');
+function montrerMessage(texte, type = 'erreur'){
+  boiteMsg.textContent = texte;
+  boiteMsg.className = 'message visible ' + type;
+}
+function cacherMessage(){ boiteMsg.className = 'message'; }
+
+const emailValide = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+function verifierInscription(){
+  const email = $('i-email').value.trim();
+  const mdp   = $('i-mdp').value;
+
+  if (!emailValide(email)) return 'Cette adresse e-mail n\u2019est pas valide.';
+  if (mdp.length < 8) return 'Le mot de passe fait 8 caractères minimum.';
+  return null;
+}
+
+function verifierConnexion(){
+  const email = $('c-email').value.trim();
+  const mdp   = $('c-mdp').value;
+  if (!emailValide(email)) return 'Cette adresse e-mail n\u2019est pas valide.';
+  if (!mdp) return 'Entre ton mot de passe.';
+  return null;
+}
+
+const traduire = m => {
+  const t = (m || '').toLowerCase();
+  if (t.includes('invalid login')) return 'E-mail ou mot de passe incorrect.';
+  if (t.includes('already registered') || t.includes('already been registered')) return 'Cette adresse est déjà inscrite. Connecte-toi.';
+  if (t.includes('email not confirmed')) return 'Confirme ton e-mail avant de te connecter.';
+  if (t.includes('rate limit') || t.includes('too many')) return 'Trop de tentatives. Attends une minute.';
+  if (t.includes('password')) return 'Mot de passe refusé : 8 caractères minimum.';
+  if (t.includes('failed to fetch') || t.includes('network')) return 'Pas de connexion au serveur. Réessaie.';
+  return m || 'Une erreur est survenue. Réessaie.';
+};
+
+function occuper(btn, texte){
+  btn.dataset.libelle = btn.dataset.libelle || btn.textContent;
+  btn.disabled = true;
+  btn.textContent = texte;
+  btn.closest('[role="tabpanel"]').querySelectorAll('input').forEach(c => c.disabled = true);
+}
+function liberer(btn){
+  btn.disabled = false;
+  btn.textContent = btn.dataset.libelle;
+  btn.closest('[role="tabpanel"]').querySelectorAll('input').forEach(c => c.disabled = false);
+}
+
+$('btn-inscription').addEventListener('click', async () => {
+  const erreur = verifierInscription();
+  if (erreur) return montrerMessage(erreur);
+  cacherMessage();
+
+  const btn = $('btn-inscription');
+  occuper(btn, 'Embauche en cours…');
+  try {
+    const { data, error } = await sb.auth.signUp({
+      email: $('i-email').value.trim(),
+      password: $('i-mdp').value
+    });
+    if (error) throw error;
+
+    if (data.session) {
+      montrerMessage('Compte créé. Bienvenue sur le quai.', 'ok');
+      setTimeout(() => location.href = 'jeu.html', 800);
+    } else {
+      montrerMessage('Compte créé. Ouvre ton e-mail pour confirmer ton adresse.', 'ok');
+      liberer(btn);
+    }
+  } catch (e) {
+    montrerMessage(traduire(e.message));
+    liberer(btn);
+  }
+});
+
+$('btn-connexion').addEventListener('click', async () => {
+  const erreur = verifierConnexion();
+  if (erreur) return montrerMessage(erreur);
+  cacherMessage();
+
+  const btn = $('btn-connexion');
+  occuper(btn, 'Pointage…');
+  try {
+    const { error } = await sb.auth.signInWithPassword({
+      email: $('c-email').value.trim(),
+      password: $('c-mdp').value
+    });
+    if (error) throw error;
+    montrerMessage('Pointage validé.', 'ok');
+    setTimeout(() => location.href = 'jeu.html', 500);
+  } catch (e) {
+    montrerMessage(traduire(e.message));
+    liberer(btn);
+  }
+});
+
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) location.replace('jeu.html');
+});
+
+document.querySelectorAll('input').forEach(champ => {
+  champ.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const form = champ.closest('[role="tabpanel"]');
+    const champs = [...form.querySelectorAll('input')];
+    const suivant = champs[champs.indexOf(champ) + 1];
+    if (suivant) suivant.focus();
+    else form.querySelector('.principal').click();
+  });
+  champ.addEventListener('input', cacherMessage);
+});
+</script>
+</body>
+</html>
