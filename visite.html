@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050d16">
+<title>Battledock — Visite médicale</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--nuit:#050d16;--brume:#7fa3c0;--sable:#e8e2d4;--ocre:#e0913a;--ocre-f:#a3611f;--papier:#e9e4d6;--encre:#2b2a26;--tampon:#b5342b}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--nuit);color:var(--sable);
+  font-family:'Barlow',system-ui,sans-serif;overflow-x:hidden;
+  background-image:radial-gradient(90% 40% at 50% 0%, rgba(30,61,89,.5), transparent 62%);
+  background-attachment:fixed;
+}
+.ecran{max-width:460px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 120px)}
+
+.progres{display:flex;gap:5px;margin-bottom:18px}
+.progres i{flex:1;height:3px;border-radius:2px;background:rgba(127,163,192,.18)}
+.progres i.faite{background:var(--ocre)}
+
+.entete{text-align:center;margin-bottom:18px}
+.entete .sur{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--brume);margin-bottom:8px;padding-left:.34em}
+.entete h1{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.03em;line-height:1.05}
+
+/* --- le medecin --- */
+.toubib{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+.toubib svg{flex:0 0 100px;width:100px;height:auto;border-radius:12px;
+  border:1px solid rgba(127,163,192,.2)}
+
+/* le médecin respire, cligne, écrit */
+.buste{animation:respire 4.2s ease-in-out infinite;transform-origin:46px 90px}
+@keyframes respire{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.016)}}
+.tete{animation:dodeline 7s ease-in-out infinite;transform-origin:46px 64px}
+@keyframes dodeline{0%,100%{transform:rotate(0deg) translateY(0)}
+  30%{transform:rotate(-1.6deg) translateY(.6px)}
+  62%{transform:rotate(1.2deg) translateY(-.4px)}}
+.paupieres{transform:scaleY(0);transform-origin:46px 40px;animation:cligne 5.4s infinite}
+@keyframes cligne{0%,95.5%{transform:scaleY(0)}96.5%,98.5%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+.bras{animation:ecrit 2.6s ease-in-out infinite;transform-origin:66px 78px}
+@keyframes ecrit{0%,100%{transform:rotate(0deg) translateX(0)}
+  25%{transform:rotate(2.4deg) translateX(-1.4px)}
+  50%{transform:rotate(-1.2deg) translateX(1px)}
+  75%{transform:rotate(3deg) translateX(-.8px)}}
+.fumee{animation:monteFumee 5s ease-out infinite}
+@keyframes monteFumee{0%{opacity:0;transform:translateY(4px)}
+  30%{opacity:.4}100%{opacity:0;transform:translateY(-10px)}}
+.toubib.leve .tete{animation:regarde 1.1s ease-in-out}
+@keyframes regarde{0%,100%{transform:rotate(0)}40%{transform:rotate(-6deg) translateY(-2px)}}
+.bulle{transition:background .25s}
+.toubib.leve .bulle{background:#fff}
+.bulle{
+  position:relative;flex:1;background:rgba(233,228,214,.94);color:var(--encre);
+  border-radius:14px;padding:13px 15px;font-size:14px;line-height:1.5;
+}
+.bulle::before{content:"";position:absolute;left:-7px;top:18px;border:7px solid transparent;border-right-color:rgba(233,228,214,.94);border-left:0}
+.bulle em{font-style:normal;color:#7a756a;font-size:12.5px;display:block;margin-top:5px}
+.bulle .note{display:block;margin-top:9px;padding-top:8px;border-top:1px dotted rgba(43,42,38,.25);
+  font-family:'Courier Prime',monospace;font-size:12px;color:#8a5a2e}
+
+.etape{display:none}
+.etape.on{display:block;animation:entre .35s ease-out}
+@keyframes entre{from{opacity:0;transform:translateY(10px) scale(.995)}to{opacity:1;transform:none}}
+
+/* --- test de la vue --- */
+.tableau{
+  background:var(--papier);border-radius:12px;padding:22px 14px;text-align:center;
+  font-family:'Courier Prime',monospace;font-weight:700;color:var(--encre);margin-bottom:16px;
+}
+.tableau div{letter-spacing:.28em;line-height:1.9}
+.tableau .l1{font-size:30px}
+.tableau .l2{font-size:22px}
+.tableau .l3{font-size:15px}
+.tableau .l4{font-size:10px}
+.tableau .l5{font-size:6px;letter-spacing:.2em;color:#5f5b52}
+.tableau .rang{font-size:9px;letter-spacing:.1em;color:#a09a8d;font-weight:400}
+
+/* --- audition --- */
+.onde{
+  background:rgba(10,28,46,.7);border:1px solid rgba(127,163,192,.18);border-radius:12px;
+  padding:26px 16px;margin-bottom:16px;text-align:center;
+}
+.onde svg{width:100%;height:52px;display:block}
+.onde p{margin-top:12px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(127,163,192,.55)}
+
+/* --- balance --- */
+.balance{
+  background:rgba(10,28,46,.7);border:1px solid rgba(127,163,192,.18);border-radius:12px;
+  padding:22px;margin-bottom:16px;text-align:center;
+}
+.cadran{
+  font-family:'Courier Prime',monospace;font-size:38px;font-weight:700;color:var(--ocre);
+  letter-spacing:.04em;
+}
+.cadran small{font-size:15px;color:var(--brume);letter-spacing:.1em}
+.retire{margin-top:14px;font-size:12px;color:var(--brume);min-height:18px}
+
+/* --- boutons --- */
+.choix{display:flex;flex-direction:column;gap:9px}
+.choix button{
+  width:100%;text-align:left;background:rgba(10,28,46,.75);
+  border:1px solid rgba(127,163,192,.2);border-radius:10px;padding:14px 16px;
+  font-family:'Barlow',sans-serif;font-size:15px;color:var(--sable);cursor:pointer;
+  transition:transform .12s,border-color .2s,background .2s;
+}
+.choix button:active{transform:scale(.985)}
+.choix button:hover{border-color:var(--ocre)}
+.champ label{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ocre);margin-bottom:8px}
+.champ input{
+  width:100%;background:rgba(5,13,22,.55);border:1px solid rgba(127,163,192,.2);
+  border-radius:10px;padding:14px 15px;font-family:'Courier Prime',monospace;
+  font-size:16px;color:var(--sable);text-transform:uppercase;letter-spacing:.1em;
+}
+.champ input:focus{outline:none;border-color:var(--ocre)}
+.champ input::placeholder{color:rgba(127,163,192,.35);letter-spacing:.05em}
+
+.barre{position:fixed;left:0;right:0;bottom:0;z-index:6;
+  padding:14px 18px calc(env(safe-area-inset-bottom) + 16px);
+  background:linear-gradient(180deg,rgba(5,13,22,0),rgba(5,13,22,.92) 32%,var(--nuit))}
+.barre .dedans{max-width:460px;margin:0 auto}
+.principal{width:100%;background:var(--ocre);border:0;border-radius:10px;padding:17px;
+  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:#1a0f02;cursor:pointer;transition:transform .12s,background .2s}
+.principal:active{transform:scale(.985);background:var(--ocre-f)}
+.principal:disabled{opacity:.45;cursor:default}
+
+/* --- le dossier final --- */
+.dossier{
+  background:var(--papier);color:var(--encre);border-radius:14px;padding:22px 20px;
+  position:relative;overflow:hidden;font-family:'Courier Prime',monospace;
+}
+.dossier::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 26px,rgba(43,42,38,.05) 26px,rgba(43,42,38,.05) 27px);
+}
+.dossier h3{font-family:'Barlow',sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#7a756a;margin-bottom:3px}
+.dossier .nom{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.03em;margin-bottom:16px}
+.dossier .l{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dotted rgba(43,42,38,.25);font-size:12.5px}
+.dossier .l span{color:#7a756a}
+.dossier .l b{text-align:right;font-weight:700}
+.tampon{
+  position:absolute;right:14px;bottom:14px;
+  border:3px solid var(--tampon);color:var(--tampon);
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.14em;
+  padding:4px 14px;transform:rotate(-13deg) scale(2.4);opacity:0;border-radius:4px;
+}
+.tampon.pose{animation:frappe .45s cubic-bezier(.2,.9,.3,1.2) forwards}
+@keyframes frappe{to{opacity:.88;transform:rotate(-13deg) scale(1)}}
+
+.avatar-final{
+  display:flex;gap:16px;align-items:center;
+  background:rgba(10,28,46,.7);border:1px solid rgba(127,163,192,.18);
+  border-radius:14px;padding:16px;margin-top:16px;
+}
+.avatar-final svg{flex:0 0 84px;width:84px;height:auto;image-rendering:pixelated}
+.avatar-final p{font-size:13.5px;line-height:1.5;color:#9dbcd4}
+.avatar-final p b{color:var(--sable);font-weight:600}
+
+.rejouer{width:100%;margin-top:14px;background:none;border:1px solid rgba(127,163,192,.28);
+  border-radius:10px;padding:13px;font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--brume);cursor:pointer}
+@media (prefers-reduced-motion:reduce){
+  .etape.on,.buste,.tete,.bras,.fumee{animation:none}
+  .paupieres{animation:none;transform:scaleY(0)}.tampon.pose{animation:none;opacity:.88;transform:rotate(-13deg)}}
+</style>
+</head>
+<body>
+
+<main class="ecran">
+  <div class="progres">
+    <i id="p0"></i><i id="p1"></i><i id="p2"></i><i id="p3"></i><i id="p4"></i>
+  </div>
+
+  <div class="entete">
+    <p class="sur">Service médical du port</p>
+    <h1 id="titre">Visite d'embauche</h1>
+  </div>
+
+  <div class="toubib">
+    <svg viewBox="0 0 96 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="96" height="104" rx="10" fill="#1c2f3e"/>
+      <rect y="0" width="96" height="62" fill="#22394a"/>
+      <rect x="6" y="8" width="20" height="26" rx="1.5" fill="#2c4a5e"/>
+      <rect x="8" y="11" width="16" height="9" fill="#3d6480" opacity=".7"/>
+      <rect x="8" y="23" width="16" height="8" fill="#3d6480" opacity=".45"/>
+      <rect x="66" y="6" width="26" height="34" rx="2" fill="#2a4152"/>
+      <rect x="69" y="10" width="20" height="3" fill="#4a6d85"/>
+      <rect x="69" y="16" width="14" height="3" fill="#4a6d85" opacity=".7"/>
+      <rect x="69" y="22" width="17" height="3" fill="#4a6d85" opacity=".5"/>
+      <rect x="69" y="28" width="11" height="3" fill="#4a6d85" opacity=".4"/>
+      <rect x="34" y="4" width="28" height="20" rx="1.5" fill="#e9e4d6" opacity=".9"/>
+      <rect x="37" y="7" width="22" height="2" fill="#a8a196"/>
+      <rect x="37" y="11" width="16" height="2" fill="#a8a196"/>
+      <rect x="37" y="15" width="19" height="2" fill="#a8a196"/>
+      <rect x="0" y="58" width="96" height="4" fill="#2c4a5e"/>
+      <ellipse cx="46" cy="101" rx="40" ry="3.5" fill="#040c14" opacity=".3"/>
+
+      <g class="bureau">
+        <rect x="0" y="88" width="96" height="16" rx="2" fill="#5c4a32"/>
+        <rect x="0" y="88" width="96" height="4" rx="2" fill="#75603f"/>
+        <rect x="4" y="80" width="26" height="9" rx="1" fill="#e9e4d6"/>
+        <rect x="6" y="82" width="18" height="1.2" fill="#b0aa9a"/>
+        <rect x="6" y="85" width="14" height="1.2" fill="#b0aa9a"/>
+        <path d="M74 78 h12 v10 q0 2 -2 2 h-8 q-2 0 -2 -2 z" fill="#e9e4d6"/>
+        <path d="M86 80 q4 1 4 4 t-4 4" fill="none" stroke="#e9e4d6" stroke-width="2"/>
+        <path d="M76 80 h8 v3 h-8 z" fill="#8a6a52"/>
+        <g class="fumee" opacity=".35">
+          <path d="M80 76 q-3 -6 1 -10" stroke="#9aa3a8" stroke-width="1.6" fill="none"/>
+        </g>
+      </g>
+
+      <g class="buste">
+        <path d="M14 90 q0 -22 14 -27 h32 q14 5 14 27 z" fill="#f2eee2"/>
+        <path d="M46 63 h14 q14 5 14 27 h-28 z" fill="#d5d0c2"/>
+        <path d="M36 63 h16 v11 q-8 5 -16 0 z" fill="#cf9b6f"/>
+        <path d="M36 63 h16 v4 q-8 5 -16 0 z" fill="#a97449" opacity=".6"/>
+        <path d="M34 65 q12 12 22 0 l5 3 -16 15 -16 -15 z" fill="#f2eee2"/>
+        <path d="M46 68 v14" stroke="#d5d0c2" stroke-width="1.4"/>
+        <rect x="18" y="76" width="12" height="8" rx="1.5" fill="#e0e6ea"/>
+        <rect x="19.5" y="78" width="9" height="1.4" fill="#9aa3a8"/>
+        <rect x="19.5" y="81" width="6" height="1.4" fill="#9aa3a8"/>
+        <path d="M34 70 q-8 14 -2 22 q8 8 16 0 q6 -8 -2 -22" fill="none" stroke="#8a939b" stroke-width="1.8"/>
+        <circle cx="46" cy="94" r="4.5" fill="#b9c2c8"/>
+        <circle cx="46" cy="94" r="2" fill="#7a838a"/>
+      </g>
+
+      <g class="tete">
+        <ellipse cx="27" cy="42" rx="4" ry="6" fill="#cf9b6f"/>
+        <ellipse cx="65" cy="42" rx="4" ry="6" fill="#cf9b6f"/>
+        <path d="M28 40 q0 -22 18 -22 t18 22 q0 18 -18 24 q-18 -6 -18 -24 z" fill="#d9a87d"/>
+        <path d="M46 18 q18 0 18 22 q0 18 -18 24 z" fill="#b98a5f" opacity=".35"/>
+        <path d="M26 30 q2 -18 20 -18 t20 18 q-6 -8 -20 -8 t-20 8 z" fill="#b8b4ac"/>
+        <path d="M24 30 q2 6 4 8 q-1 -6 0 -10 z" fill="#a5a199"/>
+        <path d="M68 30 q-2 6 -4 8 q1 -6 0 -10 z" fill="#a5a199"/>
+
+        <path d="M34 34 q6 -3 11 -1" stroke="#8a8579" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M58 34 q-6 -3 -11 -1" stroke="#8a8579" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+        <g class="oeilG">
+          <ellipse cx="39" cy="40" rx="4.6" ry="3.4" fill="#f6f1e6"/>
+          <circle cx="39.6" cy="40.2" r="2" fill="#3b2415"/>
+        </g>
+        <g class="oeilD">
+          <ellipse cx="53" cy="40" rx="4.6" ry="3.4" fill="#f6f1e6"/>
+          <circle cx="53.6" cy="40.2" r="2" fill="#3b2415"/>
+        </g>
+        <g class="paupieres">
+          <rect x="34" y="36" width="10" height="8" rx="1" fill="#d9a87d"/>
+          <rect x="48" y="36" width="10" height="8" rx="1" fill="#d9a87d"/>
+        </g>
+
+        <g stroke="#4a5158" stroke-width="1.6" fill="rgba(180,200,210,.18)">
+          <rect x="33" y="35.5" width="12" height="9" rx="2"/>
+          <rect x="47" y="35.5" width="12" height="9" rx="2"/>
+          <path d="M45 39 h2"/>
+          <path d="M33 38 l-5 1" fill="none"/>
+          <path d="M59 38 l5 1" fill="none"/>
+        </g>
+
+        <path d="M44 45 q-1 6 -3 8 q0 2 5 2 t5 -2 q-2 -2 -3 -8" fill="#b98a5f" opacity=".5"/>
+        <path d="M36 57 q10 4 20 0" stroke="#8a8579" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+        <path d="M38 60.5 q8 3 16 0" stroke="#7d3a2e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <g class="bras">
+        <path d="M66 78 q14 2 16 10" fill="none" stroke="#f2eee2" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="82" cy="88" r="4" fill="#cf9b6f"/>
+        <path d="M84 86 l8 -9" stroke="#2b3038" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M91 78 l3 -3" stroke="#e0913a" stroke-width="2.4" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div class="bulle" id="bulle">
+      Asseyez-vous. Ça va être rapide.
+      <em>Il ne lève pas les yeux de son dossier.</em>
+    </div>
+  </div>
+
+  <!-- 0 : accueil -->
+  <section class="etape on" id="e0">
+    <div class="champ" style="margin-bottom:14px">
+      <label for="pseudo">Aperçu — ton pseudo (récupéré automatiquement dans le jeu)</label>
+      <input type="text" id="pseudo" maxlength="18" placeholder="Ton pseudo" autocomplete="off">
+    </div>
+    <div class="choix">
+      <button data-go="1">Je suis prêt</button>
+    </div>
+  </section>
+
+  <!-- 1 : vue -->
+  <section class="etape" id="e1">
+    <div class="tableau">
+      <div class="l1">P O R T</div>
+      <div class="l2">D O C K E R</div>
+      <div class="l3">C A F E &nbsp; C A L E</div>
+      <div class="l4">A I J A M A I S V U</div>
+      <div class="l5">SIVOUSLISEZCECILAVOUSMENTEZ</div>
+      <div class="rang">— dernière ligne —</div>
+    </div>
+    <div class="champ">
+      <label for="vue">↓ Tapez ici la dernière ligne que vous arrivez à lire</label>
+      <input type="text" id="vue" maxlength="34" placeholder="Ex. : DOCKER" autocomplete="off">
+    </div>
+  </section>
+
+  <!-- 2 : audition -->
+  <section class="etape" id="e2">
+    <div class="onde">
+      <svg viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M0 20 H200" stroke="#2a4f68" stroke-width="2"/>
+        <circle cx="100" cy="20" r="2.5" fill="#3a6a88"/>
+      </svg>
+      <p id="onde-txt">Émission du signal…</p>
+    </div>
+    <div class="choix" id="choix-audition" style="display:none">
+      <button data-rep="oui">Oui, je l'entends</button>
+      <button data-rep="non">Non, je n'entends rien</button>
+    </div>
+  </section>
+
+  <!-- 3 : poids -->
+  <section class="etape" id="e3">
+    <div class="balance">
+      <div class="cadran" id="cadran">— <small>kg</small></div>
+      <p class="retire" id="retire">Montez sur la balance.</p>
+    </div>
+    <div class="choix" id="choix-poids">
+      <button id="monter">Monter sur la balance</button>
+    </div>
+  </section>
+
+  <!-- 4 : vertige -->
+  <section class="etape" id="e4">
+    <div class="choix">
+      <button data-vide="Aucune">Aucune</button>
+      <button data-vide="Un peu">Un peu</button>
+      <button data-vide="Énorme">Énorme</button>
+    </div>
+  </section>
+
+  <!-- 5 : verdict -->
+  <section class="etape" id="e5">
+    <div class="dossier">
+      <h3>Dossier médical</h3>
+      <p class="nom" id="d-nom">—</p>
+      <div class="l"><span>Acuité visuelle</span><b id="d-vue">—</b></div>
+      <div class="l"><span>Audition</span><b id="d-oreille">—</b></div>
+      <div class="l"><span>Poids déclaré</span><b id="d-poids">—</b></div>
+      <div class="l"><span>Taille</span><b id="d-taille">—</b></div>
+      <div class="l"><span>Vertige</span><b id="d-vide">—</b></div>
+      <div class="l"><span>Affectation</span><b id="d-poste">—</b></div>
+      <div class="l"><span>Équipement remis</span><b>Casque (taille 61)</b></div>
+      <div class="tampon" id="tampon">Apte</div>
+    </div>
+
+    <div class="avatar-final">
+      <svg id="avatar" viewBox="0 0 16 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Docker coiffé d'un casque trop grand"></svg>
+      <p>Le casque est trop grand. <b>Il te tombe sur les yeux.</b><br>Tu le garderas jusqu'à ce que tu en gagnes un à ta taille.</p>
+    </div>
+
+  </section>
+</main>
+
+<div class="barre"><div class="dedans">
+  <button class="principal" id="suivant">Commencer</button>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const PEAUX = [
+  { id:'p1', c:'#f2d3b6', o:'#d9ab86' },
+  { id:'p2', c:'#e5bc96', o:'#c4936b' },
+  { id:'p3', c:'#cf9b6f', o:'#a97449' },
+  { id:'p4', c:'#a97048', o:'#83502e' },
+  { id:'p5', c:'#7d4c2c', o:'#5c341a' },
+  { id:'p6', c:'#4f2f1c', o:'#39200f' }
+];
+const CHEVEUX = [
+  { id:'c1', c:'#171310', o:'#000000' },
+  { id:'c2', c:'#3d2b1e', o:'#241a12' },
+  { id:'c3', c:'#6b4526', o:'#472c16' },
+  { id:'c4', c:'#a8763c', o:'#7c5426' },
+  { id:'c5', c:'#c9a86a', o:'#9c8049' },
+  { id:'c6', c:'#8f2f1e', o:'#661d10' },
+  { id:'c7', c:'#9aa3a8', o:'#727b80' }
+];
+const VESTES = [
+  { id:'v1', c:'#c8641f', o:'#8f4310', n:'Orange' },
+  { id:'v2', c:'#1f5f8f', o:'#123f61', n:'Bleu' },
+  { id:'v3', c:'#3d6b4a', o:'#264730', n:'Vert' },
+  { id:'v4', c:'#8f2f2a', o:'#5f1c19', n:'Rouge' },
+  { id:'v5', c:'#4a4f57', o:'#2f333a', n:'Gris' },
+  { id:'v6', c:'#c9b47a', o:'#9a8654', n:'Sable' }
+];
+const COIFFURES = ['Rasé','Court','Ondulé','Épais','Queue','Dégarni'];
+const BARBES    = ['Glabre','Bouc','Courte','Pleine','Moustache','Rouflaquettes'];
+const TETES     = ['Rien','Bonnet','Casquette','Casque','Bandana'];
+const YEUX = [
+  { id:'y1', c:'#3b2415', n:'Marron' }, { id:'y2', c:'#6b4a1e', n:'Noisette' },
+  { id:'y3', c:'#3f6b45', n:'Vert' },   { id:'y4', c:'#2f6b8f', n:'Bleu' },
+  { id:'y5', c:'#6b7378', n:'Gris' },   { id:'y6', c:'#1a1208', n:'Noir' }
+];
+const FOULARDS = [
+  null,
+  { id:'f1', c:'#b5342b', o:'#7d2119' }, { id:'f2', c:'#2f6b8f', o:'#1d4460' },
+  { id:'f3', c:'#d8b24a', o:'#a2842e' }, { id:'f4', c:'#e8e2d4', o:'#b2ab9c' }
+];
+const OR = '#e0b23a', ARGENT = '#c3cad0';
+const BOUCHES  = ['Neutre','Sourire','Serrée','Dents','Dent en or'];
+const LUNETTES = ['Sans','De vue','Soleil','Sécurité','Bandeau'];
+const BOUCLES  = ['Sans','Une','Deux or','Deux argent'];
+const MOTIFS   = ['Uni','Marinière','Gilet fluo','Bretelles'];
+const NOMS_FOULARD = ['Sans','Rouge','Bleu','Jaune','Blanc'];
+
+
+const GW = 16, GH = 18;
+const BLANC = '#f6f1e6', NOIR = '#1a1208', BOUCHE = '#7a3a2e', COL = '#161d24';
+const CASQUE = '#e8a51e', CASQUE_O = '#b8790c';
+
+function zone(g, x0, y0, x1, y1, c){
+  for (let y = Math.max(0, y0); y <= Math.min(GH - 1, y1); y++)
+    for (let x = Math.max(0, x0); x <= Math.min(GW - 1, x1); x++) g[y][x] = c;
+}
+function pt(g, cases, c){
+  for (const [x, y] of cases) if (x >= 0 && x < GW && y >= 0 && y < GH) g[y][x] = c;
+}
+
+function grille(){
+  const P = PEAUX[etat.peau], C = CHEVEUX[etat.cheveux], V = VESTES[etat.veste];
+  const co = etat.coiffure, ba = etat.barbe, te = etat.tete;
+  const chauve = co === 0, casque = te === 3, poil = !chauve && !casque;
+  const bc = chauve ? '#3d2b1e' : C.c;
+  const bo = chauve ? '#241a12' : C.o;
+  const g = Array.from({ length: GH }, () => new Array(GW).fill(null));
+
+  zone(g, 1, 14, 14, 17, V.c);
+  zone(g, 2, 13, 13, 13, V.c);
+  zone(g, 1, 14, 3, 17, V.o);
+  zone(g, 12, 14, 14, 17, V.o);
+  zone(g, 2, 13, 3, 13, V.o);
+  zone(g, 12, 13, 13, 13, V.o);
+
+  const mo = etat.motif;
+  if (mo === 1){
+    zone(g, 1, 15, 14, 15, '#e8e2d4'); zone(g, 1, 17, 14, 17, '#e8e2d4');
+    zone(g, 1, 15, 3, 15, '#b2ab9c'); zone(g, 12, 15, 14, 15, '#b2ab9c');
+    zone(g, 1, 17, 3, 17, '#b2ab9c'); zone(g, 12, 17, 14, 17, '#b2ab9c');
+  }
+  if (mo === 2){
+    zone(g, 1, 14, 14, 14, '#d7e84a'); zone(g, 1, 16, 14, 16, '#d7e84a');
+    zone(g, 1, 14, 3, 14, '#a8b82e'); zone(g, 12, 14, 14, 14, '#a8b82e');
+    zone(g, 1, 16, 3, 16, '#a8b82e'); zone(g, 12, 16, 14, 16, '#a8b82e');
+  }
+  if (mo === 3){
+    zone(g, 4, 14, 4, 17, '#3a2c1d'); zone(g, 11, 14, 11, 17, '#3a2c1d');
+    pt(g, [[4,15],[11,15]], OR);
+  }
+
+  if (etat.tshirt){
+    const TC = '#8d8a7e', TO = '#6e6c62';
+    zone(g, 1, 14, 14, 17, TC);
+    zone(g, 2, 13, 13, 13, TC);
+    zone(g, 1, 14, 3, 17, TO);
+    zone(g, 12, 14, 14, 17, TO);
+    zone(g, 2, 13, 3, 13, TO);
+    zone(g, 12, 13, 13, 13, TO);
+    pt(g, [[5,15],[9,16],[3,17],[12,15]], '#3c3a34');
+    pt(g, [[6,14],[7,14],[8,14],[9,14]], '#5a584f');
+  }
+
+  zone(g, 6, 11, 9, 12, P.c);
+  zone(g, 6, 11, 9, 11, P.o);
+  zone(g, 9, 11, 9, 12, P.o);
+
+  pt(g, [[6,13],[9,13],[7,14],[8,14]], COL);
+  pt(g, [[5,13],[10,13],[6,14],[9,14]], V.o);
+
+  const F = FOULARDS[etat.foulard];
+  if (F){
+    zone(g, 5, 12, 10, 13, F.c);
+    zone(g, 4, 13, 11, 13, F.c);
+    pt(g, [[9,12],[10,12],[10,13],[11,13]], F.o);
+    pt(g, [[7,13],[8,14]], F.o);
+  }
+
+  pt(g, [[3,6],[3,7],[12,6],[12,7]], P.c);
+  pt(g, [[3,7],[12,7]], P.o);
+
+  zone(g, 4, 3, 11, 9, P.c);
+  zone(g, 5, 10, 10, 10, P.c);
+  zone(g, 11, 3, 11, 9, P.o);
+  pt(g, [[10,10]], P.o);
+
+  if (ba === 1){ zone(g, 6, 9, 9, 10, bc); pt(g, [[9,9],[9,10]], bo); }
+  if (ba === 2){
+    zone(g, 4, 8, 11, 9, bc); zone(g, 5, 10, 10, 10, bc);
+    pt(g, [[4,7],[11,7],[11,8],[11,9],[10,10]], bo);
+  }
+  if (ba === 3){
+    zone(g, 4, 7, 11, 10, bc); zone(g, 5, 11, 10, 11, bc);
+    pt(g, [[4,6],[11,6]], bc);
+    pt(g, [[11,6],[11,7],[11,8],[11,9],[11,10],[10,11]], bo);
+  }
+  if (ba === 5){
+    zone(g, 4, 5, 4, 8, bc); zone(g, 11, 5, 11, 8, bc);
+    pt(g, [[11,5],[11,6],[11,7],[11,8]], bo);
+  }
+
+  const oeil = YEUX[etat.yeux].c;
+  pt(g, [[5,5],[6,5],[9,5],[10,5]], BLANC);
+  pt(g, [[6,5],[9,5]], oeil);
+  pt(g, [[7,7],[8,7]], P.o);
+
+  const bo2 = etat.bouche;
+  if (bo2 === 0){ zone(g, 6, 9, 9, 9, BOUCHE); pt(g, [[6,9],[9,9]], P.o); }
+  if (bo2 === 1){ zone(g, 6, 9, 9, 9, BOUCHE); pt(g, [[5,8],[10,8]], P.o); }
+  if (bo2 === 2){ zone(g, 6, 9, 9, 9, P.o); }
+  if (bo2 === 3){ zone(g, 6, 9, 9, 9, BOUCHE); pt(g, [[7,9],[8,9]], BLANC); }
+  if (bo2 === 4){ zone(g, 6, 9, 9, 9, BOUCHE); pt(g, [[7,9]], BLANC); pt(g, [[8,9]], OR); }
+
+  if (ba === 1 || ba === 3 || ba === 4){ zone(g, 6, 8, 9, 8, bc); pt(g, [[9,8]], bo); }
+  if (ba === 4) zone(g, 6, 9, 9, 9, BOUCHE);
+
+  pt(g, [[5,4],[6,4],[9,4],[10,4]], poil ? bc : P.o);
+  if (poil) pt(g, [[10,4]], bo);
+
+  if (poil){
+    if (co === 1){
+      zone(g, 4, 2, 11, 2, C.c);
+      pt(g, [[3,3],[3,4],[12,3],[12,4]], C.c);
+      pt(g, [[11,2],[12,3],[12,4]], C.o);
+    }
+    if (co === 2){
+      zone(g, 5, 1, 10, 1, C.c); zone(g, 4, 2, 11, 2, C.c);
+      pt(g, [[3,3],[3,4],[12,3],[12,4]], C.c);
+      pt(g, [[5,2],[7,2],[9,2],[6,1],[9,1]], C.o);
+      pt(g, [[11,2],[12,3],[12,4]], C.o);
+    }
+    if (co === 3){
+      zone(g, 4, 1, 11, 2, C.c); zone(g, 3, 2, 3, 5, C.c); zone(g, 12, 2, 12, 5, C.c);
+      pt(g, [[5,0],[6,0],[7,0],[8,0],[9,0],[10,0]], C.c);
+      pt(g, [[10,0],[11,1],[11,2],[12,2],[12,3],[12,4],[12,5]], C.o);
+    }
+    if (co === 4){
+      zone(g, 4, 2, 11, 2, C.c);
+      pt(g, [[3,3],[12,3]], C.c);
+      pt(g, [[12,4],[13,4],[13,5],[13,6],[12,6]], C.c);
+      pt(g, [[11,2],[13,5],[13,6]], C.o);
+    }
+    if (co === 5){
+      zone(g, 6, 2, 9, 2, C.c);
+      pt(g, [[4,3],[3,3],[3,4],[11,3],[12,3],[12,4]], C.c);
+      pt(g, [[9,2],[11,3],[12,3],[12,4]], C.o);
+    }
+  }
+
+  const lu = etat.lunettes;
+  if (lu === 1){
+    pt(g, [[4,5],[7,5],[8,5],[11,5]], '#2b2119');
+    pt(g, [[5,5],[10,5]], BLANC);
+    pt(g, [[6,5],[9,5]], oeil);
+    pt(g, [[3,5],[12,5]], '#2b2119');
+  }
+  if (lu === 2){
+    zone(g, 4, 5, 11, 5, '#1e1a16');
+    pt(g, [[5,5],[9,5]], '#4a4038');
+    pt(g, [[3,5],[12,5],[7,5],[8,5]], '#2b2119');
+  }
+  if (lu === 3){
+    zone(g, 4, 5, 11, 5, '#cfe0a8');
+    pt(g, [[6,5],[9,5]], oeil);
+    pt(g, [[7,5],[8,5]], '#8fa36a');
+    pt(g, [[3,5],[12,5]], '#8fa36a');
+  }
+  if (lu === 4){
+    pt(g, [[9,5],[10,5],[11,5],[12,5]], '#1e1a16');
+    pt(g, [[11,4],[12,4],[8,4]], '#1e1a16');
+  }
+
+  if (etat.boucle === 1) pt(g, [[12,8]], OR);
+  if (etat.boucle === 2) pt(g, [[12,8],[3,8]], OR);
+  if (etat.boucle === 3) pt(g, [[12,8],[3,8]], ARGENT);
+
+  if (te === 1){
+    pt(g, [[7,0],[8,0]], V.c);
+    zone(g, 4, 1, 11, 1, V.o);
+    zone(g, 3, 2, 12, 3, V.c);
+    pt(g, [[11,1],[12,2],[12,3]], V.o);
+    zone(g, 3, 3, 12, 3, V.o);
+  }
+  if (te === 2){
+    zone(g, 4, 0, 11, 1, V.c);
+    zone(g, 3, 2, 12, 2, V.o);
+    zone(g, 2, 3, 13, 3, V.o);
+    pt(g, [[11,0],[11,1],[12,2],[13,3]], V.o);
+    pt(g, [[4,0],[5,0]], V.c);
+  }
+  if (te === 3){
+    zone(g, 4, 0, 11, 1, CASQUE);
+    zone(g, 3, 2, 12, 2, CASQUE);
+    zone(g, 2, 3, 13, 3, CASQUE_O);
+    pt(g, [[7,0],[8,0],[7,1],[8,1]], CASQUE_O);
+    pt(g, [[11,0],[11,1],[12,2]], CASQUE_O);
+  }
+  if (te === 5){                       // casque de chantier trop grand
+    zone(g, 3, 1, 12, 3, CASQUE);
+    zone(g, 2, 4, 13, 4, CASQUE_O);
+    zone(g, 4, 5, 11, 5, CASQUE_O);
+    pt(g, [[7,1],[8,1],[7,2],[8,2],[7,3],[8,3]], CASQUE_O);
+    pt(g, [[12,1],[12,2],[12,3],[13,4]], CASQUE_O);
+    pt(g, [[3,5],[12,5]], CASQUE_O);
+  }
+  if (te === 4){
+    zone(g, 4, 1, 11, 2, V.c);
+    pt(g, [[3,2],[12,2],[3,3],[12,3]], V.c);
+    pt(g, [[5,1],[8,1],[10,2]], V.o);
+    pt(g, [[13,3],[13,4],[12,4]], V.c);
+    pt(g, [[11,1],[11,2],[12,2],[13,4]], V.o);
+  }
+  return g;
+}
+
+function dessinerAvatar(){
+  const g = grille(), out = [];
+  for (let y = 0; y < GH; y++){
+    let x = 0;
+    while (x < GW){
+      const c = g[y][x];
+      if (c === null){ x++; continue; }
+      let n = 1;
+      while (x + n < GW && g[y][x + n] === c) n++;
+      out.push(`<rect x="${x}" y="${y}" width="${n}" height="1" fill="${c}"/>`);
+      x += n;
+    }
+  }
+  return out.join('');
+}
+
+
+let etat = { peau:2, cheveux:1, coiffure:1, barbe:2, tete:5, veste:0,
+             yeux:0, bouche:0, lunettes:0, boucle:0, motif:0, foulard:0 };
+
+const dossier = {};
+let pas = 0;
+
+const REPLIQUES = [
+  { t:"Visite d'embauche", b:"Asseyez-vous. Ça va être rapide.", e:"Il ne lève pas les yeux de son dossier." },
+  { t:"Test de la vue", b:"Lisez-moi la dernière ligne que vous arrivez à lire.", e:"Il regarde par la fenêtre pendant tout le test." },
+  { t:"Test auditif", b:"Je vais émettre un son. Dites-moi quand vous l'entendez.", e:"Aucun appareil n'est branché." },
+  { t:"Poids et taille", b:"Montez là-dessus.", e:"La balance est éteinte." },
+  { t:"Aptitude en hauteur", b:"Dernière question. Peur du vide ?", e:"Il tient déjà le tampon." },
+  { t:"Verdict", b:"C'est bon. Vous êtes apte.", e:"Il n'a rien relu." }
+];
+
+const toubib = document.querySelector('.toubib');
+
+function ecran(n){
+  pas = n;
+  document.querySelectorAll('.etape').forEach(s => s.classList.remove('on'));
+  $('e' + n).classList.add('on');
+  const r = REPLIQUES[n];
+  $('titre').textContent = r.t;
+  $('bulle').innerHTML = r.b + '<em>' + r.e + '</em>';
+  for (let i = 0; i < 5; i++) $('p' + i).classList.toggle('faite', i < n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* le medecin lève les yeux, dit un truc, note quelque chose */
+function reagit(phrase, note, suite){
+  toubib.classList.add('leve');
+  $('bulle').innerHTML = phrase + '<span class="note">Il écrit : « ' + note + ' »</span>';
+  setTimeout(() => toubib.classList.remove('leve'), 1100);
+  $('suivant').disabled = false;
+  $('suivant').textContent = 'Continuer';
+  suivantFait = suite;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+let suivantFait = null;
+
+$('suivant').addEventListener('click', () => {
+  if (suivantFait){ const f = suivantFait; suivantFait = null; return f(); }
+  if (pas === 0) lancerVue();
+  else if (pas === 1) validerVue();
+});
+
+$('e0').querySelector('[data-go]').addEventListener('click', () => lancerVue());
+
+/* ---------- 1 : vue ---------- */
+function lancerVue(){
+  dossier.pseudo = (FICHE && FICHE.pseudo) || 'Docker sans nom';
+  ecran(1);
+  $('suivant').textContent = 'Valider';
+  $('suivant').disabled = false;
+  suivantFait = null;
+}
+function validerVue(){
+  const rep = $('vue').value.replace(/[^A-Za-zÀ-ÿ]/g, '').toUpperCase();
+  const piege = 'SIVOUSLISEZCECILAVOUSMENTEZ';
+  let phrase;
+  if (rep.length >= 14 && piege.startsWith(rep.slice(0, 12))){
+    dossier.vue = 'Ment, mais bonne vue';
+    phrase = "Cette ligne est illisible. Personne ne peut la lire.";
+  } else if (rep.includes('AIJAMAISVU')){
+    dossier.vue = 'Correcte, aveu spontané';
+    phrase = "C'est noté. Ça arrive.";
+  } else if (rep.length === 0){
+    dossier.vue = 'Correcte';
+    phrase = "Vous n'avez rien tapé. Je mets correcte.";
+  } else {
+    dossier.vue = 'Correcte';
+    phrase = "Très bien. Correcte.";
+  }
+  reagit(phrase, dossier.vue, lancerAudition);
+}
+
+/* ---------- 2 : audition ---------- */
+function lancerAudition(){
+  ecran(2);
+  $('suivant').disabled = true;
+  $('suivant').textContent = 'Répondez au médecin';
+  $('choix-audition').style.display = 'none';
+  let n = 0;
+  const tic = setInterval(() => {
+    n++;
+    $('onde-txt').textContent = 'Émission du signal' + '.'.repeat(n % 4);
+    if (n > 7){
+      clearInterval(tic);
+      $('onde-txt').textContent = 'Signal émis';
+      $('choix-audition').style.display = 'flex';
+    }
+  }, 420);
+}
+document.getElementById('choix-audition').querySelectorAll('[data-rep]').forEach(b =>
+  b.addEventListener('click', () => {
+    if (b.dataset.rep === 'oui'){
+      dossier.oreille = 'Ment';
+      reagit("Il n'y avait pas de son.", 'Ment', lancerPoids);
+    } else {
+      dossier.oreille = 'Sourd';
+      reagit("Hm. Vous n'entendez pas.", 'Sourd', lancerPoids);
+    }
+  }));
+
+/* ---------- 3 : poids ---------- */
+const BALANCE = [
+  { c:"Enlevez vos chaussures.",              b:'Monter sur la balance' },
+  { c:"Et la veste.",                          b:"D'accord" },
+  { c:"Videz vos poches.",                     b:"D'accord" },
+  { c:"Le casque aussi.",                      b:"D'accord" },
+  { c:"Votre montre. Ça compte.",              b:"Si vous voulez" },
+  { c:"Ne respirez pas, deux secondes.",       b:"Bloqué" },
+  { c:"Appuyez pas avec les mains sur le mur.",b:"Je touchais rien" },
+  { c:"Bon. On va dire ça.",                   b:"Voilà" }
+];
+let cran = 0;
+function lancerPoids(){
+  ecran(3);
+  cran = 0;
+  $('cadran').innerHTML = '— <small>kg</small>';
+  $('retire').textContent = 'Montez sur la balance.';
+  $('monter').textContent = 'Monter sur la balance';
+  $('suivant').disabled = true;
+  $('suivant').textContent = 'Suivez les consignes';
+  suivantFait = null;
+}
+$('monter').addEventListener('click', () => {
+  if (cran < BALANCE.length){
+    const suite = [92, 84, 77, 71, 63, 55, 48, 41];
+    $('retire').textContent = BALANCE[cran].c;
+    $('cadran').innerHTML = suite[cran] + ' <small>kg</small>';
+    cran++;
+    $('monter').textContent = cran < BALANCE.length ? BALANCE[cran].b : 'Descendre';
+  } else {
+    const p = 29 + Math.floor(Math.random() * 12);          // 29 à 40 kg
+    const t = (1.31 + Math.random() * 0.16).toFixed(2);      // 1,31 à 1,47 m
+    dossier.poids = p + ' kg';
+    dossier.taille = t.replace('.', ',') + ' m';
+    $('cadran').innerHTML = p + ' <small>kg</small>';
+    $('retire').textContent = 'Il note le chiffre sans regarder l’écran.';
+    reagit("Bon. " + p + " kilos, " + dossier.taille.replace(',', ',') + ". Voilà.",
+           p + ' kg — ' + dossier.taille, lancerVertige);
+  }
+});
+
+/* ---------- 4 : vertige ---------- */
+function lancerVertige(){
+  ecran(4);
+  $('suivant').disabled = true;
+  $('suivant').textContent = 'Répondez au médecin';
+  suivantFait = null;
+}
+document.getElementById('e4').querySelectorAll('[data-vide]').forEach(b =>
+  b.addEventListener('click', () => {
+    const v = b.dataset.vide;
+    dossier.vide = v;
+    if (v === 'Énorme'){
+      dossier.poste = 'Grutier — cabine haute (40 m)';
+      reagit("Parfait. Grue numéro 4. Quarante mètres.", 'Apte hauteur', verdict);
+    } else if (v === 'Aucune'){
+      dossier.poste = 'Fond de cale — niveau −3';
+      reagit("Alors on vous met en bas. Fond de cale.", 'Apte confinement', verdict);
+    } else {
+      dossier.poste = 'Passerelle — niveau 2';
+      reagit("Un peu. Donc beaucoup. Passerelle.", 'Apte', verdict);
+    }
+  }));
+
+/* ---------- 5 : verdict ---------- */
+function verdict(){
+  ecran(5);
+  $('d-nom').textContent = dossier.pseudo;
+  $('d-vue').textContent = dossier.vue;
+  $('d-oreille').textContent = dossier.oreille;
+  $('d-poids').textContent = dossier.poids;
+  $('d-taille').textContent = dossier.taille;
+  $('d-vide').textContent = dossier.vide;
+  $('d-poste').textContent = dossier.poste;
+  $('avatar').innerHTML = dessinerAvatar();
+  $('suivant').textContent = 'Descendre sur le quai';
+  $('suivant').disabled = false;
+  suivantFait = () => {
+    $('suivant').disabled = true;
+    $('suivant').textContent = 'Enregistrement…';
+    terminerVisite();
+  };
+  setTimeout(() => $('tampon').classList.add('pose'), 900);
+}
+
+ecran(0);
+
+/* ---------- Battle Dock ---------- */
+let FICHE = null;
+(async () => {
+  FICHE = await BD.garder('visite');
+  if (!FICHE) return;
+  const a = BD.avatarDe(FICHE);
+  Object.assign(etat, a, { tete: 5 });
+  dossier.pseudo = FICHE.pseudo || 'Docker sans nom';
+  $('pseudo').value = FICHE.pseudo || '';
+  $('pseudo').disabled = true;
+  $('pseudo').parentElement.style.display = 'none';
+  $('e0').querySelector('[data-go]').textContent = 'Je suis prêt';
+})();
+
+async function terminerVisite(){
+  await BD.poser('dossier_medical', {
+    poids_kg: parseInt(dossier.poids) || null,
+    taille_m: parseFloat((dossier.taille || '').replace(',', '.')) || null,
+    acuite: dossier.vue || null,
+    audition: dossier.oreille || null,
+    vertige: dossier.vide || null,
+    poste: dossier.poste || null
+  });
+  await BD.poser('equipement', { casque_trop_grand: true });
+  await BD.avancer('visite');
+}
+
+</script>
+</body>
+</html>
