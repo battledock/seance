@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050d16">
+<title>Battledock — Comptoir d'équipement</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--nuit:#050d16;--brume:#7fa3c0;--sable:#e8e2d4;--ocre:#e0913a;--ocre-f:#a3611f;
+      --papier:#e9e4d6;--encre:#2b2a26;--tampon:#b5342b;--vert:#4fb286}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--nuit);color:var(--sable);
+  font-family:'Barlow',system-ui,sans-serif;overflow-x:hidden;
+  background-image:radial-gradient(90% 40% at 50% 0%, rgba(30,61,89,.5), transparent 62%);
+  background-attachment:fixed;
+}
+.ecran{max-width:460px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 18px) 18px calc(env(safe-area-inset-bottom) + 124px)}
+
+/* --- bandeau solde --- */
+.solde{
+  position:sticky;top:calc(env(safe-area-inset-top) + 4px);z-index:5;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(10,28,46,.92);backdrop-filter:blur(12px);
+  border:1px solid rgba(127,163,192,.2);border-radius:12px;
+  padding:12px 16px;margin-bottom:18px;
+}
+.solde span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--brume)}
+.solde b{font-family:'Courier Prime',monospace;font-size:19px;font-weight:700;color:var(--ocre);letter-spacing:.02em}
+.solde b.chute{animation:degringole .8s ease-out}
+@keyframes degringole{0%{color:var(--tampon);transform:scale(1.14)}100%{color:var(--ocre);transform:none}}
+
+.entete{text-align:center;margin-bottom:16px}
+.entete .sur{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--brume);margin-bottom:8px;padding-left:.34em}
+.entete h1{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.03em;line-height:1.05}
+
+/* --- le vendeur --- */
+.vendeur{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+.vendeur svg{flex:0 0 100px;width:100px;height:auto;border-radius:12px;border:1px solid rgba(127,163,192,.2)}
+.bulle{position:relative;flex:1;background:rgba(233,228,214,.94);color:var(--encre);
+  border-radius:14px;padding:13px 15px;font-size:14px;line-height:1.5;transition:background .25s}
+.bulle::before{content:"";position:absolute;left:-7px;top:18px;border:7px solid transparent;border-right-color:rgba(233,228,214,.94);border-left:0}
+.bulle em{font-style:normal;color:#7a756a;font-size:12.5px;display:block;margin-top:5px}
+.vendeur.parle .bulle{background:#fff}
+
+.buste{animation:respire 4s ease-in-out infinite;transform-origin:46px 92px}
+@keyframes respire{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.018)}}
+.tete{animation:dodeline 6.4s ease-in-out infinite;transform-origin:46px 62px}
+@keyframes dodeline{0%,100%{transform:rotate(0) translateY(0)}
+  35%{transform:rotate(1.8deg) translateY(-.5px)}70%{transform:rotate(-1.4deg) translateY(.4px)}}
+.paupieres{transform:scaleY(0);transform-origin:46px 40px;animation:cligne 5.8s infinite}
+@keyframes cligne{0%,95.5%{transform:scaleY(0)}96.5%,98.5%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+.mainD{animation:frotte 3.2s ease-in-out infinite;transform-origin:70px 80px}
+@keyframes frotte{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
+
+/* --- rayon --- */
+.rayon{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.article{
+  display:flex;align-items:center;gap:13px;
+  background:rgba(10,28,46,.7);border:1px solid rgba(127,163,192,.16);
+  border-radius:12px;padding:12px 14px;text-align:left;width:100%;
+  font-family:'Barlow',sans-serif;color:var(--sable);cursor:pointer;
+  transition:transform .12s,border-color .2s,opacity .2s;
+}
+.article:active{transform:scale(.99)}
+.article svg{flex:0 0 42px;width:42px;height:42px}
+.article .txt{flex:1;min-width:0}
+.article .nom{font-size:14.5px;font-weight:500;margin-bottom:2px}
+.article .desc{font-size:12px;color:#8fa9bd;line-height:1.35}
+.article .prix{font-family:'Courier Prime',monospace;font-size:13px;font-weight:700;text-align:right;white-space:nowrap}
+.article.trop .prix{color:#c96a5c}
+.article.trop{opacity:.62}
+.article.ok{border-color:var(--ocre)}
+.article.ok .prix{color:var(--vert)}
+.article .etiq{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--brume);display:block;margin-top:3px}
+
+.note{font-size:12px;color:rgba(127,163,192,.6);line-height:1.5;margin:14px 2px 0}
+
+.barre{position:fixed;left:0;right:0;bottom:0;z-index:6;
+  padding:14px 18px calc(env(safe-area-inset-bottom) + 16px);
+  background:linear-gradient(180deg,rgba(5,13,22,0),rgba(5,13,22,.92) 32%,var(--nuit))}
+.barre .dedans{max-width:460px;margin:0 auto}
+.principal{width:100%;background:var(--ocre);border:0;border-radius:10px;padding:17px;
+  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:#1a0f02;cursor:pointer;transition:transform .12s,background .2s}
+.principal:active{transform:scale(.985);background:var(--ocre-f)}
+.principal:disabled{opacity:.45;cursor:default}
+
+/* --- ticket de caisse --- */
+.ticket{
+  background:var(--papier);color:var(--encre);border-radius:4px;
+  padding:20px 18px 26px;font-family:'Courier Prime',monospace;position:relative;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),94% 100%,88% calc(100% - 8px),82% 100%,76% calc(100% - 8px),70% 100%,64% calc(100% - 8px),58% 100%,52% calc(100% - 8px),46% 100%,40% calc(100% - 8px),34% 100%,28% calc(100% - 8px),22% 100%,16% calc(100% - 8px),10% 100%,4% calc(100% - 8px),0 100%);
+}
+.ticket h3{font-family:'Barlow',sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;text-align:center;color:#7a756a;margin-bottom:2px}
+.ticket .ens{font-family:'Bebas Neue',sans-serif;font-size:22px;text-align:center;letter-spacing:.04em;margin-bottom:14px}
+.ticket .sep{border-top:1px dashed rgba(43,42,38,.35);margin:10px 0}
+.ticket .l{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:4px 0}
+.ticket .l b{font-weight:700}
+.ticket .tot{font-size:15px;font-weight:700}
+.ticket .pied{text-align:center;font-size:11px;color:#7a756a;margin-top:12px;line-height:1.6}
+
+.etapeFin{display:none}
+.etapeFin.on{display:block;animation:entre .4s ease-out}
+@keyframes entre{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.avatar-final{
+  display:flex;gap:16px;align-items:center;
+  background:rgba(10,28,46,.7);border:1px solid rgba(127,163,192,.18);
+  border-radius:14px;padding:16px;margin-top:16px;
+}
+.avatar-final svg{flex:0 0 84px;width:84px;height:auto;image-rendering:pixelated}
+.avatar-final p{font-size:13.5px;line-height:1.5;color:#9dbcd4}
+.avatar-final p b{color:var(--sable);font-weight:600}
+
+.rayon.off{display:none}
+@media (prefers-reduced-motion:reduce){
+  .buste,.tete,.mainD,.etapeFin.on,.solde b.chute{animation:none}
+  .paupieres{animation:none;transform:scaleY(0)}
+}
+</style>
+</head>
+<body>
+
+<main class="ecran">
+  <div class="solde">
+    <span>Ton solde</span><b id="solde">300 000 €</b>
+  </div>
+
+  <div class="entete">
+    <p class="sur">Coopérative du port</p>
+    <h1 id="titre">Comptoir d'équipement</h1>
+  </div>
+
+  <div class="vendeur" id="vendeur">
+    <svg viewBox="0 0 96 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="96" height="104" rx="10" fill="#241d16"/>
+      <rect width="96" height="66" fill="#2e2419"/>
+      <g fill="#3d3021">
+        <rect x="2" y="6" width="92" height="4"/><rect x="2" y="30" width="92" height="4"/>
+        <rect x="2" y="54" width="92" height="4"/>
+      </g>
+      <g>
+        <rect x="6" y="12" width="9" height="18" rx="1.5" fill="#c8641f"/>
+        <rect x="17" y="16" width="11" height="14" rx="1.5" fill="#3d6b4a"/>
+        <rect x="30" y="13" width="8" height="17" rx="1.5" fill="#2f7fb0"/>
+        <rect x="40" y="18" width="13" height="12" rx="1.5" fill="#8f4a3a"/>
+        <rect x="56" y="12" width="9" height="18" rx="1.5" fill="#c9a83a"/>
+        <rect x="68" y="15" width="10" height="15" rx="1.5" fill="#4a5158"/>
+        <rect x="81" y="17" width="9" height="13" rx="1.5" fill="#a04d12"/>
+        <path d="M10 36 q0 -6 6 -6 t6 6 v14 h-12 z" fill="#e8a51e"/>
+        <rect x="26" y="38" width="12" height="16" rx="2" fill="#4a3b28"/>
+        <rect x="42" y="36" width="14" height="18" rx="2" fill="#2f4f6b"/>
+        <rect x="60" y="40" width="10" height="14" rx="2" fill="#7d6544"/>
+        <rect x="74" y="37" width="14" height="17" rx="2" fill="#3a4147"/>
+      </g>
+      <ellipse cx="46" cy="101" rx="40" ry="3.5" fill="#040c14" opacity=".3"/>
+      <g class="comptoir">
+        <rect x="0" y="90" width="96" height="14" rx="2" fill="#4a3b28"/>
+        <rect x="0" y="90" width="96" height="4" rx="2" fill="#65523a"/>
+        <rect x="6" y="82" width="18" height="8" rx="1" fill="#9aa3a8"/>
+        <rect x="8" y="84" width="14" height="3" fill="#3a4147"/>
+        <rect x="10" y="79" width="10" height="3" rx="1" fill="#c3cad0"/>
+      </g>
+      <g class="buste">
+        <path d="M14 92 q0 -22 14 -27 h32 q14 5 14 27 z" fill="#8f4a3a"/>
+        <path d="M46 65 h14 q14 5 14 27 h-28 z" fill="#743a2c"/>
+        <path d="M36 63 h16 v11 q-8 5 -16 0 z" fill="#cf9b6f"/>
+        <path d="M34 66 q12 12 22 0 l5 3 -16 15 -16 -15 z" fill="#8f4a3a"/>
+        <path d="M34 66 q12 12 22 0 l5 3 -16 15 -16 -15 z" fill="#e9e4d6" opacity=".22"/>
+        <rect x="18" y="78" width="13" height="9" rx="1.5" fill="#e9e4d6"/>
+        <rect x="20" y="80.5" width="9" height="1.4" fill="#a8a196"/>
+        <rect x="20" y="83.5" width="6" height="1.4" fill="#a8a196"/>
+      </g>
+      <g class="tete">
+        <ellipse cx="27" cy="42" rx="4" ry="6" fill="#cf9b6f"/>
+        <ellipse cx="65" cy="42" rx="4" ry="6" fill="#cf9b6f"/>
+        <path d="M28 40 q0 -22 18 -22 t18 22 q0 18 -18 24 q-18 -6 -18 -24 z" fill="#d9a87d"/>
+        <path d="M46 18 q18 0 18 22 q0 18 -18 24 z" fill="#b98a5f" opacity=".35"/>
+        <path d="M25 34 q0 -24 21 -24 t21 24 q-3 -12 -21 -12 t-21 12 z" fill="#3d2b1e"/>
+        <path d="M25 34 q2 -10 8 -15 q-2 8 -2 15 z" fill="#2a1d14"/>
+        <path d="M33 34 q6 -3 11 -1" stroke="#3d2b1e" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <path d="M59 34 q-6 -3 -11 -1" stroke="#3d2b1e" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="39" cy="40" rx="4.6" ry="3.4" fill="#f6f1e6"/>
+        <circle cx="39.8" cy="40.2" r="2" fill="#2f4f2f"/>
+        <ellipse cx="53" cy="40" rx="4.6" ry="3.4" fill="#f6f1e6"/>
+        <circle cx="53.8" cy="40.2" r="2" fill="#2f4f2f"/>
+        <g class="paupieres">
+          <rect x="34" y="36" width="10" height="8" rx="1" fill="#d9a87d"/>
+          <rect x="48" y="36" width="10" height="8" rx="1" fill="#d9a87d"/>
+        </g>
+        <path d="M44 45 q-1 6 -3 8 q0 2 5 2 t5 -2 q-2 -2 -3 -8" fill="#b98a5f" opacity=".5"/>
+        <path d="M37 58 q9 7 18 0 q-4 6 -9 6 t-9 -6 z" fill="#7d3a2e"/>
+        <path d="M39 59 q7 3 14 0 q-3 2 -7 2 t-7 -2 z" fill="#f2eee2"/>
+      </g>
+      <g class="mainD">
+        <path d="M64 80 q12 4 14 10" fill="none" stroke="#8f4a3a" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="79" cy="90" r="4.4" fill="#cf9b6f"/>
+        <path d="M83 88 q4 -2 6 0" stroke="#cf9b6f" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div class="bulle" id="bulle">
+      Trois cent mille euros de dotation. Vous êtes riche.
+      <em>Il sourit d'une façon qui ne rassure pas.</em>
+    </div>
+  </div>
+
+  <div class="rayon" id="rayon"></div>
+  <p class="note" id="note">Il te faut au moins un article pour être autorisé à travailler.</p>
+
+  <section class="etapeFin" id="fin">
+    <div class="ticket">
+      <h3>Coopérative d'équipement</h3>
+      <p class="ens">Quai de la Joliette</p>
+      <div class="sep"></div>
+      <div class="l"><span id="t-art">—</span><b id="t-prix">—</b></div>
+      <div class="l"><span>Frais de dossier</span><b>0,00 €</b></div>
+      <div class="sep"></div>
+      <div class="l tot"><span>Total</span><b id="t-tot">—</b></div>
+      <div class="l"><span>Dotation reçue</span><b id="t-dot">—</b></div>
+      <div class="l tot"><span>Reste</span><b id="t-reste">—</b></div>
+      <div class="sep"></div>
+      <p class="pied">Article vendu en l'état.<br>Ni repris ni échangé.<br>Merci de votre confiance.</p>
+    </div>
+
+    <div class="avatar-final">
+      <svg id="avatar" viewBox="0 0 16 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Docker en tee-shirt d'occasion"></svg>
+      <p>Casque trop grand, <b>tee-shirt d'occasion troué</b>, et un euro en poche.<br>Tu es prêt.</p>
+    </div>
+  </section>
+</main>
+
+<div class="barre"><div class="dedans">
+  <button class="principal" id="suivant" disabled>Choisis un article</button>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const PEAUX = [
+  { id:'p1', c:'#f2d3b6', o:'#d9ab86' },
+  { id:'p2', c:'#e5bc96', o:'#c4936b' },
+  { id:'p3', c:'#cf9b6f', o:'#a97449' },
+  { id:'p4', c:'#a97048', o:'#83502e' },
+  { id:'p5', c:'#7d4c2c', o:'#5c341a' },
+  { id:'p6', c:'#4f2f1c', o:'#39200f' }
+];
+const CHEVEUX = [
+  { id:'c1', c:'#171310', o:'#000000' },
+  { id:'c2', c:'#3d2b1e', o:'#241a12' },
+  { id:'c3', c:'#6b4526', o:'#472c16' },
+  { id:'c4', c:'#a8763c', o:'#7c5426' },
+  { id:'c5', c:'#c9a86a', o:'#9c8049' },
+  { id:'c6', c:'#8f2f1e', o:'#661d10' },
+  { id:'c7', c:'#9aa3a8', o:'#727b80' }
+];
+const VESTES = [
+  { id:'v1', c:'#c8641f', o:'#8f4310', n:'Orange' },
+  { id:'v2', c:'#1f5f8f', o:'#123f61', n:'Bleu' },
+  { id:'v3', c:'#3d6b4a', o:'#264730', n:'Vert' },
+  { id:'v4', c:'#8f2f2a', o:'#5f1c19', n:'Rouge' },
+  { id:'v5', c:'#4a4f57', o:'#2f333a', n:'Gris' },
+  { id:'v6', c:'#c9b47a', o:'#9a8654', n:'Sable' }
+];
+const COIFFURES = ['Rasé','Court','Ondulé','Épais','Queue','Dégarni'];
+const BARBES    = ['Glabre','Bouc','Courte','Pleine','Moustache','Rouflaquettes'];
+const TETES     = ['Rien','Bonnet','Casquette','Casque','Bandana'];
+const YEUX = [
+  { id:'y1', c:'#3b2415', n:'Marron' }, { id:'y2', c:'#6b4a1e', n:'Noisette' },
+  { id:'y3', c:'#3f6b45', n:'Vert' },   { id:'y4', c:'#2f6b8f', n:'Bleu' },
+  { id:'y5', c:'#6b7378', n:'Gris' },   { id:'y6', c:'#1a1208', n:'Noir' }
+];
+const FOULARDS = [
+  null,
+  { id:'f1', c:'#b5342b', o:'#7d2119' }, { id:'f2', c:'#2f6b8f', o:'#1d4460' },
+  { id:'f3', c:'#d8b24a', o:'#a2842e' }, { id:'f4', c:'#e8e2d4', o:'#b2ab9c' }
+];
+const OR = '#e0b23a', ARGENT = '#c3cad0';
+const BOUCHES  = ['Neutre','Sourire','Serrée','Dents','Dent en or'];
+const LUNETTES = ['Sans','De vue','Soleil','Sécurité','Bandeau'];
+const BOUCLES  = ['Sans','Une','Deux or','Deux argent'];
+const MOTIFS   = ['Uni','Marinière','Gilet fluo','Bretelles'];
+const NOMS_FOULARD = ['Sans','Rouge','Bleu','Jaune','Blanc'];
+
+
+const GW = 16, GH = 18;
+const BLANC = '#f6f1e6', NOIR = '#1a1208', BOUCHE = '#7a3a2e', COL = '#161d24';
+const CASQUE = '#e8a51e', CASQUE_O = '#b8790c';
+
+function zone(g, x0, y0, x1, y1, c){
+  for (let y = Math.max(0, y0); y <= Math.min(GH - 1, y1); y++)
+    for (let x = Math.max(0, x0); x <= Math.min(GW - 1, x1); x++) g[y][x] = c;
+}
+function pt(g, cases, c){
+  for (const [x, y] of cases) if (x >= 0 && x < GW && y >= 0 && y < GH) g[y][x] = c;
+}
+
+function grille(){
+  const P = PEAUX[etat.peau], C = CHEVEUX[etat.cheveux], V = VESTES[etat.veste];
+  const co = etat.coiffure, ba = etat.barbe, te = etat.tete;
+  const chauve = co === 0, casque = te === 3, poil = !chauve && !casque;
+  const bc = chauve ? '#3d2b1e' : C.c;
+  const bo = chauve ? '#241a12' : C.o;
+  const g = Array.from({ length: GH }, () => new Array(GW).fill(null));
+
+  zone(g, 1, 14, 14, 17, V.c);
+  zone(g, 2, 13, 13, 13, V.c);
+  zone(g, 1, 14, 3, 17, V.o);
+  zone(g, 12, 14, 14, 17, V.o);
+  zone(g, 2, 13, 3, 13, V.o);
+  zone(g, 12, 13, 13, 13, V.o);
+
+  const mo = etat.motif;
+  if (mo === 1){
+    zone(g, 1, 15, 14, 15, '#e8e2d4'); zone(g, 1, 17, 14, 17, '#e8e2d4');
+    zone(g, 1, 15, 3, 15, '#b2ab9c'); zone(g, 12, 15, 14, 15, '#b2ab9c');
+    zone(g, 1, 17, 3, 17, '#b2ab9c'); zone(g, 12, 17, 14, 17, '#b2ab9c');
+  }
+  if (mo === 2){
+    zone(g, 1, 14, 14, 14, '#d7e84a'); zone(g, 1, 16, 14, 16, '#d7e84a');
+    zone(g, 1, 14, 3, 14, '#a8b82e'); zone(g, 12, 14, 14, 14, '#a8b82e');
+    zone(g, 1, 16, 3, 16, '#a8b82e'); zone(g, 12, 16, 14, 16, '#a8b82e');
+  }
+  if (mo === 3){
+    zone(g, 4, 14, 4, 17, '#3a2c1d'); zone(g, 11, 14, 11, 17, '#3a2c1d');
+    pt(g, [[4,15],[11,15]], OR);
+  }
+
+  if (etat.tshirt){
+    const TC = '#8d8a7e', TO = '#6e6c62';
+    zone(g, 1, 14, 14, 17, TC);
+    zone(g, 2, 13, 13, 13, TC);
+    zone(g, 1, 14, 3, 17, TO);
+    zone(g, 12, 14, 14, 17, TO);
+    zone(g, 2, 13, 3, 13, TO);
+    zone(g, 12, 13, 13, 13, TO);
+    pt(g, [[5,15],[9,16],[3,17],[12,15]], '#3c3a34');
+    pt(g, [[6,14],[7,14],[8,14],[9,14]], '#5a584f');
+  }
+
+  zone(g, 6, 11, 9, 12, P.c);
+  zone(g, 6, 11, 9, 11, P.o);
+  zone(g, 9, 11, 9, 12, P.o);
+
+  pt(g, [[6,13],[9,13],[7,14],[8,14]], COL);
+  pt(g, [[5,13],[10,13],[6,14],[9,14]], V.o);
+
+  const F = FOULARDS[etat.foulard];
+  if (F){
+    zone(g, 5, 12, 10, 13, F.c);
+    zone(g, 4, 13, 11, 13, F.c);
+    pt(g, [[9,12],[10,12],[10,13],[11,13]], F.o);
+    pt(g, [[7,13],[8,14]], F.o);
+  }
+
+  pt(g, [[3,6],[3,7],[12,6],[12,7]], P.c);
+  pt(g, [[3,7],[12,7]], P.o);
+
+  zone(g, 4, 3, 11, 9, P.c);
+  zone(g, 5, 10, 10, 10, P.c);
+  zone(g, 11, 3, 11, 9, P.o);
+  pt(g, [[10,10]], P.o);
+
+  if (ba === 1){ zone(g, 6, 9, 9, 10, bc); pt(g, [[9,9],[9,10]], bo); }
+  if (ba === 2){
+    zone(g, 4, 8, 11, 9, bc); zone(g, 5, 10, 10, 10, bc);
+    pt(g, [[4,7],[11,7],[11,8],[11,9],[10,10]], bo);
+  }
+  if (ba === 3){
+    zone(g, 4, 7, 11, 10, bc); zone(g, 5, 11, 10, 11, bc);
+    pt(g, [[4,6],[11,6]], bc);
+    pt(g, [[11,6],[11,7],[11,8],[11,9],[11,10],[10,11]], bo);
+  }
+  if (ba === 5){
+    zone(g, 4, 5, 4, 8, bc); zone(g, 11, 5, 11, 8, bc);
+    pt(g, [[11,5],[11,6],[11,7],[11,8]], bo);
+  }
+
+  const oeil = YEUX[etat.yeux].c;
+  pt(g, [[5,5],[6,5],[9,5],[10,5]], BLANC);
+  pt(g, [[6,5],[9,5]], oeil);
+  pt(g, [[7,7],[8,7]], P.o);
+
+  const bo2 = etat.bouche;
+  if (bo2 === 0){ zone(g, 6, 9, 9, 9, BOUCHE); pt(g, [[6,9],[9,9]], P.o); }
+  if (bo2 === 1){ zone(g, 6, 9, 9, 9, BOUCHE); pt(g, [[5,8],[10,8]], P.o); }
+  if (bo2 === 2){ zone(g, 6, 9, 9, 9, P.o); }
+  if (bo2 === 3){ zone(g, 6, 9, 9, 9, BOUCHE); pt(g, [[7,9],[8,9]], BLANC); }
+  if (bo2 === 4){ zone(g, 6, 9, 9, 9, BOUCHE); pt(g, [[7,9]], BLANC); pt(g, [[8,9]], OR); }
+
+  if (ba === 1 || ba === 3 || ba === 4){ zone(g, 6, 8, 9, 8, bc); pt(g, [[9,8]], bo); }
+  if (ba === 4) zone(g, 6, 9, 9, 9, BOUCHE);
+
+  pt(g, [[5,4],[6,4],[9,4],[10,4]], poil ? bc : P.o);
+  if (poil) pt(g, [[10,4]], bo);
+
+  if (poil){
+    if (co === 1){
+      zone(g, 4, 2, 11, 2, C.c);
+      pt(g, [[3,3],[3,4],[12,3],[12,4]], C.c);
+      pt(g, [[11,2],[12,3],[12,4]], C.o);
+    }
+    if (co === 2){
+      zone(g, 5, 1, 10, 1, C.c); zone(g, 4, 2, 11, 2, C.c);
+      pt(g, [[3,3],[3,4],[12,3],[12,4]], C.c);
+      pt(g, [[5,2],[7,2],[9,2],[6,1],[9,1]], C.o);
+      pt(g, [[11,2],[12,3],[12,4]], C.o);
+    }
+    if (co === 3){
+      zone(g, 4, 1, 11, 2, C.c); zone(g, 3, 2, 3, 5, C.c); zone(g, 12, 2, 12, 5, C.c);
+      pt(g, [[5,0],[6,0],[7,0],[8,0],[9,0],[10,0]], C.c);
+      pt(g, [[10,0],[11,1],[11,2],[12,2],[12,3],[12,4],[12,5]], C.o);
+    }
+    if (co === 4){
+      zone(g, 4, 2, 11, 2, C.c);
+      pt(g, [[3,3],[12,3]], C.c);
+      pt(g, [[12,4],[13,4],[13,5],[13,6],[12,6]], C.c);
+      pt(g, [[11,2],[13,5],[13,6]], C.o);
+    }
+    if (co === 5){
+      zone(g, 6, 2, 9, 2, C.c);
+      pt(g, [[4,3],[3,3],[3,4],[11,3],[12,3],[12,4]], C.c);
+      pt(g, [[9,2],[11,3],[12,3],[12,4]], C.o);
+    }
+  }
+
+  const lu = etat.lunettes;
+  if (lu === 1){
+    pt(g, [[4,5],[7,5],[8,5],[11,5]], '#2b2119');
+    pt(g, [[5,5],[10,5]], BLANC);
+    pt(g, [[6,5],[9,5]], oeil);
+    pt(g, [[3,5],[12,5]], '#2b2119');
+  }
+  if (lu === 2){
+    zone(g, 4, 5, 11, 5, '#1e1a16');
+    pt(g, [[5,5],[9,5]], '#4a4038');
+    pt(g, [[3,5],[12,5],[7,5],[8,5]], '#2b2119');
+  }
+  if (lu === 3){
+    zone(g, 4, 5, 11, 5, '#cfe0a8');
+    pt(g, [[6,5],[9,5]], oeil);
+    pt(g, [[7,5],[8,5]], '#8fa36a');
+    pt(g, [[3,5],[12,5]], '#8fa36a');
+  }
+  if (lu === 4){
+    pt(g, [[9,5],[10,5],[11,5],[12,5]], '#1e1a16');
+    pt(g, [[11,4],[12,4],[8,4]], '#1e1a16');
+  }
+
+  if (etat.boucle === 1) pt(g, [[12,8]], OR);
+  if (etat.boucle === 2) pt(g, [[12,8],[3,8]], OR);
+  if (etat.boucle === 3) pt(g, [[12,8],[3,8]], ARGENT);
+
+  if (te === 1){
+    pt(g, [[7,0],[8,0]], V.c);
+    zone(g, 4, 1, 11, 1, V.o);
+    zone(g, 3, 2, 12, 3, V.c);
+    pt(g, [[11,1],[12,2],[12,3]], V.o);
+    zone(g, 3, 3, 12, 3, V.o);
+  }
+  if (te === 2){
+    zone(g, 4, 0, 11, 1, V.c);
+    zone(g, 3, 2, 12, 2, V.o);
+    zone(g, 2, 3, 13, 3, V.o);
+    pt(g, [[11,0],[11,1],[12,2],[13,3]], V.o);
+    pt(g, [[4,0],[5,0]], V.c);
+  }
+  if (te === 3){
+    zone(g, 4, 0, 11, 1, CASQUE);
+    zone(g, 3, 2, 12, 2, CASQUE);
+    zone(g, 2, 3, 13, 3, CASQUE_O);
+    pt(g, [[7,0],[8,0],[7,1],[8,1]], CASQUE_O);
+    pt(g, [[11,0],[11,1],[12,2]], CASQUE_O);
+  }
+  if (te === 5){                       // casque de chantier trop grand
+    zone(g, 3, 1, 12, 3, CASQUE);
+    zone(g, 2, 4, 13, 4, CASQUE_O);
+    zone(g, 4, 5, 11, 5, CASQUE_O);
+    pt(g, [[7,1],[8,1],[7,2],[8,2],[7,3],[8,3]], CASQUE_O);
+    pt(g, [[12,1],[12,2],[12,3],[13,4]], CASQUE_O);
+    pt(g, [[3,5],[12,5]], CASQUE_O);
+  }
+  if (te === 4){
+    zone(g, 4, 1, 11, 2, V.c);
+    pt(g, [[3,2],[12,2],[3,3],[12,3]], V.c);
+    pt(g, [[5,1],[8,1],[10,2]], V.o);
+    pt(g, [[13,3],[13,4],[12,4]], V.c);
+    pt(g, [[11,1],[11,2],[12,2],[13,4]], V.o);
+  }
+  return g;
+}
+
+function dessinerAvatar(){
+  const g = grille(), out = [];
+  for (let y = 0; y < GH; y++){
+    let x = 0;
+    while (x < GW){
+      const c = g[y][x];
+      if (c === null){ x++; continue; }
+      let n = 1;
+      while (x + n < GW && g[y][x + n] === c) n++;
+      out.push(`<rect x="${x}" y="${y}" width="${n}" height="1" fill="${c}"/>`);
+      x += n;
+    }
+  }
+  return out.join('');
+}
+
+
+let etat = { peau:2, cheveux:1, coiffure:1, barbe:2, tete:5, veste:0,
+             yeux:0, bouche:0, lunettes:0, boucle:0, motif:0, foulard:0, tshirt:false };
+
+let solde = 0;
+
+const euro = n => n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+const euroCourt = n => n.toLocaleString('fr-FR') + ' €';
+
+/* --- pictos --- */
+const I = {
+  bottes:'<path d="M10 6 h9 v18 q0 6 6 8 h9 v6 H10 z" fill="#4a3b28"/><path d="M10 30 h24 v8 H10 z" fill="#2b2219"/><path d="M12 10 h5 v12 h-5 z" fill="#65523a"/>',
+  gants:'<path d="M12 16 q0 -6 5 -6 t5 6 v-3 q0 -4 4 -4 t4 4 v3 q4 0 4 5 v10 q0 8 -9 8 t-13 -8 z" fill="#c8641f"/><path d="M14 30 h18" stroke="#8f4310" stroke-width="2"/>',
+  casque:'<path d="M8 26 q0 -18 16 -18 t16 18 z" fill="#e8a51e"/><path d="M24 8 q16 0 16 18 h-8 q1 -13 -8 -18 z" fill="#c98a12"/><rect x="5" y="26" width="38" height="5" rx="2.5" fill="#c98a12"/>',
+  crochet:'<path d="M14 8 h5 v20 q0 8 8 8 t8 -8 v-4 h5 v4 q0 13 -13 13 t-13 -13 z" fill="#9aa3a8"/><rect x="11" y="4" width="11" height="6" rx="3" fill="#5c4a32"/>',
+  veste:'<path d="M10 14 q0 -5 7 -7 l7 6 l7 -6 q7 2 7 7 v22 H10 z" fill="#2f7fb0"/><path d="M24 13 v23" stroke="#1f5f8f" stroke-width="2"/><rect x="10" y="30" width="28" height="4" fill="#d7e84a"/>',
+  thermos:'<rect x="17" y="10" width="14" height="28" rx="3" fill="#3a4750"/><rect x="17" y="10" width="14" height="6" rx="3" fill="#6b7378"/><rect x="19" y="20" width="10" height="9" rx="1" fill="#c8641f"/>',
+  radio:'<rect x="15" y="8" width="18" height="30" rx="3" fill="#2b3038"/><rect x="18" y="12" width="12" height="8" rx="1" fill="#5b9dc4"/><rect x="22" y="2" width="3" height="8" rx="1.5" fill="#6b7378"/><circle cx="21" cy="27" r="2" fill="#6b7378"/><circle cx="27" cy="27" r="2" fill="#6b7378"/>',
+  tshirt:'<path d="M11 14 q0 -4 7 -6 l6 5 l6 -5 q7 2 7 6 l-4 4 v20 H15 V18 z" fill="#8d8a7e"/><circle cx="20" cy="28" r="2" fill="#3c3a34"/><circle cx="30" cy="34" r="1.6" fill="#3c3a34"/><circle cx="15" cy="21" r="1.4" fill="#3c3a34"/>'
+};
+
+const ARTICLES = [
+  { id:'casque',  n:"Casque à ta taille",       d:"Taille 57. Celui que tu portes fait 61.", p:1240000 },
+  { id:'crochet', n:"Crochet de docker",        d:"Neuf. Manche en frêne.",                  p:842000 },
+  { id:'bottes',  n:"Bottes de sécurité",       d:"Coquées. Étanches. La paire.",            p:611000 },
+  { id:'veste',   n:"Veste haute visibilité",   d:"Bandes réfléchissantes homologuées.",     p:498000 },
+  { id:'radio',   n:"Radio de quai",            d:"Portée 4 km. Batterie fournie.",          p:377000 },
+  { id:'gants',   n:"Paire de gants",           d:"Cuir renforcé. Taille unique.",           p:315000 },
+  { id:'thermos', n:"Thermos",                  d:"Un litre. Garde le café chaud 6 h.",      p:300001 },
+  { id:'tshirt',  n:"Tee-shirt d'occasion",     d:"Taille inconnue. Trois trous. Lavé.",     p:299999 }
+];
+
+const REACTIONS = {
+  casque:  "Le casque à votre taille ? C'est du sur-mesure, forcément.",
+  crochet: "Le crochet, c'est de l'artisanat. Ça se paye.",
+  bottes:  "Deux bottes. Vous vouliez les deux ?",
+  veste:   "Les bandes réfléchissantes, c'est ce qui coûte.",
+  radio:   "Quatre kilomètres de portée. Vous croyiez que c'était donné ?",
+  gants:   "Quinze mille de trop. Dommage, hein.",
+  thermos: "Un euro de trop. Un seul. C'est rageant.",
+};
+
+function afficherSolde(chute){
+  $('solde').textContent = euroCourt(solde);
+  if (chute){
+    $('solde').classList.remove('chute');
+    void $('solde').offsetWidth;
+    $('solde').classList.add('chute');
+  }
+}
+
+function parle(phrase, italique){
+  $('vendeur').classList.add('parle');
+  $('bulle').innerHTML = phrase + (italique ? '<em>' + italique + '</em>' : '');
+  setTimeout(() => $('vendeur').classList.remove('parle'), 900);
+}
+
+function construire(){
+  $('rayon').innerHTML = ARTICLES.map(a => {
+    const trop = a.p > solde;
+    return `<button class="article ${trop ? 'trop' : 'ok'}" data-id="${a.id}">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${I[a.id]}</svg>
+      <span class="txt"><span class="nom">${a.n}</span><span class="desc">${a.d}</span></span>
+      <span class="prix">${euroCourt(a.p)}${trop ? '<span class="etiq">Fonds insuffisants</span>' : '<span class="etiq">Accessible</span>'}</span>
+    </button>`;
+  }).join('');
+
+  $('rayon').querySelectorAll('.article').forEach(b =>
+    b.addEventListener('click', () => choisir(b.dataset.id)));
+}
+
+let panier = null;
+
+function choisir(id){
+  const a = ARTICLES.find(x => x.id === id);
+  if (a.p > solde){
+    parle(REACTIONS[id], "Il ne propose pas de facilités de paiement.");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  panier = a;
+  $('rayon').querySelectorAll('.article').forEach(b =>
+    b.style.borderColor = b.dataset.id === id ? 'var(--ocre)' : '');
+  parle("Bon choix. C'est ce qu'il vous reste, de toute façon.",
+        "Il l'a sorti avant même que vous choisissiez.");
+  $('suivant').disabled = false;
+  $('suivant').textContent = 'Payer ' + euroCourt(a.p);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+$('suivant').addEventListener('click', () => {
+  if (!panier) return;
+  if ($('fin').classList.contains('on')){
+    $('suivant').disabled = true;
+    $('suivant').textContent = 'Enregistrement…';
+    terminerBoutique();
+    return;
+  }
+  solde -= panier.p;
+  afficherSolde(true);
+  etat.tshirt = panier.id === 'tshirt';
+  $('rayon').classList.add('off');
+  $('note').style.display = 'none';
+  $('titre').textContent = 'Ticket de caisse';
+  parle("Voilà. Un euro. Vous démarrez bien.",
+        "Il range la caisse et n'ajoute rien.");
+  $('t-art').textContent = panier.n;
+  $('t-prix').textContent = euro(panier.p);
+  $('t-tot').textContent = euro(panier.p);
+  $('t-dot').textContent = euro(solde + panier.p);
+  $('t-reste').textContent = euro(solde);
+  $('avatar').innerHTML = dessinerAvatar();
+  $('fin').classList.add('on');
+  $('suivant').textContent = 'Continuer';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+afficherSolde(false);
+construire();
+
+/* ---------- Battle Dock ---------- */
+let FICHE = null, EQUIP = null;
+(async () => {
+  FICHE = await BD.garder('boutique');
+  if (!FICHE) return;
+  EQUIP = await BD.lire('equipement');
+  Object.assign(etat, BD.avatarDe(FICHE, EQUIP));
+  solde = Number(FICHE.euros) || 0;
+  afficherSolde(false);
+  construire();
+})();
+
+async function terminerBoutique(){
+  await BD.poser('equipement', {
+    article_achete: panier ? panier.n : null,
+    prix_paye: panier ? panier.p : 0,
+    casque_trop_grand: true,
+    tshirt_troue: !!(panier && panier.id === 'tshirt')
+  });
+  await BD.enregistrer({ euros: solde });
+  await BD.avancer('boutique');
+}
+
+</script>
+</body>
+</html>
