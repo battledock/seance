@@ -505,7 +505,7 @@ body{
         </div>
       </div>
 
-      <button class="principal" id="btn-inscription">Prendre son poste</button>
+      <button class="principal" id="btn-inscription">Continuer</button>
 
       <p class="bascule">Déjà un matricule ? <button type="button" data-aller="connexion">Se connecter</button></p>
     </div>
@@ -527,7 +527,7 @@ body{
         </div>
       </div>
 
-      <button class="principal" id="btn-connexion">Pointer</button>
+      <button class="principal" id="btn-connexion">Continuer</button>
 
       <p class="bascule">Pas encore embauché ? <button type="button" data-aller="inscription">Créer un compte</button></p>
     </div>
@@ -537,6 +537,7 @@ body{
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
 <script>
 const SUPABASE_URL = 'https://zpfkekiavlfphialvphi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable__dfR2lEOwKjhhtavvJEvGw_KVACZnHP';
@@ -637,7 +638,7 @@ $('btn-inscription').addEventListener('click', async () => {
 
     if (data.session) {
       montrerMessage('Compte créé. Bienvenue sur le quai.', 'ok');
-      setTimeout(() => location.href = 'jeu.html', 800);
+      setTimeout(() => location.href = 'personnage.html', 800);
     } else {
       montrerMessage('Compte créé. Ouvre ton e-mail pour confirmer ton adresse.', 'ok');
       liberer(btn);
@@ -654,23 +655,29 @@ $('btn-connexion').addEventListener('click', async () => {
   cacherMessage();
 
   const btn = $('btn-connexion');
-  occuper(btn, 'Pointage…');
+  occuper(btn, 'Connexion…');
   try {
     const { error } = await sb.auth.signInWithPassword({
       email: $('c-email').value.trim(),
       password: $('c-mdp').value
     });
     if (error) throw error;
-    montrerMessage('Pointage validé.', 'ok');
-    setTimeout(() => location.href = 'jeu.html', 500);
+    montrerMessage('Connexion validée.', 'ok');
+    setTimeout(async () => {
+      const d = await BD.charger();
+      location.href = d && d.pseudo ? (BD.PAGES[d.etape] || 'jeu.html') : 'personnage.html';
+    }, 500);
   } catch (e) {
     montrerMessage(traduire(e.message));
     liberer(btn);
   }
 });
 
-sb.auth.getSession().then(({ data }) => {
-  if (data.session) location.replace('jeu.html');
+sb.auth.getSession().then(async ({ data }) => {
+  if (data.session){
+    const d = await BD.charger();
+    location.replace(d && d.pseudo ? (BD.PAGES[d.etape] || 'jeu.html') : 'personnage.html');
+  }
 });
 
 document.querySelectorAll('input').forEach(champ => {
