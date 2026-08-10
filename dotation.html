@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050d16">
+<title>Battledock — Dotation d'entrée</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--nuit:#050d16;--brume:#7fa3c0;--sable:#e8e2d4;--ocre:#e0913a;--ocre-f:#a3611f;
+      --papier:#e9e4d6;--encre:#2b2a26;--vert:#4fb286;--rouge:#b5342b}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--nuit);color:var(--sable);
+  font-family:'Barlow',system-ui,sans-serif;overflow-x:hidden;
+  background-image:radial-gradient(100% 45% at 50% 0%, rgba(42,90,122,.5), transparent 64%);
+  background-attachment:fixed;
+}
+.ecran{max-width:460px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 22px) 18px calc(env(safe-area-inset-bottom) + 118px)}
+
+.entete{text-align:center;margin-bottom:18px}
+.entete .sur{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--brume);margin-bottom:8px;padding-left:.34em}
+.entete h1{font-family:'Bebas Neue',sans-serif;font-size:31px;letter-spacing:.03em;line-height:1.05}
+.entete .intro{margin-top:9px;font-size:13.5px;color:#9dbcd4;line-height:1.5}
+
+/* --- la machine --- */
+.caisse{
+  background:linear-gradient(180deg,#3a4147 0%,#2b3038 100%);
+  border:1px solid rgba(127,163,192,.22);border-radius:18px;
+  padding:18px 16px 16px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.caisse::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:44%;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),transparent);pointer-events:none;
+}
+.plaque{
+  text-align:center;font-size:9px;letter-spacing:.3em;text-transform:uppercase;
+  color:#8fa3ad;margin-bottom:14px;
+}
+.rouleaux{
+  display:flex;gap:5px;justify-content:center;align-items:stretch;
+  background:#12171c;border-radius:10px;padding:14px 10px;
+  box-shadow:inset 0 3px 10px rgba(0,0,0,.6);
+}
+.rouleau{
+  flex:0 0 auto;width:38px;height:62px;overflow:hidden;position:relative;
+  background:linear-gradient(180deg,#e9e4d6 0%,#fbf8f0 50%,#d5cfbf 100%);
+  border-radius:5px;
+}
+.rouleau::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.28),transparent 32%,transparent 68%,rgba(0,0,0,.28));
+}
+.bande{position:absolute;left:0;right:0;top:0;transition:none}
+.bande span{
+  display:block;height:62px;line-height:62px;text-align:center;
+  font-family:'Courier Prime',monospace;font-weight:700;font-size:34px;color:#22201c;
+}
+.espace{flex:0 0 8px}
+.devise{
+  align-self:center;font-family:'Courier Prime',monospace;font-weight:700;
+  font-size:30px;color:#8fa3ad;padding-left:4px;
+}
+.montant{
+  text-align:center;font-family:'Courier Prime',monospace;font-weight:700;
+  font-size:22px;margin-top:14px;letter-spacing:.02em;color:#8fa3ad;min-height:28px;
+}
+.montant.maigre{color:#c96a5c;animation:tombe .5s ease-out}
+.montant.gros{color:var(--vert);animation:jaillit .55s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes tombe{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes jaillit{0%{opacity:0;transform:scale(.6)}60%{transform:scale(1.18)}100%{opacity:1;transform:none}}
+.voyants{display:flex;justify-content:center;gap:7px;margin-top:12px}
+.voyants i{width:9px;height:9px;border-radius:50%;background:#1b2126;border:1px solid #454d55}
+.voyants i.on{background:var(--ocre);box-shadow:0 0 8px rgba(224,145,58,.7)}
+
+.tirages{
+  display:flex;justify-content:space-between;align-items:center;
+  margin:14px 2px 0;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brume);
+}
+.tirages b{font-family:'Courier Prime',monospace;color:var(--sable);letter-spacing:0}
+
+/* --- le guichetier --- */
+.guichet{display:flex;gap:12px;align-items:flex-start;margin-bottom:18px}
+.guichet svg{flex:0 0 76px;width:76px;height:auto}
+.bulle{position:relative;flex:1;background:rgba(233,228,214,.94);color:var(--encre);
+  border-radius:14px;padding:13px 15px;font-size:14.5px;line-height:1.5;transition:background .25s}
+.bulle::before{content:"";position:absolute;left:-7px;top:16px;border:7px solid transparent;border-right-color:rgba(233,228,214,.94);border-left:0}
+.bulle em{font-style:normal;color:#7a756a;font-size:12.5px;display:block;margin-top:6px}
+.guichet.parle .bulle{background:#fff}
+
+.g-buste{animation:resp 4s ease-in-out infinite;transform-origin:38px 88px}
+@keyframes resp{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.018)}}
+.g-paup{transform:scaleY(0);transform-origin:38px 36px;animation:cligne 6s infinite}
+@keyframes cligne{0%,95.5%{transform:scaleY(0)}96.5%,98.5%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+
+.recu{
+  background:var(--papier);color:var(--encre);border-radius:4px;padding:18px 16px 24px;
+  font-family:'Courier Prime',monospace;display:none;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 7px),93% 100%,86% calc(100% - 7px),79% 100%,72% calc(100% - 7px),65% 100%,58% calc(100% - 7px),51% 100%,44% calc(100% - 7px),37% 100%,30% calc(100% - 7px),23% 100%,16% calc(100% - 7px),9% 100%,2% calc(100% - 7px),0 100%);
+}
+.recu.on{display:block;animation:entre .4s ease-out}
+@keyframes entre{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.recu h3{font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;text-align:center;color:#7a756a;margin-bottom:12px}
+.recu .l{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:5px 0}
+.recu .sep{border-top:1px dashed rgba(43,42,38,.35);margin:9px 0}
+.recu .tot{font-size:16px;font-weight:700}
+.recu .pied{text-align:center;font-size:11px;color:#7a756a;margin-top:12px;line-height:1.6}
+
+.barre{position:fixed;left:0;right:0;bottom:0;z-index:6;
+  padding:14px 18px calc(env(safe-area-inset-bottom) + 16px);
+  background:linear-gradient(180deg,rgba(5,13,22,0),rgba(5,13,22,.92) 32%,var(--nuit))}
+.barre .dedans{max-width:460px;margin:0 auto;display:flex;gap:9px}
+.principal{flex:1;background:var(--ocre);border:0;border-radius:10px;padding:17px;
+  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:#1a0f02;cursor:pointer;transition:transform .12s,background .2s}
+.principal:active{transform:scale(.985);background:var(--ocre-f)}
+.principal:disabled{opacity:.45;cursor:default}
+.second{flex:0 0 auto;background:none;border:1px solid rgba(127,163,192,.3);border-radius:10px;
+  padding:17px 18px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--brume);cursor:pointer}
+.second:disabled{opacity:.35;cursor:default}
+@media (prefers-reduced-motion:reduce){.g-buste,.montant{animation:none}.g-paup{animation:none;transform:scaleY(0)}.recu.on{animation:none}}
+</style>
+</head>
+<body>
+
+<main class="ecran">
+  <div class="entete">
+    <p class="sur">Caisse des dockers</p>
+    <h1>Dotation d'entrée</h1>
+    <p class="intro">Le montant de ta dotation est tiré au sort. C'est la règle depuis 1953.</p>
+  </div>
+
+  <div class="guichet" id="guichet">
+    <svg viewBox="0 0 76 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <ellipse cx="38" cy="97" rx="32" ry="3" fill="#040c14" opacity=".3"/>
+      <rect x="0" y="86" width="76" height="14" rx="2" fill="#4a3b28"/>
+      <rect x="0" y="86" width="76" height="3.5" rx="2" fill="#65523a"/>
+      <rect x="5" y="79" width="16" height="7" rx="1" fill="#e9e4d6"/>
+      <g class="g-buste">
+        <path d="M10 88 q0 -20 12 -24 h32 q12 4 12 24 z" fill="#4a4f57"/>
+        <path d="M38 64 h16 q12 4 12 24 h-28 z" fill="#383c43"/>
+        <path d="M30 62 h16 v10 q-8 4 -16 0 z" fill="#cf9b6f"/>
+        <path d="M28 65 q10 10 20 0 l4 3 -14 13 -14 -13 z" fill="#e9e4d6"/>
+        <path d="M34 68 l4 12 4 -12" stroke="#8f2f2a" stroke-width="3" fill="none"/>
+      </g>
+      <g>
+        <ellipse cx="21" cy="38" rx="3.5" ry="5" fill="#cf9b6f"/>
+        <ellipse cx="55" cy="38" rx="3.5" ry="5" fill="#cf9b6f"/>
+        <path d="M22 36 q0 -20 16 -20 t16 20 q0 16 -16 22 q-16 -6 -16 -22 z" fill="#d9a87d"/>
+        <path d="M38 16 q16 0 16 20 q0 16 -16 22 z" fill="#b98a5f" opacity=".35"/>
+        <path d="M21 26 q3 -14 17 -14 t17 14 q-7 -6 -17 -6 t-17 6 z" fill="#8a8579"/>
+        <ellipse cx="32" cy="36" rx="4" ry="3" fill="#f6f1e6"/>
+        <circle cx="32.6" cy="36.2" r="1.8" fill="#3b2415"/>
+        <ellipse cx="44" cy="36" rx="4" ry="3" fill="#f6f1e6"/>
+        <circle cx="44.6" cy="36.2" r="1.8" fill="#3b2415"/>
+        <g class="g-paup">
+          <rect x="28" y="32" width="8" height="7" rx="1" fill="#d9a87d"/>
+          <rect x="40" y="32" width="8" height="7" rx="1" fill="#d9a87d"/>
+        </g>
+        <path d="M37 41 q-1 5 -2 7 q0 2 3 2 t3 -2 q-1 -2 -2 -7" fill="#b98a5f" opacity=".5"/>
+        <path d="M32 54 q6 3 12 0" stroke="#7d3a2e" stroke-width="1.8" fill="none"/>
+      </g>
+    </svg>
+    <div class="bulle" id="bulle">
+      Appuyez quand vous voulez. Le hasard fait bien les choses.
+      <em>Il a déjà rempli le reçu.</em>
+    </div>
+  </div>
+
+  <div class="caisse">
+    <p class="plaque">Tirage officiel — Caisse des dockers</p>
+    <div class="rouleaux" id="rouleaux"></div>
+    <p class="montant" id="montant">—</p>
+    <div class="voyants"><i id="v0"></i><i id="v1"></i><i id="v2"></i></div>
+    <div class="tirages"><span>Tirages restants</span><b id="restants">1</b></div>
+  </div>
+
+  <div class="recu" id="recu">
+    <h3>Caisse des dockers — reçu</h3>
+    <div class="l"><span>Bénéficiaire</span><b id="r-nom">—</b></div>
+    <div class="l"><span>Tirages effectués</span><b id="r-nb">—</b></div>
+    <div class="sep"></div>
+    <div class="l"><span>Tirage 1</span><b id="r-t1">1,00 €</b></div>
+    <div class="l" id="l2" style="display:none"><span>Tirage 2 (geste commercial)</span><b>300 000,00 €</b></div>
+    <div class="sep"></div>
+    <div class="l tot"><span>Dotation retenue</span><b id="r-tot">—</b></div>
+    <p class="pied">Montant déterminé par tirage aléatoire.<br>Non contestable.</p>
+  </div>
+</main>
+
+<div class="barre"><div class="dedans">
+  <button class="second" id="relancer" disabled>Relancer</button>
+  <button class="principal" id="suivant">Lancer le tirage</button>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+
+const TIRAGES = ['000001', '300000'];
+const NB = 6;
+let tirage = 0;
+let enCours = false;
+
+function bandeHTML(){
+  let s = '';
+  for (let i = 0; i < 30; i++) s += '<span>' + Math.floor(Math.random() * 10) + '</span>';
+  return s;
+}
+$('rouleaux').innerHTML = '000000'.split('').map((c, i) =>
+  (i === 3 ? '<div class="espace"></div>' : '') +
+  `<div class="rouleau"><div class="bande" id="b${i}">${bandeHTML()}<span>0</span></div></div>`
+).join('') + '<div class="devise">€</div>';
+
+function parle(txt, note){
+  $('guichet').classList.add('parle');
+  $('bulle').innerHTML = txt + (note ? '<em>' + note + '</em>' : '');
+  setTimeout(() => $('guichet').classList.remove('parle'), 900);
+}
+
+const H = 62;
+
+function tourner(){
+  if (enCours) return;
+  enCours = true;
+  const cible = TIRAGES[tirage];
+  $('suivant').disabled = true;
+  $('relancer').disabled = true;
+  $('suivant').textContent = 'Tirage en cours…';
+  for (let i = 0; i < 3; i++) $('v' + i).classList.remove('on');
+
+  cible.split('').forEach((c, i) => {
+    const b = $('b' + i);
+    b.style.transition = 'none';
+    b.style.transform = 'translateY(0)';
+    b.innerHTML = bandeHTML() + '<span>' + c + '</span>';
+    void b.offsetHeight;
+    const duree = 1.5 + i * 0.34;
+    b.style.transition = `transform ${duree}s cubic-bezier(.16,.9,.2,1)`;
+    b.style.transform = `translateY(-${30 * H}px)`;
+  });
+
+  const total = (1.5 + (NB - 1) * 0.34) * 1000 + 280;
+  let v = 0;
+  const clign = setInterval(() => {
+    if (v < 3) $('v' + (v++)).classList.add('on');
+    else clearInterval(clign);
+  }, total / 4);
+
+  setTimeout(() => { enCours = false; fini(); }, total);
+}
+
+function fini(){
+  for (let i = 0; i < 3; i++) $('v' + i).classList.add('on');
+
+  if (tirage === 0){
+    $('montant').textContent = '1,00 €';
+    $('montant').className = 'montant maigre';
+    parle("Un euro.",
+          "Il regarde l'écran. Il ne dit rien pendant deux secondes.");
+    setTimeout(() => parle("Bon. Écoutez. Je vous en remets un, ça reste entre nous.",
+                           "Il jette un œil derrière lui avant d'appuyer."), 1500);
+    $('restants').textContent = '1';
+    $('relancer').disabled = false;
+    $('relancer').textContent = 'Relancer';
+    $('suivant').disabled = false;
+    $('suivant').textContent = 'Accepter 1 €';
+    $('suivant').onclick = accepter;
+    tirage = 1;
+  } else {
+    $('montant').textContent = '300 000,00 €';
+    $('montant').className = 'montant gros';
+    parle("Ah ! Trois cent mille. Là, ça va mieux.",
+          "Il vous rend le reçu comme si de rien n'était.");
+    $('restants').textContent = '0';
+    $('relancer').disabled = true;
+    $('relancer').textContent = 'Plus de tirage';
+    $('suivant').disabled = false;
+    $('suivant').textContent = 'Accepter 300 000 €';
+    $('suivant').onclick = accepter;
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function accepter(){
+  const gagne = tirage === 1 && $('montant').textContent === '1,00 €' ? '1,00 €' : '300 000,00 €';
+  $('r-nom').textContent = (FICHE && FICHE.pseudo) || 'Docker sans nom';
+  $('r-nb').textContent = gagne === '1,00 €' ? '1' : '2';
+  $('r-t1').textContent = '1,00 €';
+  if (gagne !== '1,00 €'){ $('l2').style.display = 'flex'; }
+  $('r-tot').textContent = gagne;
+  $('recu').classList.add('on');
+  parle(gagne === '1,00 €'
+        ? "Comme vous voulez. C'est vous qui voyez."
+        : "Voilà. Avec ça, vous vous équipez comme vous voulez.",
+        "Il vous indique la porte du fond.");
+  $('relancer').disabled = true;
+  $('suivant').textContent = 'Continuer';
+  $('suivant').onclick = () => {
+    $('suivant').disabled = true;
+    $('suivant').textContent = 'Enregistrement…';
+    terminerDotation(gagne === '1,00 €' ? 1 : 300000, gagne === '1,00 €' ? 1 : 2);
+  };
+  setTimeout(() => $('recu').scrollIntoView({ behavior:'smooth', block:'center' }), 320);
+}
+
+$('suivant').onclick = tourner;
+$('relancer').addEventListener('click', tourner);
+
+/* ---------- Battle Dock ---------- */
+let FICHE = null;
+(async () => {
+  FICHE = await BD.garder('dotation');
+  if (!FICHE) return;
+  $('r-nom').textContent = FICHE.pseudo || 'Docker sans nom';
+})();
+
+async function terminerDotation(montant, nb){
+  await BD.poser('equipement', { dotation: montant, tirages: nb });
+  await BD.enregistrer({ euros: montant });
+  await BD.avancer('dotation');
+}
+
+</script>
+</body>
+</html>
