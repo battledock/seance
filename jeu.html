@@ -60,11 +60,10 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 @keyframes onduler{0%,100%{transform:translateX(0)}50%{transform:translateX(-8px)}}
 .feu{animation:clignote 3.2s infinite}
 @keyframes clignote{0%,45%{opacity:1}55%,95%{opacity:.2}100%{opacity:1}}
-.croch{animation:pend 6s ease-in-out infinite;transform-origin:196px 30px}
-@keyframes pend{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
-.fum{animation:fumer 5s ease-out infinite}
-@keyframes fumer{0%{opacity:0;transform:translate(0,0) scale(.6)}
-  30%{opacity:.4}100%{opacity:0;transform:translate(-10px,-16px) scale(1.6)}}
+
+
+
+
 
 .evenement{margin:12px 13px 0;background:#fdf3e3;
   border:1px solid #efd9b4;border-radius:14px;padding:12px 14px;
@@ -170,76 +169,10 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 </header>
 
 <div class="banniere">
-  <svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ton port">
-    <defs>
-      <linearGradient id="bc" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#7fb4d8"/><stop offset="46%" stop-color="#b3d4e8"/>
-        <stop offset="80%" stop-color="#dceaf2"/><stop offset="100%" stop-color="#f2e4cf"/>
-      </linearGradient>
-      <linearGradient id="bm" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#69b0c9"/><stop offset="100%" stop-color="#2d7290"/>
-      </linearGradient>
-      <radialGradient id="bs"><stop offset="0%" stop-color="#fff3d4" stop-opacity=".85"/>
-        <stop offset="100%" stop-color="#ffe0a0" stop-opacity="0"/></radialGradient>
-    </defs>
-    <rect width="320" height="150" fill="url(#bc)"/>
-    <ellipse cx="252" cy="62" rx="98" ry="42" fill="url(#bs)"/>
-    <circle cx="252" cy="46" r="15" fill="#fff8e4" opacity=".95"/>
-    <path d="M0 62 L34 54 L66 60 L100 50 L138 58 L176 48 L214 56 L254 50 L292 56 L320 52 L320 84 L0 84 Z"
-          fill="#8fb2c4" opacity=".7"/>
-    <g fill="#5d7d90">
-      <rect x="24" y="42" width="4" height="42"/><rect x="16" y="40" width="20" height="4"/>
-      <rect x="300" y="46" width="4" height="38"/><rect x="292" y="44" width="20" height="4"/>
-    </g>
-    <g stroke="#4a6b7d" stroke-width="3.4" fill="none" stroke-linecap="square">
-      <path d="M78 96 V38 H112"/><path d="M78 38 H54"/><path d="M78 52 L94 38"/>
-      <path d="M70 96 V66 M86 96 V66"/>
-      <path d="M196 96 V30 H232"/><path d="M196 30 H172"/><path d="M196 46 L212 30"/>
-      <path d="M188 96 V62 M204 96 V62"/>
-    </g>
-    <rect x="70" y="30" width="16" height="9" fill="#4a6b7d"/>
-    <rect x="188" y="22" width="16" height="9" fill="#4a6b7d"/>
-    <circle cx="112" cy="36" r="2.2" fill="#e8452f" class="feu"/>
-    <circle cx="232" cy="28" r="2.2" fill="#e8452f" class="feu"/>
-    <g class="croch"><path d="M226 30 V52" stroke="#4a6b7d" stroke-width="1.6"/>
-      <rect x="219" y="52" width="14" height="10" fill="#4a6b7d"/></g>
-    <path d="M0 84 H320 V104 H0 Z" fill="url(#bm)"/>
-    <g class="houle" stroke="#ffffff" stroke-width=".9" fill="none" opacity=".38">
-      <path d="M-8 90 q16 -3 32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0"/>
-      <path d="M-8 98 q20 3 40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/>
-    </g>
-    <g fill="#ffffff" opacity=".5">
-      <rect x="246" y="87" width="14" height="1.6" rx=".8"/><rect x="242" y="93" width="22" height="1.8" rx=".9"/>
-      <rect x="247" y="99" width="12" height="1.6" rx=".8"/>
-    </g>
-    <g transform="translate(120 70)">
-      <path d="M0 14 H74 l9 4 l-3 6 H5 Z" fill="#2f4a5c"/>
-      <path d="M0 14 H74 l9 4 H0 Z" fill="#456678"/>
-      <rect x="8" y="7" width="9" height="7" fill="#f2eee2"/>
-      <rect x="22" y="8" width="8" height="6" fill="#4a2f2c"/><rect x="32" y="8" width="8" height="6" fill="#2b4437"/>
-      <rect x="42" y="8" width="8" height="6" fill="#5c3a24"/><rect x="52" y="8" width="8" height="6" fill="#1d3c52"/>
-      <g class="fum"><circle cx="12" cy="4" r="4" fill="#ffffff"/></g>
-    </g>
-    <path d="M0 104 H320 V112 H0 Z" fill="#9aa79f"/>
-    <rect x="0" y="110" width="320" height="40" fill="#cfcabb"/>
-    <rect x="0" y="110" width="320" height="2.5" fill="#eae5d8"/>
-    <g stroke="#b0aa9a" stroke-width="1.1" opacity=".7">
-      <path d="M0 126 H320 M0 140 H320 M52 110 V150 M148 110 V150 M244 110 V150"/>
-    </g>
-    <g fill="#d9b23a" opacity=".7">
-      <rect x="10" y="115" width="22" height="3"/><rect x="42" y="115" width="22" height="3"/>
-      <rect x="258" y="115" width="22" height="3"/><rect x="290" y="115" width="22" height="3"/>
-    </g>
-    <g fill="#6d675a"><rect x="18" y="104" width="8" height="9" rx="3"/><rect x="286" y="104" width="8" height="9" rx="3"/></g>
-    <g>
-      <rect x="60" y="118" width="34" height="12" fill="#3f7fa8"/>
-      <rect x="96" y="118" width="34" height="12" fill="#4f8f68"/>
-      <rect x="78" y="106" width="34" height="12" fill="#b06a3a"/>
-    </g>
-  </svg>
+  <div id="banniere-ville"></div>
   <div class="info">
     <span class="prod"><b id="prod">—</b><span>production</span></span>
-    <span class="meteo" id="meteo">Mistral — grues ralenties</span>
+    <span class="meteo" id="meteo">Marseille — bassin est</span>
   </div>
 </div>
 
@@ -840,6 +773,267 @@ setInterval(() => {
   const m = IMPREVUS[iImp++ % IMPREVUS.length];
   ajouterJournal(m[0], m[1]);
 }, 22000);
+
+/* ---------- la ville ---------- */
+const VILLES = {};
+
+const DEFS = `<defs>
+<linearGradient id="w-ciel" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#5da3cf"/><stop offset="30%" stop-color="#8fc3e0"/>
+  <stop offset="58%" stop-color="#c2dced"/><stop offset="80%" stop-color="#eae6dc"/>
+  <stop offset="100%" stop-color="#f8dfb4"/>
+</linearGradient>
+<linearGradient id="w-mer" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#7cc0d8"/><stop offset="30%" stop-color="#4e9cbe"/>
+  <stop offset="100%" stop-color="#1f5d7e"/>
+</linearGradient>
+<linearGradient id="w-coll1" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#cfd8dd"/><stop offset="100%" stop-color="#a9bcc6"/>
+</linearGradient>
+<linearGradient id="w-coll2" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#e4e0d2"/><stop offset="100%" stop-color="#c3bfae"/>
+</linearGradient>
+<linearGradient id="w-quai" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#efe9db"/><stop offset="100%" stop-color="#cec6b3"/>
+</linearGradient>
+<radialGradient id="w-sol"><stop offset="0%" stop-color="#fff8e2" stop-opacity="1"/>
+  <stop offset="38%" stop-color="#ffe4ae" stop-opacity=".5"/>
+  <stop offset="100%" stop-color="#ffd9a0" stop-opacity="0"/></radialGradient>
+<linearGradient id="w-refl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#ffffff" stop-opacity=".3"/>
+  <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+</defs>`;
+
+const rnd = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+
+/* ---------- immeuble marseillais détaillé ---------- */
+function maison(x, sol, w, h, i){
+  const murs  = ['#f0e2c8','#e8d5b4','#f2e8d4','#e2cdaa','#eddfc4','#e6d2b2'];
+  const toits = ['#c4714a','#b4643e','#cf7d52','#a95a36'];
+  const mur = murs[i % murs.length], toit = toits[i % toits.length];
+  const y = sol - h;
+  let s = '';
+  /* toit en tuiles */
+  s += `<path d="M${x-3} ${y} L${x+w+3} ${y} L${x+w} ${y-5} L${x+3} ${y-5} Z" fill="${toit}"/>`;
+  s += `<path d="M${x-3} ${y} L${x+w+3} ${y} L${x+w+3} ${y+1} L${x-3} ${y+1} Z" fill="#00000010"/>`;
+  s += `<path d="M${x-3} ${y-5} L${x+w+3} ${y-5} L${x+w+3} ${y-3.6} L${x-3} ${y-3.6} Z" fill="#ffffff" opacity=".22"/>`;
+  /* cheminée */
+  if (rnd(i + 3) > .45){
+    const cx = x + 4 + rnd(i) * (w - 12);
+    s += `<rect x="${cx.toFixed(1)}" y="${y - 9}" width="4" height="5" fill="${toit}"/>
+          <rect x="${(cx-0.8).toFixed(1)}" y="${y - 10.6}" width="5.6" height="1.8" fill="#a95a36"/>`;
+  }
+  /* mur */
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${mur}"/>`;
+  s += `<rect x="${x + w - 5}" y="${y}" width="3" height="${h}" fill="#00000009"/>`;
+  /* fenêtres à volets */
+  const cols = Math.max(1, Math.round((w - 8) / 14));
+  const rows = Math.max(1, Math.floor((h - 16) / 17));
+  const pasX = (w - 8) / cols, pasY = (h - 14) / (rows + 0.35);
+  for (let c = 0; c < cols; c++){
+    for (let r = 0; r < rows; r++){
+      const fx = x + 4 + c * pasX + (pasX - 9) / 2;
+      const fy = y + 8 + r * pasY;
+      const ouvert = rnd(i * 17 + c * 5 + r) > .38;
+      s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="9" height="11" rx="1" fill="#65879c"/>`;
+      s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="9" height="5" rx="1" fill="#84a6ba" opacity=".65"/>`;
+      if (!ouvert)
+        s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="9" height="11" rx="1" fill="#9dbccd"/>`;
+      else {
+        s += `<rect x="${(fx-2.6).toFixed(1)}" y="${fy.toFixed(1)}" width="2" height="11" fill="#9db8c8"/>`;
+        s += `<rect x="${(fx+9.2).toFixed(1)}" y="${fy.toFixed(1)}" width="2" height="11" fill="#89a6b8"/>`;
+      }
+      s += `<rect x="${(fx-1.4).toFixed(1)}" y="${(fy+11).toFixed(1)}" width="11.4" height="1.4" fill="#00000016"/>`;
+      /* balcon occasionnel */
+      if (r === 0 && rnd(i * 7 + c) > .62){
+        s += `<rect x="${(fx-3).toFixed(1)}" y="${(fy+11.6).toFixed(1)}" width="15" height="4.6" fill="none" stroke="#8d9aa4" stroke-width="1.1"/>`;
+        s += `<g stroke="#8d9aa4" stroke-width=".7">`;
+        for (let b = 0; b < 5; b++) s += `<path d="M${(fx-2+b*3.2).toFixed(1)} ${(fy+11.6).toFixed(1)} v4.6"/>`;
+        s += `</g>`;
+      }
+    }
+  }
+  /* rez-de-chaussée : boutique avec store */
+  const stores = ['#c74a33','#2f7fb0','#4f8f68','#c9a83a'];
+  if (h > 30){
+    const sy = sol - 13;
+    s += `<rect x="${x+3}" y="${sy}" width="${w-6}" height="13" fill="#c9b99a"/>`;
+    s += `<rect x="${x + w/2 - 5}" y="${sy+3}" width="10" height="10" fill="#6b5a45"/>`;
+    s += `<path d="M${x+1} ${sy-1} h${w-2} l-2.5 5 h-${w-7} z" fill="${stores[i % stores.length]}"/>`;
+  }
+  return s;
+}
+
+/* ---------- Notre-Dame de la Garde, détaillée ---------- */
+function bonneMere(x, y, s){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <path d="M-40 40 L-30 22 L30 22 L40 40 Z" fill="#cdc4ae"/>
+    <path d="M-30 22 L30 22 L30 26 L-30 26 Z" fill="#b9b09a"/>
+    <rect x="-26" y="4" width="52" height="19" fill="#ece5d3"/>
+    <g fill="#cdc4ae">
+      <path d="M-22 23 v-11 a4 4 0 0 1 8 0 v11 z"/>
+      <path d="M-10 23 v-11 a4 4 0 0 1 8 0 v11 z"/>
+      <path d="M2 23 v-11 a4 4 0 0 1 8 0 v11 z"/>
+      <path d="M14 23 v-11 a4 4 0 0 1 8 0 v11 z"/>
+    </g>
+    <path d="M-26 4 h52 v-3 h-52 z" fill="#d8d0ba"/>
+    <path d="M-14 4 a14 11 0 0 1 28 0 z" fill="#e4dcc8"/>
+    <path d="M-14 4 a14 11 0 0 1 14 -11 l0 11 z" fill="#f2ecdc"/>
+    <rect x="-9" y="-40" width="18" height="34" fill="#f0e9d7"/>
+    <rect x="-9" y="-40" width="7" height="34" fill="#fbf6e8"/>
+    <g fill="#cdc4ae">
+      <path d="M-6 -12 v-9 a3 3 0 0 1 6 0 v9 z"/>
+      <path d="M1 -12 v-9 a3 3 0 0 1 6 0 v9 z"/>
+      <path d="M-6 -26 v-7 a3 3 0 0 1 6 0 v7 z"/>
+      <path d="M1 -26 v-7 a3 3 0 0 1 6 0 v7 z"/>
+    </g>
+    <rect x="-11" y="-44" width="22" height="4" fill="#d8d0ba"/>
+    <rect x="-4" y="-58" width="8" height="14" fill="#e0bb62"/>
+    <ellipse cx="0" cy="-64" rx="5" ry="7" fill="#f2d98a"/>
+    <ellipse cx="0" cy="-64" rx="5" ry="7" fill="#fff0bc" opacity=".6"/>
+    <circle cx="0" cy="-70" r="3" fill="#f7e3a4"/>
+    <circle cx="0" cy="-66" r="13" fill="#fff2c4" opacity=".22"/>
+  </g>`;
+}
+
+/* ---------- Fort Saint-Jean ---------- */
+function fort(x, y, s){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <rect x="-30" y="-14" width="60" height="26" fill="#e0d8c2"/>
+    <rect x="-30" y="-14" width="60" height="5" fill="#efe8d6"/>
+    <g fill="#c9c0a8">
+      <rect x="-30" y="-19" width="8" height="5"/><rect x="-16" y="-19" width="8" height="5"/>
+      <rect x="-2" y="-19" width="8" height="5"/><rect x="12" y="-19" width="8" height="5"/>
+      <rect x="24" y="-19" width="6" height="5"/></g>
+    <g fill="#a89f88" opacity=".5">
+      <rect x="-24" y="-6" width="6" height="8"/><rect x="-8" y="-6" width="6" height="8"/>
+      <rect x="8" y="-6" width="6" height="8"/></g>
+    <rect x="18" y="-40" width="20" height="30" fill="#e8e0ca"/>
+    <rect x="18" y="-40" width="7" height="30" fill="#f4eddb"/>
+    <g fill="#c9c0a8"><rect x="18" y="-45" width="6" height="5"/><rect x="27" y="-45" width="6" height="5"/>
+      <rect x="34" y="-45" width="4" height="5"/></g>
+    <rect x="24" y="-30" width="5" height="8" fill="#8d8674"/>
+    <rect x="37" y="-56" width="1.6" height="12" fill="#8d8674"/>
+    <path d="M38.6 -56 h11 v6 h-11 z" fill="#3f6fa8"/>
+    <path d="M38.6 -53 h11 v3 h-11 z" fill="#e8e2d4"/>
+  </g>`;
+}
+
+/* ---------- MuCEM ---------- */
+function mucem(x, y, s){
+  let m = `<g transform="translate(${x},${y}) scale(${s})">
+    <rect x="-24" y="-30" width="48" height="30" fill="#6b7681"/>
+    <rect x="-24" y="-30" width="48" height="30" fill="#8a95a1" opacity=".45"/>
+    <g fill="#454d56" opacity=".7">`;
+  for (let i = 0; i < 7; i++)
+    for (let j = 0; j < 5; j++)
+      m += `<path d="M${-21 + i*6.6} ${-27 + j*5.6} l3 0 l-3 4 l-3 0 z"/>`;
+  m += `</g><rect x="-24" y="0" width="48" height="4" fill="#5a636c"/>
+    <rect x="-2" y="-40" width="4" height="10" fill="#7d8894"/></g>`;
+  return m;
+}
+
+/* ---------- voilier ---------- */
+function voilier(x, y, s, c){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <rect x="-0.8" y="-26" width="1.6" height="26" fill="#9a9284"/>
+    <path d="M0 -24 q9 10 4 19 h-4 z" fill="#fbf7ee"/>
+    <path d="M0 -24 q9 10 4 19 h-4 z" fill="#d8d2c4" opacity=".35"/>
+    <path d="M-1.5 -19 q-7 8 -4 14 h4 z" fill="#f4f0e4"/>
+    <path d="M-13 -1 h26 l-4 6 h-18 z" fill="${c}"/>
+    <path d="M-13 -1 h26 l-1 1.6 h-24 z" fill="#ffffff" opacity=".45"/>
+    <ellipse cx="0" cy="7" rx="12" ry="2" fill="#ffffff" opacity=".18"/>
+  </g>`;
+}
+
+/* ============ Marseille, depuis la mer ============ */
+let ville = `${DEFS}
+<rect width="320" height="150" fill="url(#w-ciel)"/>
+<ellipse cx="62" cy="30" rx="86" ry="40" fill="url(#w-sol)"/>
+<circle cx="62" cy="26" r="12" fill="#fffbe8"/>`;
+
+for (let i = 0; i < 9; i++){
+  const cx = rnd(i+2)*340, cy = 12 + rnd(i+9)*30, w = 22 + rnd(i)*34;
+  ville += `<g opacity="${(.2 + rnd(i+5)*.22).toFixed(2)}" fill="#ffffff">
+    <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="4.5"/>
+    <ellipse cx="${(cx+w*.3).toFixed(0)}" cy="${(cy-3).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="4"/></g>`;
+}
+
+/* collines */
+ville += `<path d="M0 68 L34 50 L72 62 L112 42 L156 58 L196 36 L240 54 L282 40 L320 54 L320 96 L0 96 Z" fill="url(#w-coll1)"/>`;
+ville += `<path d="M92 50 L130 26 L168 46 L212 18 L252 44 L288 28 L320 48 L320 96 L92 96 Z" fill="url(#w-coll2)"/>`;
+for (let i = 0; i < 46; i++){
+  const x = 92 + rnd(i)*228, y = 36 + rnd(i+30)*46;
+  ville += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="2.6" ry="2" fill="#8fa07e" opacity="${(.2+rnd(i+7)*.3).toFixed(2)}"/>`;
+}
+ville += bonneMere(212, 22, .78);
+
+/* ville : rangée du fond, puis rangée du bord de mer */
+for (let i = 0; i < 13; i++){
+  const x = i * 26 - 8, h = 20 + rnd(i + 40) * 22;
+  if (x > 174 && x < 250) continue;
+  ville += maison(x, 94, 26, h, i + 3);
+}
+ville += mucem(122, 100, .72);
+ville += fort(196, 96, .7);
+for (let i = 0; i < 18; i++){
+  const x = i * 19 - 6, h = 14 + rnd(i + 70) * 16;
+  if (x > 100 && x < 148) continue;
+  if (x > 168 && x < 224) continue;
+  ville += maison(x, 104, 19, h, i + 11);
+}
+
+/* quai de pierre */
+ville += `<rect x="0" y="100" width="320" height="8" fill="#ded6c2"/>
+<rect x="0" y="100" width="320" height="2.4" fill="#f2ecdc"/>
+<g fill="#c6bda8">`;
+for (let i = 0; i < 22; i++) ville += `<rect x="${i*15}" y="102.5" width="1.4" height="5.5"/>`;
+ville += `</g>`;
+
+/* mer */
+ville += `<rect x="0" y="108" width="320" height="42" fill="url(#w-mer)"/>`;
+/* reflets des façades */
+for (let i = 0; i < 14; i++){
+  const x = i * 24 - 4;
+  ville += `<rect x="${x+3}" y="108" width="18" height="${(9 + rnd(i)*8).toFixed(1)}" fill="#f0e2c8" opacity=".13"/>`;
+}
+ville += `<rect x="200" y="108" width="26" height="14" fill="#fbf6e8" opacity=".16"/>`;
+/* vaguelettes */
+for (let i = 0; i < 5; i++)
+  ville += `<path d="M-8 ${112+i*8} q20 -3 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"
+    stroke="#ffffff" stroke-width="1.1" fill="none" opacity="${(.3 - i*.045).toFixed(2)}"/>`;
+/* chemin du soleil */
+ville += `<g fill="#fff6dc" opacity=".5">`;
+for (let i = 0; i < 8; i++){
+  const w = 10 + rnd(i)*26;
+  ville += `<rect x="${(62 - w/2).toFixed(0)}" y="${110 + i*5}" width="${w.toFixed(0)}" height="2.2" rx="1.1"/>`;
+}
+ville += `</g>`;
+
+/* bateaux */
+ville += voilier(44, 126, .82, '#e8e2d4');
+ville += voilier(96, 134, .95, '#c74a33');
+ville += voilier(268, 128, .78, '#e8e2d4');
+/* ferry */
+ville += `<g transform="translate(190 128)">
+  <path d="M-40 0 h80 l10 5 l-4 8 h-84 z" fill="#33414c"/>
+  <path d="M-40 0 h80 l10 5 h-90 z" fill="#4f606d"/>
+  <rect x="-32" y="-11" width="62" height="11" fill="#f4f0e4"/>
+  <g fill="#6f8fa4"><rect x="-28" y="-8" width="7" height="5"/><rect x="-17" y="-8" width="7" height="5"/>
+    <rect x="-6" y="-8" width="7" height="5"/><rect x="5" y="-8" width="7" height="5"/>
+    <rect x="16" y="-8" width="7" height="5"/></g>
+  <rect x="-36" y="-18" width="12" height="8" fill="#f4f0e4"/>
+  <rect x="-33" y="-15" width="6" height="4" fill="#6f8fa4"/>
+  <rect x="14" y="-20" width="7" height="10" fill="#c74a33"/>
+  <rect x="14" y="-20" width="7" height="3" fill="#e8e2d4"/>
+  <ellipse cx="0" cy="15" rx="46" ry="3" fill="#ffffff" opacity=".18"/>
+</g>`;
+VILLES.marseille = ville;
+
+
+$('banniere-ville').innerHTML =
+  '<svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Marseille">'
+  + VILLES.marseille + '</svg>';
 
 /* ---------- démarrage ---------- */
 (async () => {
