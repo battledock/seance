@@ -16,6 +16,20 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   background-image:radial-gradient(96% 38% at 50% 0%, #ffffff, transparent 62%);
   background-attachment:fixed;overflow-x:hidden}
 
+/* --- tout est verrouillé pendant la construction --- */
+.mod.ferme{opacity:.5;cursor:default}
+.mod.ferme .co{color:var(--doux)}
+.mod.ferme:active{transform:none}
+.mod .cadenas{position:absolute;top:10px;right:10px;width:16px;height:16px;opacity:.5}
+.nav button.ferme{opacity:.4;cursor:default}
+.chantier{
+  margin:12px 13px 0;background:#eef2f6;border:1px dashed #c3ccd4;border-radius:14px;
+  padding:11px 14px;display:flex;gap:10px;align-items:center;
+}
+.chantier svg{flex:0 0 20px;width:20px;height:20px}
+.chantier p{font-size:12.5px;color:#5f6b75;line-height:1.45}
+.chantier p b{color:#33404a;font-weight:600}
+
 /* --- squelette de chargement --- */
 @keyframes respireOs{0%,100%{opacity:.55}50%{opacity:.9}}
 .os{background:#e6e1d6;border-radius:6px;color:transparent !important;
@@ -224,6 +238,12 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
     <span class="prod"><b id="prod">—</b><span>production</span></span>
     <span class="meteo" id="meteo">Marseille — bassin est</span>
   </div>
+</div>
+
+<div class="chantier">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#5f6b75" stroke-width="1.8">
+    <path d="M12 3l9 16H3zM12 9v5M12 17v.01"/></svg>
+  <p><b>Hub en construction.</b> Les modules sont désactivés le temps qu'on les bâtisse.</p>
 </div>
 
 <div class="evenement" id="evenement">
@@ -650,17 +670,21 @@ const MODULES = {
   ]
 };
 
+const VERROUILLE = true;
+
 function carte(m){
-  return `<button class="mod ${m.verrou ? 'verrou' : ''}" data-k="${m.k}">
-    ${m.badge ? `<span class="pastille">${m.badge}</span>` : ''}
+  return `<button class="mod ferme" data-k="${m.k}" disabled aria-disabled="true">
+    <svg class="cadenas" viewBox="0 0 24 24" fill="none" stroke="#75705f" stroke-width="1.9">
+      <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
     <svg class="ic" viewBox="0 0 24 24">${ICONES[m.k]}</svg>
     <b>${m.n}</b><span class="ap">${m.a}</span>
     ${m.prog !== undefined ? `<span class="barre"><i style="width:${m.prog}%"></i></span>` : ''}
-    <span class="bas"><span class="co">${m.c}</span></span>
+    <span class="bas"><span class="co">Bientôt</span></span>
   </button>`;
 }
 function poser(cible, liste){
   $(cible).innerHTML = liste.map(carte).join('');
+  if (VERROUILLE) return;
   $(cible).querySelectorAll('.mod').forEach((b,i) =>
     b.addEventListener('click', () => liste[i].f && liste[i].f()));
 }
@@ -801,13 +825,19 @@ function ajouterJournal(h, txt){
 function ouvrir(id){ $(id).classList.add('on'); }
 document.querySelectorAll('[data-x]').forEach(b =>
   b.addEventListener('click', () => document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'))));
-document.querySelectorAll('.nav button').forEach(b =>
+document.querySelectorAll('.nav button').forEach(b => {
+  if (VERROUILLE && b.dataset.f){
+    b.classList.add('ferme');
+    b.setAttribute('aria-disabled', 'true');
+    return;
+  }
   b.addEventListener('click', () => {
     document.querySelectorAll('.nav button').forEach(x => x.classList.remove('actif'));
     b.classList.add('actif');
     document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'));
     if (b.dataset.f) ouvrir(b.dataset.f);
-  }));
+  });
+});
 
 /* ---------- production idle ---------- */
 /* aucun gain pour l'instant : on construira l'économie ensemble */
@@ -818,11 +848,7 @@ const IMPREVUS = [
   ['13 h 15','Le <b>quai 4</b> est signalé fermé. Il n\'existe pas.'],
   ['14 h 06','Un conteneur que tu as expédié en mars est <b>revenu</b>.']
 ];
-let iImp = 0;
-setInterval(() => {
-  const m = IMPREVUS[iImp++ % IMPREVUS.length];
-  ajouterJournal(m[0], m[1]);
-}, 22000);
+/* le journal ne s'alimente plus tant qu'il n'est pas branché */
 
 /* ---------- la ville ---------- */
 const VILLES = {};
