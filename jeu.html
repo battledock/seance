@@ -228,6 +228,17 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .lv-st .l .v{font-family:'Courier Prime',monospace;font-size:12px;color:var(--ocre);font-weight:700}
 .lv-st .p{height:8px;border-radius:5px;background:#eceae2;overflow:hidden}
 .lv-st .p i{display:block;height:100%;border-radius:5px;width:0;transition:width .7s ease-out}
+.lv-car{display:flex;gap:8px}
+.lv-car > div{flex:1;background:#faf8f3;border:1px solid var(--bord);border-radius:12px;
+  padding:11px 8px 10px;text-align:center;position:relative;overflow:hidden}
+.lv-car .ic{font-size:17px;line-height:1;margin-bottom:5px}
+.lv-car .v{font-family:'Bebas Neue',sans-serif;font-size:25px;line-height:1;color:var(--encre)}
+.lv-car .v.zero{color:#b8b2a4}
+.lv-car .sur{font-size:9px;color:var(--doux);margin-top:1px}
+.lv-car .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--doux);margin-top:6px}
+.lv-car .p{height:4px;border-radius:3px;background:#e9e5db;overflow:hidden;margin-top:7px}
+.lv-car .p i{display:block;height:100%;border-radius:3px;width:0;transition:width .8s ease-out}
+.lv-vide{font-size:11.5px;color:var(--doux);line-height:1.5;margin-top:10px;text-align:center}
 .lv-paires{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .lv-paire{background:#faf8f3;border:1px solid var(--bord);border-radius:11px;padding:9px 11px}
 .lv-paire .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--doux)}
@@ -1410,6 +1421,12 @@ setTimeout(() => {
 }, 6000);
 
 /* ---------- le livret ---------- */
+const CARAC = [
+  ['Chance',     '#6d4fa8', 'chance',     '🍀'],
+  ['Sang-froid', '#2f7fb0', 'sang_froid', '🧊'],
+  ['Instinct',   '#c2711a', 'instinct',   '👁']
+];
+
 const NUANCES = {
   force:       ['#c74a33', 'Ce que tu portes sans faire de bruit'],
   endurance:   ['#2f8f66', "Les heures avant que tu t'assoies"],
@@ -1467,6 +1484,19 @@ function livret(d, MED, EQ, CP){
             + n[0] + ',' + n[0] + 'bb)"></i></div></div>';
         }).join('') + '</div>' : '')
 
+    + '<div class="lv-sect"><p class="t">Caractéristiques</p><div class="lv-car">'
+    + CARAC.map(c => {
+        const v = d[c[2]] || 0;
+        return '<div><div class="ic">' + c[3] + '</div>'
+          + '<div class="v' + (v === 0 ? ' zero' : '') + '">' + v + '</div>'
+          + '<div class="sur">/ 100</div><div class="k">' + c[0] + '</div>'
+          + '<div class="p"><i data-v="' + v + '" style="background:' + c[1] + '"></i></div></div>';
+      }).join('')
+    + '</div>'
+    + (CARAC.every(c => !(d[c[2]] || 0))
+        ? '<p class="lv-vide">Tu n\'as encore rien de tout ça. Ça se gagne.</p>' : '')
+    + '</div>'
+
     + (med.length ? '<div class="lv-sect"><p class="t">Visite médicale</p><div class="lv-paires">'
       + med.map(m => '<div class="lv-paire"><div class="k">' + m[0] + '</div>'
         + '<div class="v">' + m[1] + '</div></div>').join('') + '</div></div>' : '')
@@ -1480,6 +1510,7 @@ function livret(d, MED, EQ, CP){
     const b = $('lv-barre-xp');
     if (b) b.style.width = ((d.xp || 0) / palier * 100) + '%';
     $('l-fiche').querySelectorAll('.lv-st .p i').forEach(el => el.style.width = el.dataset.v + '%');
+    $('l-fiche').querySelectorAll('.lv-car .p i').forEach(el => el.style.width = el.dataset.v + '%');
   });
 }
 
