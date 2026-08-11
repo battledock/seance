@@ -262,13 +262,13 @@ function fini(){
     parle("Un euro.",
           "Il regarde l'écran. Il ne dit rien pendant deux secondes.");
     setTimeout(() => parle("Bon. Écoutez. Je vous en remets un, ça reste entre nous.",
-                           "Il jette un œil derrière lui avant d'appuyer."), 1500);
+                           "Ce n'est pas une proposition. Il a déjà la main sur le levier."), 1500);
     $('restants').textContent = '1';
     $('relancer').disabled = false;
     $('relancer').textContent = 'Relancer';
     $('suivant').disabled = false;
-    $('suivant').textContent = 'Accepter 1 €';
-    $('suivant').onclick = accepter;
+    $('suivant').textContent = 'Relancer le tirage';
+    $('suivant').onclick = tourner;
     tirage = 1;
   } else {
     $('montant').textContent = '300 000,00 €';
