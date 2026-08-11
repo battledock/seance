@@ -16,6 +16,56 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   background-image:radial-gradient(96% 38% at 50% 0%, #ffffff, transparent 62%);
   background-attachment:fixed;overflow-x:hidden}
 
+/* --- squelette de chargement --- */
+@keyframes respireOs{0%,100%{opacity:.55}50%{opacity:.9}}
+.os{background:#e6e1d6;border-radius:6px;color:transparent !important;
+  animation:respireOs 1.4s ease-in-out infinite;position:relative;overflow:hidden;
+  user-select:none;pointer-events:none}
+.os::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);
+  animation:balayage 1.6s ease-in-out infinite}
+@keyframes balayage{to{transform:translateX(100%)}}
+.os *{visibility:hidden}
+.charge .mod b,.charge .mod .ap,.charge .mod .co,
+.charge .journal .h,.charge .journal .c,
+.charge .jg .t > span:first-child,
+.charge .face .niv{
+  background:#e6e1d6 !important;color:transparent !important;border-radius:6px;
+  animation:respireOs 1.4s ease-in-out infinite;
+}
+.charge .mod b{display:block;width:72%;height:14px}
+.charge .hn b{display:block;width:60%;height:15px}
+.charge .hn span{display:block;width:78%;height:11px;margin-top:5px}
+.charge .hk b{display:block;width:74px;height:17px;margin-left:auto}
+.charge .hk span{display:block;width:46px;height:9px;margin-top:4px;margin-left:auto}
+.charge .face{background:#e6e1d6}
+.charge .face svg,
+.charge .jg .p i{width:0 !important}
+.charge .jg .t > span:first-child{display:inline-block;width:52px;height:9px}
+.charge .evenement b{display:block;width:66%;height:15px}
+.charge .evenement p{display:block;width:92%;height:11px;margin-top:6px}
+.charge .evenement .et{display:block;width:52px;height:8px}
+.charge .mod b{display:block;width:72%;height:14px}
+.charge .mod .ap{display:block;width:96%;height:30px;margin-top:4px}
+.charge .mod .co{display:inline-block;width:56px;height:9px}
+.charge .mod .ic{opacity:.25}
+.charge .mod .pastille{display:none}
+.charge .journal .h{display:inline-block;width:36px;height:10px}
+.charge .journal .c{display:block;width:88%;height:11px}
+.charge .banniere{background:#dfe8ee}
+.charge .banniere svg{opacity:0}
+.charge .banniere .info{opacity:0}
+.charge .prod b,.charge .prod span,.charge .meteo{color:transparent}
+.pret .os{animation:none;background:none;color:inherit !important}
+.pret .mod b,.pret .mod .ap,.pret .mod .co,
+.pret .journal .h,.pret .journal .c,
+.pret .jg .t > span:first-child,.pret .face .niv{
+  background:none !important;color:inherit !important;animation:none;width:auto;height:auto;
+}
+.pret .face .niv{background:var(--ocre) !important;color:#fff !important;width:auto;height:auto}
+.pret .os::after{display:none}
+.pret .os *{visibility:visible}
+
 .hud{position:sticky;top:0;z-index:20;
   padding:calc(env(safe-area-inset-top) + 9px) 13px 10px;
   background:rgba(255,255,255,.92);border-bottom:1px solid var(--bord);
@@ -150,25 +200,25 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 }
 </style>
 </head>
-<body>
+<body class="charge">
 
 <header class="hud">
   <div class="hl">
-    <div class="face" id="face"><span class="niv" id="niv">7</span></div>
-    <div class="hn"><b id="pseudo">Docker sans nom</b><span id="titre">Chef de quai — Bassin est</span></div>
-    <div class="hk"><b id="euros">1,00 €</b><span>Caisse</span></div>
+    <div class="face os" id="face"><span class="niv" id="niv">7</span></div>
+    <div class="hn"><b id="pseudo" class="os">Docker sans nom</b><span id="titre" class="os">Chargement</span></div>
+    <div class="hk"><b id="euros" class="os">0,00 €</b><span class="os">Caisse</span></div>
   </div>
   <div class="jauges">
-    <div class="jg en" id="jg-en"><div class="t"><span>Énergie</span><span id="v-en">82 %</span></div>
+    <div class="jg en" id="jg-en"><div class="t"><span>Énergie</span><span id="v-en" class="os">— %</span></div>
       <div class="p"><i id="i-en" style="width:82%"></i></div></div>
-    <div class="jg xp"><div class="t"><span>Niveau 7</span><span id="v-xp">340 / 900</span></div>
+    <div class="jg xp"><div class="t"><span>Niveau 7</span><span id="v-xp" class="os">— / —</span></div>
       <div class="p"><i id="i-xp" style="width:38%"></i></div></div>
-    <div class="jg rep"><div class="t"><span>Réputation</span><span id="v-rep">Correcte</span></div>
+    <div class="jg rep"><div class="t"><span>Réputation</span><span id="v-rep" class="os">—</span></div>
       <div class="p"><i id="i-rep" style="width:56%"></i></div></div>
   </div>
 </header>
 
-<div class="banniere">
+<div class="banniere os">
   <div id="banniere-ville"></div>
   <div class="info">
     <span class="prod"><b id="prod">—</b><span>production</span></span>
@@ -180,8 +230,8 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   <span class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="#c2711a" stroke-width="1.8"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></svg></span>
   <span class="tx">
     <span class="et">Aujourd'hui</span>
-    <b id="ev-titre">Le camion du mardi est arrivé</b>
-    <p id="ev-texte">Il ne charge rien. Il ne décharge rien. Il repartira dans deux heures. Il est au planning.</p>
+    <b id="ev-titre" class="os">Chargement de la journée</b>
+    <p id="ev-texte" class="os">Le port se réveille doucement, comme tous les matins.</p>
   </span>
 </div>
 
@@ -1284,6 +1334,14 @@ $('banniere-ville').innerHTML =
   '<svg viewBox="0 0 320 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Marseille">'
   + batir('claireProfonde', { sansVoiliers: true }) + '</svg>';
 
+/* si la base traîne, on n'immobilise pas le joueur */
+setTimeout(() => {
+  if (document.body.classList.contains('charge')){
+    document.body.classList.remove('charge');
+    document.body.classList.add('pret');
+  }
+}, 6000);
+
 /* ---------- démarrage ---------- */
 (async () => {
   const d = await BD.garder('jeu');
@@ -1322,6 +1380,9 @@ $('banniere-ville').innerHTML =
     if (sac.length) window.__sac = sac;
   }
   majHud(false);
+  await new Promise(r => requestAnimationFrame(r));
+  document.body.classList.remove('charge');
+  document.body.classList.add('pret');
 })();
 
 poser('g-travail', MODULES.travail);
