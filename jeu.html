@@ -192,6 +192,56 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   overflow-y:auto;padding:calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 24px)}
 .feuille.on{display:block;animation:mont .32s ease-out}
 @keyframes mont{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* --- le livret --- */
+.lv-hero{position:relative;background:linear-gradient(160deg,#eaf1f5,#f6f2ea);
+  border:1px solid var(--bord);border-radius:16px 16px 0 0;padding:17px 15px 15px;overflow:hidden}
+.lv-hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(70% 90% at 84% 12%, rgba(194,113,26,.15), transparent 62%)}
+.lv-hl{position:relative;display:flex;align-items:center;gap:14px}
+.lv-portrait{position:relative;flex:0 0 76px;width:76px;height:76px}
+.lv-portrait .im{width:76px;height:76px;border-radius:18px;overflow:hidden;background:#dfe8ee;
+  border:2px solid #fff;box-shadow:0 4px 14px rgba(34,32,28,.16)}
+.lv-portrait .im svg{display:block;width:100%;image-rendering:pixelated}
+.lv-portrait .niv{position:absolute;right:-4px;bottom:-4px;background:var(--ocre);color:#fff;
+  font-family:'Bebas Neue',sans-serif;font-size:13px;padding:1px 8px;border-radius:8px;
+  border:2px solid #fff;box-shadow:0 2px 6px rgba(34,32,28,.18)}
+.lv-qui{flex:1;min-width:0}
+.lv-qui .role{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ocre);font-weight:600}
+.lv-qui h3{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1.05;margin:2px 0 3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lv-qui p{font-size:11.5px;color:var(--doux)}
+.lv-xp{position:relative;margin-top:14px}
+.lv-xp .t{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--doux);margin-bottom:4px}
+.lv-xp .p{height:9px;border-radius:5px;background:#e2e6e4;overflow:hidden}
+.lv-xp .p i{display:block;height:100%;border-radius:5px;width:0;
+  background:linear-gradient(90deg,var(--ocre),#e8a94e);transition:width .8s ease-out}
+.lv-sect{background:var(--carte);border:1px solid var(--bord);border-top:0;padding:15px}
+.lv-sect:last-of-type{border-radius:0 0 16px 16px}
+.lv-sect > .t{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--doux);margin-bottom:11px}
+.lv-st{margin-bottom:11px}
+.lv-st:last-child{margin-bottom:0}
+.lv-st .l{display:flex;align-items:baseline;gap:8px;margin-bottom:5px}
+.lv-st .l b{flex:0 0 auto;font-size:13.5px;font-weight:600}
+.lv-st .l em{flex:1;font-style:normal;font-size:10.5px;color:var(--doux);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lv-st .l .v{font-family:'Courier Prime',monospace;font-size:12px;color:var(--ocre);font-weight:700}
+.lv-st .p{height:8px;border-radius:5px;background:#eceae2;overflow:hidden}
+.lv-st .p i{display:block;height:100%;border-radius:5px;width:0;transition:width .7s ease-out}
+.lv-paires{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lv-paire{background:#faf8f3;border:1px solid var(--bord);border-radius:11px;padding:9px 11px}
+.lv-paire .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--doux)}
+.lv-paire .v{font-size:14px;font-weight:600;margin-top:2px}
+.lv-obj{display:flex;align-items:center;gap:10px;background:#faf8f3;border:1px solid var(--bord);
+  border-radius:11px;padding:10px;margin-bottom:7px}
+.lv-obj:last-child{margin-bottom:0}
+.lv-obj .ic{flex:0 0 34px;height:34px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:16px;background:#eef1f4}
+.lv-obj .tx{flex:1;min-width:0}
+.lv-obj .tx b{display:block;font-size:13px}
+.lv-obj .tx span{font-size:11px;color:var(--doux)}
+.lv-obj .et{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--rouge);text-align:right}
+
 .feuille h2{font-family:'Bebas Neue',sans-serif;font-size:27px;margin-bottom:3px}
 .feuille .st{font-size:12.5px;color:var(--doux);margin-bottom:15px;line-height:1.5}
 .fermer{width:100%;margin-top:12px;background:none;border:1px solid var(--bord);
@@ -279,7 +329,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 
 <nav class="nav">
   <button class="actif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg>Port</button>
-  <button data-f="f-fiche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h4"/></svg>Fiche</button>
+  <button data-f="f-fiche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h4"/></svg>Livret</button>
   <button data-f="f-marche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-6 4 4 5-8 4 5"/></svg>Marché</button>
   <button data-f="f-classement"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M12 17v4M5 4h14v5a7 7 0 0 1-14 0z"/></svg>Classement</button>
 </nav>
@@ -291,7 +341,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 </section>
 
 <section class="feuille" id="f-fiche">
-  <h2>Ta fiche</h2><p class="st">Niveau 7 — chef de quai depuis onze jours.</p>
+  <h2>Ton livret</h2><p class="st" id="lv-sous">Ce que le port sait de toi.</p>
   <div id="l-fiche"></div>
   <button class="fermer" data-x>Fermer</button>
 </section>
@@ -770,16 +820,6 @@ $('l-dockers').innerHTML = DOCKERS.map(d =>
    <span class="tx"><b>${d.n}</b><span>${d.t}</span></span>
    <span class="vl">${d.xp}<small><span class="humeur" style="background:${d.h}"></span>${d.hum}</small></span></div>`).join('');
 
-/* ---------- fiche ---------- */
-const STATS = [['Force',5],['Endurance',4],['Précision',3],['Négociation',2],['Discussion',6]];
-$('l-fiche').innerHTML =
-  `<div class="item"><span class="av" style="flex:0 0 72px;width:72px;height:auto">${svgPix(true)}</span>
-   <span class="tx"><b>Docker sans nom</b><span>Chef de quai — bassin est<br>Onze jours d'ancienneté</span></span></div>`
-  + STATS.map(s => `<div class="item"><span class="tx"><b>${s[0]}</b>
-     <span style="display:block;height:6px;border-radius:3px;background:rgba(127,163,192,.16);margin-top:6px">
-     <i style="display:block;height:100%;border-radius:3px;width:${s[1]/6*100}%;background:#c2711a"></i></span></span>
-     <span class="vl">${s[1]} / 6</span></div>`).join('');
-
 /* ---------- marché ---------- */
 const MARCHE = [
   ['Savon','Bastia','+ 32 %','↑'],['Sable','Marseille','− 8 %','↓'],
@@ -825,8 +865,9 @@ function ajouterJournal(h, txt){
 function ouvrir(id){ $(id).classList.add('on'); }
 document.querySelectorAll('[data-x]').forEach(b =>
   b.addEventListener('click', () => document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'))));
+const ONGLETS_OUVERTS = ['f-fiche'];
 document.querySelectorAll('.nav button').forEach(b => {
-  if (VERROUILLE && b.dataset.f){
+  if (VERROUILLE && b.dataset.f && !ONGLETS_OUVERTS.includes(b.dataset.f)){
     b.classList.add('ferme');
     b.setAttribute('aria-disabled', 'true');
     return;
@@ -1368,6 +1409,80 @@ setTimeout(() => {
   }
 }, 6000);
 
+/* ---------- le livret ---------- */
+const NUANCES = {
+  force:       ['#c74a33', 'Ce que tu portes sans faire de bruit'],
+  endurance:   ['#2f8f66', "Les heures avant que tu t'assoies"],
+  precision:   ['#2f7fb0', 'Poser sans rien casser'],
+  negociation: ['#c2711a', "Le prix que tu obtiens"],
+  discussion:  ['#6d4fa8', "Ce qu'on te raconte"]
+};
+
+function livret(d, MED, EQ, CP){
+  const nom = (d.pseudo || 'Docker sans nom').toUpperCase();
+  const poste = (MED && MED.poste) || 'Docker';
+  const jours = Math.max(1, Math.round((Date.now() - new Date(d.cree_le || Date.now())) / 86400000));
+  const palier = J.palier || 100;
+
+  const comp = CP ? [
+    ['Force', CP.force, 'force'], ['Endurance', CP.endurance, 'endurance'],
+    ['Précision', CP.precision_, 'precision'], ['Négociation', CP.negociation, 'negociation'],
+    ['Discussion', CP.discussion, 'discussion']
+  ] : [];
+
+  const med = [];
+  if (MED){
+    if (MED.poids_kg) med.push(['Poids', MED.poids_kg + ' kg']);
+    if (MED.taille_m) med.push(['Taille', String(MED.taille_m).replace('.', ',') + ' m']);
+    if (MED.audition) med.push(['Audition', MED.audition]);
+    if (MED.vertige) med.push(['Vertige', MED.vertige]);
+    if (MED.acuite) med.push(['Vue', MED.acuite]);
+  }
+
+  const objets = [];
+  if (EQ && EQ.casque_trop_grand)
+    objets.push(['⛑️', 'Casque de chantier', 'Taille 61 — tombe sur les yeux', 'À remplacer']);
+  if (EQ && EQ.article_achete)
+    objets.push(['👕', EQ.article_achete,
+      'Payé ' + Number(EQ.prix_paye).toLocaleString('fr-FR') + ' €', 'Porté']);
+
+  $('lv-sous').textContent = 'Ce que le port sait de toi.';
+  $('l-fiche').innerHTML =
+    '<div class="lv-hero"><div class="lv-hl">'
+    + '<span class="lv-portrait"><span class="im">' + svgPix(false) + '</span>'
+    + '<span class="niv">' + (d.niveau || 1) + '</span></span>'
+    + '<span class="lv-qui"><span class="role">' + poste + '</span>'
+    + '<h3>' + nom + '</h3>'
+    + '<p>Marseille — ' + jours + ' jour' + (jours > 1 ? 's' : '') + " d'ancienneté</p></span></div>"
+    + '<div class="lv-xp"><div class="t"><span>Niveau ' + (d.niveau || 1) + '</span>'
+    + '<span>' + (d.xp || 0) + ' / ' + palier + '</span></div>'
+    + '<div class="p"><i id="lv-barre-xp"></i></div></div></div>'
+
+    + (comp.length ? '<div class="lv-sect"><p class="t">Compétences</p>'
+      + comp.map(c => {
+          const n = NUANCES[c[2]];
+          return '<div class="lv-st"><div class="l"><b>' + c[0] + '</b><em>' + n[1] + '</em>'
+            + '<span class="v">' + c[1] + '/6</span></div>'
+            + '<div class="p"><i data-v="' + (c[1] / 6 * 100) + '" style="background:linear-gradient(90deg,'
+            + n[0] + ',' + n[0] + 'bb)"></i></div></div>';
+        }).join('') + '</div>' : '')
+
+    + (med.length ? '<div class="lv-sect"><p class="t">Visite médicale</p><div class="lv-paires">'
+      + med.map(m => '<div class="lv-paire"><div class="k">' + m[0] + '</div>'
+        + '<div class="v">' + m[1] + '</div></div>').join('') + '</div></div>' : '')
+
+    + (objets.length ? '<div class="lv-sect"><p class="t">Équipement</p>'
+      + objets.map(o => '<div class="lv-obj"><span class="ic">' + o[0] + '</span>'
+        + '<span class="tx"><b>' + o[1] + '</b><span>' + o[2] + '</span></span>'
+        + '<span class="et">' + o[3] + '</span></div>').join('') + '</div>' : '');
+
+  requestAnimationFrame(() => {
+    const b = $('lv-barre-xp');
+    if (b) b.style.width = ((d.xp || 0) / palier * 100) + '%';
+    $('l-fiche').querySelectorAll('.lv-st .p i').forEach(el => el.style.width = el.dataset.v + '%');
+  });
+}
+
 /* ---------- démarrage ---------- */
 (async () => {
   const d = await BD.garder('jeu');
@@ -1386,18 +1501,7 @@ setTimeout(() => {
   $('v-xp').parentElement.querySelector('span').textContent = 'Niveau ' + J.niveau;
   $('i-rep').style.width = (d.reputation ?? 50) + '%';
   $('v-rep').textContent = (d.reputation ?? 50) >= 50 ? 'Correcte' : 'Fragile';
-  if (CP){
-    const s = [['Force',CP.force],['Endurance',CP.endurance],['Précision',CP.precision_],
-               ['Négociation',CP.negociation],['Discussion',CP.discussion]];
-    $('l-fiche').innerHTML =
-      '<div class="item"><span class="av" style="flex:0 0 72px;width:72px;height:auto">' + svgPix(true) + '</span>'
-      + '<span class="tx"><b>' + (d.pseudo || 'Docker sans nom') + '</b><span>'
-      + (MED && MED.poste ? MED.poste : 'Docker') + ' — Marseille</span></span></div>'
-      + s.map(x => '<div class="item"><span class="tx"><b>' + x[0] + '</b>'
-        + '<span style="display:block;height:6px;border-radius:3px;background:#e9e5db;margin-top:6px">'
-        + '<i style="display:block;height:100%;border-radius:3px;width:' + (x[1]/6*100) + '%;background:#c2711a"></i></span></span>'
-        + '<span class="vl">' + x[1] + ' / 6</span></div>').join('');
-  }
+  livret(d, MED, EQ, CP);
   if (EQ){
     const sac = [];
     if (EQ.casque_trop_grand) sac.push(['Casque de chantier (taille 61)','Trop grand. Tombe sur les yeux.','—']);
