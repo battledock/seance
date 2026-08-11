@@ -578,6 +578,29 @@ function construire(){
 
   $('rayon').querySelectorAll('.article').forEach(b =>
     b.addEventListener('click', () => choisir(b.dataset.id)));
+
+  /* personne ne doit rester coincé ici */
+  const accessible = ARTICLES.some(a => a.p <= solde);
+  if (!accessible && !panier){
+    parle("Bon. Vous avez rien, en fait.",
+          "Il regarde sous le comptoir et sort quelque chose de gris.");
+    const don = { id:'tshirt', n:"Tee-shirt d'occasion", p:0 };
+    $('rayon').insertAdjacentHTML('afterbegin',
+      `<button class="article ok" id="depannage">
+        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${I.tshirt}</svg>
+        <span class="txt"><span class="nom">Tee-shirt d'occasion</span>
+        <span class="desc">Il vous le laisse. Il ne dit pas pourquoi.</span></span>
+        <span class="prix">Offert<span class="etiq">Accessible</span></span>
+      </button>`);
+    $('depannage').addEventListener('click', () => {
+      panier = don;
+      parle("Prenez-le. Et dites rien à personne.",
+            "Il referme le comptoir. La transaction n'a jamais eu lieu.");
+      $('suivant').disabled = false;
+      $('suivant').textContent = 'Accepter';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 }
 
 let panier = null;
