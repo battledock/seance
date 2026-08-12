@@ -347,7 +347,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .nav button.actif::before{content:"";position:absolute;top:-11px;left:50%;
   transform:translateX(-50%);width:30px;height:2.5px;background:#f6c47e;border-radius:0 0 3px 3px}
 
-.feuille{display:none;padding:16px 14px 0}
+.feuille{display:none;padding:16px 14px calc(env(safe-area-inset-bottom) + 96px)}
 .feuille.on{display:block;animation:mont .3s ease-out}
 @keyframes mont{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 #page-port{display:block}
