@@ -48,10 +48,10 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   animation:respireOs 1.4s ease-in-out infinite;
 }
 .charge .mod b{display:block;width:72%;height:14px}
-.charge .hn b{display:block;width:60%;height:15px}
-.charge .hn span{display:block;width:78%;height:11px;margin-top:5px}
-.charge .hk b{display:block;width:74px;height:17px;margin-left:auto}
-.charge .hk span{display:block;width:46px;height:9px;margin-top:4px;margin-left:auto}
+.charge .hn b{display:block;width:52%;height:13px}
+
+.charge .hk b{display:block;width:68px;height:15px}
+
 .charge .face{background:#e6e1d6}
 .charge .face svg,
 .charge .jg .p i{width:0 !important}
@@ -76,7 +76,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .pret .jg .t > span:first-child,.pret .face .niv{
   background:none !important;color:inherit !important;animation:none;width:auto;height:auto;
 }
-.pret .face .niv{background:var(--ocre) !important;color:#fff !important;width:auto;height:auto}
+
 .pret .os::after{display:none}
 .pret .os *{visibility:visible}
 
@@ -118,29 +118,27 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 @keyframes flotteP{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
 
 .hud{position:sticky;top:0;z-index:20;
-  padding:calc(env(safe-area-inset-top) + 9px) 13px 10px;
-  background:rgba(255,255,255,.92);border-bottom:1px solid var(--bord);
-  backdrop-filter:blur(10px);box-shadow:0 2px 14px rgba(34,32,28,.05)}
+  padding:calc(env(safe-area-inset-top) + 8px) 13px 9px;
+  background:rgba(255,255,255,.95);border-bottom:1px solid var(--bord);
+  backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(34,32,28,.04)}
 .hl{display:flex;align-items:center;gap:10px}
-.face{flex:0 0 42px;width:42px;height:42px;border-radius:11px;overflow:hidden;
-  background:#dfe8ee;border:1px solid var(--bord);position:relative}
+.face{flex:0 0 26px;width:26px;height:26px;border-radius:8px;overflow:hidden;
+  background:#dfe8ee;border:1px solid var(--bord);padding:0;cursor:pointer;position:relative}
 .face svg{display:block;width:100%;image-rendering:pixelated;transform:translateY(6%)}
-.face .niv{position:absolute;right:-1px;bottom:-1px;background:var(--ocre);color:#fff;
-  font-family:'Bebas Neue',sans-serif;font-size:11px;padding:0 4px;border-radius:5px}
 .hn{flex:1;min-width:0}
-.hn b{display:block;font-size:14.5px;font-weight:600;line-height:1.15}
-.hn span{font-size:10.5px;color:var(--doux)}
-.hk{text-align:right}
-.hk b{display:block;font-family:'Courier Prime',monospace;font-size:16px;color:var(--ocre)}
+.hn b{display:block;font-size:13px;font-weight:600;line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hk{flex:0 0 auto}
+.hk b{display:block;font-family:'Courier Prime',monospace;font-size:15px;color:var(--ocre)}
 .hk b.pop{animation:pop .5s ease-out}
 @keyframes pop{0%{transform:scale(1.14);color:var(--vert)}100%{transform:none}}
-.hk span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--doux)}
-.jauges{display:flex;gap:7px;margin-top:9px}
-.jg{flex:1}
-.jg .t{display:flex;justify-content:space-between;font-size:8.5px;letter-spacing:.11em;
+.jauges{display:flex;gap:8px;margin-top:7px}
+.jauges > div{flex:1;min-width:0}
+.jauges .t{display:flex;justify-content:space-between;gap:4px;font-size:8px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--doux);margin-bottom:3px}
-.jg .p{height:5px;border-radius:3px;background:#e6e2d8;overflow:hidden}
-.jg .p i{display:block;height:100%;transition:width .4s}
+.jauges .t span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jauges .p{height:4px;border-radius:3px;background:#e6e2d8;overflow:hidden}
+.jauges .p i{display:block;height:100%;border-radius:3px;transition:width .5s ease-out}
 .jg.en .p i{background:linear-gradient(90deg,#2f8f66,#5cc194)}
 .jg.en.bas .p i{background:linear-gradient(90deg,#c74a33,#e0806a)}
 .jg.xp .p i{background:linear-gradient(90deg,var(--ocre),#e8a94e)}
@@ -316,17 +314,17 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 
 <header class="hud">
   <div class="hl">
-    <div class="face os" id="face"><span class="niv" id="niv">7</span></div>
-    <div class="hn"><b id="pseudo" class="os">Docker sans nom</b><span id="titre" class="os">Chargement</span></div>
-    <div class="hk"><b id="euros" class="os">0,00 €</b><span class="os">Caisse</span></div>
+    <button class="face os" id="face" aria-label="Ouvrir ton livret"></button>
+    <span class="hn"><b id="pseudo" class="os">Docker sans nom</b></span>
+    <span class="hk"><b id="euros" class="os">0,00 €</b></span>
   </div>
   <div class="jauges">
-    <div class="jg en" id="jg-en"><div class="t"><span>Énergie</span><span id="v-en" class="os">— %</span></div>
-      <div class="p"><i id="i-en" style="width:82%"></i></div></div>
-    <div class="jg xp"><div class="t"><span>Niveau 7</span><span id="v-xp" class="os">— / —</span></div>
-      <div class="p"><i id="i-xp" style="width:38%"></i></div></div>
-    <div class="jg rep"><div class="t"><span>Réputation</span><span id="v-rep" class="os">—</span></div>
-      <div class="p"><i id="i-rep" style="width:56%"></i></div></div>
+    <div class="jg en" id="jg-en"><div class="t"><span>Énergie</span><span id="v-en" class="os">—</span></div>
+      <div class="p"><i id="i-en" style="width:0%"></i></div></div>
+    <div class="jg xp"><div class="t"><span id="l-niv">Niveau 1</span><span id="v-xp" class="os">—</span></div>
+      <div class="p"><i id="i-xp" style="width:0%"></i></div></div>
+    <div class="jg rep"><div class="t"><span>Répu.</span><span id="v-rep" class="os">—</span></div>
+      <div class="p"><i id="i-rep" style="width:0%"></i></div></div>
   </div>
 </header>
 
@@ -745,7 +743,7 @@ const euro = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFrac
 function majHud(pop){
   $('euros').textContent = euro(J.euros);
   if (pop){ $('euros').classList.remove('pop'); void $('euros').offsetWidth; $('euros').classList.add('pop'); }
-  $('v-en').textContent = Math.round(J.energie) + ' %';
+  $('v-en').textContent = Math.round(J.energie) + '%';
   $('i-en').style.width = J.energie + '%';
   $('jg-en').classList.toggle('bas', J.energie < 30);
   $('v-xp').textContent = J.xp + ' / ' + J.palier;
@@ -924,6 +922,14 @@ function ajouterJournal(h, txt){
   j.insertAdjacentHTML('afterbegin', `<div class="l"><span class="h">${h}</span><span class="c">${txt}</span></div>`);
   while (j.children.length > 7) j.removeChild(j.lastChild);
 }
+
+$('face').addEventListener('click', () => {
+  document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'));
+  ouvrir('f-fiche');
+  document.querySelectorAll('.nav button').forEach(x => x.classList.remove('actif'));
+  const b = document.querySelector('.nav button[data-f="f-fiche"]');
+  if (b) b.classList.add('actif');
+});
 
 /* ---------- feuilles ---------- */
 function ouvrir(id){ $(id).classList.add('on'); }
@@ -2201,17 +2207,18 @@ function livret(d, MED, EQ, CP){
   const EQ = await BD.lire('equipement');
   const CP = await BD.lire('competences');
   Object.assign(etat, BD.avatarDe(d, EQ));
-  $('face').innerHTML = '<span class="niv" id="niv">' + d.niveau + '</span>' + svgPix(false);
+  $('face').innerHTML = svgPix(false);
   $('pseudo').textContent = d.pseudo || 'Docker sans nom';
   const MED = await BD.lire('dossier_medical');
-  $('titre').textContent = (MED && MED.poste ? MED.poste : 'Docker') + ' — Marseille';
+  $('l-niv').textContent = 'Niveau ' + (d.niveau || 1);
   J.euros = Number(d.euros) || 0;
   J.energie = d.energie ?? 100;
   J.niveau = d.niveau || 1;
   J.xp = d.xp || 0;
-  $('v-xp').parentElement.querySelector('span').textContent = 'Niveau ' + J.niveau;
+
   $('i-rep').style.width = (d.reputation ?? 50) + '%';
-  $('v-rep').textContent = (d.reputation ?? 50) >= 50 ? 'Correcte' : 'Fragile';
+  const rp = d.reputation ?? 50;
+  $('v-rep').textContent = rp >= 70 ? 'Bonne' : rp >= 40 ? 'Correcte' : 'Fragile';
   livret(d, MED, EQ, CP);
   if (EQ){
     const sac = [];
