@@ -347,10 +347,11 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .nav button.actif::before{content:"";position:absolute;top:-11px;left:50%;
   transform:translateX(-50%);width:30px;height:2.5px;background:#f6c47e;border-radius:0 0 3px 3px}
 
-.feuille{position:fixed;inset:0;z-index:40;display:none;background:var(--fond);
-  overflow-y:auto;padding:calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 24px)}
-.feuille.on{display:block;animation:mont .32s ease-out}
-@keyframes mont{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.feuille{display:none;padding:16px 14px 0}
+.feuille.on{display:block;animation:mont .3s ease-out}
+@keyframes mont{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+#page-port{display:block}
+#page-port.off{display:none}
 /* --- le livret --- */
 .lv-hero{position:relative;background:linear-gradient(160deg,#eaf1f5,#f6f2ea);
   border:1px solid var(--bord);border-radius:16px 16px 0 0;padding:17px 15px 15px;overflow:hidden}
@@ -414,7 +415,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 
 .feuille h2{font-family:'Bebas Neue',sans-serif;font-size:27px;margin-bottom:3px}
 .feuille .st{font-size:12.5px;color:var(--doux);margin-bottom:15px;line-height:1.5}
-.fermer{width:100%;margin-top:12px;background:none;border:1px solid var(--bord);
+.fermer{display:none;width:100%;margin-top:12px;background:none;border:1px solid var(--bord);
   border-radius:11px;padding:13px;font-family:'Barlow',sans-serif;font-size:11px;
   font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--doux);cursor:pointer;
   background:var(--carte)}
@@ -445,6 +446,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   </div>
 </header>
 
+<main id="page-port">
 <div class="ecrans">
   <div class="fenetre4" id="fenetre4">
     <div class="rail4" id="rail4">
@@ -505,6 +507,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 </div>
 
 <p class="pied">Battle Dock — Bassin est</p>
+</main>
 
 <nav class="nav">
   <button class="actif" aria-label="Le port">
@@ -1045,7 +1048,6 @@ function ajouterJournal(h, txt){
 }
 
 $('face').addEventListener('click', () => {
-  document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'));
   ouvrir('f-fiche');
   document.querySelectorAll('.nav button').forEach(x => x.classList.remove('actif'));
   const b = document.querySelector('.nav button[data-f="f-fiche"]');
@@ -1053,9 +1055,18 @@ $('face').addEventListener('click', () => {
 });
 
 /* ---------- feuilles ---------- */
-function ouvrir(id){ $(id).classList.add('on'); }
-document.querySelectorAll('[data-x]').forEach(b =>
-  b.addEventListener('click', () => document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'))));
+function ouvrir(id){
+  document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'));
+  $('page-port').classList.toggle('off', !!id);
+  if (id) $(id).classList.add('on');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+function auPort(){ ouvrir(null); }
+document.querySelectorAll('[data-x]').forEach(b => b.addEventListener('click', () => {
+  auPort();
+  document.querySelectorAll('.nav button').forEach(x => x.classList.remove('actif'));
+  document.querySelector('.nav button:not([data-f])').classList.add('actif');
+}));
 const ONGLETS_OUVERTS = ['f-fiche'];
 document.querySelectorAll('.nav button').forEach(b => {
   if (VERROUILLE && b.dataset.f && !ONGLETS_OUVERTS.includes(b.dataset.f)){
@@ -1066,8 +1077,7 @@ document.querySelectorAll('.nav button').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('.nav button').forEach(x => x.classList.remove('actif'));
     b.classList.add('actif');
-    document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'));
-    if (b.dataset.f) ouvrir(b.dataset.f);
+    ouvrir(b.dataset.f || null);
   });
 });
 
