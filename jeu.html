@@ -4,866 +4,434 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#f2efe7">
-<title>Battle Dock — Le port</title>
+<title>Battle Dock — Le port (clair)</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--fond:#f2efe7;--carte:#fff;--bord:#e2ddd2;--encre:#22201c;--doux:#75705f;
-      --ocre:#c2711a;--vert:#2f8f66;--rouge:#c74a33;--violet:#6d4fa8}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none}
-html,body{height:100%;overflow:hidden}
+:root{--fond:#f2efe7;--carte:#ffffff;--bord:#e2ddd2;--encre:#22201c;--doux:#75705f;
+      --ocre:#c2711a;--ocre-f:#9a570f;--vert:#2f8f66;--rouge:#c74a33;--violet:#6d4fa8;
+      --bleu:#2f7fb0}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
 body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sans-serif;
-     display:flex;flex-direction:column}
-@keyframes respireOs{0%,100%{opacity:.55}50%{opacity:.9}}
-.charge .hn b,.charge .hn span,.charge .hk b,.charge .hk span,
-.charge .jauges .t span:first-child,.charge .jauges .t span:last-child{
-  background:#e6e1d6 !important;color:transparent !important;border-radius:6px;
-  animation:respireOs 1.4s ease-in-out infinite;display:inline-block;min-width:40px}
-.charge .hn b{display:block;width:58%;height:15px}
-.charge .hn span{display:block;width:74%;height:11px;margin-top:5px}
-.charge .hk b{display:block;width:76px;height:17px;margin-left:auto}
-.charge .hk span{display:block;width:44px;height:9px;margin-top:4px;margin-left:auto}
-.charge .face{background:#e6e1d6;color:transparent}
-.charge .face .niv{background:#e6e1d6;color:transparent}
-.charge .jauges .p i{width:0 !important}
-.pret .hn b,.pret .hn span,.pret .hk b,.pret .hk span,
-.pret .jauges .t span,.pret .face,.pret .face .niv{
-  background:none !important;color:inherit !important;animation:none;width:auto;height:auto;min-width:0}
-.pret .face .niv{background:var(--ocre) !important;color:#fff !important}
+  background-image:radial-gradient(96% 38% at 50% 0%, #ffffff, transparent 62%);
+  background-attachment:fixed;overflow-x:hidden}
 
-.hud{flex:0 0 auto;padding:calc(env(safe-area-inset-top) + 9px) 13px 10px;
-  background:var(--carte);border-bottom:1px solid var(--bord)}
+/* --- tout est verrouillé pendant la construction --- */
+.mod.ferme{opacity:.5;cursor:default}
+.mod.ferme .co{color:var(--doux)}
+.mod.ferme:active{transform:none}
+.mod .cadenas{position:absolute;top:10px;right:10px;width:16px;height:16px;opacity:.5}
+.nav button.ferme{opacity:.4;cursor:default}
+.chantier{
+  margin:12px 13px 0;background:#eef2f6;border:1px dashed #c3ccd4;border-radius:14px;
+  padding:11px 14px;display:flex;gap:10px;align-items:center;
+}
+.chantier svg{flex:0 0 20px;width:20px;height:20px}
+.chantier p{font-size:12.5px;color:#5f6b75;line-height:1.45}
+.chantier p b{color:#33404a;font-weight:600}
+
+/* --- squelette de chargement --- */
+@keyframes respireOs{0%,100%{opacity:.55}50%{opacity:.9}}
+.os{background:#e6e1d6;border-radius:6px;color:transparent !important;
+  animation:respireOs 1.4s ease-in-out infinite;position:relative;overflow:hidden;
+  user-select:none;pointer-events:none}
+.os::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);
+  animation:balayage 1.6s ease-in-out infinite}
+@keyframes balayage{to{transform:translateX(100%)}}
+.os *{visibility:hidden}
+.charge .mod b,.charge .mod .ap,.charge .mod .co,
+.charge .journal .h,.charge .journal .c,
+.charge .jg .t > span:first-child,
+.charge .face .niv{
+  background:#e6e1d6 !important;color:transparent !important;border-radius:6px;
+  animation:respireOs 1.4s ease-in-out infinite;
+}
+.charge .mod b{display:block;width:72%;height:14px}
+.charge .hn b{display:block;width:60%;height:15px}
+.charge .hn span{display:block;width:78%;height:11px;margin-top:5px}
+.charge .hk b{display:block;width:74px;height:17px;margin-left:auto}
+.charge .hk span{display:block;width:46px;height:9px;margin-top:4px;margin-left:auto}
+.charge .face{background:#e6e1d6}
+.charge .face svg,
+.charge .jg .p i{width:0 !important}
+.charge .jg .t > span:first-child{display:inline-block;width:52px;height:9px}
+.charge .evenement b{display:block;width:66%;height:15px}
+.charge .evenement p{display:block;width:92%;height:11px;margin-top:6px}
+.charge .evenement .et{display:block;width:52px;height:8px}
+.charge .mod b{display:block;width:72%;height:14px}
+.charge .mod .ap{display:block;width:96%;height:30px;margin-top:4px}
+.charge .mod .co{display:inline-block;width:56px;height:9px}
+.charge .mod .ic{opacity:.25}
+.charge .mod .pastille{display:none}
+.charge .journal .h{display:inline-block;width:36px;height:10px}
+.charge .journal .c{display:block;width:88%;height:11px}
+.charge .banniere{background:#dfe8ee}
+.charge .banniere svg{opacity:0}
+.charge .banniere .info{opacity:0}
+.charge .prod b,.charge .prod span,.charge .meteo{color:transparent}
+.pret .os{animation:none;background:none;color:inherit !important}
+.pret .mod b,.pret .mod .ap,.pret .mod .co,
+.pret .journal .h,.pret .journal .c,
+.pret .jg .t > span:first-child,.pret .face .niv{
+  background:none !important;color:inherit !important;animation:none;width:auto;height:auto;
+}
+.pret .face .niv{background:var(--ocre) !important;color:#fff !important;width:auto;height:auto}
+.pret .os::after{display:none}
+.pret .os *{visibility:visible}
+
+
+/* ================= les quatre écrans ================= */
+.ecrans{position:relative;margin:12px 13px 0}
+.fenetre4{border-radius:16px;overflow:hidden;border:1px solid var(--bord);
+  box-shadow:0 5px 20px rgba(34,32,28,.09);position:relative;background:#dceaf2;
+  touch-action:pan-y;aspect-ratio:2/1}
+.rail4{display:flex;height:100%;transition:transform .44s cubic-bezier(.3,.85,.3,1)}
+.rail4.suit{transition:none}
+.page4{flex:0 0 100%;position:relative;overflow:hidden}
+.page4 > .toile4{position:absolute;inset:0}
+.page4 svg{position:absolute;inset:0;width:100%;height:100%}
+.lg4{position:absolute;left:0;right:0;bottom:0;padding:24px 11px 10px;
+  background:linear-gradient(180deg,transparent,rgba(10,22,34,.85));color:#fff;pointer-events:none}
+.lg4 b{display:block;font-family:'Bebas Neue',sans-serif;font-size:19px;line-height:1.05}
+.lg4 .sous{display:block;font-size:10.5px;color:rgba(255,255,255,.82);margin-top:1px}
+.puce4{position:absolute;top:9px;left:9px;background:rgba(255,255,255,.94);
+  border:1px solid rgba(34,32,28,.1);border-radius:9px;padding:4px 9px;font-size:10.5px;font-weight:600}
+.chantier4{position:absolute;left:50%;top:9px;transform:translateX(-50%);z-index:7;
+  display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.93);
+  border:1px dashed #b9b1a0;border-radius:20px;padding:5px 11px;font-size:10px;font-weight:600;
+  color:var(--doux);white-space:nowrap}
+.chantier4 .pt{width:6px;height:6px;border-radius:50%;background:#e8a04a;
+  animation:respireCh 1.9s ease-in-out infinite}
+@keyframes respireCh{0%,100%{opacity:.35}50%{opacity:1}}
+.ronds{display:flex;justify-content:center;align-items:center;gap:13px;padding:13px 0 2px}
+.ronds button{width:22px;height:22px;border:0;background:none;padding:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+.ronds button::before{content:"";width:7px;height:7px;border-radius:50%;background:none;
+  box-shadow:inset 0 0 0 1.4px #c4bdae;
+  transition:box-shadow .34s cubic-bezier(.3,.9,.3,1), background .34s, transform .34s}
+.ronds button.on::before{background:var(--ocre);
+  box-shadow:inset 0 0 0 1.4px var(--ocre), 0 0 0 4px rgba(194,113,26,.14);transform:scale(1.16)}
+.charge .fenetre4{background:#e6e1d6}
+.charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
+.pedalo{animation:flotteP 4.2s ease-in-out infinite}
+@keyframes flotteP{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
+
+.hud{position:sticky;top:0;z-index:20;
+  padding:calc(env(safe-area-inset-top) + 9px) 13px 10px;
+  background:rgba(255,255,255,.92);border-bottom:1px solid var(--bord);
+  backdrop-filter:blur(10px);box-shadow:0 2px 14px rgba(34,32,28,.05)}
 .hl{display:flex;align-items:center;gap:10px}
-.face{flex:0 0 42px;width:42px;height:42px;border-radius:11px;background:#dfe8ee;
-  border:1px solid var(--bord);position:relative;display:flex;align-items:center;justify-content:center;font-size:19px}
+.face{flex:0 0 42px;width:42px;height:42px;border-radius:11px;overflow:hidden;
+  background:#dfe8ee;border:1px solid var(--bord);position:relative}
+.face svg{display:block;width:100%;image-rendering:pixelated;transform:translateY(6%)}
 .face .niv{position:absolute;right:-1px;bottom:-1px;background:var(--ocre);color:#fff;
   font-family:'Bebas Neue',sans-serif;font-size:11px;padding:0 4px;border-radius:5px}
 .hn{flex:1;min-width:0}
-.hn b{display:block;font-size:14.5px;font-weight:600}
+.hn b{display:block;font-size:14.5px;font-weight:600;line-height:1.15}
 .hn span{font-size:10.5px;color:var(--doux)}
 .hk{text-align:right}
 .hk b{display:block;font-family:'Courier Prime',monospace;font-size:16px;color:var(--ocre)}
+.hk b.pop{animation:pop .5s ease-out}
+@keyframes pop{0%{transform:scale(1.14);color:var(--vert)}100%{transform:none}}
 .hk span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--doux)}
 .jauges{display:flex;gap:7px;margin-top:9px}
-.jauges > div{flex:1}
-.jauges .t{display:flex;justify-content:space-between;font-size:8.5px;letter-spacing:.11em;
+.jg{flex:1}
+.jg .t{display:flex;justify-content:space-between;font-size:8.5px;letter-spacing:.11em;
   text-transform:uppercase;color:var(--doux);margin-bottom:3px}
-.jauges .p{height:5px;border-radius:3px;background:#e6e2d8;overflow:hidden}
-.jauges .p i{display:block;height:100%}
-.pied{flex:0 0 auto;padding:0 13px calc(env(safe-area-inset-bottom) + 12px)}
-.principal{width:100%;background:var(--ocre);border:0;border-radius:14px;padding:16px;
-  font-family:'Barlow',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.14em;
-  text-transform:uppercase;color:#fff;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;gap:9px}
-.principal:active{background:#9a570f}
-.principal:disabled{opacity:.45}
-.journal{margin-top:8px;font-size:11.5px;color:var(--doux);text-align:center;line-height:1.4;min-height:16px}
-.journal b{color:var(--encre);font-weight:600}
-.lg{position:absolute;left:0;right:0;bottom:0;padding:26px 11px 11px;
-  background:linear-gradient(180deg,transparent,rgba(10,22,34,.85));color:#fff;pointer-events:none}
-.lg b{display:block;font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1.05;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lg .sous{display:block;font-size:10.5px;color:rgba(255,255,255,.82);margin-top:1px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lg .lignes{margin-top:8px;display:flex;flex-direction:column;gap:4px}
-.lg .li{display:flex;align-items:center;gap:7px;font-size:11.5px;color:rgba(255,255,255,.92)}
-.lg .li i{width:6px;height:6px;border-radius:50%;flex:0 0 6px}
-.lg .li em{font-style:normal;margin-left:auto;font-family:'Courier Prime',monospace;font-size:10.5px;
-  color:rgba(255,255,255,.7)}
-.puce{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.94);
-  border:1px solid rgba(34,32,28,.1);border-radius:9px;padding:4px 9px;font-size:10.5px;font-weight:600}
-.pastille{position:absolute;top:10px;right:10px;min-width:20px;height:20px;border-radius:11px;
-  background:var(--rouge);color:#fff;font-size:11.5px;font-weight:600;display:flex;
-  align-items:center;justify-content:center;padding:0 6px;box-shadow:0 2px 8px rgba(199,74,51,.4)}
-.pastille.calme{background:rgba(255,255,255,.94);color:var(--doux);
-  border:1px solid rgba(34,32,28,.1);box-shadow:none}
-.houle{animation:derive 13s linear infinite}
-.houle:nth-of-type(2n){animation-duration:17s;animation-direction:reverse}
-@keyframes derive{to{transform:translateX(56px)}}
-.ecume{animation:scint 3.8s ease-in-out infinite}
-@keyframes scint{0%,100%{opacity:.1}50%{opacity:.6}}
-.feu{animation:clign 3.4s infinite}
-.feu2{animation:clign 5.2s infinite .8s}
-@keyframes clign{0%,44%{opacity:1}54%,94%{opacity:.14}100%{opacity:1}}
-.crochet{animation:pend 7s ease-in-out infinite;transform-origin:top center}
-@keyframes pend{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
-.navire,.remorqueur{animation:flotte 6s ease-in-out infinite}
-@keyframes flotte{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
-.camion{animation:roule 16s linear infinite}
-.camion2{animation:roule 21s linear infinite 3s}
-@keyframes roule{0%{transform:translateX(-70px)}100%{transform:translateX(400px)}}
-.pedalo{animation:flotte 4.2s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+.jg .p{height:5px;border-radius:3px;background:#e6e2d8;overflow:hidden}
+.jg .p i{display:block;height:100%;transition:width .4s}
+.jg.en .p i{background:linear-gradient(90deg,#2f8f66,#5cc194)}
+.jg.en.bas .p i{background:linear-gradient(90deg,#c74a33,#e0806a)}
+.jg.xp .p i{background:linear-gradient(90deg,var(--ocre),#e8a94e)}
+.jg.rep .p i{background:linear-gradient(90deg,#6d4fa8,#a487d8)}
+
+.banniere{position:relative;margin:12px 13px 0;border-radius:16px;overflow:hidden;
+  border:1px solid var(--bord);box-shadow:0 4px 18px rgba(34,32,28,.07)}
+.banniere svg{display:block;width:100%;height:auto}
+.banniere .info{position:absolute;left:12px;bottom:10px;right:12px;
+  display:flex;justify-content:space-between;align-items:flex-end}
+.banniere .prod{background:rgba(255,255,255,.92);border:1px solid var(--bord);
+  border-radius:9px;padding:6px 10px}
+.banniere .prod b{display:block;font-family:'Courier Prime',monospace;font-size:13px;color:var(--vert)}
+.banniere .prod span{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--doux)}
+.banniere .meteo{background:rgba(255,255,255,.92);border:1px solid var(--bord);
+  border-radius:9px;padding:6px 10px;font-size:11.5px;color:var(--encre)}
+.houle path{animation:onduler 8s ease-in-out infinite}
+@keyframes onduler{0%,100%{transform:translateX(0)}50%{transform:translateX(-8px)}}
+.feu{animation:clignote 3.2s infinite}
+@keyframes clignote{0%,45%{opacity:1}55%,95%{opacity:.2}100%{opacity:1}}
 
 
 
-.scene{flex:1;min-height:0;position:relative;padding:12px 13px 6px;display:flex;flex-direction:column}
-.grand{flex:1;min-height:0;border-radius:18px;overflow:hidden;border:1px solid var(--bord);
-  box-shadow:0 6px 24px rgba(34,32,28,.12);position:relative;background:#dceaf2;touch-action:pan-y}
-.rail{display:flex;height:100%;transition:transform .44s cubic-bezier(.3,.85,.3,1)}
-.rail.suit{transition:none}
-.page{flex:0 0 100%;position:relative;overflow:hidden}
-.page > .toile{position:absolute;inset:0}
-.page svg{position:absolute;inset:0;width:100%;height:100%}
 
-/* les pastilles du bas, seule indication */
-.chantier{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:7;
-  display:flex;align-items:center;gap:7px;
-  background:rgba(255,255,255,.93);border:1px dashed #b9b1a0;border-radius:22px;
-  padding:6px 13px;font-size:11px;font-weight:600;color:var(--doux);white-space:nowrap;
-  box-shadow:0 3px 12px rgba(34,32,28,.12)}
-.chantier .pt{width:7px;height:7px;border-radius:50%;background:#e8a04a;
-  animation:respireCh 1.9s ease-in-out infinite}
-@keyframes respireCh{0%,100%{opacity:.35}50%{opacity:1}}
-.indice{display:flex;justify-content:center;align-items:center;gap:13px;padding:15px 0 6px}
-.indice button{width:22px;height:22px;border:0;background:none;padding:0;cursor:pointer;
+
+.evenement{margin:12px 13px 0;background:#fdf3e3;
+  border:1px solid #efd9b4;border-radius:14px;padding:12px 14px;
+  display:flex;gap:11px;align-items:flex-start}
+.evenement .pic{flex:0 0 34px;height:34px;border-radius:9px;background:#f7e4c6;
   display:flex;align-items:center;justify-content:center}
-.indice button::before{content:"";width:7px;height:7px;border-radius:50%;
-  background:none;box-shadow:inset 0 0 0 1.4px #c4bdae;
-  transition:box-shadow .34s cubic-bezier(.3,.9,.3,1), background .34s, transform .34s}
-.indice button.on::before{background:var(--ocre);box-shadow:inset 0 0 0 1.4px var(--ocre),
-  0 0 0 4px rgba(194,113,26,.14);transform:scale(1.16)}
+.evenement .pic svg{width:19px;height:19px}
+.evenement .tx{flex:1;min-width:0}
+.evenement .et{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--ocre);margin-bottom:3px}
+.evenement b{display:block;font-size:14.5px;margin-bottom:3px}
+.evenement p{font-size:12.5px;color:var(--doux);line-height:1.45}
 
-/* le bateau */
-.pontBateau{position:absolute;inset:0;display:flex;flex-direction:column;
-  background:linear-gradient(170deg,#e8eef2,#f4efe4)}
-.pontBateau .haut{flex:1;min-height:0;position:relative}
-.pontBateau .haut svg{position:absolute;inset:0;width:100%;height:100%}
-.calePont{position:absolute;left:11px;right:11px;bottom:11px;display:flex;gap:7px;z-index:3}
-.emp{flex:1;aspect-ratio:1;max-height:64px;border-radius:12px;border:1.5px dashed rgba(255,255,255,.55);
-  background:rgba(10,22,34,.28);display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:1px;color:#fff}
-.emp.plein{border-style:solid;border-color:transparent}
-.emp .ic{font-size:17px}
-.emp .n{font-size:9px;font-weight:600;text-align:center;padding:0 3px;line-height:1.1}
-.emp.vide .ic{opacity:.45;font-size:15px}
+.section{margin:18px 13px 0}
+.section > .t{font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--doux);margin-bottom:9px;padding-left:2px}
+.grille{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.mod{position:relative;background:var(--carte);border:1px solid var(--bord);
+  border-radius:14px;padding:12px;text-align:left;color:inherit;cursor:pointer;
+  font-family:'Barlow',sans-serif;transition:transform .11s,box-shadow .2s;overflow:hidden;
+  box-shadow:0 2px 10px rgba(34,32,28,.05)}
+.mod:active{transform:scale(.985)}
+.mod:hover{box-shadow:0 6px 18px rgba(34,32,28,.1)}
+.mod .ic{width:28px;height:28px;margin-bottom:9px}
+.mod b{display:block;font-size:14.5px;font-weight:600;margin-bottom:3px}
+.mod .ap{display:block;font-size:11.5px;color:var(--doux);line-height:1.4;min-height:32px}
+.mod .bas{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.mod .co{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ocre)}
+.mod .pastille{position:absolute;top:10px;right:10px;min-width:19px;height:19px;
+  border-radius:10px;background:var(--rouge);color:#fff;font-size:11px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;padding:0 5px}
+.mod.verrou{opacity:.5}
+.mod .barre{height:4px;border-radius:2px;background:#e9e5db;overflow:hidden;margin-top:8px}
+.mod .barre i{display:block;height:100%;background:var(--ocre)}
+
+.journal{margin:18px 13px 0;background:var(--carte);
+  border:1px solid var(--bord);border-radius:14px;padding:12px 14px;
+  box-shadow:0 2px 10px rgba(34,32,28,.05)}
+.journal .t{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--doux);margin-bottom:9px}
+.journal .l{display:flex;gap:9px;font-size:12.5px;line-height:1.5;padding:5px 0;
+  border-bottom:1px solid #efece3;animation:ent .35s ease-out}
+.journal .l:last-child{border:0}
+.journal .h{flex:0 0 42px;font-family:'Courier Prime',monospace;font-size:11px;color:#a09a8c}
+.journal .c{flex:1;color:#5d584c}
+.journal .c b{color:var(--encre);font-weight:600}
+@keyframes ent{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.pied{margin:20px 13px calc(env(safe-area-inset-bottom) + 84px);
+  text-align:center;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:#b0a99a}
+
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:25;display:flex;
+  background:rgba(255,255,255,.97);border-top:1px solid var(--bord);
+  padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(10px);
+  box-shadow:0 -2px 16px rgba(34,32,28,.06)}
+.nav button{flex:1;background:none;border:0;padding:9px 3px 11px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#96907f;
+  font-family:'Barlow',sans-serif}
+.nav button svg{width:20px;height:20px}
+.nav button.actif{color:var(--ocre)}
+
+.feuille{position:fixed;inset:0;z-index:40;display:none;background:var(--fond);
+  overflow-y:auto;padding:calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 24px)}
+.feuille.on{display:block;animation:mont .32s ease-out}
+@keyframes mont{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* --- le livret --- */
+.lv-hero{position:relative;background:linear-gradient(160deg,#eaf1f5,#f6f2ea);
+  border:1px solid var(--bord);border-radius:16px 16px 0 0;padding:17px 15px 15px;overflow:hidden}
+.lv-hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(70% 90% at 84% 12%, rgba(194,113,26,.15), transparent 62%)}
+.lv-hl{position:relative;display:flex;align-items:center;gap:14px}
+.lv-portrait{position:relative;flex:0 0 76px;width:76px;height:76px}
+.lv-portrait .im{width:76px;height:76px;border-radius:18px;overflow:hidden;background:#dfe8ee;
+  border:2px solid #fff;box-shadow:0 4px 14px rgba(34,32,28,.16)}
+.lv-portrait .im svg{display:block;width:100%;image-rendering:pixelated}
+.lv-portrait .niv{position:absolute;right:-4px;bottom:-4px;background:var(--ocre);color:#fff;
+  font-family:'Bebas Neue',sans-serif;font-size:13px;padding:1px 8px;border-radius:8px;
+  border:2px solid #fff;box-shadow:0 2px 6px rgba(34,32,28,.18)}
+.lv-qui{flex:1;min-width:0}
+.lv-qui .role{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ocre);font-weight:600}
+.lv-qui h3{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1.05;margin:2px 0 3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lv-qui p{font-size:11.5px;color:var(--doux)}
+.lv-xp{position:relative;margin-top:14px}
+.lv-xp .t{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--doux);margin-bottom:4px}
+.lv-xp .p{height:9px;border-radius:5px;background:#e2e6e4;overflow:hidden}
+.lv-xp .p i{display:block;height:100%;border-radius:5px;width:0;
+  background:linear-gradient(90deg,var(--ocre),#e8a94e);transition:width .8s ease-out}
+.lv-sect{background:var(--carte);border:1px solid var(--bord);border-top:0;padding:15px}
+.lv-sect:last-of-type{border-radius:0 0 16px 16px}
+.lv-sect > .t{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--doux);margin-bottom:11px}
+.lv-st{margin-bottom:11px}
+.lv-st:last-child{margin-bottom:0}
+.lv-st .l{display:flex;align-items:baseline;gap:8px;margin-bottom:5px}
+.lv-st .l b{flex:0 0 auto;font-size:13.5px;font-weight:600}
+.lv-st .l em{flex:1;font-style:normal;font-size:10.5px;color:var(--doux);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lv-st .l .v{font-family:'Courier Prime',monospace;font-size:12px;color:var(--ocre);font-weight:700}
+.lv-st .p{height:8px;border-radius:5px;background:#eceae2;overflow:hidden}
+.lv-st .p i{display:block;height:100%;border-radius:5px;width:0;transition:width .7s ease-out}
+.lv-car{display:flex;gap:8px}
+.lv-car > div{flex:1;background:#faf8f3;border:1px solid var(--bord);border-radius:12px;
+  padding:11px 8px 10px;text-align:center;position:relative;overflow:hidden}
+.lv-car .ic{font-size:17px;line-height:1;margin-bottom:5px}
+.lv-car .v{font-family:'Bebas Neue',sans-serif;font-size:25px;line-height:1;color:var(--encre)}
+.lv-car .v.zero{color:#b8b2a4}
+.lv-car .sur{font-size:9px;color:var(--doux);margin-top:1px}
+.lv-car .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--doux);margin-top:6px}
+.lv-car .p{height:4px;border-radius:3px;background:#e9e5db;overflow:hidden;margin-top:7px}
+.lv-car .p i{display:block;height:100%;border-radius:3px;width:0;transition:width .8s ease-out}
+.lv-vide{font-size:11.5px;color:var(--doux);line-height:1.5;margin-top:10px;text-align:center}
+.lv-paires{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lv-paire{background:#faf8f3;border:1px solid var(--bord);border-radius:11px;padding:9px 11px}
+.lv-paire .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--doux)}
+.lv-paire .v{font-size:14px;font-weight:600;margin-top:2px}
+.lv-obj{display:flex;align-items:center;gap:10px;background:#faf8f3;border:1px solid var(--bord);
+  border-radius:11px;padding:10px;margin-bottom:7px}
+.lv-obj:last-child{margin-bottom:0}
+.lv-obj .ic{flex:0 0 34px;height:34px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;font-size:16px;background:#eef1f4}
+.lv-obj .tx{flex:1;min-width:0}
+.lv-obj .tx b{display:block;font-size:13px}
+.lv-obj .tx span{font-size:11px;color:var(--doux)}
+.lv-obj .et{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--rouge);text-align:right}
+
+.feuille h2{font-family:'Bebas Neue',sans-serif;font-size:27px;margin-bottom:3px}
+.feuille .st{font-size:12.5px;color:var(--doux);margin-bottom:15px;line-height:1.5}
+.fermer{width:100%;margin-top:12px;background:none;border:1px solid var(--bord);
+  border-radius:11px;padding:13px;font-family:'Barlow',sans-serif;font-size:11px;
+  font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--doux);cursor:pointer;
+  background:var(--carte)}
+.item{display:flex;align-items:center;gap:11px;background:var(--carte);
+  border:1px solid var(--bord);border-radius:12px;padding:11px;margin-bottom:8px;
+  box-shadow:0 2px 8px rgba(34,32,28,.04)}
+.item .av{flex:0 0 40px;width:40px;height:40px;border-radius:9px;overflow:hidden;background:#dfe8ee}
+.item .av svg{display:block;width:100%;image-rendering:pixelated;transform:translateY(6%)}
+.item .tx{flex:1;min-width:0}
+.item .tx b{display:block;font-size:14px}
+.item .tx span{font-size:11.5px;color:var(--doux);line-height:1.35}
+.item .vl{text-align:right;font-family:'Courier Prime',monospace;font-size:12px;color:var(--ocre)}
+.item .vl small{display:block;font-family:'Barlow',sans-serif;font-size:9.5px;color:var(--doux);letter-spacing:.1em}
+.humeur{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}
+@media (prefers-reduced-motion:reduce){
+  .houle path,.feu,.croch,.fum,.journal .l,.feuille.on,.hk b.pop{animation:none}
+}
 </style>
 </head>
 <body class="charge">
+
 <header class="hud">
   <div class="hl">
-    <span class="face" id="face"><span class="niv" id="niv">1</span></span>
-    <span class="hn"><b id="pseudo">Docker</b><span id="h-lieu">Marseille — à quai</span></span>
-    <span class="hk"><b id="h-caisse">0,00 €</b><span>Caisse</span></span>
+    <div class="face os" id="face"><span class="niv" id="niv">7</span></div>
+    <div class="hn"><b id="pseudo" class="os">Docker sans nom</b><span id="titre" class="os">Chargement</span></div>
+    <div class="hk"><b id="euros" class="os">0,00 €</b><span class="os">Caisse</span></div>
   </div>
   <div class="jauges">
-    <div><div class="t"><span>Énergie</span><span id="v-en">— %</span></div>
-      <div class="p"><i id="i-en" style="width:0%;background:linear-gradient(90deg,#2f8f66,#5cc194)"></i></div></div>
-    <div><div class="t"><span id="l-niv">Niveau 1</span><span id="v-xp">— / —</span></div>
-      <div class="p"><i id="i-xp" style="width:0%;background:linear-gradient(90deg,#c2711a,#e8a94e)"></i></div></div>
-    <div><div class="t"><span>Réputation</span><span id="v-rep">—</span></div>
-      <div class="p"><i id="i-rep" style="width:0%;background:linear-gradient(90deg,#6d4fa8,#a487d8)"></i></div></div>
+    <div class="jg en" id="jg-en"><div class="t"><span>Énergie</span><span id="v-en" class="os">— %</span></div>
+      <div class="p"><i id="i-en" style="width:82%"></i></div></div>
+    <div class="jg xp"><div class="t"><span>Niveau 7</span><span id="v-xp" class="os">— / —</span></div>
+      <div class="p"><i id="i-xp" style="width:38%"></i></div></div>
+    <div class="jg rep"><div class="t"><span>Réputation</span><span id="v-rep" class="os">—</span></div>
+      <div class="p"><i id="i-rep" style="width:56%"></i></div></div>
   </div>
 </header>
 
-<div class="scene">
-  <div class="grand" id="grand">
-    <div class="rail" id="rail">
-      <div class="page"><span class="chantier"><span class="pt"></span>Design en cours de création</span><div class="toile" id="tPort"></div>
-        <span class="puce" id="pcPort"></span><span class="pastille" id="paPort"></span>
-        <span class="lg"><b id="tiPort"></b><span class="sous" id="soPort"></span>
-          <span class="lignes" id="liPort"></span></span></div>
-
-      <div class="page"><span class="chantier"><span class="pt"></span>Design en cours de création</span><div class="toile" id="tMer"></div>
-        <span class="puce" id="pcMer"></span><span class="pastille" id="paMer"></span>
-        <span class="lg"><b id="tiMer"></b><span class="sous" id="soMer"></span>
-          <span class="lignes" id="liMer"></span></span></div>
-
-      <div class="page"><span class="chantier"><span class="pt"></span>Design en cours de création</span><div class="pontBateau">
-        <div class="haut" id="tBat"></div>
-        <div class="calePont" id="calePont"></div></div>
-        <span class="puce" id="pcBat"></span><span class="pastille" id="paBat"></span>
-        <span class="lg" style="padding-bottom:84px"><b id="tiBat"></b>
-          <span class="sous" id="soBat"></span></span></div>
-
-      <div class="page"><span class="chantier"><span class="pt"></span>Design en cours de création</span><div class="toile" id="tHangar"></div>
-        <span class="puce" id="pcHan"></span><span class="pastille" id="paHan"></span>
-        <span class="lg"><b id="tiHan"></b><span class="sous" id="soHan"></span>
-          <span class="lignes" id="liHan"></span></span></div>
+<div class="ecrans">
+  <div class="fenetre4" id="fenetre4">
+    <div class="rail4" id="rail4">
+      <div class="page4"><div class="toile4" id="e-port"></div>
+        <span class="chantier4"><span class="pt"></span>Design en cours</span>
+        <span class="puce4" id="pc-port"></span>
+        <span class="lg4"><b>Ton port</b><span class="sous" id="so-port"></span></span></div>
+      <div class="page4"><div class="toile4" id="e-mer"></div>
+        <span class="chantier4"><span class="pt"></span>Design en cours</span>
+        <span class="puce4" id="pc-mer"></span>
+        <span class="lg4"><b>La mer</b><span class="sous" id="so-mer"></span></span></div>
+      <div class="page4"><div class="toile4" id="e-bateau"></div>
+        <span class="chantier4"><span class="pt"></span>Design en cours</span>
+        <span class="puce4" id="pc-bat"></span>
+        <span class="lg4"><b>Ton bateau</b><span class="sous" id="so-bat"></span></span></div>
+      <div class="page4"><div class="toile4" id="e-hangar"></div>
+        <span class="chantier4"><span class="pt"></span>Design en cours</span>
+        <span class="puce4" id="pc-han"></span>
+        <span class="lg4"><b>Le hangar</b><span class="sous" id="so-han"></span></span></div>
     </div>
   </div>
-  <div class="indice" id="indice"></div>
+  <div class="ronds" id="ronds"></div>
 </div>
 
-<div class="pied">
-  <button class="principal" id="agir"></button>
-  <p class="journal" id="journal">Fais glisser pour changer d'écran.</p>
+<div class="chantier">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#5f6b75" stroke-width="1.8">
+    <path d="M12 3l9 16H3zM12 9v5M12 17v.01"/></svg>
+  <p><b>Hub en construction.</b> Les modules sont désactivés le temps qu'on les bâtisse.</p>
 </div>
+
+<div class="evenement" id="evenement">
+  <span class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="#c2711a" stroke-width="1.8"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></svg></span>
+  <span class="tx">
+    <span class="et">Aujourd'hui — exemple</span>
+    <b id="ev-titre" class="os">Chargement de la journée</b>
+    <p id="ev-texte" class="os">Le port se réveille doucement, comme tous les matins.</p>
+  </span>
+</div>
+
+<div class="section">
+  <p class="t">Le travail</p>
+  <div class="grille" id="g-travail"></div>
+</div>
+
+<div class="section">
+  <p class="t">Ton port</p>
+  <div class="grille" id="g-port"></div>
+</div>
+
+<div class="section">
+  <p class="t">Les autres</p>
+  <div class="grille" id="g-social"></div>
+</div>
+
+<div class="journal">
+  <p class="t">Ce qui s'est passé</p>
+  <div id="journal"></div>
+</div>
+
+<p class="pied">Battle Dock — Bassin est</p>
+
+<nav class="nav">
+  <button class="actif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg>Port</button>
+  <button data-f="f-fiche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h4"/></svg>Livret</button>
+  <button data-f="f-marche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-6 4 4 5-8 4 5"/></svg>Marché</button>
+  <button data-f="f-classement"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 21h8M12 17v4M5 4h14v5a7 7 0 0 1-14 0z"/></svg>Classement</button>
+</nav>
+
+<section class="feuille" id="f-dockers">
+  <h2>Ton équipe</h2><p class="st">Six dockers. Chacun sa manie.</p>
+  <div id="l-dockers"></div>
+  <button class="fermer" data-x>Fermer</button>
+</section>
+
+<section class="feuille" id="f-fiche">
+  <h2>Ton livret</h2><p class="st" id="lv-sous">Ce que le port sait de toi.</p>
+  <div id="l-fiche"></div>
+  <button class="fermer" data-x>Fermer</button>
+</section>
+
+<section class="feuille" id="f-marche">
+  <h2>Le marché</h2><p class="st">Les prix bougent toutes les heures. Personne ne sait vraiment pourquoi.</p>
+  <div id="l-marche"></div>
+  <button class="fermer" data-x>Fermer</button>
+</section>
+
+<section class="feuille" id="f-classement">
+  <h2>Classement</h2><p class="st">Bassin est — semaine 3.</p>
+  <div id="l-classement"></div>
+  <button class="fermer" data-x>Fermer</button>
+</section>
+
+<section class="feuille" id="f-generique">
+  <h2 id="gt">—</h2><p class="st" id="gs">—</p>
+  <div id="gl"></div>
+  <button class="fermer" data-x>Fermer</button>
+</section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="bd.js"></script>
 <script>
 const $ = id => document.getElementById(id);
-/* =========================================================
-   Le port : moteur de rendu par niveaux
-   niveau 0 : côte nue → niveau 5 : port complet
-   ========================================================= */
-const rnd = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
-
-const DEFS = `<defs>
-<linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#4f9bcc"/><stop offset="26%" stop-color="#83bdde"/>
-  <stop offset="54%" stop-color="#bcd9ea"/><stop offset="78%" stop-color="#e6e2d8"/>
-  <stop offset="100%" stop-color="#f7dcaf"/></linearGradient>
-<linearGradient id="mer" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#93d8e0"/><stop offset="18%" stop-color="#5cb4cd"/>
-  <stop offset="52%" stop-color="#2d81a6"/><stop offset="100%" stop-color="#0e4363"/></linearGradient>
-<linearGradient id="bassin" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#6dbfd4"/><stop offset="100%" stop-color="#1c5f82"/></linearGradient>
-<linearGradient id="quai" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#efe9db"/><stop offset="42%" stop-color="#ddd5c2"/>
-  <stop offset="100%" stop-color="#c4bba6"/></linearGradient>
-<linearGradient id="colline" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#e2ddcd"/><stop offset="100%" stop-color="#bcb7a4"/></linearGradient>
-<radialGradient id="soleil"><stop offset="0%" stop-color="#fff9e6" stop-opacity="1"/>
-  <stop offset="38%" stop-color="#ffe6b4" stop-opacity=".5"/>
-  <stop offset="100%" stop-color="#ffd9a0" stop-opacity="0"/></radialGradient>
-<linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
-  <stop offset="0%" stop-color="#f2a83a"/><stop offset="45%" stop-color="#e0913a"/>
-  <stop offset="100%" stop-color="#b06a1e"/></linearGradient>
-<linearGradient id="metalG" x1="0" y1="0" x2="1" y2="0">
-  <stop offset="0%" stop-color="#8fa2ad"/><stop offset="50%" stop-color="#6d808c"/>
-  <stop offset="100%" stop-color="#4e5f6a"/></linearGradient>
-<linearGradient id="halo" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#fff3d0" stop-opacity=".5"/>
-  <stop offset="100%" stop-color="#fff3d0" stop-opacity="0"/></linearGradient>
-</defs>`;
-
-/* ---------- ciel et fond, communs ---------- */
-function fond(n){
-  let s = `<rect width="480" height="240" fill="url(#ciel)"/>`;
-  s += `<ellipse cx="392" cy="46" rx="120" ry="54" fill="url(#soleil)"/>`;
-  s += `<circle cx="392" cy="42" r="16" fill="#fffdf2"/>`;
-  for (let i = 0; i < 11; i++){
-    const cx = rnd(i+2)*520, cy = 14 + rnd(i+9)*38, w = 26 + rnd(i)*46;
-    s += `<g opacity="${(.18 + rnd(i+5)*.2).toFixed(2)}" fill="#fff">
-      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="5"/>
-      <ellipse cx="${(cx+w*.34).toFixed(0)}" cy="${(cy-4).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="4.4"/></g>`;
-  }
-  /* collines : deux plans */
-  s += `<path d="M0 104 L44 84 L92 98 L142 76 L196 94 L248 72 L302 90 L356 76 L410 92 L480 82 L480 150 L0 150 Z"
-    fill="#c6d2d8" opacity=".75"/>`;
-  s += `<path d="M0 116 L52 98 L106 112 L162 92 L220 108 L276 88 L334 106 L392 92 L446 108 L480 100 L480 152 L0 152 Z"
-    fill="url(#colline)"/>`;
-  for (let i = 0; i < 52; i++)
-    s += `<ellipse cx="${(rnd(i)*480).toFixed(0)}" cy="${(96 + rnd(i+30)*52).toFixed(0)}" rx="3" ry="2.4"
-      fill="#93a583" opacity="${(.18+rnd(i+7)*.26).toFixed(2)}"/>`;
-  /* la ville au loin, apparaît dès le niveau 1 */
-  if (n >= 1){
-    const murs = ['#f2e5cd','#ead9ba','#f5ecdb','#e4d2b2'];
-    const toits = ['#c4714a','#b4643e','#cf7d52','#a95a36'];
-    for (let i = 0; i < 22; i++){
-      const x = i*22 - 6, h = 12 + rnd(i+40)*16, y = 132 - h;
-      if (x > 150 && x < 340) continue;
-      s += `<rect x="${x}" y="${y.toFixed(0)}" width="20" height="${h.toFixed(0)}" fill="${murs[i%4]}"/>`;
-      s += `<path d="M${x-2} ${y.toFixed(0)} h24 l-3 -4 h-18 z" fill="${toits[i%4]}"/>`;
-      for (let k = 0; k < 2; k++)
-        s += `<rect x="${x+4+k*8}" y="${(y+5).toFixed(0)}" width="5" height="6" fill="#7c9cb0" opacity=".8"/>`;
-    }
-  }
-  return s;
-}
-
-/* ---------- la mer et le bassin ---------- */
-function eau(n){
-  let s = `<rect x="0" y="152" width="480" height="88" fill="url(#mer)"/>`;
-  s += `<path d="M0 158 q66 6 134 1 q68 -5 132 3 q60 5 116 -3 q52 -4 98 2 v-9 H0 Z" fill="#a8e4e8" opacity=".28"/>`;
-  for (let i = 0; i < 5; i++)
-    s += `<path class="houle" d="M-50 ${164+i*11} q28 -4 56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0"
-      stroke="#fff" stroke-width="${(1.5-i*.16).toFixed(2)}" fill="none" opacity="${(.34-i*.05).toFixed(2)}"/>`;
-  for (let i = 0; i < 14; i++)
-    s += `<ellipse class="ecume" cx="${(rnd(i+31)*480).toFixed(0)}" cy="${(166+rnd(i+41)*66).toFixed(0)}"
-      rx="${(3+rnd(i)*7).toFixed(1)}" ry="1.2" fill="#fff" opacity="${(.2+rnd(i+4)*.3).toFixed(2)}"/>`;
-  return s;
-}
-
-/* ---------- pièces du port ---------- */
-function quai(x, y, w, h){
-  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#quai)"/>`;
-  s += `<rect x="${x}" y="${y}" width="${w}" height="3" fill="#f7f2e6"/>`;
-  s += `<rect x="${x}" y="${y+h-3}" width="${w}" height="3" fill="#a89e88"/>`;
-  for (let i = 0; i * 16 < w; i++)
-    s += `<rect x="${x + i*16}" y="${y+3}" width="1.4" height="${h-6}" fill="#c0b6a0" opacity=".7"/>`;
-  return s;
-}
-function bollard(x, y){
-  return `<path d="M${x} ${y} q0 -7 5 -7 q5 0 5 7 z" fill="#4a5560"/>
-    <ellipse cx="${x+5}" cy="${y-7}" rx="5" ry="2" fill="#5f6c78"/>`;
-}
-function conteneur(x, y, w, h, c, o){
-  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1" fill="${c}"/>`;
-  s += `<rect x="${x}" y="${y}" width="${w}" height="${(h*.22).toFixed(1)}" fill="#fff" opacity=".16"/>`;
-  s += `<rect x="${x}" y="${y+h-h*.2}" width="${w}" height="${(h*.2).toFixed(1)}" fill="${o}" opacity=".55"/>`;
-  for (let i = 1; i * 7 < w; i++)
-    s += `<rect x="${x + i*7}" y="${y+1}" width="1.2" height="${h-2}" fill="${o}" opacity=".5"/>`;
-  return s;
-}
-function pileConteneurs(x, sol, cols, rangs, graine){
-  const C = [['#2f7fb0','#1a527a'],['#4f8f68','#2f5f42'],['#b06a3a','#7c4522'],
-             ['#8a5a9c','#5c3a6c'],['#c2711a','#8a4d0e'],['#5c7f8f','#3a5a68']];
-  let s = '';
-  for (let c = 0; c < cols; c++){
-    const h = 1 + Math.floor(rnd(graine + c) * rangs);
-    for (let r = 0; r < h; r++){
-      const t = C[Math.floor(rnd(graine + c*7 + r*3) * C.length)];
-      s += conteneur(x + c*22, sol - (r+1)*10, 20, 9, t[0], t[1]);
-    }
-  }
-  return s;
-}
-function portique(x, sol, h, ouvert){
-  const ecart = 30, fleche = 46;
-  let s = `<g class="portique">`;
-  s += `<rect x="${x-10}" y="${sol-2}" width="${ecart+fleche+22}" height="2.4" fill="#8c8272"/>`;
-  /* deux jambes en A */
-  s += `<path d="M${x-3} ${sol} L${x+1} ${sol-h} h4 L${x+7} ${sol} z" fill="url(#metalG)"/>`;
-  s += `<path d="M${x+ecart-3} ${sol} L${x+ecart+1} ${sol-h} h4 L${x+ecart+7} ${sol} z" fill="url(#metalG)"/>`;
-  s += `<path d="M${x+3} ${sol-h*.5} L${x+ecart+3} ${sol-h*.78} M${x+ecart+3} ${sol-h*.5} L${x+3} ${sol-h*.78}"
-    stroke="#6d808c" stroke-width="1.6"/>`;
-  s += `<rect x="${x-2}" y="${sol-h*.5}" width="${ecart+8}" height="2.4" fill="#6d808c"/>`;
-  /* poutre horizontale */
-  s += `<rect x="${x-14}" y="${sol-h-7}" width="${ecart+fleche+24}" height="6" rx="1" fill="url(#metal)"/>`;
-  s += `<rect x="${x-14}" y="${sol-h-7}" width="${ecart+fleche+24}" height="1.8" fill="#ffc86a" opacity=".5"/>`;
-  for (let i = 0; i < 7; i++){
-    const px = x - 10 + i*(ecart+fleche+18)/7;
-    s += `<path d="M${px.toFixed(1)} ${sol-h-7} l${((ecart+fleche+18)/14).toFixed(1)} 7"
-      stroke="#c07a1c" stroke-width="1.2"/>`;
-  }
-  /* contrepoids côté terre */
-  s += `<rect x="${x-19}" y="${sol-h-13}" width="11" height="8" rx="1" fill="#5c6a74"/>`;
-  /* cabine */
-  s += `<rect x="${x+6}" y="${sol-h-16}" width="16" height="9" rx="1.5" fill="#2f3f4a"/>`;
-  s += `<rect x="${x+8}" y="${sol-h-14}" width="12" height="4.4" fill="#8fd0ee" opacity=".7"/>`;
-  /* chariot suspendu */
-  const cx = x + (ouvert ? ecart + 34 : 14);
-  s += `<rect x="${cx-5}" y="${sol-h-5}" width="10" height="4" fill="#4e5f6a"/>`;
-  s += `<g class="crochet"><path d="M${cx} ${sol-h-1} V${sol-h+22}" stroke="#4e5f6a" stroke-width="1.2"/>`;
-  s += `<rect x="${cx-8}" y="${sol-h+22}" width="16" height="8" rx="1" fill="#2f7fb0"/>`;
-  s += `<rect x="${cx-8}" y="${sol-h+22}" width="16" height="1.8" fill="#fff" opacity=".22"/></g>`;
-  s += `<circle class="feu" cx="${x+ecart+fleche+6}" cy="${sol-h-10}" r="2.2" fill="#e04a33"/>`;
-  return s + `</g>`;
-}
-
-function hangar(x, sol, w, h, nom){
-  let s = `<path d="M${x} ${sol} L${x} ${sol-h} L${x+w/2} ${sol-h-13} L${x+w} ${sol-h} L${x+w} ${sol} Z" fill="#cfd6d2"/>`;
-  s += `<path d="M${x} ${sol-h} L${x+w/2} ${sol-h-13} L${x+w/2} ${sol} L${x} ${sol} Z" fill="#e2e7e2"/>`;
-  for (let i = 1; i * 12 < w; i++)
-    s += `<rect x="${x + i*12}" y="${sol-h}" width="1.6" height="${h}" fill="#b4bcb8" opacity=".8"/>`;
-  s += `<rect x="${x+w*.3}" y="${sol-h*.62}" width="${w*.4}" height="${h*.62}" fill="#5a6a72"/>`;
-  for (let i = 0; i < 5; i++)
-    s += `<rect x="${x+w*.3}" y="${sol-h*.62 + i*(h*.62/5)}" width="${w*.4}" height="1.4" fill="#485660"/>`;
-  s += `<rect x="${x+w*.12}" y="${sol-h*.86}" width="${w*.14}" height="${h*.2}" fill="#8fd0ee" opacity=".55"/>`;
-  s += `<rect x="${x+w*.74}" y="${sol-h*.86}" width="${w*.14}" height="${h*.2}" fill="#8fd0ee" opacity=".45"/>`;
-  if (nom){
-    s += `<rect x="${x+w*.26}" y="${sol-h-6}" width="${w*.48}" height="11" rx="2" fill="#c2711a"/>`;
-    s += `<text x="${x+w*.5}" y="${sol-h+2.5}" font-family="Barlow,sans-serif" font-size="7"
-      font-weight="600" fill="#fff" text-anchor="middle">${nom}</text>`;
-  }
-  return s;
-}
-function grueMobile(x, sol, s2){
-  return `<g transform="translate(${x},${sol}) scale(${s2})">
-    <rect x="-16" y="-14" width="34" height="12" rx="2" fill="#e0913a"/>
-    <rect x="-16" y="-14" width="34" height="3" fill="#f2b45c"/>
-    <circle cx="-9" cy="0" r="5.4" fill="#2b3038"/><circle cx="11" cy="0" r="5.4" fill="#2b3038"/>
-    <circle cx="-9" cy="0" r="2" fill="#6d7a84"/><circle cx="11" cy="0" r="2" fill="#6d7a84"/>
-    <path d="M6 -14 L34 -40" stroke="url(#metal)" stroke-width="5"/>
-    <path d="M34 -40 V-30" stroke="#4e5f6a" stroke-width="1.2"/>
-    <rect x="30" y="-30" width="9" height="6" rx="1" fill="#4f8f68"/>
-    <rect x="-8" y="-22" width="12" height="8" rx="1.5" fill="#2f3f4a"/></g>`;
-}
-function capitainerie(x, sol){
-  let s = `<rect x="${x}" y="${sol-34}" width="52" height="34" fill="#f0e9dc"/>`;
-  s += `<rect x="${x}" y="${sol-34}" width="52" height="4" fill="#c4714a"/>`;
-  s += `<path d="M${x-3} ${sol-34} h58 l-4 -5 h-50 z" fill="#b4643e"/>`;
-  for (let r = 0; r < 2; r++)
-    for (let c = 0; c < 4; c++)
-      s += `<rect x="${x+6+c*12}" y="${sol-27+r*13}" width="7" height="9" rx="1" fill="#6d94ac"/>`;
-  s += `<rect x="${x+34}" y="${sol-56}" width="14" height="23" fill="#f6f1e6"/>`;
-  s += `<rect x="${x+36}" y="${sol-52}" width="10" height="9" fill="#8fd0ee" opacity=".7"/>`;
-  s += `<rect x="${x+32}" y="${sol-60}" width="18" height="5" rx="1" fill="#4e5f6a"/>`;
-  s += `<path d="M${x+41} ${sol-60} V${sol-72}" stroke="#8c8272" stroke-width="1.4"/>`;
-  s += `<path d="M${x+41.7} ${sol-72} h12 v7 h-12 z" fill="#0055a4"/>`;
-  s += `<path d="M${x+45.7} ${sol-72} h4 v7 h-4 z" fill="#fff"/>`;
-  s += `<path d="M${x+49.7} ${sol-72} h4 v7 h-4 z" fill="#ef4135"/>`;
-  s += `<circle class="feu2" cx="${x+41}" cy="${sol-62}" r="2" fill="#4fb286"/>`;
-  return s;
-}
-function phare(x, sol){
-  let s = `<path d="M${x-8} ${sol} L${x-5} ${sol-46} L${x+5} ${sol-46} L${x+8} ${sol} Z" fill="#f6f1e6"/>`;
-  s += `<path d="M${x} ${sol} L${x} ${sol-46} L${x+5} ${sol-46} L${x+8} ${sol} Z" fill="#ddd5c2"/>`;
-  s += `<g fill="#c74a33"><path d="M${x-7.2} ${sol-12} h14.4 l.3 5 h-15 z"/>
-    <path d="M${x-6.2} ${sol-30} h12.4 l.3 5 h-13 z"/></g>`;
-  s += `<rect x="${x-7}" y="${sol-54}" width="14" height="8" fill="#4e5f6a"/>`;
-  s += `<rect x="${x-5}" y="${sol-52}" width="10" height="5" fill="#ffe8b4"/>`;
-  s += `<path d="M${x-9} ${sol-54} h18 l-3 -4 h-12 z" fill="#3a4a54"/>`;
-  s += `<circle class="feu" cx="${x}" cy="${sol-49}" r="13" fill="#ffe8b4" opacity=".18"/>`;
-  return s;
-}
-function navire(x, y, taille, c){
-  const w = 92 * taille, h = 15 * taille;
-  let s = `<g class="navire">`;
-  s += `<path d="M${x} ${y} h${w} l${12*taille} ${5*taille} l${-4*taille} ${h} H${x+6*taille} Z" fill="#2b3a45"/>`;
-  s += `<path d="M${x} ${y} h${w} l${12*taille} ${5*taille} H${x} Z" fill="#48606e"/>`;
-  s += `<rect x="${x+3*taille}" y="${y-11*taille}" width="${18*taille}" height="${11*taille}" fill="#f2eee2"/>`;
-  for (let i = 0; i < 3; i++)
-    s += `<rect x="${x+5*taille+i*5*taille}" y="${y-8*taille}" width="${3*taille}" height="${3*taille}" fill="#7fa8bc"/>`;
-  s += `<rect x="${x+6*taille}" y="${y-17*taille}" width="${8*taille}" height="${6*taille}" fill="#f2eee2"/>`;
-  const C = [['#2f7fb0','#1a527a'],['#4f8f68','#2f5f42'],['#b06a3a','#7c4522'],['#8a5a9c','#5c3a6c']];
-  for (let i = 0; i < 6; i++)
-    for (let r = 0; r < (i % 2 ? 2 : 1); r++){
-      const t = C[(i+r) % C.length];
-      s += conteneur(x + (26 + i*11)*taille, y - (5 + r*7)*taille, 10*taille, 6*taille, t[0], t[1]);
-    }
-  s += `<rect x="${x+w-6*taille}" y="${y-14*taille}" width="${5*taille}" height="${9*taille}" fill="${c}"/>`;
-  s += `<ellipse cx="${x+w/2}" cy="${y+h+3}" rx="${w*.55}" ry="3" fill="#fff" opacity=".16"/>`;
-  return s + `</g>`;
-}
-function remorqueur(x, y){
-  return `<g class="remorqueur">
-    <path d="M${x} ${y} h26 l4 3 l-2 6 h-26 z" fill="#2b3a45"/>
-    <path d="M${x} ${y} h26 l4 3 h-30 z" fill="#c74a33"/>
-    <rect x="${x+6}" y="${y-8}" width="11" height="8" fill="#f2eee2"/>
-    <rect x="${x+8}" y="${y-6}" width="7" height="3.4" fill="#7fa8bc"/>
-    <rect x="${x+18}" y="${y-11}" width="4" height="11" fill="#3a4a54"/>
-    <ellipse cx="${x+15}" cy="${y+11}" rx="17" ry="2.4" fill="#fff" opacity=".18"/></g>`;
-}
-function digue(x, y, w){
-  let s = `<path d="M${x} ${y} h${w} l-6 9 h-${w-12} z" fill="#b8b0a0"/>`;
-  s += `<path d="M${x} ${y} h${w} v2.6 h-${w} z" fill="#d4cdb8"/>`;
-  for (let i = 0; i < w/9; i++)
-    s += `<path d="M${x+4+i*9} ${y+2.6} l3 6 l-6 0 z" fill="#9c9484" opacity=".7"/>`;
-  return s;
-}
-
-/* ============ le port, par niveau ============ */
-function port(n){
-  let s = fond(n);
-
-  /* le bassin se creuse dès le niveau 2 */
-  if (n >= 2){
-    s += `<path d="M96 152 h268 v46 h-268 z" fill="url(#bassin)"/>`;
-  }
-
-  s += eau(n);
-
-  /* --- niveau 0 : une côte nue --- */
-  if (n === 0){
-    s += `<path d="M0 152 h480 v14 H0 Z" fill="#cfc7b2"/>`;
-    for (let i = 0; i < 26; i++)
-      s += `<ellipse cx="${(rnd(i)*480).toFixed(0)}" cy="${(156+rnd(i+5)*8).toFixed(0)}"
-        rx="${(3+rnd(i+2)*6).toFixed(1)}" ry="${(1.4+rnd(i+3)*1.6).toFixed(1)}" fill="#b4ab96"/>`;
-    s += `<path d="M0 166 h480 v74 H0 Z" fill="#a89f88" opacity=".22"/>`;
-    return s;
-  }
-
-  /* --- le quai principal --- */
-  s += quai(0, 152, 480, 18);
-  if (n >= 2){
-    /* le bassin découpe le quai */
-    s += `<rect x="96" y="152" width="268" height="46" fill="url(#bassin)"/>`;
-    s += `<rect x="96" y="152" width="268" height="2.4" fill="#8fd0dc" opacity=".6"/>`;
-    s += quai(0, 152, 96, 18);
-    s += quai(364, 152, 116, 18);
-    s += `<rect x="0" y="196" width="480" height="44" fill="url(#quai)"/>`;
-    s += `<rect x="0" y="196" width="480" height="3" fill="#f7f2e6"/>`;
-    for (let i = 0; i < 30; i++)
-      s += `<rect x="${i*16}" y="199" width="1.4" height="41" fill="#c0b6a0" opacity=".55"/>`;
-    /* margelles du bassin */
-    s += `<rect x="92" y="150" width="6" height="48" fill="#c4bba6"/>`;
-    s += `<rect x="362" y="150" width="6" height="48" fill="#c4bba6"/>`;
-  } else {
-    s += `<rect x="0" y="170" width="480" height="70" fill="url(#quai)"/>`;
-    for (let i = 0; i < 30; i++)
-      s += `<rect x="${i*16}" y="173" width="1.4" height="67" fill="#c0b6a0" opacity=".55"/>`;
-  }
-
-  /* marquages au sol */
-  if (n >= 1){
-    s += `<g fill="#d9b23a" opacity=".6">`;
-    for (let i = 0; i < 12; i++) s += `<rect x="${8+i*40}" y="${n>=2?206:180}" width="24" height="3.4"/>`;
-    s += `</g>`;
-  }
-  if (n >= 3){
-    s += `<g stroke="#8c8272" stroke-width="1.6" opacity=".5" stroke-dasharray="7 6">
-      <path d="M0 ${n>=2?222:196} H480"/></g>`;
-  }
-
-  /* bollards */
-  const solQuai = n >= 2 ? 152 : 170;
-  for (let i = 0; i < 9; i++){
-    const x = 14 + i*54;
-    if (n >= 2 && x > 88 && x < 366) continue;
-    s += bollard(x, solQuai);
-  }
-
-  /* --- niveau 1 : un quai, une grue mobile, quelques caisses --- */
-  if (n >= 1){
-    s += pileConteneurs(28, 196, 2, 2, 3);
-    s += grueMobile(150, 194, .9);
-    s += `<g><rect x="316" y="180" width="30" height="14" rx="2" fill="#8a6a4a"/>
-      <rect x="316" y="180" width="30" height="3" fill="#a5825c"/></g>`;
-  }
-
-  /* --- niveau 2 : le bassin, un premier portique, un hangar --- */
-  if (n >= 2){
-    s += portique(124, 152, 52, false);
-    s += hangar(382, 196, 88, 40, 'HANGAR 1');
-    s += pileConteneurs(6, 196, 3, 3, 11);
-    s += remorqueur(300, 176);
-  }
-
-  /* --- niveau 3 : deux portiques, navire à quai, plus de stock --- */
-  if (n >= 3){
-    s += navire(140, 168, 1, '#c74a33');
-    s += portique(232, 152, 56, true);
-    s += hangar(276, 196, 96, 44, 'HANGAR 2');
-    s += pileConteneurs(6, 240, 4, 4, 21);
-    s += grueMobile(238, 236, 1);
-  }
-
-  /* --- niveau 4 : capitainerie, digue, phare, trafic --- */
-  if (n >= 4){
-    s += digue(0, 148, 92);
-    s += phare(74, 148);
-    s += capitainerie(392, 196);
-    s += portique(300, 152, 60, false);
-    s += navire(378, 172, .74, '#2f7fb0');
-    s += pileConteneurs(112, 240, 5, 4, 31);
-    s += `<g class="camion"><rect x="176" y="226" width="30" height="12" rx="2" fill="#4f8f68"/>
-      <rect x="206" y="222" width="16" height="16" rx="2" fill="#3f7a56"/>
-      <circle cx="186" cy="239" r="3.4" fill="#2b3038"/><circle cx="214" cy="239" r="3.4" fill="#2b3038"/></g>`;
-  }
-
-  /* --- niveau 5 : tout tourne --- */
-  if (n >= 5){
-    s += portique(52, 152, 58, true);
-    s += navire(30, 166, .68, '#4f8f68');
-    s += pileConteneurs(240, 240, 6, 5, 41);
-    s += grueMobile(400, 236, 1.05);
-    s += `<g class="camion2"><rect x="60" y="226" width="30" height="12" rx="2" fill="#c2711a"/>
-      <rect x="90" y="222" width="16" height="16" rx="2" fill="#9a570f"/>
-      <circle cx="70" cy="239" r="3.4" fill="#2b3038"/><circle cx="98" cy="239" r="3.4" fill="#2b3038"/></g>`;
-    s += remorqueur(214, 178);
-    /* halos des projecteurs */
-    s += `<g opacity=".45"><path d="M138 96 L116 152 h44 z" fill="url(#halo)"/>
-      <path d="M246 92 L224 152 h44 z" fill="url(#halo)"/>
-      <path d="M314 88 L292 152 h44 z" fill="url(#halo)"/></g>`;
-  }
-
-  return s;
-}
-
-const PEDALO = (x, y, s) => `<g class="pedalo" transform="translate(${x},${y}) scale(${s})">
-  <ellipse cx="30" cy="19" rx="26" ry="2.6" fill="#0c2434" opacity=".22"/>
-  <path d="M8 15 q-2 -11 9 -12 h28 q11 1 9 12 z" fill="#e8a0b4"/>
-  <path d="M34 3 h11 q11 1 9 12 h-20 z" fill="#d98aa0" opacity=".5"/>
-  <ellipse cx="31" cy="6" rx="12" ry="3" fill="#1c3346"/>
-  <g transform="translate(6,-4)">
-    <path d="M5 14 q-4.5 -2.5 -4.5 -7 q0 -6 5.5 -6 q5.5 0 5.5 6 q0 4.5 -3 7 z" fill="#f2b9c8"/>
-    <path d="M.5 7 q-5 .5 -6.5 3 q5 2 7.5 .5 z" fill="#e8a51e"/>
-    <circle cx="3" cy="5" r="1.3" fill="#f4efe4"/><circle cx="2.5" cy="5" r=".7" fill="#1a1208"/></g>
-  <g transform="translate(52,10)"><circle r="5.5" fill="none" stroke="#9aa3a8" stroke-width="1.4"/>
-    <path d="M-5.5 0 h11 M0 -5.5 v11 M-4 -4 l8 8 M-4 4 l8 -8" stroke="#9aa3a8" stroke-width="1.1"/></g>
-</g>`;
-
-function merOuverte(enRoute){
-  let s = DEFS + `<rect width="480" height="240" fill="url(#ciel)"/>
-    <ellipse cx="304" cy="58" rx="132" ry="58" fill="url(#soleil)"/>
-    <circle cx="304" cy="54" r="17" fill="#fffdf2"/>`;
-  for (let i = 0; i < 7; i++){
-    const cx = rnd(i+2)*520, cy = 16 + rnd(i+9)*30, w = 26 + rnd(i)*42;
-    s += `<g opacity="${(.18 + rnd(i+5)*.18).toFixed(2)}" fill="#fff">
-      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="5"/></g>`;
-  }
-  s += `<path d="M0 112 L58 96 L120 110 L184 92 L248 108 L312 90 L376 106 L436 94 L480 104 L480 150 L0 150 Z"
-    fill="#c6d2d8" opacity=".62"/>`;
-  s += `<rect x="0" y="138" width="480" height="102" fill="url(#mer)"/>`;
-  s += `<path d="M0 146 q66 6 134 1 q68 -5 132 3 q60 5 116 -3 q52 -4 98 2 v-9 H0 Z" fill="#a8e4e8" opacity=".28"/>`;
-  for (let i = 0; i < 6; i++)
-    s += `<path class="houle" d="M-50 ${152+i*14} q28 -4 56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0"
-      stroke="#fff" stroke-width="${(1.6-i*.16).toFixed(2)}" fill="none" opacity="${(.34-i*.045).toFixed(2)}"/>`;
-  for (let i = 0; i < 10; i++)
-    s += `<ellipse class="ecume" cx="${(rnd(i+31)*480).toFixed(0)}" cy="${(154+rnd(i+41)*74).toFixed(0)}"
-      rx="${(3+rnd(i)*7).toFixed(1)}" ry="1.2" fill="#fff" opacity="${(.2+rnd(i+4)*.3).toFixed(2)}"/>`;
-  s += PEDALO(enRoute ? 250 : 176, 178, 1.6);
-  return s;
-}
-
-const ETAT = {
-  ou: 'port', enMer: false, caisse: 1284, niveauPort: 4, cale: 2, places: 3,
-  lieux: [
-    { n:'Le bassin',   chaud:true,  v:'6 h' },
-    { n:"L'esplanade", chaud:true,  v:'2 h' },
-    { n:'Hangar 1',    chaud:false, v:'91 %' }
-  ],
-  escales: [
-    { n:'Gênes',     t:'42 s', marge:'+ 46 €' },
-    { n:'Barcelone', t:'60 s', marge:'+ 78 €' }
-  ]
-};
-
-function svgPort(){
-  return '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + DEFS + port(ETAT.niveauPort) + '</svg>';
-}
-function svgMer(){
-  return '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + merOuverte(ETAT.enMer) + '</svg>';
-}
-function infosPort(){
-  const chauds = 0;
-  return {
-    puce: 'Niveau ' + ETAT.niveauPort,
-    past: chauds || '—', calme: !chauds,
-    titre: 'Ton port',
-    sous: ETAT.lieux.length + ' lieux prévus',
-    lignes: ETAT.lieux.map(l =>
-      '<span class="li"><i style="background:rgba(255,255,255,.4)"></i>' + l.n + '<em>—</em></span>').join('')
-  };
-}
-function infosMer(){
-  if (ETAT.enMer) return {
-    puce: 'Cap sur Gênes', past: '28 s', calme: false,
-    titre: 'En mer', sous: 'Cale pleine — 2 marchandises',
-    lignes: '<span class="li"><i style="background:#e8a04a"></i>Arrivée<em>28 s</em></span>'
-      + '<span class="li"><i style="background:rgba(255,255,255,.4)"></i>À la vente<em>+ 46 €</em></span>'
-  };
-  return {
-    puce: ETAT.escales.length + ' escales',
-    past: '—', calme: true,
-    titre: 'La mer',
-    sous: ETAT.escales.length + ' escales prévues',
-    lignes: ETAT.escales.map(e =>
-      '<span class="li"><i style="background:rgba(255,255,255,.4)"></i>' + e.n + '<em>—</em></span>').join('')
-  };
-}
-
-
-
-
-
-/* ---------- le bateau ---------- */
-ETAT.bateau = {
-  n:'Le pédalo canard', places:3, poids:60,
-  cargo:[
-    { n:'Savon', ic:'🧼', c:'#7fb8d0' },
-    { n:'Pastis', ic:'🍶', c:'#c9a83a' }
-  ]
-};
-
-function svgBateau(){
-  let s = DEFS + `<rect width="480" height="240" fill="url(#ciel)"/>
-    <ellipse cx="330" cy="52" rx="120" ry="52" fill="url(#soleil)"/>
-    <circle cx="330" cy="48" r="15" fill="#fffdf2"/>
-    <path d="M0 118 L60 104 L124 116 L188 100 L252 114 L316 98 L380 112 L440 102 L480 110 L480 156 L0 156 Z"
-      fill="#c6d2d8" opacity=".6"/>
-    <rect x="0" y="146" width="480" height="94" fill="url(#mer)"/>
-    <path d="M0 152 q66 6 134 1 q68 -5 132 3 q60 5 116 -3 v-8 H0 Z" fill="#a8e4e8" opacity=".26"/>`;
-  for (let i = 0; i < 5; i++)
-    s += `<path class="houle" d="M-50 ${158+i*13} q28 -4 56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0"
-      stroke="#fff" stroke-width="${(1.5-i*.16).toFixed(2)}" fill="none" opacity="${(.3-i*.045).toFixed(2)}"/>`;
-  /* le pédalo en grand, de profil */
-  s += `<g class="pedalo" transform="translate(122,96) scale(2.9)">
-    <ellipse cx="30" cy="20" rx="28" ry="3" fill="#0c2434" opacity=".2"/>
-    <path d="M8 15 q-2 -11 9 -12 h28 q11 1 9 12 z" fill="#e8a0b4"/>
-    <path d="M34 3 h11 q11 1 9 12 h-20 z" fill="#d98aa0" opacity=".5"/>
-    <ellipse cx="31" cy="6" rx="12" ry="3" fill="#1c3346"/>
-    <g transform="translate(6,-4)">
-      <path d="M5 14 q-4.5 -2.5 -4.5 -7 q0 -6 5.5 -6 q5.5 0 5.5 6 q0 4.5 -3 7 z" fill="#f2b9c8"/>
-      <path d="M.5 7 q-5 .5 -6.5 3 q5 2 7.5 .5 z" fill="#e8a51e"/>
-      <circle cx="3" cy="5" r="1.3" fill="#f4efe4"/><circle cx="2.5" cy="5" r=".7" fill="#1a1208"/></g>
-    <g transform="translate(52,10)"><circle r="5.5" fill="none" stroke="#9aa3a8" stroke-width="1.4"/>
-      <path d="M-5.5 0 h11 M0 -5.5 v11 M-4 -4 l8 8 M-4 4 l8 -8" stroke="#9aa3a8" stroke-width="1.1"/></g>`;
-  ETAT.bateau.cargo.forEach((c, i) =>
-    s += `<rect x="${20 + i*11}" y="1" width="9" height="6" rx="1" fill="${c.c}"/>`);
-  return s + `</g>`;
-}
-
-function infosBateau(){
-  const b = ETAT.bateau;
-  return {
-    puce: b.n, past: '—', calme: true,
-    titre: 'Ton bateau',
-    sous: 'Cale : ' + b.places + ' emplacements'
-  };
-}
-
-/* ---------- le hangar de production ---------- */
-ETAT.chaines = [
-  { n:'Savonnerie',   ic:'🧼', etat:'En cours', reste:'4 min', pct:62,  c:'#7fb8d0' },
-  { n:'Distillerie',  ic:'🍶', etat:'Prêt',     reste:'—',     pct:100, c:'#c9a83a' },
-  { n:'Atelier filet', ic:'🪢', etat:'À l\'arrêt', reste:'manque du chanvre', pct:0, c:'#8a9a72' }
-];
-
-function svgHangar(){
-  let s = DEFS + `<rect width="480" height="240" fill="#e6e2d6"/>`;
-  /* charpente */
-  s += `<path d="M0 30 L240 -4 L480 30 L480 44 L240 10 L0 44 Z" fill="#b8b0a0"/>`;
-  s += `<g stroke="#c8c0ae" stroke-width="3">`;
-  for (let i = 0; i < 7; i++) s += `<path d="M${20+i*74} 36 V196"/>`;
-  s += `</g>`;
-  s += `<g stroke="#cfc8b6" stroke-width="2" opacity=".7">
-    <path d="M0 62 H480 M0 86 H480"/></g>`;
-  /* verrières */
-  for (let i = 0; i < 4; i++)
-    s += `<rect x="${44+i*112}" y="44" width="64" height="26" rx="3" fill="#bfe0ea" opacity=".55"/>`;
-  /* mur du fond */
-  s += `<rect x="0" y="96" width="480" height="100" fill="#dcd6c6"/>`;
-  s += `<g stroke="#cbc4b2" stroke-width="1.4">`;
-  for (let i = 0; i < 16; i++) s += `<path d="M${i*30} 96 V196"/>`;
-  s += `</g>`;
-  /* sol */
-  s += `<rect x="0" y="196" width="480" height="44" fill="#c8c0ac"/>`;
-  s += `<rect x="0" y="196" width="480" height="2.6" fill="#e2dccc"/>`;
-  s += `<g fill="#d9b23a" opacity=".5">`;
-  for (let i = 0; i < 8; i++) s += `<rect x="${14+i*60}" y="204" width="28" height="3.4"/>`;
-  s += `</g>`;
-  /* trois postes de travail */
-  const P = [[42,'#7fb8d0','🧼'],[196,'#c9a83a','🍶'],[350,'#8a9a72','🪢']];
-  P.forEach(([x, c], i) => {
-    /* établi */
-    s += `<rect x="${x}" y="150" width="92" height="10" rx="2" fill="#a5825c"/>`;
-    s += `<rect x="${x}" y="150" width="92" height="3" fill="#c49a6c"/>`;
-    s += `<rect x="${x+6}" y="160" width="7" height="36" fill="#8a6a4a"/>`;
-    s += `<rect x="${x+79}" y="160" width="7" height="36" fill="#8a6a4a"/>`;
-    /* cuve ou machine */
-    s += `<rect x="${x+14}" y="120" width="42" height="30" rx="3" fill="${c}"/>`;
-    s += `<rect x="${x+14}" y="120" width="42" height="7" rx="3" fill="#fff" opacity=".22"/>`;
-    s += `<rect x="${x+22}" y="106" width="9" height="14" fill="#8c8272"/>`;
-    s += `<circle cx="${x+26.5}" cy="103" r="5" fill="#a5988a"/>`;
-    /* caisses produites */
-    for (let k = 0; k < 2 + i; k++)
-      s += `<rect x="${x+62 + (k%2)*13}" y="${186 - Math.floor(k/2)*12}" width="12" height="11" rx="1"
-        fill="#a5825c" stroke="#8a6a4a" stroke-width="1"/>`;
-    /* vapeur */
-    s += `<g class="ecume"><ellipse cx="${x+27}" cy="96" rx="8" ry="4" fill="#fff" opacity=".5"/></g>`;
-  });
-  /* suspensions */
-  for (let i = 0; i < 4; i++){
-    const x = 62 + i*118;
-    s += `<path d="M${x} 36 V62" stroke="#8c8272" stroke-width="1.6"/>`;
-    s += `<path d="M${x-11} 62 h22 l-4 7 h-14 z" fill="#5c6a74"/>`;
-    s += `<circle class="feu2" cx="${x}" cy="70" r="4" fill="#ffe8b4"/>`;
-    s += `<path d="M${x-16} 70 L${x-30} 196 h60 L${x+16} 70 Z" fill="#fff3d0" opacity=".16"/>`;
-  }
-  return s;
-}
-
-function infosHangar(){
-  const prets = 0, arret = 0;
-  return {
-    puce: ETAT.chaines.length + ' chaînes',
-    past: prets || (arret ? '!' : '—'), calme: !prets && !arret,
-    titre: 'Le hangar',
-    sous: ETAT.chaines.length + ' chaînes prévues',
-    lignes: ETAT.chaines.map(c =>
-      '<span class="li"><i style="background:rgba(255,255,255,.4)"></i>' + c.n + '<em>—</em></span>').join('')
-  };
-}
-
-/* ---------- pages ---------- */
-const PAGES = ['port', 'mer', 'bateau', 'hangar'];
-let page = 0;
-
-function maj(){
-  const p = infosPort(), b = infosBateau(), q = infosMer();
-  $('pcPort').textContent = p.puce; $('paPort').textContent = p.past;
-  $('paPort').classList.add('calme'); $('paPort').textContent = '—';
-  $('tiPort').textContent = p.titre; $('soPort').textContent = p.sous; $('liPort').innerHTML = p.lignes;
-
-  $('pcBat').textContent = b.puce; $('paBat').textContent = b.past;
-  $('paBat').classList.add('calme'); $('paBat').textContent = '—';
-  $('tiBat').textContent = b.titre; $('soBat').textContent = b.sous;
-
-  $('pcMer').textContent = q.puce; $('paMer').textContent = q.past;
-  $('paMer').classList.add('calme'); $('paMer').textContent = '—';
-  $('tiMer').textContent = q.titre; $('soMer').textContent = q.sous; $('liMer').innerHTML = q.lignes;
-
-  const hn = infosHangar();
-  $('pcHan').textContent = hn.puce; $('paHan').textContent = hn.past;
-  $('paHan').classList.add('calme'); $('paHan').textContent = '—';
-  $('tiHan').textContent = hn.titre; $('soHan').textContent = hn.sous; $('liHan').innerHTML = hn.lignes;
-  $('tHangar').innerHTML = '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice" '
-    + 'xmlns="http://www.w3.org/2000/svg">' + svgHangar() + '</svg>';
-
-  $('tPort').innerHTML = svgPort();
-  $('tMer').innerHTML = svgMer();
-  $('tBat').innerHTML = '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice" '
-    + 'xmlns="http://www.w3.org/2000/svg">' + svgBateau() + '</svg>';
-
-  $('calePont').innerHTML = Array.from({length: ETAT.bateau.places}, (_, i) => {
-    const c = ETAT.bateau.cargo[i];
-    return c
-      ? '<span class="emp plein" style="background:' + c.c + '"><span class="ic">' + c.ic
-        + '</span><span class="n">' + c.n + '</span></span>'
-      : '<span class="emp vide"><span class="ic">+</span></span>';
-  }).join('');
-
-  const NOMS = { port:'Le port', mer:'La mer', bateau:'Ton bateau', hangar:'Le hangar' };
-  $('indice').innerHTML = PAGES.map((n, i) =>
-    '<button data-i="' + i + '" class="' + (i === page ? 'on' : '') + '"'
-    + ' aria-label="' + NOMS[n] + '" aria-current="' + (i === page ? 'true' : 'false') + '"></button>').join('');
-  $('indice').querySelectorAll('button').forEach(x =>
-    x.addEventListener('click', () => aller(+x.dataset.i)));
-
-  const libelle = { port:'Entrer dans le port', bateau:'Ouvrir la cale',
-    mer: ETAT.enMer ? 'Suivre la traversée' : 'Préparer le départ',
-    hangar:'Ouvrir le hangar' };
-  $('agir').textContent = 'Bientôt';
-  $('agir').disabled = true;
-  $('h-lieu').textContent = ETAT.enMer ? 'En mer — cap sur Gênes' : 'Marseille — à quai';
-}
-
-function aller(i){
-  page = Math.max(0, Math.min(PAGES.length - 1, i));
-  $('rail').classList.remove('suit');
-  $('rail').style.transform = 'translateX(' + (-page * 100) + '%)';
-  maj();
-  const mots = {
-    port: 'Le port. Rien n\'est encore jouable ici.',
-    mer: 'La mer. Les traversées viendront.',
-    bateau: 'Ton bateau. La cale n\'est pas encore branchée.',
-    hangar: 'Le hangar. Les chaînes de production arrivent.'
-  };
-  $('journal').innerHTML = mots[PAGES[page]];
-}
-
-/* glissement */
-(() => {
-  const g = $('grand'), rail = $('rail');
-  let x0 = null, y0 = null, dx = 0, actif = false, large = 0;
-  g.addEventListener('touchstart', e => {
-    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; actif = false;
-    large = g.clientWidth || 360;
-  }, { passive:true });
-  g.addEventListener('touchmove', e => {
-    if (x0 === null) return;
-    dx = e.touches[0].clientX - x0;
-    const dy = e.touches[0].clientY - y0;
-    if (!actif){
-      if (Math.abs(dx) < 12) return;
-      if (Math.abs(dy) > Math.abs(dx)){ x0 = null; return; }
-      actif = true;
-      rail.classList.add('suit');
-    }
-    let d = dx;
-    if ((page === 0 && d > 0) || (page === PAGES.length - 1 && d < 0)) d *= .3;
-    rail.style.transform = 'translateX(' + (-page * large + d) + 'px)';
-  }, { passive:true });
-  g.addEventListener('touchend', () => {
-    if (x0 === null) return;
-    rail.classList.remove('suit');
-    if (actif && Math.abs(dx) > large * .16) aller(page + (dx < 0 ? 1 : -1));
-    else aller(page);
-    x0 = null; actif = false;
-  });
-})();
-
-$('agir').addEventListener('click', () => {
-  $('journal').innerHTML = 'Aperçu — cet écran reste à construire.';
-});
-/* ---------- l'avatar et la fiche ---------- */
 const PEAUX = [
   { id:'p1', c:'#f2d3b6', o:'#d9ab86' },
   { id:'p2', c:'#e5bc96', o:'#c4936b' },
@@ -1133,24 +701,1398 @@ function dessinerAvatar(){
   return out.join('');
 }
 
-let etat = { peau:2, cheveux:1, coiffure:1, barbe:2, tete:1, veste:0,
-             yeux:0, bouche:0, lunettes:0, boucle:0, motif:0, foulard:0 };
-function svgPix(){
-  const g = grille(), out = [];
-  for (let y = 0; y < GH; y++){
+
+let etat = { peau:2, cheveux:1, coiffure:1, barbe:2, tete:5, veste:0,
+             yeux:0, bouche:0, lunettes:0, boucle:0, motif:0, foulard:0, tshirt:true };
+
+const GH_PIED = 27;
+function grillePied(){
+  const b = grille();
+  const g = Array.from({ length: GH_PIED }, () => new Array(GW).fill(null));
+  for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) g[y][x] = b[y][x];
+  for (let x = 3; x <= 12; x++) g[18][x] = '#46505a';
+  for (let y = 19; y <= 23; y++){
+    for (let x = 4; x <= 6; x++) g[y][x] = '#46505a';
+    for (let x = 9; x <= 11; x++) g[y][x] = '#46505a';
+  }
+  for (let x = 3; x <= 6; x++){ g[24][x] = '#2b2219'; g[25][x] = '#2b2219'; }
+  for (let x = 9; x <= 12; x++){ g[24][x] = '#2b2219'; g[25][x] = '#2b2219'; }
+  return g;
+}
+function svgPix(pied, e){
+  const sv = etat; if (e) etat = e;
+  const g = pied ? grillePied() : grille(), h = pied ? GH_PIED : GH, out = [];
+  for (let y = 0; y < h; y++){
     let x = 0;
     while (x < GW){
       const c = g[y][x];
       if (c === null){ x++; continue; }
       let n = 1;
       while (x + n < GW && g[y][x + n] === c) n++;
-      out.push('<rect x="'+x+'" y="'+y+'" width="'+n+'" height="1" fill="'+c+'"/>');
+      out.push(`<rect x="${x}" y="${y}" width="${n}" height="1" fill="${c}"/>`);
       x += n;
     }
   }
-  return '<svg viewBox="0 0 '+GW+' '+GH+'" shape-rendering="crispEdges" style="width:100%;image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">'+out.join('')+'</svg>';
+  etat = sv;
+  return `<svg viewBox="0 0 ${GW} ${h}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${out.join('')}</svg>`;
+}
+$('face').insertAdjacentHTML('afterbegin', svgPix(false));
+
+/* ---------- état ---------- */
+const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100 };
+const euro = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+
+function majHud(pop){
+  $('euros').textContent = euro(J.euros);
+  if (pop){ $('euros').classList.remove('pop'); void $('euros').offsetWidth; $('euros').classList.add('pop'); }
+  $('v-en').textContent = Math.round(J.energie) + ' %';
+  $('i-en').style.width = J.energie + '%';
+  $('jg-en').classList.toggle('bas', J.energie < 30);
+  $('v-xp').textContent = J.xp + ' / ' + J.palier;
+  $('i-xp').style.width = (J.xp / J.palier * 100) + '%';
 }
 
+/* ---------- modules ---------- */
+const ICONES = {
+  contrats:'<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h3" stroke="#c2711a" stroke-width="1.8" fill="none"/>',
+  quart:'<path d="M4 22V4h12M4 8h9M13 4v6M13 10l4 4v3" stroke="#c2711a" stroke-width="1.9" fill="none" stroke-linecap="round"/>',
+  contrebande:'<path d="M4 8h16v12H4zM9 8V5a3 3 0 0 1 6 0v3M12 12v4" stroke="#6d4fa8" stroke-width="1.8" fill="none"/>',
+  dockers:'<path d="M8 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2 21c0-4 3-6 6-6s6 2 6 6M17 8a2.6 2.6 0 1 0 0-5M16 15c3 0 6 1.6 6 5.4" stroke="#2f8f66" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
+  batiments:'<path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6" stroke="#4a7f9e" stroke-width="1.8" fill="none"/>',
+  flotte:'<path d="M3 17l2-6h14l2 6M6 11V6h12v5M12 3v3M2 20c2 1.4 4 1.4 6 0s4-1.4 6 0 4 1.4 6 0" stroke="#4a7f9e" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
+  defis:'<path d="M12 3l2.4 6H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.6z" stroke="#a8862a" stroke-width="1.7" fill="none"/>',
+  alliance:'<path d="M12 21s-8-4.6-8-10a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.4-8 10-8 10z" stroke="#e05c4a" stroke-width="1.7" fill="none"/>',
+  campagne:'<path d="M4 5h16v14H4zM8 5v14M4 9h4M4 13h4" stroke="#6d4fa8" stroke-width="1.8" fill="none"/>'
+};
+
+const MODULES = {
+  travail: [
+    { k:'contrats', n:'Contrats', a:'Quatre navires attendent une réponse.', c:'3 urgents', badge:4, f:()=>gen('Contrats du jour','Ce qu\'on te propose. Ce que tu acceptes t\'engage.', CONTRATS) },
+    { k:'quart', n:'Prendre un quart', a:'Grue 4 libre. Le vent se lève.', c:'− 12 énergie', f:()=>gen('Prendre un quart','Choisis ton poste pour les deux prochaines heures.', QUARTS) },
+    { k:'contrebande', n:'La cale cachée', a:'Le douanier zélé est de service.', c:'Risqué', f:()=>gen('La cale cachée','Ce qui n\'apparaît sur aucun manifeste.', CONTREBANDE) },
+    { k:'defis', n:'Défis du jour', a:'Série en cours : 6 jours.', c:'2 / 3 faits', badge:1, prog:66, f:()=>gen('Défis du jour','Trois par jour. La série se casse si tu en rates un.', DEFIS) }
+  ],
+  port: [
+    { k:'dockers', n:'Ton équipe', a:'Nono est de mauvaise humeur.', c:'6 dockers', badge:1, f:()=>ouvrir('f-dockers') },
+    { k:'batiments', n:'Bâtiments', a:'Entrepôt plein à 91 %.', c:'2 améliorables', prog:91, f:()=>gen('Bâtiments','Ce que tu as construit. Ce que tu peux agrandir.', BATIMENTS) },
+    { k:'flotte', n:'Ta flotte', a:'Le pédalo est rentré. Il manque une pédale.', c:'1 en mer', f:()=>gen('Ta flotte','Tes bateaux. Leur état est une question de point de vue.', FLOTTE) },
+    { k:'campagne', n:'Campagne', a:'Chapitre 3 — La paie.', c:'Chapitre 3 / 8', prog:34, f:()=>gen('Campagne','Le mode histoire. Chaque chapitre débloque une partie du port.', CAMPAGNE) }
+  ],
+  social: [
+    { k:'alliance', n:'Alliance', a:'Les Fadas du Bassin — 14 membres.', c:'1 message', badge:1, f:()=>gen('Les Fadas du Bassin','Quatorze membres. Personne ne sait qui a créé l\'alliance.', ALLIANCE) },
+    { k:'defis', n:'Navires disputés', a:'Le Cormoran arrive dans 4 min.', c:'2 joueurs dessus', f:()=>gen('Navires disputés','Le premier qui accoste prend le contrat. Les autres regardent.', DISPUTES) }
+  ]
+};
+
+const VERROUILLE = true;
+
+function carte(m){
+  return `<button class="mod ferme" data-k="${m.k}" disabled aria-disabled="true">
+    <svg class="cadenas" viewBox="0 0 24 24" fill="none" stroke="#75705f" stroke-width="1.9">
+      <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    <svg class="ic" viewBox="0 0 24 24">${ICONES[m.k]}</svg>
+    <b>${m.n}</b><span class="ap">${m.a}</span>
+    ${m.prog !== undefined ? `<span class="barre"><i style="width:${m.prog}%"></i></span>` : ''}
+    <span class="bas"><span class="co">Bientôt</span></span>
+  </button>`;
+}
+function poser(cible, liste){
+  $(cible).innerHTML = liste.map(carte).join('');
+  if (VERROUILLE) return;
+  $(cible).querySelectorAll('.mod').forEach((b,i) =>
+    b.addEventListener('click', () => liste[i].f && liste[i].f()));
+}
+
+/* ---------- contenus ---------- */
+const CONTRATS = [
+  ['Le Cormoran — 40 conteneurs','Départ dans 2 h. Payé rubis sur l\'ongle.','+ 340 €','Accepter'],
+  ['Cargaison de sable','Personne ne sait pourquoi. Ça paie mal.','+ 45 €','Accepter'],
+  ['Fret réfrigéré','Il faut une prise. Tu n\'en as pas.','+ 210 €','Verrouillé'],
+  ['Colis non déclaré','Aucun manifeste. Aucune question.','+ 890 €','Risqué']
+];
+const QUARTS = [
+  ['Grue 4','Deux heures. Le vent se lève.','− 12 én.','Y aller'],
+  ['Fond de cale','Personne ne te verra. Personne ne te félicitera.','− 18 én.','Y aller'],
+  ['Pointage','Assis. Payé moins. Tu apprends des choses.','− 5 én.','Y aller']
+];
+const CONTREBANDE = [
+  ['Deux caisses sans étiquette','Risque de contrôle : 18 %','+ 420 €','Charger'],
+  ['Un conteneur entier','Risque de contrôle : 47 %','+ 1 900 €','Charger'],
+  ['Une tortue','Elle n\'est sur aucun registre. Elle te regarde.','?','Réfléchir']
+];
+const DEFIS = [
+  ['Charger 20 conteneurs','Fait','+ 80 XP','✓'],
+  ['Parler à trois personnes','Fait','+ 60 XP','✓'],
+  ['Ne rien casser de la journée','En cours','+ 120 XP','2 h 40']
+];
+const BATIMENTS = [
+  ['Entrepôt','Niveau 3 — plein à 91 %','1 200 €','Agrandir'],
+  ['Grue portique','Niveau 2 — lente par mistral','2 400 €','Améliorer'],
+  ['Réfectoire','Niveau 1 — le café est mauvais','600 €','Améliorer'],
+  ['Bureau de pointage','Niveau 2','—','Complet'],
+  ['Capitainerie','Verrouillée — chapitre 6','—','Verrouillé']
+];
+const FLOTTE = [
+  ['Le pédalo canard','Rentré. Il manque une pédale.','—','Réparer'],
+  ['La barque du pointu','En mer — retour dans 34 min','+ 120 €','Suivre'],
+  ['Le radeau de palettes','Coule lentement. Ça se voit.','—','Renoncer']
+];
+const CAMPAGNE = [
+  ['1 — Le premier jour','Terminé','','✓'],
+  ['2 — Le casier 47','Terminé','','✓'],
+  ['3 — La paie','En cours — il manque 40 € sur ta fiche','','Continuer'],
+  ['4 — Le conteneur qui n\'existe pas','Verrouillé','','—'],
+  ['5 — Le pointu','Verrouillé','','—']
+];
+const ALLIANCE = [
+  ['Bouboulette Chéri','Fondateur — connecté','2 840 €',''],
+  ['Nono','Trésorier — cherche son crochet','1 620 €',''],
+  ['La Ficelle','Membre — vend du sable','980 €',''],
+  ['Deux-Doigts','Membre','640 €','']
+];
+const DISPUTES = [
+  ['Le Cormoran','Arrive dans 4 min — 2 joueurs positionnés','340 €','Se placer'],
+  ['Le Marie-Jeanne','Arrive dans 22 min','180 €','Se placer']
+];
+
+function gen(titre, sous, liste){
+  $('gt').textContent = titre;
+  $('gs').textContent = sous;
+  $('gl').innerHTML = liste.map(l =>
+    `<div class="item"><span class="tx"><b>${l[0]}</b><span>${l[1]}</span></span>
+     <span class="vl">${l[2]}<small>${l[3]}</small></span></div>`).join('');
+  ouvrir('f-generique');
+}
+
+/* ---------- dockers ---------- */
+const DOCKERS = [
+  { n:'Nono', t:'Ne dort jamais', h:'#c74a33', hum:'Mauvaise humeur', xp:'Niv. 9',
+    e:{peau:1,cheveux:6,coiffure:5,barbe:3,tete:0,veste:4,yeux:4,bouche:0,lunettes:1,boucle:0,motif:0,foulard:0,tshirt:false} },
+  { n:'La Ficelle', t:'Casse un conteneur sur dix', h:'#2f8f66', hum:'Content', xp:'Niv. 6',
+    e:{peau:2,cheveux:2,coiffure:4,barbe:1,tete:2,veste:2,yeux:1,bouche:1,lunettes:0,boucle:1,motif:0,foulard:1,tshirt:false} },
+  { n:'Deux-Doigts', t:'A ses dix doigts', h:'#2f8f66', hum:'Content', xp:'Niv. 4',
+    e:{peau:4,cheveux:0,coiffure:0,barbe:2,tete:3,veste:3,yeux:5,bouche:3,lunettes:0,boucle:2,motif:2,foulard:0,tshirt:false} },
+  { n:'Le Cousin', t:'Dit qu\'il est ton cousin', h:'#a8862a', hum:'Indéterminé', xp:'Niv. 1',
+    e:{peau:3,cheveux:3,coiffure:2,barbe:0,tete:1,veste:5,yeux:0,bouche:4,lunettes:0,boucle:0,motif:3,foulard:2,tshirt:false} },
+  { n:'Marcel', t:'Salue tout le monde, deux fois', h:'#2f8f66', hum:'Content', xp:'Niv. 7',
+    e:{peau:0,cheveux:4,coiffure:1,barbe:4,tete:2,veste:1,yeux:3,bouche:0,lunettes:1,boucle:0,motif:1,foulard:0,tshirt:false} },
+  { n:'Le Silencieux', t:'N\'a jamais parlé', h:'#4a7f9e', hum:'Inconnue', xp:'Niv. 12',
+    e:{peau:5,cheveux:0,coiffure:0,barbe:5,tete:4,veste:0,yeux:5,bouche:2,lunettes:2,boucle:0,motif:0,foulard:3,tshirt:false} }
+];
+$('l-dockers').innerHTML = DOCKERS.map(d =>
+  `<div class="item"><span class="av">${svgPix(false, d.e)}</span>
+   <span class="tx"><b>${d.n}</b><span>${d.t}</span></span>
+   <span class="vl">${d.xp}<small><span class="humeur" style="background:${d.h}"></span>${d.hum}</small></span></div>`).join('');
+
+/* ---------- marché ---------- */
+const MARCHE = [
+  ['Savon','Bastia','+ 32 %','↑'],['Sable','Marseille','− 8 %','↓'],
+  ['Poutargue','Toulon','+ 61 %','↑'],['Pastis périmé','Alger','− 4 %','↓'],
+  ['Chaussures gauches','Partout','0 %','—']
+];
+$('l-marche').innerHTML = MARCHE.map(m =>
+  `<div class="item"><span class="tx"><b>${m[0]}</b><span>Meilleur prix : ${m[1]}</span></span>
+   <span class="vl" style="color:${m[2].startsWith('+') ? '#2f8f66' : m[2].startsWith('−') ? '#c74a33' : '#4a7f9e'}">${m[2]}<small>${m[3]}</small></span></div>`).join('');
+
+/* ---------- classement ---------- */
+const CLASSEMENT = [
+  ['Bouboulette Chéri','Contremaître','2 840 €'],
+  ['Le Silencieux','Bassin est','1 980 €'],
+  ['Nono','Quai 3','1 620 €'],
+  ['La Ficelle','Quai 3','980 €'],
+  ['Toi','Bassin est','1,00 €']
+];
+$('l-classement').innerHTML = CLASSEMENT.map((c,i) =>
+  `<div class="item" ${c[0]==='Toi' ? 'style="border-color:rgba(194,113,26,.55)"' : ''}>
+   <span class="vl" style="flex:0 0 26px;text-align:center;font-family:'Bebas Neue';font-size:18px">${i+1}</span>
+   <span class="tx"><b>${c[0]}</b><span>${c[1]}</span></span><span class="vl">${c[2]}</span></div>`).join('');
+
+/* ---------- journal ---------- */
+const LIGNES = [
+  ['6 h 30','Tu as pris ton poste. <b>Personne</b> ne l\'a remarqué.'],
+  ['7 h 12','<b>Nono</b> cherche son crochet. Il demande à tout le monde.'],
+  ['8 h 04','Le <b>camion du mardi</b> s\'est garé. Il attend.'],
+  ['9 h 45','<b>La Ficelle</b> a cassé un conteneur. Le neuvième ce mois-ci.'],
+  ['10 h 20','Un contrôle douanier a eu lieu au <b>quai 5</b>. Pas chez toi.'],
+  ['11 h 08','<b>Le Cousin</b> a pointé. Tu ne l\'as pas embauché.']
+];
+$('journal').innerHTML = LIGNES.map(l =>
+  `<div class="l"><span class="h">${l[0]}</span><span class="c">${l[1]}</span></div>`).join('');
+
+function ajouterJournal(h, txt){
+  const j = $('journal');
+  j.insertAdjacentHTML('afterbegin', `<div class="l"><span class="h">${h}</span><span class="c">${txt}</span></div>`);
+  while (j.children.length > 7) j.removeChild(j.lastChild);
+}
+
+/* ---------- feuilles ---------- */
+function ouvrir(id){ $(id).classList.add('on'); }
+document.querySelectorAll('[data-x]').forEach(b =>
+  b.addEventListener('click', () => document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'))));
+const ONGLETS_OUVERTS = ['f-fiche'];
+document.querySelectorAll('.nav button').forEach(b => {
+  if (VERROUILLE && b.dataset.f && !ONGLETS_OUVERTS.includes(b.dataset.f)){
+    b.classList.add('ferme');
+    b.setAttribute('aria-disabled', 'true');
+    return;
+  }
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.nav button').forEach(x => x.classList.remove('actif'));
+    b.classList.add('actif');
+    document.querySelectorAll('.feuille').forEach(f => f.classList.remove('on'));
+    if (b.dataset.f) ouvrir(b.dataset.f);
+  });
+});
+
+/* ---------- production idle ---------- */
+/* aucun gain pour l'instant : on construira l'économie ensemble */
+
+const IMPREVUS = [
+  ['12 h 02','Une <b>mouette</b> a emporté un gant. Personne ne réagit.'],
+  ['12 h 31','<b>Le Silencieux</b> a hoché la tête. C\'est arrivé.'],
+  ['13 h 15','Le <b>quai 4</b> est signalé fermé. Il n\'existe pas.'],
+  ['14 h 06','Un conteneur que tu as expédié en mars est <b>revenu</b>.']
+];
+/* le journal ne s'alimente plus tant qu'il n'est pas branché */
+
+/* ---------- la ville ---------- */
+const VILLES = {};
+
+const DEFS = `<defs>
+<linearGradient id="w-ciel" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#5da3cf"/><stop offset="30%" stop-color="#8fc3e0"/>
+  <stop offset="58%" stop-color="#c2dced"/><stop offset="80%" stop-color="#eae6dc"/>
+  <stop offset="100%" stop-color="#f8dfb4"/>
+</linearGradient>
+<linearGradient id="w-mer" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#7cc0d8"/><stop offset="30%" stop-color="#4e9cbe"/>
+  <stop offset="100%" stop-color="#1f5d7e"/>
+</linearGradient>
+<linearGradient id="w-coll1" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#cfd8dd"/><stop offset="100%" stop-color="#a9bcc6"/>
+</linearGradient>
+<linearGradient id="w-coll2" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#e4e0d2"/><stop offset="100%" stop-color="#c3bfae"/>
+</linearGradient>
+<linearGradient id="w-quai" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#efe9db"/><stop offset="100%" stop-color="#cec6b3"/>
+</linearGradient>
+<radialGradient id="w-sol"><stop offset="0%" stop-color="#fff8e2" stop-opacity="1"/>
+  <stop offset="38%" stop-color="#ffe4ae" stop-opacity=".5"/>
+  <stop offset="100%" stop-color="#ffd9a0" stop-opacity="0"/></radialGradient>
+<linearGradient id="w-refl" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#ffffff" stop-opacity=".3"/>
+  <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+</defs>`;
+
+const rnd = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+
+/* ---------- immeuble marseillais détaillé ---------- */
+function maison(x, sol, w, h, i){
+  const murs  = ['#f0e2c8','#e8d5b4','#f2e8d4','#e2cdaa','#eddfc4','#e6d2b2'];
+  const toits = ['#c4714a','#b4643e','#cf7d52','#a95a36'];
+  const mur = murs[i % murs.length], toit = toits[i % toits.length];
+  const y = sol - h;
+  let s = '';
+  /* toit en tuiles */
+  s += `<path d="M${x-3} ${y} L${x+w+3} ${y} L${x+w} ${y-5} L${x+3} ${y-5} Z" fill="${toit}"/>`;
+  s += `<path d="M${x-3} ${y} L${x+w+3} ${y} L${x+w+3} ${y+1} L${x-3} ${y+1} Z" fill="#00000010"/>`;
+  s += `<path d="M${x-3} ${y-5} L${x+w+3} ${y-5} L${x+w+3} ${y-3.6} L${x-3} ${y-3.6} Z" fill="#ffffff" opacity=".22"/>`;
+  /* cheminée */
+  if (rnd(i + 3) > .45){
+    const cx = x + 4 + rnd(i) * (w - 12);
+    s += `<rect x="${cx.toFixed(1)}" y="${y - 9}" width="4" height="5" fill="${toit}"/>
+          <rect x="${(cx-0.8).toFixed(1)}" y="${y - 10.6}" width="5.6" height="1.8" fill="#a95a36"/>`;
+  }
+  /* mur */
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${mur}"/>`;
+  s += `<rect x="${x + w - 5}" y="${y}" width="3" height="${h}" fill="#00000009"/>`;
+  /* fenêtres à volets */
+  const cols = Math.max(1, Math.round((w - 8) / 14));
+  const rows = Math.max(1, Math.floor((h - 16) / 17));
+  const pasX = (w - 8) / cols, pasY = (h - 14) / (rows + 0.35);
+  for (let c = 0; c < cols; c++){
+    for (let r = 0; r < rows; r++){
+      const fx = x + 4 + c * pasX + (pasX - 9) / 2;
+      const fy = y + 8 + r * pasY;
+      const ouvert = rnd(i * 17 + c * 5 + r) > .38;
+      s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="9" height="11" rx="1" fill="#65879c"/>`;
+      s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="9" height="5" rx="1" fill="#84a6ba" opacity=".65"/>`;
+      if (!ouvert)
+        s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="9" height="11" rx="1" fill="#9dbccd"/>`;
+      else {
+        s += `<rect x="${(fx-2.6).toFixed(1)}" y="${fy.toFixed(1)}" width="2" height="11" fill="#9db8c8"/>`;
+        s += `<rect x="${(fx+9.2).toFixed(1)}" y="${fy.toFixed(1)}" width="2" height="11" fill="#89a6b8"/>`;
+      }
+      s += `<rect x="${(fx-1.4).toFixed(1)}" y="${(fy+11).toFixed(1)}" width="11.4" height="1.4" fill="#00000016"/>`;
+      /* balcon occasionnel */
+      if (r === 0 && rnd(i * 7 + c) > .62){
+        s += `<rect x="${(fx-3).toFixed(1)}" y="${(fy+11.6).toFixed(1)}" width="15" height="4.6" fill="none" stroke="#8d9aa4" stroke-width="1.1"/>`;
+        s += `<g stroke="#8d9aa4" stroke-width=".7">`;
+        for (let b = 0; b < 5; b++) s += `<path d="M${(fx-2+b*3.2).toFixed(1)} ${(fy+11.6).toFixed(1)} v4.6"/>`;
+        s += `</g>`;
+      }
+    }
+  }
+  /* rez-de-chaussée : boutique avec store */
+  const stores = ['#c74a33','#2f7fb0','#4f8f68','#c9a83a'];
+  if (h > 30){
+    const sy = sol - 13;
+    s += `<rect x="${x+3}" y="${sy}" width="${w-6}" height="13" fill="#c9b99a"/>`;
+    s += `<rect x="${x + w/2 - 5}" y="${sy+3}" width="10" height="10" fill="#6b5a45"/>`;
+    s += `<path d="M${x+1} ${sy-1} h${w-2} l-2.5 5 h-${w-7} z" fill="${stores[i % stores.length]}"/>`;
+  }
+  return s;
+}
+
+/* ---------- Notre-Dame de la Garde, détaillée ---------- */
+function bonneMere(x, y, s){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <path d="M-40 40 L-30 22 L30 22 L40 40 Z" fill="#cdc4ae"/>
+    <path d="M-30 22 L30 22 L30 26 L-30 26 Z" fill="#b9b09a"/>
+    <rect x="-26" y="4" width="52" height="19" fill="#ece5d3"/>
+    <g fill="#cdc4ae">
+      <path d="M-22 23 v-11 a4 4 0 0 1 8 0 v11 z"/>
+      <path d="M-10 23 v-11 a4 4 0 0 1 8 0 v11 z"/>
+      <path d="M2 23 v-11 a4 4 0 0 1 8 0 v11 z"/>
+      <path d="M14 23 v-11 a4 4 0 0 1 8 0 v11 z"/>
+    </g>
+    <path d="M-26 4 h52 v-3 h-52 z" fill="#d8d0ba"/>
+    <path d="M-14 4 a14 11 0 0 1 28 0 z" fill="#e4dcc8"/>
+    <path d="M-14 4 a14 11 0 0 1 14 -11 l0 11 z" fill="#f2ecdc"/>
+    <rect x="-9" y="-40" width="18" height="34" fill="#f0e9d7"/>
+    <rect x="-9" y="-40" width="7" height="34" fill="#fbf6e8"/>
+    <g fill="#cdc4ae">
+      <path d="M-6 -12 v-9 a3 3 0 0 1 6 0 v9 z"/>
+      <path d="M1 -12 v-9 a3 3 0 0 1 6 0 v9 z"/>
+      <path d="M-6 -26 v-7 a3 3 0 0 1 6 0 v7 z"/>
+      <path d="M1 -26 v-7 a3 3 0 0 1 6 0 v7 z"/>
+    </g>
+    <rect x="-11" y="-44" width="22" height="4" fill="#d8d0ba"/>
+    <rect x="-4" y="-58" width="8" height="14" fill="#e0bb62"/>
+    <ellipse cx="0" cy="-64" rx="5" ry="7" fill="#f2d98a"/>
+    <ellipse cx="0" cy="-64" rx="5" ry="7" fill="#fff0bc" opacity=".6"/>
+    <circle cx="0" cy="-70" r="3" fill="#f7e3a4"/>
+    <circle cx="0" cy="-66" r="13" fill="#fff2c4" opacity=".22"/>
+  </g>`;
+}
+
+/* ---------- Fort Saint-Jean ---------- */
+function fort(x, y, s){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <rect x="-30" y="-14" width="60" height="26" fill="#e0d8c2"/>
+    <rect x="-30" y="-14" width="60" height="5" fill="#efe8d6"/>
+    <g fill="#c9c0a8">
+      <rect x="-30" y="-19" width="8" height="5"/><rect x="-16" y="-19" width="8" height="5"/>
+      <rect x="-2" y="-19" width="8" height="5"/><rect x="12" y="-19" width="8" height="5"/>
+      <rect x="24" y="-19" width="6" height="5"/></g>
+    <g fill="#a89f88" opacity=".5">
+      <rect x="-24" y="-6" width="6" height="8"/><rect x="-8" y="-6" width="6" height="8"/>
+      <rect x="8" y="-6" width="6" height="8"/></g>
+    <rect x="18" y="-40" width="20" height="30" fill="#e8e0ca"/>
+    <rect x="18" y="-40" width="7" height="30" fill="#f4eddb"/>
+    <g fill="#c9c0a8"><rect x="18" y="-45" width="6" height="5"/><rect x="27" y="-45" width="6" height="5"/>
+      <rect x="34" y="-45" width="4" height="5"/></g>
+    <rect x="24" y="-30" width="5" height="8" fill="#8d8674"/>
+    <rect x="37" y="-56" width="1.6" height="12" fill="#8d8674"/>
+    <path d="M38.6 -56 h11 v6 h-11 z" fill="#3f6fa8"/>
+    <path d="M38.6 -53 h11 v3 h-11 z" fill="#e8e2d4"/>
+  </g>`;
+}
+
+/* ---------- MuCEM ---------- */
+function mucem(x, y, s){
+  let m = `<g transform="translate(${x},${y}) scale(${s})">
+    <rect x="-24" y="-30" width="48" height="30" fill="#6b7681"/>
+    <rect x="-24" y="-30" width="48" height="30" fill="#8a95a1" opacity=".45"/>
+    <g fill="#454d56" opacity=".7">`;
+  for (let i = 0; i < 7; i++)
+    for (let j = 0; j < 5; j++)
+      m += `<path d="M${-21 + i*6.6} ${-27 + j*5.6} l3 0 l-3 4 l-3 0 z"/>`;
+  m += `</g><rect x="-24" y="0" width="48" height="4" fill="#5a636c"/>
+    <rect x="-2" y="-40" width="4" height="10" fill="#7d8894"/></g>`;
+  return m;
+}
+
+/* ---------- voilier ---------- */
+function voilier(x, y, s, c){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <rect x="-0.8" y="-26" width="1.6" height="26" fill="#9a9284"/>
+    <path d="M0 -24 q9 10 4 19 h-4 z" fill="#fbf7ee"/>
+    <path d="M0 -24 q9 10 4 19 h-4 z" fill="#d8d2c4" opacity=".35"/>
+    <path d="M-1.5 -19 q-7 8 -4 14 h4 z" fill="#f4f0e4"/>
+    <path d="M-13 -1 h26 l-4 6 h-18 z" fill="${c}"/>
+    <path d="M-13 -1 h26 l-1 1.6 h-24 z" fill="#ffffff" opacity=".45"/>
+    <ellipse cx="0" cy="7" rx="12" ry="2" fill="#ffffff" opacity=".18"/>
+  </g>`;
+}
+
+/* ============ Marseille, depuis la mer ============ */
+const MERS = {};
+
+/* --- 1. simple : ce qu'on a aujourd'hui --- */
+MERS.simple = () => {
+  let m = `<rect x="0" y="108" width="320" height="42" fill="url(#w-mer)"/>`;
+  for (let i = 0; i < 14; i++)
+    m += `<rect x="${i*24-1}" y="108" width="18" height="${(9 + rnd(i)*8).toFixed(1)}" fill="#f0e2c8" opacity=".13"/>`;
+  for (let i = 0; i < 5; i++)
+    m += `<path d="M-8 ${112+i*8} q20 -3 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"
+      stroke="#ffffff" stroke-width="1.1" fill="none" opacity="${(.3 - i*.045).toFixed(2)}"/>`;
+  m += `<g fill="#fff6dc" opacity=".5">`;
+  for (let i = 0; i < 8; i++){
+    const w = 10 + rnd(i)*26;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${110 + i*5}" width="${w.toFixed(0)}" height="2.2" rx="1.1"/>`;
+  }
+  return m + `</g>`;
+};
+
+/* --- 2. miroir : les façades se reflètent vraiment --- */
+MERS.miroir = () => {
+  let m = `<rect x="0" y="108" width="320" height="42" fill="url(#w-mer)"/>`;
+  const murs = ['#f0e2c8','#e8d5b4','#f2e8d4','#e2cdaa','#eddfc4','#e6d2b2'];
+  const toits = ['#c4714a','#b4643e','#cf7d52','#a95a36'];
+  for (let i = 0; i < 18; i++){
+    const x = i * 19 - 6, h = 12 + rnd(i + 70) * 16;
+    m += `<rect x="${x}" y="108" width="19" height="${h.toFixed(1)}" fill="${murs[(i+11)%6]}" opacity=".22"/>`;
+    m += `<rect x="${x}" y="108" width="19" height="3.4" fill="${toits[(i+11)%4]}" opacity=".3"/>`;
+  }
+  m += `<rect x="196" y="108" width="26" height="26" fill="#fbf6e8" opacity=".24"/>`;
+  m += `<rect x="120" y="108" width="30" height="18" fill="#7d8894" opacity=".16"/>`;
+  /* l'ondulation qui casse le reflet */
+  for (let i = 0; i < 11; i++)
+    m += `<path d="M-8 ${110+i*3.8} q14 -2.4 28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0"
+      stroke="#2a6f8f" stroke-width="1.6" fill="none" opacity="${(.36 - i*.02).toFixed(2)}"/>`;
+  m += `<g fill="#fff8e4">`;
+  for (let i = 0; i < 11; i++){
+    const w = 8 + rnd(i+3)*30;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${110 + i*3.8}" width="${w.toFixed(0)}" height="1.8" rx=".9" opacity="${(.62 - i*.045).toFixed(2)}"/>`;
+  }
+  return m + `</g>`;
+};
+
+/* --- 3. profondeurs : hauts-fonds clairs, large au fond --- */
+MERS.profondeur = () => {
+  let m = `<defs><linearGradient id="m-prof" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8fd4de"/><stop offset="16%" stop-color="#5db5cc"/>
+    <stop offset="42%" stop-color="#2f87ab"/><stop offset="72%" stop-color="#1a5d80"/>
+    <stop offset="100%" stop-color="#0d3a54"/></linearGradient></defs>
+    <rect x="0" y="108" width="320" height="42" fill="url(#m-prof)"/>`;
+  /* bancs de sable */
+  m += `<path d="M0 112 q40 5 84 1 q46 -4 80 2 q40 4 78 -2 q34 -4 78 1 v-6 H0 Z" fill="#a8e0e4" opacity=".45"/>`;
+  m += `<path d="M0 118 q54 6 110 0 q56 -5 108 3 q48 5 102 -3 v-5 H0 Z" fill="#63bcd0" opacity=".35"/>`;
+  /* taches de fond */
+  for (let i = 0; i < 24; i++){
+    const x = rnd(i)*320, y = 120 + rnd(i+9)*26;
+    m += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(6+rnd(i+3)*16).toFixed(0)}" ry="${(2+rnd(i+5)*3).toFixed(1)}"
+      fill="#0a2f46" opacity="${(.1+rnd(i+7)*.12).toFixed(2)}"/>`;
+  }
+  for (let i = 0; i < 6; i++)
+    m += `<path d="M-8 ${113+i*6.5} q22 -3 44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0"
+      stroke="#ffffff" stroke-width="1.2" fill="none" opacity="${(.34 - i*.045).toFixed(2)}"/>`;
+  m += `<g fill="#fff8e4" opacity=".55">`;
+  for (let i = 0; i < 7; i++){
+    const w = 12 + rnd(i)*24;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${111 + i*5.6}" width="${w.toFixed(0)}" height="2.4" rx="1.2"/>`;
+  }
+  return m + `</g>`;
+};
+
+/* --- 4. gravure : la mer au trait --- */
+MERS.gravure = () => {
+  let m = `<rect x="0" y="108" width="320" height="42" fill="#dceaf0"/>`;
+  m += `<rect x="0" y="108" width="320" height="42" fill="#4e9cbe" opacity=".22"/>`;
+  for (let i = 0; i < 26; i++){
+    const y = 110 + i * 1.6;
+    const ep = .5 + (i / 26) * 1.5;
+    const op = .18 + (i / 26) * .5;
+    m += `<path d="M-8 ${y.toFixed(1)} q${(8+rnd(i)*10).toFixed(0)} -1.6 ${(18+rnd(i+2)*10).toFixed(0)} 0
+      t34 0 t34 0 t34 0 t34 0 t34 0 t34 0 t34 0 t34 0 t34 0"
+      stroke="#1f5d7e" stroke-width="${ep.toFixed(2)}" fill="none" opacity="${op.toFixed(2)}"/>`;
+  }
+  /* le blanc réservé du soleil */
+  m += `<g fill="#ffffff">`;
+  for (let i = 0; i < 13; i++){
+    const w = 6 + rnd(i+4)*26;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${110 + i*3.2}" width="${w.toFixed(0)}" height="2" rx="1" opacity="${(.72 - i*.05).toFixed(2)}"/>`;
+  }
+  return m + `</g>`;
+};
+
+/* --- 5. vivante : écume, sillages, mouvement --- */
+MERS.vivante = () => {
+  let m = `<rect x="0" y="108" width="320" height="42" fill="url(#w-mer)"/>`;
+  for (let i = 0; i < 14; i++)
+    m += `<rect x="${i*24-1}" y="108" width="18" height="${(8 + rnd(i)*7).toFixed(1)}" fill="#f0e2c8" opacity=".12"/>`;
+  m += `<g class="vagues">`;
+  for (let i = 0; i < 6; i++)
+    m += `<path d="M-40 ${111+i*6.6} q22 -3.4 44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0"
+      stroke="#ffffff" stroke-width="${(1.5 - i*.14).toFixed(2)}" fill="none" opacity="${(.4 - i*.055).toFixed(2)}"/>`;
+  m += `</g>`;
+  /* moutons d'écume */
+  m += `<g class="ecume" fill="#ffffff">`;
+  for (let i = 0; i < 26; i++){
+    const x = rnd(i+11)*320, y = 113 + rnd(i+21)*32;
+    m += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(3+rnd(i)*7).toFixed(1)}" ry="1.2"
+      opacity="${(.3+rnd(i+4)*.4).toFixed(2)}"/>`;
+  }
+  m += `</g>`;
+  /* clapot contre le quai */
+  m += `<path d="M0 108 q16 3.4 32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0"
+    stroke="#ffffff" stroke-width="2.4" fill="none" opacity=".55"/>`;
+  m += `<g fill="#fff8e4" opacity=".5">`;
+  for (let i = 0; i < 8; i++){
+    const w = 10 + rnd(i)*26;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${110 + i*5}" width="${w.toFixed(0)}" height="2.2" rx="1.1"/>`;
+  }
+  return m + `</g>`;
+};
+
+/* --- 6. contre-jour : brume et chemin de lumière large --- */
+MERS.contreJour = () => {
+  let m = `<defs><linearGradient id="m-cj" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#cfe2ea"/><stop offset="22%" stop-color="#8fbcd0"/>
+    <stop offset="60%" stop-color="#4d8faa"/><stop offset="100%" stop-color="#255f7e"/></linearGradient>
+    <linearGradient id="m-ray" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff4d8" stop-opacity=".85"/>
+      <stop offset="100%" stop-color="#fff4d8" stop-opacity=".05"/></linearGradient></defs>
+    <rect x="0" y="108" width="320" height="42" fill="url(#m-cj)"/>`;
+  /* large faisceau depuis le soleil */
+  m += `<path d="M52 108 L2 150 h124 L72 108 Z" fill="url(#m-ray)"/>`;
+  for (let i = 0; i < 12; i++){
+    const w = 14 + rnd(i)*40;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${110 + i*3.4}" width="${w.toFixed(0)}" height="2"
+      rx="1" fill="#fffaf0" opacity="${(.8 - i*.06).toFixed(2)}"/>`;
+  }
+  for (let i = 0; i < 7; i++)
+    m += `<path d="M-8 ${112+i*5.6} q24 -3 48 0 t48 0 t48 0 t48 0 t48 0 t48 0 t48 0"
+      stroke="#ffffff" stroke-width="1" fill="none" opacity="${(.26 - i*.03).toFixed(2)}"/>`;
+  /* brume au ras de l'eau */
+  m += `<rect x="0" y="108" width="320" height="12" fill="#ffffff" opacity=".2"/>`;
+  m += `<rect x="0" y="108" width="320" height="5" fill="#ffffff" opacity=".22"/>`;
+  return m;
+};
+
+
+/* --- 7. fusion : profondeurs + mouvement --- */
+MERS.vive = () => {
+  let m = `<defs><linearGradient id="m-vive" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8fd4de"/><stop offset="16%" stop-color="#5db5cc"/>
+    <stop offset="42%" stop-color="#2f87ab"/><stop offset="72%" stop-color="#1a5d80"/>
+    <stop offset="100%" stop-color="#0d3a54"/></linearGradient></defs>
+    <rect x="0" y="108" width="320" height="42" fill="url(#m-vive)"/>`;
+  m += `<path d="M0 112 q40 5 84 1 q46 -4 80 2 q40 4 78 -2 q34 -4 78 1 v-6 H0 Z" fill="#a8e0e4" opacity=".45"/>`;
+  m += `<path d="M0 118 q54 6 110 0 q56 -5 108 3 q48 5 102 -3 v-5 H0 Z" fill="#63bcd0" opacity=".32"/>`;
+  for (let i = 0; i < 22; i++){
+    const x = rnd(i)*320, y = 121 + rnd(i+9)*25;
+    m += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(6+rnd(i+3)*16).toFixed(0)}" ry="${(2+rnd(i+5)*3).toFixed(1)}"
+      fill="#0a2f46" opacity="${(.09+rnd(i+7)*.11).toFixed(2)}"/>`;
+  }
+  m += `<g class="vagues">`;
+  for (let i = 0; i < 6; i++)
+    m += `<path d="M-44 ${112+i*6.4} q22 -3.2 44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0"
+      stroke="#ffffff" stroke-width="${(1.5 - i*.14).toFixed(2)}" fill="none" opacity="${(.4 - i*.05).toFixed(2)}"/>`;
+  m += `</g>`;
+  m += `<g class="ecume" fill="#ffffff">`;
+  for (let i = 0; i < 22; i++){
+    const x = rnd(i+11)*320, y = 114 + rnd(i+21)*30;
+    m += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(3+rnd(i)*7).toFixed(1)}" ry="1.2"
+      opacity="${(.28+rnd(i+4)*.38).toFixed(2)}"/>`;
+  }
+  m += `</g>`;
+  m += `<path d="M0 108 q16 3.2 32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0"
+    stroke="#ffffff" stroke-width="2.4" fill="none" opacity=".55"/>`;
+  m += `<g class="soleil" fill="#fff8e4">`;
+  for (let i = 0; i < 9; i++){
+    const w = 10 + rnd(i)*28;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${110 + i*4.6}" width="${w.toFixed(0)}" height="2.2" rx="1.1"
+      opacity="${(.62 - i*.05).toFixed(2)}"/>`;
+  }
+  return m + `</g>`;
+};
+
+/* --- 8. fusion : profondeurs + reflets + mouvement --- */
+MERS.pleine = () => {
+  let m = `<defs><linearGradient id="m-pl" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8fd4de"/><stop offset="18%" stop-color="#57b0c9"/>
+    <stop offset="46%" stop-color="#2b7fa4"/><stop offset="100%" stop-color="#0d3a54"/>
+    </linearGradient></defs>
+    <rect x="0" y="108" width="320" height="42" fill="url(#m-pl)"/>`;
+  const murs = ['#f0e2c8','#e8d5b4','#f2e8d4','#e2cdaa','#eddfc4','#e6d2b2'];
+  const toits = ['#c4714a','#b4643e','#cf7d52','#a95a36'];
+  for (let i = 0; i < 18; i++){
+    const x = i * 19 - 6, h = 10 + rnd(i + 70) * 14;
+    m += `<rect x="${x}" y="108" width="19" height="${h.toFixed(1)}" fill="${murs[(i+11)%6]}" opacity=".2"/>`;
+    m += `<rect x="${x}" y="108" width="19" height="3" fill="${toits[(i+11)%4]}" opacity=".26"/>`;
+  }
+  m += `<rect x="196" y="108" width="26" height="20" fill="#fbf6e8" opacity=".2"/>`;
+  m += `<path d="M0 113 q46 5 96 1 q50 -4 92 2 q44 4 86 -2 v-7 H0 Z" fill="#a8e0e4" opacity=".34"/>`;
+  for (let i = 0; i < 18; i++){
+    const x = rnd(i)*320, y = 124 + rnd(i+9)*22;
+    m += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(7+rnd(i+3)*15).toFixed(0)}" ry="${(2+rnd(i+5)*3).toFixed(1)}"
+      fill="#08283c" opacity="${(.1+rnd(i+7)*.1).toFixed(2)}"/>`;
+  }
+  m += `<g class="vagues">`;
+  for (let i = 0; i < 9; i++)
+    m += `<path d="M-44 ${111+i*4.4} q18 -2.6 36 0 t36 0 t36 0 t36 0 t36 0 t36 0 t36 0 t36 0 t36 0 t36 0 t36 0"
+      stroke="#ffffff" stroke-width="${(1.4 - i*.1).toFixed(2)}" fill="none" opacity="${(.34 - i*.03).toFixed(2)}"/>`;
+  m += `</g>`;
+  m += `<g class="ecume" fill="#ffffff">`;
+  for (let i = 0; i < 26; i++){
+    const x = rnd(i+11)*320, y = 113 + rnd(i+21)*32;
+    m += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(2.6+rnd(i)*6).toFixed(1)}" ry="1.1"
+      opacity="${(.26+rnd(i+4)*.4).toFixed(2)}"/>`;
+  }
+  m += `</g>`;
+  m += `<path d="M0 108 q16 3.2 32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0 t32 0"
+    stroke="#ffffff" stroke-width="2.6" fill="none" opacity=".6"/>`;
+  m += `<g class="soleil" fill="#fff8e4">`;
+  for (let i = 0; i < 12; i++){
+    const w = 8 + rnd(i+2)*30;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${110 + i*3.5}" width="${w.toFixed(0)}" height="2" rx="1"
+      opacity="${(.68 - i*.045).toFixed(2)}"/>`;
+  }
+  return m + `</g>`;
+};
+
+
+
+/* --- 9. claire : la surface seule, aucun trait --- */
+MERS.claire = () => {
+  return `<defs><linearGradient id="m-cl" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#a8dce6"/><stop offset="30%" stop-color="#7cc2d8"/>
+    <stop offset="70%" stop-color="#4e9cbe"/><stop offset="100%" stop-color="#2d7396"/>
+    </linearGradient></defs>
+    <rect x="0" y="108" width="320" height="42" fill="url(#m-cl)"/>`;
+};
+
+/* --- 10. claire avec le soleil --- */
+MERS.claireSoleil = () => {
+  let m = MERS.claire();
+  m += `<g class="soleil" fill="#fffaf0">`;
+  for (let i = 0; i < 10; i++){
+    const w = 10 + rnd(i+2)*28;
+    m += `<rect x="${(62 - w/2).toFixed(0)}" y="${111 + i*4.2}" width="${w.toFixed(0)}" height="2.2" rx="1.1"
+      opacity="${(.55 - i*.045).toFixed(2)}"/>`;
+  }
+  return m + `</g>`;
+};
+
+/* --- 11. claire, profonde --- */
+MERS.claireProfonde = () => {
+  return `<defs><linearGradient id="m-cp" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8fd4de"/><stop offset="22%" stop-color="#57b0c9"/>
+    <stop offset="58%" stop-color="#2b7fa4"/><stop offset="100%" stop-color="#0f4666"/>
+    </linearGradient></defs>
+    <rect x="0" y="108" width="320" height="42" fill="url(#m-cp)"/>
+    <path d="M0 114 q52 5 106 1 q54 -4 104 2 q46 4 90 -2 v-8 H0 Z" fill="#a8e0e4" opacity=".3"/>`;
+};
+
+const MERS_FIN = true;
+
+function batir(typeMer, opt){
+opt = opt || {};
+let ville = `${DEFS}
+<rect width="320" height="150" fill="url(#w-ciel)"/>
+<ellipse cx="62" cy="30" rx="86" ry="40" fill="url(#w-sol)"/>
+<circle cx="62" cy="26" r="12" fill="#fffbe8"/>`;
+
+for (let i = 0; i < 9; i++){
+  const cx = rnd(i+2)*340, cy = 12 + rnd(i+9)*30, w = 22 + rnd(i)*34;
+  ville += `<g opacity="${(.2 + rnd(i+5)*.22).toFixed(2)}" fill="#ffffff">
+    <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="4.5"/>
+    <ellipse cx="${(cx+w*.3).toFixed(0)}" cy="${(cy-3).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="4"/></g>`;
+}
+
+/* collines */
+ville += `<path d="M0 68 L34 50 L72 62 L112 42 L156 58 L196 36 L240 54 L282 40 L320 54 L320 96 L0 96 Z" fill="url(#w-coll1)"/>`;
+ville += `<path d="M92 50 L130 26 L168 46 L212 18 L252 44 L288 28 L320 48 L320 96 L92 96 Z" fill="url(#w-coll2)"/>`;
+for (let i = 0; i < 46; i++){
+  const x = 92 + rnd(i)*228, y = 36 + rnd(i+30)*46;
+  ville += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="2.6" ry="2" fill="#8fa07e" opacity="${(.2+rnd(i+7)*.3).toFixed(2)}"/>`;
+}
+ville += bonneMere(212, 22, .78);
+
+/* ville : rangée du fond, puis rangée du bord de mer */
+for (let i = 0; i < 13; i++){
+  const x = i * 26 - 8, h = 20 + rnd(i + 40) * 22;
+  if (x > 174 && x < 250) continue;
+  ville += maison(x, 94, 26, h, i + 3);
+}
+ville += mucem(122, 100, .72);
+ville += fort(196, 96, .7);
+for (let i = 0; i < 18; i++){
+  const x = i * 19 - 6, h = 14 + rnd(i + 70) * 16;
+  if (x > 100 && x < 148) continue;
+  if (x > 168 && x < 224) continue;
+  ville += maison(x, 104, 19, h, i + 11);
+}
+
+/* quai de pierre */
+ville += `<rect x="0" y="100" width="320" height="8" fill="#ded6c2"/>
+<rect x="0" y="100" width="320" height="2.4" fill="#f2ecdc"/>
+<g fill="#c6bda8">`;
+for (let i = 0; i < 22; i++) ville += `<rect x="${i*15}" y="102.5" width="1.4" height="5.5"/>`;
+ville += `</g>`;
+
+/* ============ la mer, six traitements ============ */
+ville += MERS[typeMer]();
+
+/* bateaux */
+if (!opt.sansVoiliers){
+  ville += voilier(44, 126, .82, '#e8e2d4');
+  ville += voilier(96, 134, .95, '#c74a33');
+  ville += voilier(268, 128, .78, '#e8e2d4');
+}
+/* ferry */
+if (!opt.sansFerry) ville += `<g transform="translate(190 128)">
+  <path d="M-40 0 h80 l10 5 l-4 8 h-84 z" fill="#33414c"/>
+  <path d="M-40 0 h80 l10 5 h-90 z" fill="#4f606d"/>
+  <rect x="-32" y="-11" width="62" height="11" fill="#f4f0e4"/>
+  <g fill="#6f8fa4"><rect x="-28" y="-8" width="7" height="5"/><rect x="-17" y="-8" width="7" height="5"/>
+    <rect x="-6" y="-8" width="7" height="5"/><rect x="5" y="-8" width="7" height="5"/>
+    <rect x="16" y="-8" width="7" height="5"/></g>
+  <rect x="-36" y="-18" width="12" height="8" fill="#f4f0e4"/>
+  <rect x="-33" y="-15" width="6" height="4" fill="#6f8fa4"/>
+  <rect x="14" y="-20" width="7" height="10" fill="#c74a33"/>
+  <rect x="14" y="-20" width="7" height="3" fill="#e8e2d4"/>
+  <ellipse cx="0" cy="15" rx="46" ry="3" fill="#ffffff" opacity=".18"/>
+</g>`;
+return ville;
+}
+
+
+const rnd4 = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+const DEFS4 = `<defs>
+<linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#4f9bcc"/><stop offset="26%" stop-color="#83bdde"/>
+  <stop offset="54%" stop-color="#bcd9ea"/><stop offset="78%" stop-color="#e6e2d8"/>
+  <stop offset="100%" stop-color="#f7dcaf"/></linearGradient>
+<linearGradient id="mer" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#93d8e0"/><stop offset="18%" stop-color="#5cb4cd"/>
+  <stop offset="52%" stop-color="#2d81a6"/><stop offset="100%" stop-color="#0e4363"/></linearGradient>
+<linearGradient id="bassin" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#6dbfd4"/><stop offset="100%" stop-color="#1c5f82"/></linearGradient>
+<linearGradient id="quai" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#efe9db"/><stop offset="42%" stop-color="#ddd5c2"/>
+  <stop offset="100%" stop-color="#c4bba6"/></linearGradient>
+<linearGradient id="colline" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#e2ddcd"/><stop offset="100%" stop-color="#bcb7a4"/></linearGradient>
+<radialGradient id="soleil"><stop offset="0%" stop-color="#fff9e6" stop-opacity="1"/>
+  <stop offset="38%" stop-color="#ffe6b4" stop-opacity=".5"/>
+  <stop offset="100%" stop-color="#ffd9a0" stop-opacity="0"/></radialGradient>
+<linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#f2a83a"/><stop offset="45%" stop-color="#e0913a"/>
+  <stop offset="100%" stop-color="#b06a1e"/></linearGradient>
+<linearGradient id="metalG" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#8fa2ad"/><stop offset="50%" stop-color="#6d808c"/>
+  <stop offset="100%" stop-color="#4e5f6a"/></linearGradient>
+<linearGradient id="halo" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#fff3d0" stop-opacity=".5"/>
+  <stop offset="100%" stop-color="#fff3d0" stop-opacity="0"/></linearGradient>
+</defs>`;
+
+/* ---------- ciel et fond, communs ---------- */
+function fond(n){
+  let s = `<rect width="480" height="240" fill="url(#ciel)"/>`;
+  s += `<ellipse cx="392" cy="46" rx="120" ry="54" fill="url(#soleil)"/>`;
+  s += `<circle cx="392" cy="42" r="16" fill="#fffdf2"/>`;
+  for (let i = 0; i < 11; i++){
+    const cx = rnd4(i+2)*520, cy = 14 + rnd4(i+9)*38, w = 26 + rnd4(i)*46;
+    s += `<g opacity="${(.18 + rnd4(i+5)*.2).toFixed(2)}" fill="#fff">
+      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="5"/>
+      <ellipse cx="${(cx+w*.34).toFixed(0)}" cy="${(cy-4).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="4.4"/></g>`;
+  }
+  /* collines : deux plans */
+  s += `<path d="M0 104 L44 84 L92 98 L142 76 L196 94 L248 72 L302 90 L356 76 L410 92 L480 82 L480 150 L0 150 Z"
+    fill="#c6d2d8" opacity=".75"/>`;
+  s += `<path d="M0 116 L52 98 L106 112 L162 92 L220 108 L276 88 L334 106 L392 92 L446 108 L480 100 L480 152 L0 152 Z"
+    fill="url(#colline)"/>`;
+  for (let i = 0; i < 52; i++)
+    s += `<ellipse cx="${(rnd4(i)*480).toFixed(0)}" cy="${(96 + rnd4(i+30)*52).toFixed(0)}" rx="3" ry="2.4"
+      fill="#93a583" opacity="${(.18+rnd4(i+7)*.26).toFixed(2)}"/>`;
+  /* la ville au loin, apparaît dès le niveau 1 */
+  if (n >= 1){
+    const murs = ['#f2e5cd','#ead9ba','#f5ecdb','#e4d2b2'];
+    const toits = ['#c4714a','#b4643e','#cf7d52','#a95a36'];
+    for (let i = 0; i < 22; i++){
+      const x = i*22 - 6, h = 12 + rnd4(i+40)*16, y = 132 - h;
+      if (x > 150 && x < 340) continue;
+      s += `<rect x="${x}" y="${y.toFixed(0)}" width="20" height="${h.toFixed(0)}" fill="${murs[i%4]}"/>`;
+      s += `<path d="M${x-2} ${y.toFixed(0)} h24 l-3 -4 h-18 z" fill="${toits[i%4]}"/>`;
+      for (let k = 0; k < 2; k++)
+        s += `<rect x="${x+4+k*8}" y="${(y+5).toFixed(0)}" width="5" height="6" fill="#7c9cb0" opacity=".8"/>`;
+    }
+  }
+  return s;
+}
+
+/* ---------- la mer et le bassin ---------- */
+function eau(n){
+  let s = `<rect x="0" y="152" width="480" height="88" fill="url(#mer)"/>`;
+  s += `<path d="M0 158 q66 6 134 1 q68 -5 132 3 q60 5 116 -3 q52 -4 98 2 v-9 H0 Z" fill="#a8e4e8" opacity=".28"/>`;
+  for (let i = 0; i < 5; i++)
+    s += `<path class="houle" d="M-50 ${164+i*11} q28 -4 56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0"
+      stroke="#fff" stroke-width="${(1.5-i*.16).toFixed(2)}" fill="none" opacity="${(.34-i*.05).toFixed(2)}"/>`;
+  for (let i = 0; i < 14; i++)
+    s += `<ellipse class="ecume" cx="${(rnd4(i+31)*480).toFixed(0)}" cy="${(166+rnd4(i+41)*66).toFixed(0)}"
+      rx="${(3+rnd4(i)*7).toFixed(1)}" ry="1.2" fill="#fff" opacity="${(.2+rnd4(i+4)*.3).toFixed(2)}"/>`;
+  return s;
+}
+
+/* ---------- pièces du port ---------- */
+function quai(x, y, w, h){
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#quai)"/>`;
+  s += `<rect x="${x}" y="${y}" width="${w}" height="3" fill="#f7f2e6"/>`;
+  s += `<rect x="${x}" y="${y+h-3}" width="${w}" height="3" fill="#a89e88"/>`;
+  for (let i = 0; i * 16 < w; i++)
+    s += `<rect x="${x + i*16}" y="${y+3}" width="1.4" height="${h-6}" fill="#c0b6a0" opacity=".7"/>`;
+  return s;
+}
+function bollard(x, y){
+  return `<path d="M${x} ${y} q0 -7 5 -7 q5 0 5 7 z" fill="#4a5560"/>
+    <ellipse cx="${x+5}" cy="${y-7}" rx="5" ry="2" fill="#5f6c78"/>`;
+}
+function conteneur(x, y, w, h, c, o){
+  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1" fill="${c}"/>`;
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${(h*.22).toFixed(1)}" fill="#fff" opacity=".16"/>`;
+  s += `<rect x="${x}" y="${y+h-h*.2}" width="${w}" height="${(h*.2).toFixed(1)}" fill="${o}" opacity=".55"/>`;
+  for (let i = 1; i * 7 < w; i++)
+    s += `<rect x="${x + i*7}" y="${y+1}" width="1.2" height="${h-2}" fill="${o}" opacity=".5"/>`;
+  return s;
+}
+function pileConteneurs(x, sol, cols, rangs, graine){
+  const C = [['#2f7fb0','#1a527a'],['#4f8f68','#2f5f42'],['#b06a3a','#7c4522'],
+             ['#8a5a9c','#5c3a6c'],['#c2711a','#8a4d0e'],['#5c7f8f','#3a5a68']];
+  let s = '';
+  for (let c = 0; c < cols; c++){
+    const h = 1 + Math.floor(rnd4(graine + c) * rangs);
+    for (let r = 0; r < h; r++){
+      const t = C[Math.floor(rnd4(graine + c*7 + r*3) * C.length)];
+      s += conteneur(x + c*22, sol - (r+1)*10, 20, 9, t[0], t[1]);
+    }
+  }
+  return s;
+}
+function portique(x, sol, h, ouvert){
+  const ecart = 30, fleche = 46;
+  let s = `<g class="portique">`;
+  s += `<rect x="${x-10}" y="${sol-2}" width="${ecart+fleche+22}" height="2.4" fill="#8c8272"/>`;
+  /* deux jambes en A */
+  s += `<path d="M${x-3} ${sol} L${x+1} ${sol-h} h4 L${x+7} ${sol} z" fill="url(#metalG)"/>`;
+  s += `<path d="M${x+ecart-3} ${sol} L${x+ecart+1} ${sol-h} h4 L${x+ecart+7} ${sol} z" fill="url(#metalG)"/>`;
+  s += `<path d="M${x+3} ${sol-h*.5} L${x+ecart+3} ${sol-h*.78} M${x+ecart+3} ${sol-h*.5} L${x+3} ${sol-h*.78}"
+    stroke="#6d808c" stroke-width="1.6"/>`;
+  s += `<rect x="${x-2}" y="${sol-h*.5}" width="${ecart+8}" height="2.4" fill="#6d808c"/>`;
+  /* poutre horizontale */
+  s += `<rect x="${x-14}" y="${sol-h-7}" width="${ecart+fleche+24}" height="6" rx="1" fill="url(#metal)"/>`;
+  s += `<rect x="${x-14}" y="${sol-h-7}" width="${ecart+fleche+24}" height="1.8" fill="#ffc86a" opacity=".5"/>`;
+  for (let i = 0; i < 7; i++){
+    const px = x - 10 + i*(ecart+fleche+18)/7;
+    s += `<path d="M${px.toFixed(1)} ${sol-h-7} l${((ecart+fleche+18)/14).toFixed(1)} 7"
+      stroke="#c07a1c" stroke-width="1.2"/>`;
+  }
+  /* contrepoids côté terre */
+  s += `<rect x="${x-19}" y="${sol-h-13}" width="11" height="8" rx="1" fill="#5c6a74"/>`;
+  /* cabine */
+  s += `<rect x="${x+6}" y="${sol-h-16}" width="16" height="9" rx="1.5" fill="#2f3f4a"/>`;
+  s += `<rect x="${x+8}" y="${sol-h-14}" width="12" height="4.4" fill="#8fd0ee" opacity=".7"/>`;
+  /* chariot suspendu */
+  const cx = x + (ouvert ? ecart + 34 : 14);
+  s += `<rect x="${cx-5}" y="${sol-h-5}" width="10" height="4" fill="#4e5f6a"/>`;
+  s += `<g class="crochet"><path d="M${cx} ${sol-h-1} V${sol-h+22}" stroke="#4e5f6a" stroke-width="1.2"/>`;
+  s += `<rect x="${cx-8}" y="${sol-h+22}" width="16" height="8" rx="1" fill="#2f7fb0"/>`;
+  s += `<rect x="${cx-8}" y="${sol-h+22}" width="16" height="1.8" fill="#fff" opacity=".22"/></g>`;
+  s += `<circle class="feu" cx="${x+ecart+fleche+6}" cy="${sol-h-10}" r="2.2" fill="#e04a33"/>`;
+  return s + `</g>`;
+}
+
+function hangar(x, sol, w, h, nom){
+  let s = `<path d="M${x} ${sol} L${x} ${sol-h} L${x+w/2} ${sol-h-13} L${x+w} ${sol-h} L${x+w} ${sol} Z" fill="#cfd6d2"/>`;
+  s += `<path d="M${x} ${sol-h} L${x+w/2} ${sol-h-13} L${x+w/2} ${sol} L${x} ${sol} Z" fill="#e2e7e2"/>`;
+  for (let i = 1; i * 12 < w; i++)
+    s += `<rect x="${x + i*12}" y="${sol-h}" width="1.6" height="${h}" fill="#b4bcb8" opacity=".8"/>`;
+  s += `<rect x="${x+w*.3}" y="${sol-h*.62}" width="${w*.4}" height="${h*.62}" fill="#5a6a72"/>`;
+  for (let i = 0; i < 5; i++)
+    s += `<rect x="${x+w*.3}" y="${sol-h*.62 + i*(h*.62/5)}" width="${w*.4}" height="1.4" fill="#485660"/>`;
+  s += `<rect x="${x+w*.12}" y="${sol-h*.86}" width="${w*.14}" height="${h*.2}" fill="#8fd0ee" opacity=".55"/>`;
+  s += `<rect x="${x+w*.74}" y="${sol-h*.86}" width="${w*.14}" height="${h*.2}" fill="#8fd0ee" opacity=".45"/>`;
+  if (nom){
+    s += `<rect x="${x+w*.26}" y="${sol-h-6}" width="${w*.48}" height="11" rx="2" fill="#c2711a"/>`;
+    s += `<text x="${x+w*.5}" y="${sol-h+2.5}" font-family="Barlow,sans-serif" font-size="7"
+      font-weight="600" fill="#fff" text-anchor="middle">${nom}</text>`;
+  }
+  return s;
+}
+function grueMobile(x, sol, s2){
+  return `<g transform="translate(${x},${sol}) scale(${s2})">
+    <rect x="-16" y="-14" width="34" height="12" rx="2" fill="#e0913a"/>
+    <rect x="-16" y="-14" width="34" height="3" fill="#f2b45c"/>
+    <circle cx="-9" cy="0" r="5.4" fill="#2b3038"/><circle cx="11" cy="0" r="5.4" fill="#2b3038"/>
+    <circle cx="-9" cy="0" r="2" fill="#6d7a84"/><circle cx="11" cy="0" r="2" fill="#6d7a84"/>
+    <path d="M6 -14 L34 -40" stroke="url(#metal)" stroke-width="5"/>
+    <path d="M34 -40 V-30" stroke="#4e5f6a" stroke-width="1.2"/>
+    <rect x="30" y="-30" width="9" height="6" rx="1" fill="#4f8f68"/>
+    <rect x="-8" y="-22" width="12" height="8" rx="1.5" fill="#2f3f4a"/></g>`;
+}
+function capitainerie(x, sol){
+  let s = `<rect x="${x}" y="${sol-34}" width="52" height="34" fill="#f0e9dc"/>`;
+  s += `<rect x="${x}" y="${sol-34}" width="52" height="4" fill="#c4714a"/>`;
+  s += `<path d="M${x-3} ${sol-34} h58 l-4 -5 h-50 z" fill="#b4643e"/>`;
+  for (let r = 0; r < 2; r++)
+    for (let c = 0; c < 4; c++)
+      s += `<rect x="${x+6+c*12}" y="${sol-27+r*13}" width="7" height="9" rx="1" fill="#6d94ac"/>`;
+  s += `<rect x="${x+34}" y="${sol-56}" width="14" height="23" fill="#f6f1e6"/>`;
+  s += `<rect x="${x+36}" y="${sol-52}" width="10" height="9" fill="#8fd0ee" opacity=".7"/>`;
+  s += `<rect x="${x+32}" y="${sol-60}" width="18" height="5" rx="1" fill="#4e5f6a"/>`;
+  s += `<path d="M${x+41} ${sol-60} V${sol-72}" stroke="#8c8272" stroke-width="1.4"/>`;
+  s += `<path d="M${x+41.7} ${sol-72} h12 v7 h-12 z" fill="#0055a4"/>`;
+  s += `<path d="M${x+45.7} ${sol-72} h4 v7 h-4 z" fill="#fff"/>`;
+  s += `<path d="M${x+49.7} ${sol-72} h4 v7 h-4 z" fill="#ef4135"/>`;
+  s += `<circle class="feu2" cx="${x+41}" cy="${sol-62}" r="2" fill="#4fb286"/>`;
+  return s;
+}
+function phare(x, sol){
+  let s = `<path d="M${x-8} ${sol} L${x-5} ${sol-46} L${x+5} ${sol-46} L${x+8} ${sol} Z" fill="#f6f1e6"/>`;
+  s += `<path d="M${x} ${sol} L${x} ${sol-46} L${x+5} ${sol-46} L${x+8} ${sol} Z" fill="#ddd5c2"/>`;
+  s += `<g fill="#c74a33"><path d="M${x-7.2} ${sol-12} h14.4 l.3 5 h-15 z"/>
+    <path d="M${x-6.2} ${sol-30} h12.4 l.3 5 h-13 z"/></g>`;
+  s += `<rect x="${x-7}" y="${sol-54}" width="14" height="8" fill="#4e5f6a"/>`;
+  s += `<rect x="${x-5}" y="${sol-52}" width="10" height="5" fill="#ffe8b4"/>`;
+  s += `<path d="M${x-9} ${sol-54} h18 l-3 -4 h-12 z" fill="#3a4a54"/>`;
+  s += `<circle class="feu" cx="${x}" cy="${sol-49}" r="13" fill="#ffe8b4" opacity=".18"/>`;
+  return s;
+}
+function navire(x, y, taille, c){
+  const w = 92 * taille, h = 15 * taille;
+  let s = `<g class="navire">`;
+  s += `<path d="M${x} ${y} h${w} l${12*taille} ${5*taille} l${-4*taille} ${h} H${x+6*taille} Z" fill="#2b3a45"/>`;
+  s += `<path d="M${x} ${y} h${w} l${12*taille} ${5*taille} H${x} Z" fill="#48606e"/>`;
+  s += `<rect x="${x+3*taille}" y="${y-11*taille}" width="${18*taille}" height="${11*taille}" fill="#f2eee2"/>`;
+  for (let i = 0; i < 3; i++)
+    s += `<rect x="${x+5*taille+i*5*taille}" y="${y-8*taille}" width="${3*taille}" height="${3*taille}" fill="#7fa8bc"/>`;
+  s += `<rect x="${x+6*taille}" y="${y-17*taille}" width="${8*taille}" height="${6*taille}" fill="#f2eee2"/>`;
+  const C = [['#2f7fb0','#1a527a'],['#4f8f68','#2f5f42'],['#b06a3a','#7c4522'],['#8a5a9c','#5c3a6c']];
+  for (let i = 0; i < 6; i++)
+    for (let r = 0; r < (i % 2 ? 2 : 1); r++){
+      const t = C[(i+r) % C.length];
+      s += conteneur(x + (26 + i*11)*taille, y - (5 + r*7)*taille, 10*taille, 6*taille, t[0], t[1]);
+    }
+  s += `<rect x="${x+w-6*taille}" y="${y-14*taille}" width="${5*taille}" height="${9*taille}" fill="${c}"/>`;
+  s += `<ellipse cx="${x+w/2}" cy="${y+h+3}" rx="${w*.55}" ry="3" fill="#fff" opacity=".16"/>`;
+  return s + `</g>`;
+}
+function remorqueur(x, y){
+  return `<g class="remorqueur">
+    <path d="M${x} ${y} h26 l4 3 l-2 6 h-26 z" fill="#2b3a45"/>
+    <path d="M${x} ${y} h26 l4 3 h-30 z" fill="#c74a33"/>
+    <rect x="${x+6}" y="${y-8}" width="11" height="8" fill="#f2eee2"/>
+    <rect x="${x+8}" y="${y-6}" width="7" height="3.4" fill="#7fa8bc"/>
+    <rect x="${x+18}" y="${y-11}" width="4" height="11" fill="#3a4a54"/>
+    <ellipse cx="${x+15}" cy="${y+11}" rx="17" ry="2.4" fill="#fff" opacity=".18"/></g>`;
+}
+function digue(x, y, w){
+  let s = `<path d="M${x} ${y} h${w} l-6 9 h-${w-12} z" fill="#b8b0a0"/>`;
+  s += `<path d="M${x} ${y} h${w} v2.6 h-${w} z" fill="#d4cdb8"/>`;
+  for (let i = 0; i < w/9; i++)
+    s += `<path d="M${x+4+i*9} ${y+2.6} l3 6 l-6 0 z" fill="#9c9484" opacity=".7"/>`;
+  return s;
+}
+
+/* ============ le port, par niveau ============ */
+function port(n){
+  let s = fond(n);
+
+  /* le bassin se creuse dès le niveau 2 */
+  if (n >= 2){
+    s += `<path d="M96 152 h268 v46 h-268 z" fill="url(#bassin)"/>`;
+  }
+
+  s += eau(n);
+
+  /* --- niveau 0 : une côte nue --- */
+  if (n === 0){
+    s += `<path d="M0 152 h480 v14 H0 Z" fill="#cfc7b2"/>`;
+    for (let i = 0; i < 26; i++)
+      s += `<ellipse cx="${(rnd4(i)*480).toFixed(0)}" cy="${(156+rnd4(i+5)*8).toFixed(0)}"
+        rx="${(3+rnd4(i+2)*6).toFixed(1)}" ry="${(1.4+rnd4(i+3)*1.6).toFixed(1)}" fill="#b4ab96"/>`;
+    s += `<path d="M0 166 h480 v74 H0 Z" fill="#a89f88" opacity=".22"/>`;
+    return s;
+  }
+
+  /* --- le quai principal --- */
+  s += quai(0, 152, 480, 18);
+  if (n >= 2){
+    /* le bassin découpe le quai */
+    s += `<rect x="96" y="152" width="268" height="46" fill="url(#bassin)"/>`;
+    s += `<rect x="96" y="152" width="268" height="2.4" fill="#8fd0dc" opacity=".6"/>`;
+    s += quai(0, 152, 96, 18);
+    s += quai(364, 152, 116, 18);
+    s += `<rect x="0" y="196" width="480" height="44" fill="url(#quai)"/>`;
+    s += `<rect x="0" y="196" width="480" height="3" fill="#f7f2e6"/>`;
+    for (let i = 0; i < 30; i++)
+      s += `<rect x="${i*16}" y="199" width="1.4" height="41" fill="#c0b6a0" opacity=".55"/>`;
+    /* margelles du bassin */
+    s += `<rect x="92" y="150" width="6" height="48" fill="#c4bba6"/>`;
+    s += `<rect x="362" y="150" width="6" height="48" fill="#c4bba6"/>`;
+  } else {
+    s += `<rect x="0" y="170" width="480" height="70" fill="url(#quai)"/>`;
+    for (let i = 0; i < 30; i++)
+      s += `<rect x="${i*16}" y="173" width="1.4" height="67" fill="#c0b6a0" opacity=".55"/>`;
+  }
+
+  /* marquages au sol */
+  if (n >= 1){
+    s += `<g fill="#d9b23a" opacity=".6">`;
+    for (let i = 0; i < 12; i++) s += `<rect x="${8+i*40}" y="${n>=2?206:180}" width="24" height="3.4"/>`;
+    s += `</g>`;
+  }
+  if (n >= 3){
+    s += `<g stroke="#8c8272" stroke-width="1.6" opacity=".5" stroke-dasharray="7 6">
+      <path d="M0 ${n>=2?222:196} H480"/></g>`;
+  }
+
+  /* bollards */
+  const solQuai = n >= 2 ? 152 : 170;
+  for (let i = 0; i < 9; i++){
+    const x = 14 + i*54;
+    if (n >= 2 && x > 88 && x < 366) continue;
+    s += bollard(x, solQuai);
+  }
+
+  /* --- niveau 1 : un quai, une grue mobile, quelques caisses --- */
+  if (n >= 1){
+    s += pileConteneurs(28, 196, 2, 2, 3);
+    s += grueMobile(150, 194, .9);
+    s += `<g><rect x="316" y="180" width="30" height="14" rx="2" fill="#8a6a4a"/>
+      <rect x="316" y="180" width="30" height="3" fill="#a5825c"/></g>`;
+  }
+
+  /* --- niveau 2 : le bassin, un premier portique, un hangar --- */
+  if (n >= 2){
+    s += portique(124, 152, 52, false);
+    s += hangar(382, 196, 88, 40, 'HANGAR 1');
+    s += pileConteneurs(6, 196, 3, 3, 11);
+    s += remorqueur(300, 176);
+  }
+
+  /* --- niveau 3 : deux portiques, navire à quai, plus de stock --- */
+  if (n >= 3){
+    s += navire(140, 168, 1, '#c74a33');
+    s += portique(232, 152, 56, true);
+    s += hangar(276, 196, 96, 44, 'HANGAR 2');
+    s += pileConteneurs(6, 240, 4, 4, 21);
+    s += grueMobile(238, 236, 1);
+  }
+
+  /* --- niveau 4 : capitainerie, digue, phare, trafic --- */
+  if (n >= 4){
+    s += digue(0, 148, 92);
+    s += phare(74, 148);
+    s += capitainerie(392, 196);
+    s += portique(300, 152, 60, false);
+    s += navire(378, 172, .74, '#2f7fb0');
+    s += pileConteneurs(112, 240, 5, 4, 31);
+    s += `<g class="camion"><rect x="176" y="226" width="30" height="12" rx="2" fill="#4f8f68"/>
+      <rect x="206" y="222" width="16" height="16" rx="2" fill="#3f7a56"/>
+      <circle cx="186" cy="239" r="3.4" fill="#2b3038"/><circle cx="214" cy="239" r="3.4" fill="#2b3038"/></g>`;
+  }
+
+  /* --- niveau 5 : tout tourne --- */
+  if (n >= 5){
+    s += portique(52, 152, 58, true);
+    s += navire(30, 166, .68, '#4f8f68');
+    s += pileConteneurs(240, 240, 6, 5, 41);
+    s += grueMobile(400, 236, 1.05);
+    s += `<g class="camion2"><rect x="60" y="226" width="30" height="12" rx="2" fill="#c2711a"/>
+      <rect x="90" y="222" width="16" height="16" rx="2" fill="#9a570f"/>
+      <circle cx="70" cy="239" r="3.4" fill="#2b3038"/><circle cx="98" cy="239" r="3.4" fill="#2b3038"/></g>`;
+    s += remorqueur(214, 178);
+    /* halos des projecteurs */
+    s += `<g opacity=".45"><path d="M138 96 L116 152 h44 z" fill="url(#halo)"/>
+      <path d="M246 92 L224 152 h44 z" fill="url(#halo)"/>
+      <path d="M314 88 L292 152 h44 z" fill="url(#halo)"/></g>`;
+  }
+
+  return s;
+}
+
+const PEDALO = (x, y, s) => `<g class="pedalo" transform="translate(${x},${y}) scale(${s})">
+  <ellipse cx="30" cy="19" rx="26" ry="2.6" fill="#0c2434" opacity=".22"/>
+  <path d="M8 15 q-2 -11 9 -12 h28 q11 1 9 12 z" fill="#e8a0b4"/>
+  <path d="M34 3 h11 q11 1 9 12 h-20 z" fill="#d98aa0" opacity=".5"/>
+  <ellipse cx="31" cy="6" rx="12" ry="3" fill="#1c3346"/>
+  <g transform="translate(6,-4)">
+    <path d="M5 14 q-4.5 -2.5 -4.5 -7 q0 -6 5.5 -6 q5.5 0 5.5 6 q0 4.5 -3 7 z" fill="#f2b9c8"/>
+    <path d="M.5 7 q-5 .5 -6.5 3 q5 2 7.5 .5 z" fill="#e8a51e"/>
+    <circle cx="3" cy="5" r="1.3" fill="#f4efe4"/><circle cx="2.5" cy="5" r=".7" fill="#1a1208"/></g>
+  <g transform="translate(52,10)"><circle r="5.5" fill="none" stroke="#9aa3a8" stroke-width="1.4"/>
+    <path d="M-5.5 0 h11 M0 -5.5 v11 M-4 -4 l8 8 M-4 4 l8 -8" stroke="#9aa3a8" stroke-width="1.1"/></g>
+</g>`;
+
+function merOuverte(enRoute){
+  let s = DEFS4 + `<rect width="480" height="240" fill="url(#ciel)"/>
+    <ellipse cx="304" cy="58" rx="132" ry="58" fill="url(#soleil)"/>
+    <circle cx="304" cy="54" r="17" fill="#fffdf2"/>`;
+  for (let i = 0; i < 7; i++){
+    const cx = rnd4(i+2)*520, cy = 16 + rnd4(i+9)*30, w = 26 + rnd4(i)*42;
+    s += `<g opacity="${(.18 + rnd4(i+5)*.18).toFixed(2)}" fill="#fff">
+      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="5"/></g>`;
+  }
+  s += `<path d="M0 112 L58 96 L120 110 L184 92 L248 108 L312 90 L376 106 L436 94 L480 104 L480 150 L0 150 Z"
+    fill="#c6d2d8" opacity=".62"/>`;
+  s += `<rect x="0" y="138" width="480" height="102" fill="url(#mer)"/>`;
+  s += `<path d="M0 146 q66 6 134 1 q68 -5 132 3 q60 5 116 -3 q52 -4 98 2 v-9 H0 Z" fill="#a8e4e8" opacity=".28"/>`;
+  for (let i = 0; i < 6; i++)
+    s += `<path class="houle" d="M-50 ${152+i*14} q28 -4 56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0"
+      stroke="#fff" stroke-width="${(1.6-i*.16).toFixed(2)}" fill="none" opacity="${(.34-i*.045).toFixed(2)}"/>`;
+  for (let i = 0; i < 10; i++)
+    s += `<ellipse class="ecume" cx="${(rnd4(i+31)*480).toFixed(0)}" cy="${(154+rnd4(i+41)*74).toFixed(0)}"
+      rx="${(3+rnd4(i)*7).toFixed(1)}" ry="1.2" fill="#fff" opacity="${(.2+rnd4(i+4)*.3).toFixed(2)}"/>`;
+  s += PEDALO(enRoute ? 250 : 176, 178, 1.6);
+  return s;
+}
+
+const ETAT = {
+  ou: 'port', enMer: false, caisse: 1284, niveauPort: 4, cale: 2, places: 3,
+  lieux: [
+    { n:'Le bassin',   chaud:true,  v:'6 h' },
+    { n:"L'esplanade", chaud:true,  v:'2 h' },
+    { n:'Hangar 1',    chaud:false, v:'91 %' }
+  ],
+  escales: [
+    { n:'Gênes',     t:'42 s', marge:'+ 46 €' },
+    { n:'Barcelone', t:'60 s', marge:'+ 78 €' }
+  ]
+};
+
+function svgPort(){
+  return '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+    + DEFS + port(ETAT.niveauPort) + '</svg>';
+}
+function svgMer(){
+  return '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+    + merOuverte(ETAT.enMer) + '</svg>';
+}
+function infosPort(){
+  const chauds = 0;
+  return {
+    puce: 'Niveau ' + ETAT.niveauPort,
+    past: chauds || '—', calme: !chauds,
+    titre: 'Ton port',
+    sous: ETAT.lieux.length + ' lieux prévus',
+    lignes: ETAT.lieux.map(l =>
+      '<span class="li"><i style="background:rgba(255,255,255,.4)"></i>' + l.n + '<em>—</em></span>').join('')
+  };
+}
+function infosMer(){
+  if (ETAT.enMer) return {
+    puce: 'Cap sur Gênes', past: '28 s', calme: false,
+    titre: 'En mer', sous: 'Cale pleine — 2 marchandises',
+    lignes: '<span class="li"><i style="background:#e8a04a"></i>Arrivée<em>28 s</em></span>'
+      + '<span class="li"><i style="background:rgba(255,255,255,.4)"></i>À la vente<em>+ 46 €</em></span>'
+  };
+  return {
+    puce: ETAT.escales.length + ' escales',
+    past: '—', calme: true,
+    titre: 'La mer',
+    sous: ETAT.escales.length + ' escales prévues',
+    lignes: ETAT.escales.map(e =>
+      '<span class="li"><i style="background:rgba(255,255,255,.4)"></i>' + e.n + '<em>—</em></span>').join('')
+  };
+}
+
+
+
+
+
+/* ---------- le bateau ---------- */
+ETAT.bateau = {
+  n:'Le pédalo canard', places:3, poids:60,
+  cargo:[
+    { n:'Savon', ic:'🧼', c:'#7fb8d0' },
+    { n:'Pastis', ic:'🍶', c:'#c9a83a' }
+  ]
+};
+
+function svgBateau(){
+  let s = DEFS4 + `<rect width="480" height="240" fill="url(#ciel)"/>
+    <ellipse cx="330" cy="52" rx="120" ry="52" fill="url(#soleil)"/>
+    <circle cx="330" cy="48" r="15" fill="#fffdf2"/>
+    <path d="M0 118 L60 104 L124 116 L188 100 L252 114 L316 98 L380 112 L440 102 L480 110 L480 156 L0 156 Z"
+      fill="#c6d2d8" opacity=".6"/>
+    <rect x="0" y="146" width="480" height="94" fill="url(#mer)"/>
+    <path d="M0 152 q66 6 134 1 q68 -5 132 3 q60 5 116 -3 v-8 H0 Z" fill="#a8e4e8" opacity=".26"/>`;
+  for (let i = 0; i < 5; i++)
+    s += `<path class="houle" d="M-50 ${158+i*13} q28 -4 56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0"
+      stroke="#fff" stroke-width="${(1.5-i*.16).toFixed(2)}" fill="none" opacity="${(.3-i*.045).toFixed(2)}"/>`;
+  /* le pédalo en grand, de profil */
+  s += `<g class="pedalo" transform="translate(122,96) scale(2.9)">
+    <ellipse cx="30" cy="20" rx="28" ry="3" fill="#0c2434" opacity=".2"/>
+    <path d="M8 15 q-2 -11 9 -12 h28 q11 1 9 12 z" fill="#e8a0b4"/>
+    <path d="M34 3 h11 q11 1 9 12 h-20 z" fill="#d98aa0" opacity=".5"/>
+    <ellipse cx="31" cy="6" rx="12" ry="3" fill="#1c3346"/>
+    <g transform="translate(6,-4)">
+      <path d="M5 14 q-4.5 -2.5 -4.5 -7 q0 -6 5.5 -6 q5.5 0 5.5 6 q0 4.5 -3 7 z" fill="#f2b9c8"/>
+      <path d="M.5 7 q-5 .5 -6.5 3 q5 2 7.5 .5 z" fill="#e8a51e"/>
+      <circle cx="3" cy="5" r="1.3" fill="#f4efe4"/><circle cx="2.5" cy="5" r=".7" fill="#1a1208"/></g>
+    <g transform="translate(52,10)"><circle r="5.5" fill="none" stroke="#9aa3a8" stroke-width="1.4"/>
+      <path d="M-5.5 0 h11 M0 -5.5 v11 M-4 -4 l8 8 M-4 4 l8 -8" stroke="#9aa3a8" stroke-width="1.1"/></g>`;
+  ETAT.bateau.cargo.forEach((c, i) =>
+    s += `<rect x="${20 + i*11}" y="1" width="9" height="6" rx="1" fill="${c.c}"/>`);
+  return s + `</g>`;
+}
+
+function infosBateau(){
+  const b = ETAT.bateau;
+  return {
+    puce: b.n, past: '—', calme: true,
+    titre: 'Ton bateau',
+    sous: 'Cale : ' + b.places + ' emplacements'
+  };
+}
+
+/* ---------- le hangar de production ---------- */
+ETAT.chaines = [
+  { n:'Savonnerie',   ic:'🧼', etat:'En cours', reste:'4 min', pct:62,  c:'#7fb8d0' },
+  { n:'Distillerie',  ic:'🍶', etat:'Prêt',     reste:'—',     pct:100, c:'#c9a83a' },
+  { n:'Atelier filet', ic:'🪢', etat:'À l\'arrêt', reste:'manque du chanvre', pct:0, c:'#8a9a72' }
+];
+
+function svgHangar(){
+  let s = DEFS4 + `<rect width="480" height="240" fill="#e6e2d6"/>`;
+  /* charpente */
+  s += `<path d="M0 30 L240 -4 L480 30 L480 44 L240 10 L0 44 Z" fill="#b8b0a0"/>`;
+  s += `<g stroke="#c8c0ae" stroke-width="3">`;
+  for (let i = 0; i < 7; i++) s += `<path d="M${20+i*74} 36 V196"/>`;
+  s += `</g>`;
+  s += `<g stroke="#cfc8b6" stroke-width="2" opacity=".7">
+    <path d="M0 62 H480 M0 86 H480"/></g>`;
+  /* verrières */
+  for (let i = 0; i < 4; i++)
+    s += `<rect x="${44+i*112}" y="44" width="64" height="26" rx="3" fill="#bfe0ea" opacity=".55"/>`;
+  /* mur du fond */
+  s += `<rect x="0" y="96" width="480" height="100" fill="#dcd6c6"/>`;
+  s += `<g stroke="#cbc4b2" stroke-width="1.4">`;
+  for (let i = 0; i < 16; i++) s += `<path d="M${i*30} 96 V196"/>`;
+  s += `</g>`;
+  /* sol */
+  s += `<rect x="0" y="196" width="480" height="44" fill="#c8c0ac"/>`;
+  s += `<rect x="0" y="196" width="480" height="2.6" fill="#e2dccc"/>`;
+  s += `<g fill="#d9b23a" opacity=".5">`;
+  for (let i = 0; i < 8; i++) s += `<rect x="${14+i*60}" y="204" width="28" height="3.4"/>`;
+  s += `</g>`;
+  /* trois postes de travail */
+  const P = [[42,'#7fb8d0','🧼'],[196,'#c9a83a','🍶'],[350,'#8a9a72','🪢']];
+  P.forEach(([x, c], i) => {
+    /* établi */
+    s += `<rect x="${x}" y="150" width="92" height="10" rx="2" fill="#a5825c"/>`;
+    s += `<rect x="${x}" y="150" width="92" height="3" fill="#c49a6c"/>`;
+    s += `<rect x="${x+6}" y="160" width="7" height="36" fill="#8a6a4a"/>`;
+    s += `<rect x="${x+79}" y="160" width="7" height="36" fill="#8a6a4a"/>`;
+    /* cuve ou machine */
+    s += `<rect x="${x+14}" y="120" width="42" height="30" rx="3" fill="${c}"/>`;
+    s += `<rect x="${x+14}" y="120" width="42" height="7" rx="3" fill="#fff" opacity=".22"/>`;
+    s += `<rect x="${x+22}" y="106" width="9" height="14" fill="#8c8272"/>`;
+    s += `<circle cx="${x+26.5}" cy="103" r="5" fill="#a5988a"/>`;
+    /* caisses produites */
+    for (let k = 0; k < 2 + i; k++)
+      s += `<rect x="${x+62 + (k%2)*13}" y="${186 - Math.floor(k/2)*12}" width="12" height="11" rx="1"
+        fill="#a5825c" stroke="#8a6a4a" stroke-width="1"/>`;
+    /* vapeur */
+    s += `<g class="ecume"><ellipse cx="${x+27}" cy="96" rx="8" ry="4" fill="#fff" opacity=".5"/></g>`;
+  });
+  /* suspensions */
+  for (let i = 0; i < 4; i++){
+    const x = 62 + i*118;
+    s += `<path d="M${x} 36 V62" stroke="#8c8272" stroke-width="1.6"/>`;
+    s += `<path d="M${x-11} 62 h22 l-4 7 h-14 z" fill="#5c6a74"/>`;
+    s += `<circle class="feu2" cx="${x}" cy="70" r="4" fill="#ffe8b4"/>`;
+    s += `<path d="M${x-16} 70 L${x-30} 196 h60 L${x+16} 70 Z" fill="#fff3d0" opacity=".16"/>`;
+  }
+  return s;
+}
+
+function infosHangar(){
+  const prets = 0, arret = 0;
+  return {
+    puce: ETAT.chaines.length + ' chaînes',
+    past: prets || (arret ? '!' : '—'), calme: !prets && !arret,
+    titre: 'Le hangar',
+    sous: ETAT.chaines.length + ' chaînes prévues',
+    lignes: ETAT.chaines.map(c =>
+      '<span class="li"><i style="background:rgba(255,255,255,.4)"></i>' + c.n + '<em>—</em></span>').join('')
+  };
+}
+
+
+/* ---------- les quatre écrans ---------- */
+const PAGES4 = ['port', 'mer', 'bateau', 'hangar'];
+let page4 = 0;
+
+function svg4(inner){
+  return '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice" '
+    + 'xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
+}
+function dessiner4(){
+  $('e-port').innerHTML   = svg4(DEFS4 + port(1));
+  $('e-mer').innerHTML    = svg4(merOuverte(false));
+  $('e-bateau').innerHTML = svg4(svgBateau());
+  $('e-hangar').innerHTML = svg4(svgHangar());
+  $('pc-port').textContent = 'Niveau 1';
+  $('pc-mer').textContent  = '2 escales';
+  $('pc-bat').textContent  = 'Le pédalo canard';
+  $('pc-han').textContent  = '3 chaînes';
+  $('so-port').textContent = 'Ton terminal — à construire';
+  $('so-mer').textContent  = 'Barcelone, Gênes';
+  $('so-bat').textContent  = 'Cale : 3 emplacements';
+  $('so-han').textContent  = 'Savonnerie, distillerie, filets';
+}
+function ronds4(){
+  const NOMS = { port:'Le port', mer:'La mer', bateau:'Ton bateau', hangar:'Le hangar' };
+  $('ronds').innerHTML = PAGES4.map((n, i) =>
+    '<button data-i="' + i + '" class="' + (i === page4 ? 'on' : '') + '"'
+    + ' aria-label="' + NOMS[n] + '" aria-current="' + (i === page4 ? 'true' : 'false') + '"></button>').join('');
+  $('ronds').querySelectorAll('button').forEach(b =>
+    b.addEventListener('click', () => aller4(+b.dataset.i)));
+}
+function aller4(i){
+  page4 = Math.max(0, Math.min(PAGES4.length - 1, i));
+  $('rail4').classList.remove('suit');
+  $('rail4').style.transform = 'translateX(' + (-page4 * 100) + '%)';
+  ronds4();
+}
+(() => {
+  const g = $('fenetre4'), rail = $('rail4');
+  let x0 = null, y0 = null, dx = 0, actif = false, large = 0;
+  g.addEventListener('touchstart', e => {
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; actif = false;
+    large = g.clientWidth || 340;
+  }, { passive:true });
+  g.addEventListener('touchmove', e => {
+    if (x0 === null) return;
+    dx = e.touches[0].clientX - x0;
+    const dy = e.touches[0].clientY - y0;
+    if (!actif){
+      if (Math.abs(dx) < 12) return;
+      if (Math.abs(dy) > Math.abs(dx)){ x0 = null; return; }
+      actif = true; rail.classList.add('suit');
+    }
+    let d2 = dx;
+    if ((page4 === 0 && d2 > 0) || (page4 === PAGES4.length - 1 && d2 < 0)) d2 *= .3;
+    rail.style.transform = 'translateX(' + (-page4 * large + d2) + 'px)';
+  }, { passive:true });
+  g.addEventListener('touchend', () => {
+    if (x0 === null) return;
+    rail.classList.remove('suit');
+    if (actif && Math.abs(dx) > large * .16) aller4(page4 + (dx < 0 ? 1 : -1));
+    else aller4(page4);
+    x0 = null; actif = false;
+  });
+})();
+dessiner4();
+aller4(0);
+
+/* si la base traîne, on n'immobilise pas le joueur */
 setTimeout(() => {
   if (document.body.classList.contains('charge')){
     document.body.classList.remove('charge');
@@ -1158,35 +2100,135 @@ setTimeout(() => {
   }
 }, 6000);
 
+/* ---------- le livret ---------- */
+const CARAC = [
+  ['Chance',     '#6d4fa8', 'chance',     '🍀'],
+  ['Sang-froid', '#2f7fb0', 'sang_froid', '🧊'],
+  ['Instinct',   '#c2711a', 'instinct',   '👁']
+];
+
+const NUANCES = {
+  force:       ['#c74a33', 'Ce que tu portes sans faire de bruit'],
+  endurance:   ['#2f8f66', "Les heures avant que tu t'assoies"],
+  precision:   ['#2f7fb0', 'Poser sans rien casser'],
+  negociation: ['#c2711a', "Le prix que tu obtiens"],
+  discussion:  ['#6d4fa8', "Ce qu'on te raconte"]
+};
+
+function livret(d, MED, EQ, CP){
+  const nom = (d.pseudo || 'Docker sans nom').toUpperCase();
+  const poste = (MED && MED.poste) || 'Docker';
+  const jours = Math.max(1, Math.round((Date.now() - new Date(d.cree_le || Date.now())) / 86400000));
+  const palier = J.palier || 100;
+
+  const comp = CP ? [
+    ['Force', CP.force, 'force'], ['Endurance', CP.endurance, 'endurance'],
+    ['Précision', CP.precision_, 'precision'], ['Négociation', CP.negociation, 'negociation'],
+    ['Discussion', CP.discussion, 'discussion']
+  ] : [];
+
+  const med = [];
+  if (MED){
+    if (MED.poids_kg) med.push(['Poids', MED.poids_kg + ' kg']);
+    if (MED.taille_m) med.push(['Taille', String(MED.taille_m).replace('.', ',') + ' m']);
+    if (MED.audition) med.push(['Audition', MED.audition]);
+    if (MED.vertige) med.push(['Vertige', MED.vertige]);
+    if (MED.acuite) med.push(['Vue', MED.acuite]);
+  }
+
+  const objets = [];
+  if (EQ && EQ.casque_trop_grand)
+    objets.push(['⛑️', 'Casque de chantier', 'Taille 61 — tombe sur les yeux', 'À remplacer']);
+  if (EQ && EQ.article_achete)
+    objets.push(['👕', EQ.article_achete,
+      'Payé ' + Number(EQ.prix_paye).toLocaleString('fr-FR') + ' €', 'Porté']);
+
+  $('lv-sous').textContent = 'Ce que le port sait de toi.';
+  $('l-fiche').innerHTML =
+    '<div class="lv-hero"><div class="lv-hl">'
+    + '<span class="lv-portrait"><span class="im">' + svgPix(false) + '</span>'
+    + '<span class="niv">' + (d.niveau || 1) + '</span></span>'
+    + '<span class="lv-qui"><span class="role">' + poste + '</span>'
+    + '<h3>' + nom + '</h3>'
+    + '<p>Marseille — ' + jours + ' jour' + (jours > 1 ? 's' : '') + " d'ancienneté</p></span></div>"
+    + '<div class="lv-xp"><div class="t"><span>Niveau ' + (d.niveau || 1) + '</span>'
+    + '<span>' + (d.xp || 0) + ' / ' + palier + '</span></div>'
+    + '<div class="p"><i id="lv-barre-xp"></i></div></div></div>'
+
+    + (comp.length ? '<div class="lv-sect"><p class="t">Compétences</p>'
+      + comp.map(c => {
+          const n = NUANCES[c[2]];
+          return '<div class="lv-st"><div class="l"><b>' + c[0] + '</b><em>' + n[1] + '</em>'
+            + '<span class="v">' + c[1] + '/6</span></div>'
+            + '<div class="p"><i data-v="' + (c[1] / 6 * 100) + '" style="background:linear-gradient(90deg,'
+            + n[0] + ',' + n[0] + 'bb)"></i></div></div>';
+        }).join('') + '</div>' : '')
+
+    + '<div class="lv-sect"><p class="t">Caractéristiques</p><div class="lv-car">'
+    + CARAC.map(c => {
+        const v = d[c[2]] || 0;
+        return '<div><div class="ic">' + c[3] + '</div>'
+          + '<div class="v' + (v === 0 ? ' zero' : '') + '">' + v + '</div>'
+          + '<div class="sur">/ 100</div><div class="k">' + c[0] + '</div>'
+          + '<div class="p"><i data-v="' + v + '" style="background:' + c[1] + '"></i></div></div>';
+      }).join('')
+    + '</div>'
+    + (CARAC.every(c => !(d[c[2]] || 0))
+        ? '<p class="lv-vide">Tu n\'as encore rien de tout ça. Ça se gagne.</p>' : '')
+    + '</div>'
+
+    + (med.length ? '<div class="lv-sect"><p class="t">Visite médicale</p><div class="lv-paires">'
+      + med.map(m => '<div class="lv-paire"><div class="k">' + m[0] + '</div>'
+        + '<div class="v">' + m[1] + '</div></div>').join('') + '</div></div>' : '')
+
+    + (objets.length ? '<div class="lv-sect"><p class="t">Équipement</p>'
+      + objets.map(o => '<div class="lv-obj"><span class="ic">' + o[0] + '</span>'
+        + '<span class="tx"><b>' + o[1] + '</b><span>' + o[2] + '</span></span>'
+        + '<span class="et">' + o[3] + '</span></div>').join('') + '</div>' : '');
+
+  requestAnimationFrame(() => {
+    const b = $('lv-barre-xp');
+    if (b) b.style.width = ((d.xp || 0) / palier * 100) + '%';
+    $('l-fiche').querySelectorAll('.lv-st .p i').forEach(el => el.style.width = el.dataset.v + '%');
+    $('l-fiche').querySelectorAll('.lv-car .p i').forEach(el => el.style.width = el.dataset.v + '%');
+  });
+}
+
+/* ---------- démarrage ---------- */
 (async () => {
   const d = await BD.garder('jeu');
   if (!d) return;
   const EQ = await BD.lire('equipement');
-  const MED = await BD.lire('dossier_medical');
+  const CP = await BD.lire('competences');
   Object.assign(etat, BD.avatarDe(d, EQ));
-
-  $('face').insertAdjacentHTML('afterbegin', svgPix());
-  $('niv').textContent = d.niveau || 1;
+  $('face').innerHTML = '<span class="niv" id="niv">' + d.niveau + '</span>' + svgPix(false);
   $('pseudo').textContent = d.pseudo || 'Docker sans nom';
-  $('h-lieu').textContent = (MED && MED.poste ? MED.poste : 'Docker') + ' — Marseille';
-  $('h-caisse').textContent = Number(d.euros || 0).toLocaleString('fr-FR',
-    { minimumFractionDigits:2, maximumFractionDigits:2 }) + ' €';
-  const en = d.energie ?? 100, xp = d.xp || 0, palier = 100 * Math.pow(1.6, (d.niveau || 1) - 1);
-  $('v-en').textContent = Math.round(en) + ' %';
-  $('i-en').style.width = en + '%';
-  $('l-niv').textContent = 'Niveau ' + (d.niveau || 1);
-  $('v-xp').textContent = xp + ' / ' + Math.round(palier);
-  $('i-xp').style.width = Math.min(100, xp / palier * 100) + '%';
-  const rep = d.reputation ?? 50;
-  $('v-rep').textContent = rep >= 70 ? 'Bonne' : rep >= 40 ? 'Correcte' : 'Fragile';
-  $('i-rep').style.width = rep + '%';
-
+  const MED = await BD.lire('dossier_medical');
+  $('titre').textContent = (MED && MED.poste ? MED.poste : 'Docker') + ' — Marseille';
+  J.euros = Number(d.euros) || 0;
+  J.energie = d.energie ?? 100;
+  J.niveau = d.niveau || 1;
+  J.xp = d.xp || 0;
+  $('v-xp').parentElement.querySelector('span').textContent = 'Niveau ' + J.niveau;
+  $('i-rep').style.width = (d.reputation ?? 50) + '%';
+  $('v-rep').textContent = (d.reputation ?? 50) >= 50 ? 'Correcte' : 'Fragile';
+  livret(d, MED, EQ, CP);
+  if (EQ){
+    const sac = [];
+    if (EQ.casque_trop_grand) sac.push(['Casque de chantier (taille 61)','Trop grand. Tombe sur les yeux.','—']);
+    if (EQ.article_achete) sac.push([EQ.article_achete,'Acheté à la coopérative.', Number(EQ.prix_paye).toLocaleString('fr-FR') + ' €']);
+    if (MED) sac.push(['Fiche médicale tamponnée', (MED.poids_kg||'?') + ' kg, ' + (MED.taille_m||'?') + ' m. Apte.','—']);
+    if (sac.length) window.__sac = sac;
+  }
+  majHud(false);
   await new Promise(r => requestAnimationFrame(r));
   document.body.classList.remove('charge');
   document.body.classList.add('pret');
 })();
 
-aller(0);
+poser('g-travail', MODULES.travail);
+poser('g-port', MODULES.port);
+poser('g-social', MODULES.social);
 </script>
 </body>
 </html>
