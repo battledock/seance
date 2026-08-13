@@ -83,6 +83,18 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 
 
 /* ================= les quatre écrans ================= */
+.page4 .toile4{opacity:0;transition:opacity .4s ease}
+.page4.pret .toile4{opacity:1}
+.page4 .os4{position:absolute;inset:0;background:#e6e1d6;overflow:hidden;
+  transition:opacity .4s ease}
+.page4.pret .os4{opacity:0;pointer-events:none}
+.page4 .os4::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:balayage4 1.5s ease-in-out infinite}
+@keyframes balayage4{to{transform:translateX(100%)}}
+.page4 .os4 i{position:absolute;background:#d8d2c4;border-radius:4px;display:block}
+.page4:not(.pret) .lg4,.page4:not(.pret) .puce4{opacity:0}
+.lg4,.puce4{transition:opacity .4s ease}
 .charge .fenetre4{background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
 .pedalo{animation:flotteP 4.2s ease-in-out infinite}
@@ -125,6 +137,18 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   transition:box-shadow .34s cubic-bezier(.3,.9,.3,1), background .34s, transform .34s}
 .ronds button.on::before{background:var(--ocre);
   box-shadow:inset 0 0 0 1.4px var(--ocre), 0 0 0 4px rgba(194,113,26,.14);transform:scale(1.16)}
+.page4 .toile4{opacity:0;transition:opacity .4s ease}
+.page4.pret .toile4{opacity:1}
+.page4 .os4{position:absolute;inset:0;background:#e6e1d6;overflow:hidden;
+  transition:opacity .4s ease}
+.page4.pret .os4{opacity:0;pointer-events:none}
+.page4 .os4::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:balayage4 1.5s ease-in-out infinite}
+@keyframes balayage4{to{transform:translateX(100%)}}
+.page4 .os4 i{position:absolute;background:#d8d2c4;border-radius:4px;display:block}
+.page4:not(.pret) .lg4,.page4:not(.pret) .puce4{opacity:0}
+.lg4,.puce4{transition:opacity .4s ease}
 .charge .fenetre4{background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4,.charge .chantier4{opacity:0}
 
@@ -222,6 +246,18 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .val.pop{animation:pop .5s ease-out}
 @keyframes pop{0%{transform:scale(1.13);color:#2f8f66}100%{transform:none}}
 
+.page4 .toile4{opacity:0;transition:opacity .4s ease}
+.page4.pret .toile4{opacity:1}
+.page4 .os4{position:absolute;inset:0;background:#e6e1d6;overflow:hidden;
+  transition:opacity .4s ease}
+.page4.pret .os4{opacity:0;pointer-events:none}
+.page4 .os4::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:balayage4 1.5s ease-in-out infinite}
+@keyframes balayage4{to{transform:translateX(100%)}}
+.page4 .os4 i{position:absolute;background:#d8d2c4;border-radius:4px;display:block}
+.page4:not(.pret) .lg4,.page4:not(.pret) .puce4{opacity:0}
+.lg4,.puce4{transition:opacity .4s ease}
 .charge .fenetre4{background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
 .pedalo{animation:flotteP 4.2s ease-in-out infinite}
@@ -329,6 +365,18 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .cc.en i.on{background:#3f6b48}
 .cc.rep i.on{background:#5a4a72}
 
+.page4 .toile4{opacity:0;transition:opacity .4s ease}
+.page4.pret .toile4{opacity:1}
+.page4 .os4{position:absolute;inset:0;background:#e6e1d6;overflow:hidden;
+  transition:opacity .4s ease}
+.page4.pret .os4{opacity:0;pointer-events:none}
+.page4 .os4::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:balayage4 1.5s ease-in-out infinite}
+@keyframes balayage4{to{transform:translateX(100%)}}
+.page4 .os4 i{position:absolute;background:#d8d2c4;border-radius:4px;display:block}
+.page4:not(.pret) .lg4,.page4:not(.pret) .puce4{opacity:0}
+.lg4,.puce4{transition:opacity .4s ease}
 .charge .fenetre4{background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
 .pedalo{animation:flotteP 4.2s ease-in-out infinite}
@@ -609,20 +657,18 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 <div class="ecrans">
   <div class="fenetre4" id="fenetre4">
     <div class="rail4" id="rail4">
-      <div class="page4"><div class="toile4" id="e-port"></div>
+      <div class="page4" id="pg-port"><span class="os4"><i style="left:6%;top:58%;width:22%;height:8%"></i><i style="left:34%;top:52%;width:30%;height:12%"></i><i style="left:70%;top:60%;width:20%;height:7%"></i></span><div class="toile4" id="e-port"></div>
         <span class="puce4" id="pc-port"></span>
         <span class="lg4"><b>Ton port</b><span class="sous" id="so-port"></span></span></div>
-      <div class="page4"><div class="toile4" id="e-mer"></div>
+      <div class="page4" id="pg-mer"><span class="os4"><i style="left:10%;top:62%;width:80%;height:5%"></i><i style="left:20%;top:72%;width:60%;height:4%"></i></span><div class="toile4" id="e-mer"></div>
         <span class="puce4" id="pc-mer"></span>
         <span class="lg4"><b>La mer</b><span class="sous" id="so-mer"></span></span></div>
-      <div class="page4"><div class="toile4" id="e-bateau"></div>
-        <span class="chantier4"><span class="pt"></span>Design en cours</span>
+      <div class="page4" id="pg-bateau"><span class="os4"><i style="left:8%;top:22%;width:84%;height:10%"></i><i style="left:30%;top:60%;width:40%;height:14%"></i></span><div class="toile4" id="e-bateau"></div>
         <span class="puce4" id="pc-bat"></span>
-        <span class="lg4"><b>Ton bateau</b><span class="sous" id="so-bat"></span></span></div>
-      <div class="page4"><div class="toile4" id="e-hangar"></div>
-        <span class="chantier4"><span class="pt"></span>Design en cours</span>
+        <span class="lg4"><b>Ton chantier</b><span class="sous" id="so-bat"></span></span></div>
+      <div class="page4" id="pg-hangar"><span class="os4"><i style="left:6%;top:18%;width:26%;height:26%"></i><i style="left:44%;top:16%;width:22%;height:22%"></i><i style="left:12%;top:66%;width:70%;height:8%"></i></span><div class="toile4" id="e-hangar"></div>
         <span class="puce4" id="pc-han"></span>
-        <span class="lg4"><b>Le hangar</b><span class="sous" id="so-han"></span></span></div>
+        <span class="lg4"><b>Ton laboratoire</b><span class="sous" id="so-han"></span></span></div>
     </div>
   </div>
   <div class="ronds" id="ronds"></div>
@@ -2771,6 +2817,708 @@ function traverseeT(ambiance, t){
 }
 
 
+/* ============================================================
+   Le chantier — écran 3, en intérieur
+   Une halleA de charpentier de marine. Pas de mer.
+   ============================================================ */
+const rndA = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+
+const DEFSA = `<defs>
+<linearGradient id="a-mur" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#9aa0a0"/><stop offset="42%" stop-color="#aeb2ac"/>
+  <stop offset="100%" stop-color="#c2c0b4"/></linearGradient>
+<linearGradient id="a-sol" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#7d6a4e"/><stop offset="100%" stop-color="#5f5138"/></linearGradient>
+<linearGradient id="a-bois" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#c9a374"/><stop offset="100%" stop-color="#9a7a4e"/></linearGradient>
+<linearGradient id="a-poutre" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#8a6a42"/><stop offset="40%" stop-color="#a5825c"/>
+  <stop offset="100%" stop-color="#6d5334"/></linearGradient>
+<linearGradient id="a-jour" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#e8f0f4"/><stop offset="100%" stop-color="#c4d8e2"/></linearGradient>
+<linearGradient id="a-rai" x1="0" y1="0" x2="0.4" y2="1">
+  <stop offset="0%" stop-color="#fff6d8" stop-opacity=".5"/>
+  <stop offset="100%" stop-color="#fff6d8" stop-opacity="0"/></linearGradient>
+<linearGradient id="a-fer" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#a8b0b6"/><stop offset="100%" stop-color="#6d757c"/></linearGradient>
+</defs>`;
+
+/* ---------- la halleA : murs, charpente, sol ---------- */
+function halleA(){
+  let s = '';
+  /* fond de mur en pierre appareillée */
+  s += `<rect width="480" height="240" fill="url(#a-mur)"/>`;
+  /* assises de pierre */
+  for (let r = 0; r < 12; r++){
+    const y = 14 + r * 16;
+    s += `<path d="M0 ${y} H480" stroke="#7f8582" stroke-width="1.2" opacity=".32"/>`;
+    const dec = (r % 2) * 28;
+    for (let c = 0; c < 10; c++){
+      const x = dec + c * 56 + rndA(r*10+c) * 6;
+      if (x > 476) continue;
+      s += `<path d="M${x.toFixed(0)} ${y} v16" stroke="#7f8582" stroke-width="1" opacity=".26"/>`;
+    }
+  }
+  /* taches d'humidité et usure */
+  for (let i = 0; i < 22; i++){
+    const x = rndA(i+3)*480, y = 20 + rndA(i+13)*150;
+    s += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(8+rndA(i)*22).toFixed(0)}"
+      ry="${(4+rndA(i+5)*10).toFixed(0)}" fill="#6d7472" opacity="${(.04+rndA(i+9)*.08).toFixed(3)}"/>`;
+  }
+
+  /* --- la charpente --- */
+  /* faîtière */
+  s += `<path d="M0 8 L240 -18 L480 8 L480 22 L240 -4 L0 22 Z" fill="#6d5334"/>`;
+  /* pannes */
+  [26, 44].forEach((y, k) => {
+    s += `<path d="M0 ${y} L240 ${y-14} L480 ${y} L480 ${y+6} L240 ${y-8} L0 ${y+6} Z"
+      fill="url(#a-poutre)" opacity="${1 - k*.12}"/>`;
+  });
+  /* fermes : triangles de charpente */
+  [58, 168, 278, 388].forEach((x, i) => {
+    s += `<g opacity="${(.95 - i*.04).toFixed(2)}">`;
+    /* entrait horizontal */
+    s += `<rect x="${x-46}" y="62" width="92" height="7" fill="url(#a-poutre)"/>`;
+    s += `<rect x="${x-46}" y="62" width="92" height="2" fill="#bd9a70"/>`;
+    /* arbalétriers */
+    s += `<path d="M${x-46} 64 L${x} 30 l6 4 L${x-42} 70 Z" fill="#8a6a42"/>`;
+    s += `<path d="M${x+46} 64 L${x} 30 l-6 4 L${x+42} 70 Z" fill="#7a5c38"/>`;
+    /* poinçon */
+    s += `<rect x="${x-3}" y="32" width="6" height="32" fill="#96754a"/>`;
+    /* contrefiches */
+    s += `<path d="M${x-24} 62 L${x-3} 44 l4 3 L${x-20} 66 Z" fill="#8a6a42" opacity=".9"/>`;
+    s += `<path d="M${x+24} 62 L${x+3} 44 l-4 3 L${x+20} 66 Z" fill="#8a6a42" opacity=".9"/>`;
+    /* jambes de force qui descendent au mur */
+    s += `<path d="M${x-46} 66 l-10 22 l5 2 l11 -22 z" fill="#7a5c38" opacity=".8"/>`;
+    s += `<path d="M${x+46} 66 l10 22 l-5 2 l-11 -22 z" fill="#7a5c38" opacity=".8"/>`;
+    s += `</g>`;
+  });
+
+  /* --- les hautes fenêtres, source de lumière --- */
+  [112, 232, 352].forEach((x, i) => {
+    s += `<rect x="${x-24}" y="76" width="48" height="34" rx="2" fill="#7f8582"/>`;
+    s += `<rect x="${x-21}" y="79" width="42" height="28" fill="url(#a-jour)"/>`;
+    /* meneaux */
+    s += `<g stroke="#6d7472" stroke-width="2">
+      <path d="M${x} 79 v28"/><path d="M${x-21} 93 h42"/></g>`;
+    /* carreaux irréguliers */
+    s += `<g fill="#ffffff" opacity=".22">
+      <rect x="${x-19}" y="81" width="17" height="10"/>
+      <rect x="${x+3}" y="95" width="17" height="10"/></g>`;
+    /* appui */
+    s += `<rect x="${x-27}" y="110" width="54" height="4" fill="#b8b6aa"/>`;
+  });
+  /* rais de lumière depuis les fenêtres */
+  [112, 232, 352].forEach(x => {
+    s += `<path class="rai" d="M${x-22} 110 L${x+22} 110 L${x+72} 214 L${x+18} 214 Z"
+      fill="url(#a-rai)"/>`;
+  });
+
+  /* --- la grande porte, à droite, entrouverte --- */
+  s += `<rect x="404" y="96" width="76" height="118" fill="#6d5334"/>`;
+  for (let i = 0; i < 8; i++)
+    s += `<rect x="${406 + i*9.4}" y="96" width="7.4" height="118" fill="url(#a-bois)" opacity=".9"/>`;
+  s += `<rect x="404" y="120" width="76" height="6" fill="#7a5c38"/>`;
+  s += `<rect x="404" y="182" width="76" height="6" fill="#7a5c38"/>`;
+  /* l'entrebâillement, on devine le dehors */
+  s += `<rect x="404" y="96" width="17" height="118" fill="#dfe8ea"/>`;
+  s += `<rect x="404" y="96" width="17" height="118" fill="#f6e8c8" opacity=".5"/>`;
+  s += `<path class="rai" d="M421 96 L438 96 L488 214 L436 214 Z" fill="url(#a-rai)" opacity=".7"/>`;
+
+  /* --- le sol en terre battue --- */
+  s += `<path d="M0 214 H480 V240 H0 Z" fill="url(#a-sol)"/>`;
+  s += `<path d="M0 214 H480 v2.4 H0 Z" fill="#988462"/>`;
+  /* copeaux et sciure partout */
+  for (let i = 0; i < 90; i++){
+    const x = rndA(i+31)*480, y = 216 + rndA(i+41)*22;
+    s += `<path d="M${x.toFixed(0)} ${y.toFixed(0)} q3 -2.2 6 0 q-3 1.4 -6 0 z"
+      fill="#d8b688" opacity="${(.24+rndA(i+7)*.4).toFixed(2)}"
+      transform="rotate(${(rndA(i+17)*180).toFixed(0)} ${x.toFixed(0)} ${y.toFixed(0)})"/>`;
+  }
+  for (let i = 0; i < 60; i++){
+    const x = rndA(i+51)*480, y = 216 + rndA(i+61)*22;
+    s += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(.6+rndA(i)*1.2).toFixed(1)}"
+      fill="#e0c49c" opacity="${(.2+rndA(i+3)*.3).toFixed(2)}"/>`;
+  }
+  return s;
+}
+
+/* ---------- le mur d'outils ---------- */
+function murOutilsA(x, y){
+  let s = `<g class="outils">`;
+  /* le panneau */
+  s += `<rect x="${x}" y="${y}" width="86" height="58" fill="#8a6a42"/>`;
+  for (let i = 0; i < 7; i++)
+    s += `<rect x="${x+1+i*12.2}" y="${y}" width="10.4" height="58" fill="url(#a-bois)" opacity=".85"/>`;
+  s += `<rect x="${x}" y="${y}" width="86" height="2.4" fill="#bd9a70"/>`;
+  s += `<rect x="${x}" y="${y+56}" width="86" height="2.4" fill="#6d5334"/>`;
+
+  /* scie égoïne */
+  s += `<path d="M${x+6} ${y+8} l26 4 l-1 5 l-25 -4 z" fill="url(#a-fer)"/>`;
+  s += `<g stroke="#6d757c" stroke-width=".7">`;
+  for (let i = 0; i < 13; i++) s += `<path d="M${x+8+i*2} ${y+12.6} v1.6"/>`;
+  s += `</g>`;
+  s += `<path d="M${x+2} ${y+7} q-3 3 0 7 l5 .8 l1 -6.6 z" fill="#8a5c38"/>`;
+
+  /* herminette */
+  s += `<path d="M${x+42} ${y+6} l4 22" stroke="#96754a" stroke-width="2.6" stroke-linecap="round"/>`;
+  s += `<path d="M${x+40} ${y+5} q7 -3 11 3 q-6 3 -11 -3 z" fill="url(#a-fer)"/>`;
+
+  /* deux ciseaux à bois */
+  [58, 66].forEach((dx, i) => {
+    s += `<rect x="${x+dx}" y="${y+6}" width="3.4" height="14" fill="#8a5c38"/>`;
+    s += `<path d="M${x+dx} ${y+20} h3.4 l-.6 8 h-2.2 z" fill="url(#a-fer)"/>`;
+  });
+
+  /* varlope */
+  s += `<path d="M${x+6} ${y+34} h34 l3 7 h-37 z" fill="#96754a"/>`;
+  s += `<path d="M${x+6} ${y+34} h34 l1.2 2.4 h-35.2 z" fill="#c9a374"/>`;
+  s += `<path d="M${x+20} ${y+32} l5 -3.4 l2 2.6 l-5 3.4 z" fill="url(#a-fer)"/>`;
+
+  /* vilebrequin */
+  s += `<path d="M${x+52} ${y+34} v6 h8 v-3 h6 v9 h-4" stroke="#8a9299" stroke-width="2"
+    fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M${x+62} ${y+46} v6" stroke="#6d757c" stroke-width="1.6"/>`;
+
+  /* maillet suspendu */
+  s += `<path d="M${x+72} ${y+8} l2 18" stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
+  s += `<rect x="${x+68}" y="${y+4}" width="12" height="6" rx="1.6" fill="#8a6a42"/>`;
+
+  /* silhouettes peintes : la place de chaque outil */
+  s += `<g fill="#6d5334" opacity=".26">
+    <rect x="${x+70}" y="${y+34}" width="10" height="14" rx="1.4"/>
+    <ellipse cx="${x+30}" cy="${y+50}" rx="8" ry="3"/></g>`;
+  return s + `</g>`;
+}
+
+/* ---------- le berA, vide ---------- */
+function berA(x, sol){
+  let s = `<g class="berA">`;
+  /* ombre */
+  s += `<ellipse cx="${x+52}" cy="${sol+2}" rx="70" ry="6" fill="#6d5a3c" opacity=".3"/>`;
+  /* longerons */
+  s += `<rect x="${x-6}" y="${sol-4}" width="116" height="6" rx="1" fill="#7a5c38"/>`;
+  s += `<rect x="${x-6}" y="${sol-4}" width="116" height="1.8" fill="#a5825c"/>`;
+  s += `<rect x="${x-6}" y="${sol-19}" width="116" height="6" rx="1" fill="#8a6a42"/>`;
+  s += `<rect x="${x-6}" y="${sol-19}" width="116" height="1.8" fill="#b8946a"/>`;
+  /* les tins en V */
+  [8, 34, 60, 86].forEach((dx, i) => {
+    const h = 17 + Math.sin(i * .9) * 3.4;
+    s += `<path d="M${x+dx-6} ${sol-19} l4 -${h.toFixed(1)} h5 l4 ${h.toFixed(1)} z" fill="#6d5334"/>`;
+    s += `<path d="M${x+dx-6} ${sol-19} l4 -${h.toFixed(1)} h1.8 l-2.6 ${h.toFixed(1)} z" fill="#96754a"/>`;
+    s += `<path d="M${x+dx-10} ${sol-19} l8 -4 v4 z" fill="#a5825c"/>`;
+  });
+  /* le gabarit suspendu au-dessus */
+  s += `<g class="gabarit">`;
+  s += `<path d="M${x+40} ${sol-70} v14 M${x+72} ${sol-70} v14" stroke="#8a7d5c" stroke-width="1.1"/>`;
+  s += `<path d="M${x+4} ${sol-46} q26 -16 54 -16 q28 0 54 16 l-2.4 3.4 q-24 -14 -51.6 -14
+    q-27.6 0 -51.6 14 z" fill="#c9a374"/>`;
+  s += `<path d="M${x+4} ${sol-46} q26 -16 54 -16 q28 0 54 16 l-1 1.6 q-24 -14 -53 -14
+    q-29 0 -53 14 z" fill="#dfc094"/>`;
+  s += `</g>`;
+  /* épure tracée à la craie sur le sol */
+  s += `<g stroke="#f0ead8" stroke-width=".9" fill="none" opacity=".5" stroke-dasharray="4 4">
+    <path d="M${x-2} ${sol-8} q28 -22 58 -22 q30 0 58 22"/>
+    <path d="M${x+10} ${sol-8} q22 -15 46 -15 q24 0 46 15"/>
+    <path d="M${x+54} ${sol-8} v-26"/></g>`;
+  return s + `</g>`;
+}
+
+/* ---------- l'établi ---------- */
+function etabliA(x, sol){
+  let s = `<g class="etabliA">`;
+  s += `<ellipse cx="${x+40}" cy="${sol+1}" rx="48" ry="4.4" fill="#6d5a3c" opacity=".28"/>`;
+  s += `<rect x="${x+6}" y="${sol-24}" width="7" height="24" fill="#7a5c38"/>`;
+  s += `<rect x="${x+66}" y="${sol-24}" width="7" height="24" fill="#7a5c38"/>`;
+  s += `<rect x="${x+9}" y="${sol-13}" width="60" height="4" fill="#8a6a42"/>`;
+  /* rangement sous l'établi */
+  s += `<rect x="${x+14}" y="${sol-11}" width="22" height="11" rx="1" fill="#96754a"/>`;
+  s += `<rect x="${x+14}" y="${sol-11}" width="22" height="2" fill="#b8946a"/>`;
+  s += `<circle cx="${x+25}" cy="${sol-6}" r="1.4" fill="#6d5334"/>`;
+  /* plateau */
+  s += `<rect x="${x}" y="${sol-31}" width="80" height="8" rx="1" fill="#a5825c"/>`;
+  s += `<rect x="${x}" y="${sol-31}" width="80" height="2.4" fill="#dfc094"/>`;
+  for (let i = 0; i < 9; i++)
+    s += `<rect x="${x+4+i*8.6}" y="${sol-31}" width="1.1" height="8" fill="#8a6a42" opacity=".4"/>`;
+  /* étau de bois */
+  s += `<rect x="${x+66}" y="${sol-29}" width="16" height="12" rx="1.6" fill="#8a6a42"/>`;
+  s += `<rect x="${x+68}" y="${sol-27}" width="12" height="3" fill="#b8946a"/>`;
+  s += `<path d="M${x+82} ${sol-23} h7" stroke="#6d757c" stroke-width="2.6" stroke-linecap="round"/>`;
+  s += `<circle cx="${x+90}" cy="${sol-23}" r="3" fill="#8a9299"/>`;
+  /* copeaux longs qui débordent */
+  s += `<path d="M${x+20} ${sol-31} q6 -7 14 -4 q-7 5 -14 4 z" fill="#e8cfa4" opacity=".9"/>`;
+  s += `<path d="M${x+36} ${sol-31} q8 -5 16 -1 q-9 4 -16 1 z" fill="#dfc094" opacity=".8"/>`;
+  /* outils posés */
+  s += `<path d="M${x+8} ${sol-34} h18 l2 3.4 h-22 z" fill="#96754a"/>`;
+  s += `<path d="M${x+15} ${sol-35.6} l4 -2.4 l1.6 2 l-4 2.4 z" fill="url(#a-fer)"/>`;
+  s += `<path d="M${x+46} ${sol-33} l14 -3 l.6 3 l-14 3 z" fill="#8a9299"/>`;
+  /* un pot de clous */
+  s += `<path d="M${x+62} ${sol-38} h10 l-1.4 7 h-7.2 z" fill="#9a7448"/>`;
+  s += `<g stroke="#8a9299" stroke-width=".8">
+    <path d="M${x+64} ${sol-38} v-3"/><path d="M${x+67} ${sol-38} v-4"/>
+    <path d="M${x+70} ${sol-38} v-2.6"/></g>`;
+  return s + `</g>`;
+}
+
+/* ---------- le bois en réserve ---------- */
+function reserveA(x, sol){
+  let s = `<g class="reserveA">`;
+  /* râtelier : deux montants */
+  s += `<rect x="${x}" y="${sol-64}" width="6" height="64" fill="#7a5c38"/>`;
+  s += `<rect x="${x+58}" y="${sol-64}" width="6" height="64" fill="#7a5c38"/>`;
+  /* traverses */
+  [16, 34, 52].forEach(dy => {
+    s += `<rect x="${x}" y="${sol-dy}" width="64" height="4" fill="#8a6a42"/>`;
+  });
+  /* planches rangées à plat sur chaque niveau */
+  [[14, 5], [32, 4], [50, 3]].forEach(([dy, nb], k) => {
+    for (let i = 0; i < nb; i++){
+      s += `<rect x="${x+3}" y="${sol-dy-2-i*2.6}" width="58" height="2.2" rx=".6"
+        fill="url(#a-bois)"/>`;
+      s += `<rect x="${x+59}" y="${sol-dy-2-i*2.6}" width="2" height="2.2" fill="#e8cfa4"/>`;
+    }
+  });
+  /* madriers debout, appuyés contre le râtelier */
+  s += `<path d="M${x+66} ${sol} l7 -74 l6 1 l-6 73 z" fill="#a5825c"/>`;
+  s += `<path d="M${x+66} ${sol} l7 -74 l2 .4 l-6.4 73.6 z" fill="#c9a374"/>`;
+  s += `<path d="M${x+74} ${sol} l10 -68 l6 1.4 l-9.6 66.6 z" fill="#96754a"/>`;
+  s += `<path d="M${x+82} ${sol} l6 -60 l5 1 l-5.4 59 z" fill="#b08a5c"/>`;
+  /* membrures courbées, suspendues au mur */
+  s += `<path d="M${x+2} ${sol-84} q18 -18 42 -16 l1.4 5 q-21 -2 -39 15 z" fill="#b08a5c"/>`;
+  s += `<path d="M${x+8} ${sol-92} q17 -16 38 -14 l1 4 q-19 -2 -35 13 z" fill="#c9a374"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- le brasero et le goudron ---------- */
+function feuA(x, sol){
+  let s = `<g class="feuA">`;
+  s += `<ellipse cx="${x+14}" cy="${sol+1}" rx="20" ry="3.4" fill="#6d5a3c" opacity=".3"/>`;
+  /* trépied */
+  s += `<g stroke="#5c6a74" stroke-width="2.2" stroke-linecap="round">
+    <path d="M${x+2} ${sol} l10 -22"/><path d="M${x+26} ${sol} l-10 -22"/>
+    <path d="M${x+14} ${sol} v-22"/></g>`;
+  /* chaudron */
+  s += `<path d="M${x+2} ${sol-26} q0 13 12 13 q12 0 12 -13 z" fill="#3a3a38"/>`;
+  s += `<path d="M${x+2} ${sol-26} q0 9 6 12 q-3 -6 -3 -12 z" fill="#5c5a54"/>`;
+  s += `<ellipse cx="${x+14}" cy="${sol-26}" rx="12" ry="3.6" fill="#4a4a46"/>`;
+  s += `<ellipse cx="${x+14}" cy="${sol-26}" rx="9" ry="2.4" fill="#241f1c"/>`;
+  s += `<path d="M${x+3} ${sol-27} q11 -9 22 0" stroke="#5c5a54" stroke-width="1.6" fill="none"/>`;
+  /* braises dessous */
+  s += `<ellipse class="braise" cx="${x+14}" cy="${sol-4}" rx="11" ry="3.4" fill="#c95a2a" opacity=".7"/>`;
+  s += `<ellipse class="braise b2" cx="${x+10}" cy="${sol-4}" rx="4.4" ry="2" fill="#f0a13a" opacity=".85"/>`;
+  s += `<ellipse class="braise b3" cx="${x+19}" cy="${sol-4}" rx="3.4" ry="1.6" fill="#f6c05a" opacity=".8"/>`;
+  /* lueur projetée au sol */
+  s += `<ellipse class="braise" cx="${x+14}" cy="${sol}" rx="30" ry="7" fill="#e08a3a" opacity=".14"/>`;
+  /* fumée */
+  s += `<g class="fumee" opacity=".3">
+    <ellipse cx="${x+14}" cy="${sol-34}" rx="4.6" ry="3.2" fill="#cfc8bc"/>
+    <ellipse cx="${x+18}" cy="${sol-43}" rx="6" ry="4" fill="#cfc8bc" opacity=".7"/>
+    <ellipse cx="${x+13}" cy="${sol-52}" rx="7" ry="4.6" fill="#cfc8bc" opacity=".4"/></g>`;
+  /* pinceau et pot */
+  s += `<path d="M${x+32} ${sol} l3 -20" stroke="#96754a" stroke-width="2" stroke-linecap="round"/>`;
+  s += `<path d="M${x+34} ${sol-20} l4.4 -7 l3 1.6 l-4.4 7 z" fill="#3a3a38"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- détails ---------- */
+function detailsA(){
+  let s = '';
+  /* cordages pendus au mur */
+  s += `<g class="cordages">`;
+  [[240, 128], [258, 132]].forEach(([x, y], i) => {
+    s += `<path d="M${x} ${y-6} v4" stroke="#8a7d5c" stroke-width="1.1"/>`;
+    for (let k = 0; k < 3; k++)
+      s += `<ellipse cx="${x}" cy="${y + k*5}" rx="${9 - k*1.4}" ry="${4.4 - k*.5}"
+        fill="none" stroke="#c9b58c" stroke-width="2.2"/>`;
+  });
+  s += `</g>`;
+  /* une voile roulée, appuyée */
+  s += `<g><path d="M132 214 l7 -58 l14 2 l-6 56 z" fill="#ddd2b6"/>
+    <path d="M132 214 l7 -58 l4.4 .6 l-6 57.4 z" fill="#f2ead4"/>
+    <g stroke="#b0a488" stroke-width="1.2">
+      <path d="M134 196 l14 1.8"/><path d="M136 180 l14 1.8"/><path d="M138 164 l13 1.6"/></g>
+    <path d="M131 214 h18 v3 h-18 z" fill="#8a7d5c" opacity=".5"/></g>`;
+  /* un tabouret */
+  s += `<g><ellipse cx="322" cy="214" rx="12" ry="3.4" fill="#3f3524" opacity=".3"/>
+    <path d="M312 212 l3 -12 M332 212 l-3 -12" stroke="#8a6a42" stroke-width="2.4"/>
+    <ellipse cx="322" cy="200" rx="12" ry="4" fill="#a5825c"/>
+    <ellipse cx="322" cy="199" rx="12" ry="4" fill="#c9a374"/></g>`;
+  /* un seau et une brouette */
+  s += `<path d="M158 214 h14 l-2 -12 h-10 z" fill="#8a9aa4"/>`;
+  s += `<path d="M158 214 h14 v-1.8 h-14 z" fill="#6d7d88"/>`;
+  s += `<path d="M159 202 q6 -4.4 12 0" stroke="#6d7d88" stroke-width="1.2" fill="none"/>`;
+  /* un chat qui dort près du feuA */
+  s += `<g class="chat">
+    <ellipse cx="308" cy="212" rx="11" ry="5" fill="#9a8a72"/>
+    <ellipse cx="300" cy="209" rx="5" ry="4.4" fill="#a5947c"/>
+    <path d="M296 206 l-1.4 -4 l3.4 2 z" fill="#9a8a72"/>
+    <path d="M302 205 l1 -4 l2.4 3 z" fill="#9a8a72"/>
+    <path d="M318 212 q6 -2 5 -6" stroke="#9a8a72" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M297 210 q2 1.4 4 0" stroke="#6d5f4c" stroke-width=".8" fill="none"/></g>`;
+  /* poussière dans les rais de lumière */
+  for (let i = 0; i < 34; i++){
+    const x = 90 + rndA(i+71)*330, y = 110 + rndA(i+81)*96;
+    s += `<circle class="poussiere ps${i%4}" cx="${x.toFixed(0)}" cy="${y.toFixed(0)}"
+      r="${(.5+rndA(i)*.9).toFixed(1)}" fill="#fff6d8" opacity="${(.2+rndA(i+5)*.4).toFixed(2)}"/>`;
+  }
+  return s;
+}
+
+/* ---------- la scène ---------- */
+function atelierA(){
+  let s = halleA();
+  s += murOutilsA(30, 114);
+  s += reserveA(354, 214);
+  s += detailsA();
+  s += berA(178, 214);
+  s += etabliA(30, 214);
+  s += feuA(120, 214);
+  return s;
+}
+
+
+/* ============================================================
+   Le laboratoire — écran 4
+   L'endroit où l'on invente. Pas une usine : un planL de travail.
+   ============================================================ */
+const rndL = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+
+const DEFSL = `<defs>
+<linearGradient id="l-mur" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#cfc4ae"/><stop offset="50%" stop-color="#c2b69e"/>
+  <stop offset="100%" stop-color="#a99c84"/></linearGradient>
+<linearGradient id="l-planL" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#d8c4a0"/><stop offset="18%" stop-color="#c2a880"/>
+  <stop offset="100%" stop-color="#9a7f5a"/></linearGradient>
+<linearGradient id="l-bois" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#b8946a"/><stop offset="100%" stop-color="#8a6a42"/></linearGradient>
+<linearGradient id="l-verre" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#c4d4d0" stop-opacity=".55"/>
+  <stop offset="34%" stop-color="#f2f6f2" stop-opacity=".7"/>
+  <stop offset="100%" stop-color="#a8bcb8" stop-opacity=".5"/></linearGradient>
+<linearGradient id="l-jour" x1="0" y1="0" x2="0.5" y2="1">
+  <stop offset="0%" stop-color="#fff8e4" stop-opacity=".42"/>
+  <stop offset="100%" stop-color="#fff8e4" stop-opacity="0"/></linearGradient>
+<linearGradient id="l-laiton" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%" stop-color="#9a7a34"/><stop offset="40%" stop-color="#dfbc64"/>
+  <stop offset="100%" stop-color="#8a6c2c"/></linearGradient>
+</defs>`;
+
+/* ---------- la pièce ---------- */
+function pieceL(){
+  let s = `<rect width="480" height="240" fill="url(#l-mur)"/>`;
+  /* enduit à la chaux, irrégulier */
+  for (let i = 0; i < 40; i++){
+    const x = rndL(i+3)*480, y = rndL(i+13)*170;
+    s += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(10+rndL(i)*30).toFixed(0)}"
+      ry="${(5+rndL(i+5)*14).toFixed(0)}" fill="${rndL(i+7)>.5?'#d8cdb6':'#b0a48c'}"
+      opacity="${(.05+rndL(i+9)*.09).toFixed(3)}"/>`;
+  }
+  /* la grande fenêtre, à gauche : la lumière du travail */
+  s += `<rect x="26" y="24" width="96" height="82" rx="2" fill="#8a7d64"/>`;
+  s += `<rect x="30" y="28" width="88" height="74" fill="#e4ecec"/>`;
+  s += `<g stroke="#8a7d64" stroke-width="2.6">
+    <path d="M74 28 v74"/><path d="M30 65 h88"/></g>`;
+  s += `<g stroke="#8a7d64" stroke-width="1.3">
+    <path d="M52 28 v74"/><path d="M96 28 v74"/><path d="M30 46 h88"/><path d="M30 84 h88"/></g>`;
+  /* reflets dans les carreaux */
+  s += `<g fill="#ffffff" opacity=".3">
+    <rect x="32" y="30" width="18" height="14"/><rect x="76" y="67" width="18" height="15"/></g>`;
+  s += `<rect x="20" y="104" width="108" height="6" rx="1" fill="#b8ab92"/>`;
+  /* la nappe de lumière sur le planL de travail */
+  s += `<path d="M30 106 L118 106 L228 204 L86 204 Z" fill="url(#l-jour)"/>`;
+
+  /* le sol, tomettes */
+  s += `<path d="M0 196 H480 V240 H0 Z" fill="#a8734e"/>`;
+  s += `<path d="M0 196 H480 v2.4 H0 Z" fill="#c48a5e"/>`;
+  for (let r = 0; r < 3; r++){
+    const y = 202 + r*14;
+    for (let c = 0; c < 18; c++){
+      const x = (r%2)*14 + c*28;
+      s += `<rect x="${x}" y="${y}" width="26" height="12" rx="1.4"
+        fill="${rndL(r*20+c)>.5?'#b57c54':'#a8734e'}" opacity=".9"/>`;
+      s += `<rect x="${x}" y="${y}" width="26" height="2" rx="1" fill="#c9906a" opacity=".5"/>`;
+    }
+  }
+  return s;
+}
+
+/* ---------- le grand planL de travail, au centre, avec sa place vide ---------- */
+function planL(x, sol){
+  const L = 300;
+  let s = `<g class="planL">`;
+  s += `<ellipse cx="${x+L/2}" cy="${sol+2}" rx="${L*.5}" ry="5" fill="#6d4a30" opacity=".26"/>`;
+  /* pieds tournés */
+  [10, L-18].forEach(dx => {
+    s += `<rect x="${x+dx}" y="${sol-30}" width="9" height="30" fill="#8a6a42"/>`;
+    s += `<rect x="${x+dx}" y="${sol-30}" width="3" height="30" fill="#b8946a"/>`;
+    s += `<rect x="${x+dx-1.4}" y="${sol-24}" width="11.8" height="3" rx="1" fill="#7a5c38"/>`;
+    s += `<rect x="${x+dx-1.4}" y="${sol-9}" width="11.8" height="3" rx="1" fill="#7a5c38"/>`;
+  });
+  /* traverse basse et rangement */
+  s += `<rect x="${x+14}" y="${sol-12}" width="${L-28}" height="4" fill="#7a5c38"/>`;
+  /* plateau épais */
+  s += `<rect x="${x}" y="${sol-40}" width="${L}" height="10" rx="1.4" fill="url(#l-planL)"/>`;
+  s += `<rect x="${x}" y="${sol-40}" width="${L}" height="2.6" fill="#e0c9a2"/>`;
+  s += `<rect x="${x}" y="${sol-32}" width="${L}" height="2" fill="#7d6544" opacity=".5"/>`;
+  /* veines et brûlures du plateau */
+  for (let i = 0; i < 9; i++)
+    s += `<path d="M${(x+8+i*25).toFixed(0)} ${sol-40} q2 5 0 10" stroke="#8a6a42"
+      stroke-width=".9" fill="none" opacity=".3"/>`;
+  for (let i = 0; i < 5; i++)
+    s += `<ellipse cx="${(x+24+rndL(i)*180).toFixed(0)}" cy="${sol-36}" rx="${(4+rndL(i+3)*7).toFixed(1)}"
+      ry="2" fill="#6d5334" opacity="${(.14+rndL(i+5)*.16).toFixed(2)}"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- l'aireL de composition : la place vide ---------- */
+function aireL(x, y){
+  let s = `<g class="aireL">`;
+  /* un tapis de cuir clair délimite l'endroit */
+  s += `<path d="M${x} ${y} h64 l-4 -13 h-56 z" fill="#c2ac8a"/>`;
+  s += `<path d="M${x} ${y} h64 l-4 -13 h-56 z" fill="none" stroke="#a08a68" stroke-width="1.2"/>`;
+  s += `<path d="M${x+4} ${y-2} h56 l-3 -9 h-50 z" fill="#cfba98" opacity=".7"/>`;
+  /* un support annulaire vide, au centre : rien dessus */
+  s += `<ellipse cx="${x+32}" cy="${y-6}" rx="13" ry="4" fill="none" stroke="url(#l-laiton)" stroke-width="2.2"/>`;
+  s += `<path d="M${x+21} ${y-6} l-3 6 M${x+43} ${y-6} l3 6" stroke="#9a7a34" stroke-width="1.6"/>`;
+  /* trois dosettes prêtes, à verser */
+  [[6, '#c9a83a'], [18, '#8aa46a'], [52, '#b06a3a']].forEach(([dx, c]) => {
+    s += `<path d="M${x+dx} ${y-2} h9 l-1.4 -7 h-6.2 z" fill="#d8cdb6"/>`;
+    s += `<path d="M${x+dx+1} ${y-3.4} h7 l-.8 -3.4 h-5.4 z" fill="${c}" opacity=".85"/>`;
+  });
+  /* une étiquette vierge et une plume */
+  s += `<rect x="${x+40}" y="${y-9}" width="14" height="8" rx="1" fill="#f0e8d4" transform="rotate(-6 ${x+47} ${y-5})"/>`;
+  s += `<path d="M${x+56} ${y-8} l7 -12" stroke="#c8bca0" stroke-width="1.8" stroke-linecap="round"/>`;
+  s += `<path d="M${x+62} ${y-19} q4 -5 6 -1 q-3 3 -6 1 z" fill="#e8e0cc"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- les essaisL en cours ---------- */
+function essaisL(x, y){
+  let s = `<g class="essaisL">`;
+  /* un portoir de bois avec six fioles */
+  s += `<rect x="${x}" y="${y-3}" width="70" height="5" rx="1" fill="#8a6a42"/>`;
+  s += `<rect x="${x}" y="${y-3}" width="70" height="1.6" fill="#b8946a"/>`;
+  s += `<rect x="${x+2}" y="${y-22}" width="3" height="19" fill="#8a6a42"/>`;
+  s += `<rect x="${x+65}" y="${y-22}" width="3" height="19" fill="#8a6a42"/>`;
+  s += `<rect x="${x+2}" y="${y-22}" width="66" height="3.4" rx="1" fill="#96754a"/>`;
+  const T = ['#c9a83a','#8aa46a','#b06a3a','#7f9ab0','#a4708f','#c2b06a'];
+  for (let i = 0; i < 6; i++){
+    const fx = x + 7 + i*10;
+    /* le tube */
+    s += `<path d="M${fx} ${y-19} v13 q0 4 3.4 4 q3.4 0 3.4 -4 v-13 z" fill="url(#l-verre)"/>`;
+    /* le contenu, à des niveaux différents */
+    const h = 4 + rndL(i)*7;
+    s += `<path d="M${fx} ${(y-6-h).toFixed(1)} v${h.toFixed(1)} q0 4 3.4 4 q3.4 0 3.4 -4 v-${h.toFixed(1)} z"
+      fill="${T[i]}" opacity=".76"/>`;
+    /* reflet */
+    s += `<path d="M${fx+.8} ${y-18} v11" stroke="#ffffff" stroke-width=".9" opacity=".5"/>`;
+    /* petite étiquette numérotée */
+    s += `<rect x="${fx-1}" y="${y-16}" width="8.4" height="3.4" fill="#f0e8d4" opacity=".9"/>`;
+  }
+  return s + `</g>`;
+}
+
+/* ---------- la balanceL de précision ---------- */
+function balanceL(x, sol){
+  let s = `<g class="balanceL">`;
+  /* socle */
+  s += `<path d="M${x} ${sol} h34 l-3 -5 h-28 z" fill="#7a5c38"/>`;
+  s += `<path d="M${x+3} ${sol-5} h28 v-2 h-28 z" fill="#96754a"/>`;
+  /* colonne */
+  s += `<rect x="${x+15}" y="${sol-32}" width="4" height="27" fill="url(#l-laiton)"/>`;
+  s += `<circle cx="${x+17}" cy="${sol-33}" r="2.6" fill="#dfbc64"/>`;
+  /* fléau légèrement penché */
+  s += `<g transform="rotate(-4 ${x+17} ${sol-33})">
+    <rect x="${x-2}" y="${sol-34}" width="38" height="2.4" rx="1.2" fill="url(#l-laiton)"/>
+    <path d="M${x+1} ${sol-32} v7" stroke="#9a7a34" stroke-width=".9"/>
+    <path d="M${x+33} ${sol-32} v7" stroke="#9a7a34" stroke-width=".9"/>
+    <ellipse cx="${x+1}" cy="${sol-24}" rx="8" ry="2.4" fill="#c9a84a"/>
+    <ellipse cx="${x+1}" cy="${sol-25}" rx="8" ry="2.4" fill="#dfbc64"/>
+    <ellipse cx="${x+33}" cy="${sol-24}" rx="8" ry="2.4" fill="#c9a84a"/>
+    <ellipse cx="${x+33}" cy="${sol-25}" rx="8" ry="2.4" fill="#dfbc64"/>
+    <ellipse cx="${x+33}" cy="${sol-26.4}" rx="4" ry="1.4" fill="#8aa46a" opacity=".8"/>
+  </g>`;
+  /* les poids alignés à côté */
+  [0, 7, 13, 18].forEach((dx, i) => {
+    const h = 7 - i*1.2;
+    s += `<path d="M${x+40+dx} ${sol-5} v-${h.toFixed(1)} q0 -1.4 2 -1.4 q2 0 2 1.4 v${h.toFixed(1)} z"
+      fill="#8a9299"/>`;
+    s += `<path d="M${x+40+dx} ${sol-5} v-${h.toFixed(1)} q0 -1.4 .8 -1.4 v${(h+1.4).toFixed(1)} z"
+      fill="#b0b8be"/>`;
+  });
+  return s + `</g>`;
+}
+
+/* ---------- le mortier et les ingrédients ---------- */
+function ingredientsL(x, sol){
+  let s = `<g class="ingredientsL">`;
+  /* mortier de marbre */
+  s += `<path d="M${x} ${sol-14} q0 14 13 14 q13 0 13 -14 z" fill="#b8b2a4"/>`;
+  s += `<path d="M${x} ${sol-14} q0 10 6 13 q-3 -6 -3 -13 z" fill="#d4cec0"/>`;
+  s += `<ellipse cx="${x+13}" cy="${sol-14}" rx="13" ry="4" fill="#c8c2b4"/>`;
+  s += `<ellipse cx="${x+13}" cy="${sol-14}" rx="9.4" ry="2.6" fill="#8a8478"/>`;
+  s += `<ellipse cx="${x+12}" cy="${sol-14.4}" rx="6" ry="1.6" fill="#a4703c" opacity=".7"/>`;
+  /* le pilon posé en travers */
+  s += `<path d="M${x+7} ${sol-16} l16 -9" stroke="#b8b2a4" stroke-width="3.4" stroke-linecap="round"/>`;
+  s += `<circle cx="${x+24}" cy="${sol-26}" r="3.4" fill="#c8c2b4"/>`;
+
+  /* quatre paniers d'osier, matières premières séparées */
+  const M = [['#c9a83a', 'graines'], ['#8aa46a', 'feuilles'], ['#b06a3a', 'écorces'], ['#d8cdb6', 'sel']];
+  M.forEach(([c], i) => {
+    const px = x + 30 + i*24;
+    s += `<path d="M${px} ${sol} q1 -13 11 -13 q10 0 11 13 z" fill="#c2a476"/>`;
+    /* tressage */
+    for (let k = 0; k < 3; k++)
+      s += `<path d="M${px+1.4} ${sol-3-k*4} q10 3 19.4 0" stroke="#a5825c" stroke-width="1"
+        fill="none" opacity=".7"/>`;
+    s += `<ellipse cx="${px+11}" cy="${sol-13}" rx="11" ry="3.4" fill="#a5825c"/>`;
+    /* le contenu qui déborde un peu */
+    s += `<ellipse cx="${px+11}" cy="${sol-14}" rx="9" ry="2.6" fill="${c}"/>`;
+    for (let k = 0; k < 5; k++)
+      s += `<circle cx="${(px+5+rndL(i*7+k)*12).toFixed(1)}" cy="${(sol-15-rndL(i+k)*2).toFixed(1)}"
+        r="${(.8+rndL(i+k+3)*1).toFixed(1)}" fill="${c}" opacity=".9"/>`;
+  });
+  return s + `</g>`;
+}
+
+/* ---------- le carnetL de recherche ---------- */
+function carnetL(x, y){
+  let s = `<g class="carnetL">`;
+  /* le carnetL ouvert, légèrement de biais */
+  s += `<g transform="rotate(-4 ${x+26} ${y})">`;
+  s += `<path d="M${x} ${y} q26 -6 52 0 v3 q-26 -6 -52 0 z" fill="#8a6a42"/>`;
+  s += `<path d="M${x} ${y} q26 -6 52 0 l-1 -18 q-25 -6 -50 0 z" fill="#f2ead4"/>`;
+  s += `<path d="M${x+26} ${y-3} v-18" stroke="#d8cdb6" stroke-width="1.2"/>`;
+  /* lignes d'écriture et ratures */
+  s += `<g stroke="#7a6a52" stroke-width=".8" opacity=".7">`;
+  for (let i = 0; i < 4; i++){
+    s += `<path d="M${x+4} ${y-6-i*3.6} q9 -1.4 19 0"/>`;
+    s += `<path d="M${x+29} ${y-6-i*3.6} q9 -1.4 19 0"/>`;
+  }
+  s += `</g>`;
+  /* deux ratures */
+  s += `<path d="M${x+5} ${y-13} l17 1.4" stroke="#9a4a3a" stroke-width="1.4" opacity=".8"/>`;
+  s += `<path d="M${x+30} ${y-9.4} l16 1" stroke="#9a4a3a" stroke-width="1.4" opacity=".8"/>`;
+  s += `</g>`;
+  /* l'encrier et la plume */
+  s += `<path d="M${x+58} ${y} h13 l-1.4 -10 h-10.2 z" fill="#4a5560"/>`;
+  s += `<ellipse cx="${x+64.5}" cy="${y-10}" rx="5.4" ry="1.8" fill="#2f3a42"/>`;
+  s += `<path d="M${x+66} ${y-11} l8 -18" stroke="#e8e0cc" stroke-width="1.6" stroke-linecap="round"/>`;
+  s += `<path d="M${x+73} ${y-28} q5 -6 7 -1 q-4 4 -7 1 z" fill="#f0e8d4"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- l'étagère des matières et des essaisL ratés ---------- */
+function etagereL(x, y){
+  let s = `<g class="etagereL">`;
+  const COUL = ['#c9a83a','#8aa46a','#b06a3a','#7f9ab0','#a4708f','#c98a4a','#6d9a8a','#b8b2a4'];
+  [0, 30].forEach((dy, r) => {
+    s += `<rect x="${x}" y="${y+dy+18}" width="98" height="5" rx="1" fill="url(#l-bois)"/>`;
+    s += `<rect x="${x}" y="${y+dy+18}" width="98" height="1.6" fill="#c9a374"/>`;
+    s += `<path d="M${x+5} ${y+dy+23} l4 7 h-4 z" fill="#7a5c38"/>`;
+    s += `<path d="M${x+89} ${y+dy+23} l4 7 h-4 z" fill="#7a5c38"/>`;
+    const nb = 6;
+    for (let i = 0; i < nb; i++){
+      const bx = x + 6 + i*15;
+      const h = 11 + rndL(r*9+i)*4;
+      const c = COUL[(r*4+i) % 8];
+      s += `<path d="M${bx} ${y+dy+18} v-${h.toFixed(1)} q0 -2.6 4.4 -2.6 q4.4 0 4.4 2.6 v${h.toFixed(1)} z"
+        fill="url(#l-verre)"/>`;
+      s += `<path d="M${bx+.8} ${y+dy+17} v-${(h*.62).toFixed(1)} h7 v${(h*.62).toFixed(1)} z"
+        fill="${c}" opacity=".72"/>`;
+      s += `<rect x="${bx-.6}" y="${(y+dy+18-h-3).toFixed(1)}" width="10" height="2.6" rx=".8" fill="#a5825c"/>`;
+      /* certaines fioles sont barrées : essaisL ratés */
+      if (rndL(r*13+i) > .62){
+        s += `<rect x="${bx}" y="${(y+dy+11).toFixed(1)}" width="9" height="4" fill="#e8dfc8"/>`;
+        s += `<path d="M${bx} ${(y+dy+13).toFixed(1)} l9 0" stroke="#9a4a3a" stroke-width="1.1"/>`;
+      }
+    }
+  });
+  return s + `</g>`;
+}
+
+/* ---------- le tableauL des proportions ---------- */
+function tableauL(x, y){
+  let s = `<g class="tableauL">`;
+  s += `<rect x="${x}" y="${y}" width="86" height="58" rx="2" fill="#6d5334"/>`;
+  s += `<rect x="${x+3}" y="${y+3}" width="80" height="52" fill="#3f4a44"/>`;
+  s += `<rect x="${x+3}" y="${y+3}" width="80" height="52" fill="#4a5650" opacity=".5"/>`;
+  /* traces de craie effacée */
+  for (let i = 0; i < 5; i++)
+    s += `<ellipse cx="${(x+16+rndL(i)*54).toFixed(0)}" cy="${(y+14+rndL(i+3)*36).toFixed(0)}"
+      rx="${(9+rndL(i+5)*12).toFixed(0)}" ry="${(4+rndL(i+7)*5).toFixed(0)}"
+      fill="#c8d0c8" opacity="${(.04+rndL(i+9)*.05).toFixed(3)}"/>`;
+  /* trois lignes de dosage à la craie */
+  s += `<g stroke="#e8ece4" stroke-width="1.2" fill="none" opacity=".8" stroke-linecap="round">`;
+  s += `<path d="M${x+9} ${y+13} h16"/><path d="M${x+30} ${y+13} h5"/><path d="M${x+40} ${y+13} h22"/>`;
+  s += `<path d="M${x+9} ${y+24} h12"/><path d="M${x+26} ${y+24} h6"/><path d="M${x+37} ${y+24} h28"/>`;
+  s += `<path d="M${x+9} ${y+35} h20"/><path d="M${x+34} ${y+35} h4"/><path d="M${x+43} ${y+35} h16"/>`;
+  s += `</g>`;
+  /* une esquisse de flacon dessinée à la craie */
+  s += `<g stroke="#e8ece4" stroke-width="1.1" fill="none" opacity=".6">
+    <path d="M${x+62} ${y+40} v6 q0 5 6 5 q6 0 6 -5 v-6 z"/>
+    <path d="M${x+64} ${y+40} v-3 h8 v3"/></g>`;
+  /* un point d'interrogation */
+  s += `<path d="M${x+14} ${y+44} q0 -4 4 -4 q4 0 4 3 q0 3 -4 4 v2" stroke="#e8ece4"
+    stroke-width="1.4" fill="none" opacity=".7" stroke-linecap="round"/>`;
+  s += `<circle cx="${x+18}" cy="${y+52}" r="1" fill="#e8ece4" opacity=".7"/>`;
+  /* la craie posée sur le rebord */
+  s += `<rect x="${x}" y="${y+58}" width="86" height="4" rx="1" fill="#8a6a42"/>`;
+  s += `<rect x="${x+58}" y="${y+55.6}" width="9" height="2.8" rx="1.4" fill="#f0eee4"/>`;
+  s += `<rect x="${x+70}" y="${y+56}" width="6" height="2.4" rx="1.2" fill="#e8d8a8"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- détails ---------- */
+function detailsL(){
+  let s = '';
+  /* un tabouret devant le planL */
+  s += `<g><ellipse cx="176" cy="234" rx="14" ry="4" fill="#6d4a30" opacity=".26"/>
+    <path d="M164 232 l3 -14 M188 232 l-3 -14" stroke="#8a6a42" stroke-width="2.6"/>
+    <path d="M168 226 h16" stroke="#7a5c38" stroke-width="1.8"/>
+    <ellipse cx="176" cy="218" rx="14" ry="4.4" fill="#8a6a42"/>
+    <ellipse cx="176" cy="217" rx="14" ry="4.4" fill="#b8946a"/></g>`;
+  /* un torchon jeté sur le bord du planL */
+  s += `<path d="M366 178 q9 -3 17 1 l-2 14 q-7 3 -13 -1 z" fill="#dfd8c4"/>`;
+  s += `<path d="M366 178 q9 -3 17 1 l-.8 5 q-8 -3 -16 0 z" fill="#eee8d8"/>`;
+  /* une caisse d'expédition, vide, au sol */
+  s += `<g><rect x="424" y="204" width="42" height="28" rx="1.4" fill="#a5825c"/>
+    <rect x="424" y="204" width="42" height="3" fill="#c9a374"/>
+    <rect x="424" y="204" width="42" height="28" rx="1.4" fill="none" stroke="#7a5c38" stroke-width="1.2"/>
+    <path d="M424 213 h42 M424 224 h42" stroke="#8a6a42" stroke-width="1.4"/>
+    <circle cx="445" cy="218" r="6" fill="none" stroke="#6d5334" stroke-width="1.4" opacity=".6"/>
+    <path d="M442 218 h6 M445 215 v6" stroke="#6d5334" stroke-width="1.1" opacity=".6"/>
+    <path d="M420 204 h50 l-3 -4 h-44 z" fill="#96754a"/></g>`;
+  /* une bassine et un chiffon au sol */
+  s += `<path d="M108 232 q0 -9 13 -9 q13 0 13 9 z" fill="#8a9aa4"/>`;
+  s += `<ellipse cx="121" cy="223" rx="13" ry="3.4" fill="#a4b2ba"/>`;
+  s += `<ellipse cx="121" cy="223" rx="9.4" ry="2.2" fill="#6d8090"/>`;
+  return s;
+}
+
+/* ---------- la scène ---------- */
+function laboL(){
+  let s = pieceL();
+  s += etagereL(346, 26);
+  s += tableauL(216, 30);
+  s += detailsL();
+  s += planL(96, 200);
+  s += ingredientsL(232, 160);
+  s += essaisL(108, 160);
+  s += balanceL(190, 160);
+  s += aireL(118, 186);
+    /* la petite table du carnetL, sous la fenêtre */
+  s += `<g><ellipse cx="52" cy="200" rx="34" ry="4" fill="#6d4a30" opacity=".24"/>
+    <rect x="24" y="176" width="6" height="24" fill="#8a6a42"/>
+    <rect x="74" y="176" width="6" height="24" fill="#8a6a42"/>
+    <rect x="18" y="170" width="68" height="7" rx="1.2" fill="url(#l-planL)"/>
+    <rect x="18" y="170" width="68" height="2" fill="#e0c9a2"/></g>`;
+  s += carnetL(24, 168);
+  return s;
+}
+
+
 /* ---------- les quatre écrans ---------- */
 const PAGES4 = ['port', 'mer', 'bateau', 'hangar'];
 let page4 = 0;
@@ -2779,19 +3527,33 @@ function svg4(inner){
   return '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" '
     + 'xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
 }
+const DECORS = {
+  port:   () => DEFS_B + baie(),
+  mer:    () => defsT('clair') + traverseeT('clair', null),
+  bateau: () => DEFSA + atelierA(),
+  hangar: () => DEFSL + laboL()
+};
+const FAIT = {};
+function peindre(nom){
+  if (FAIT[nom]) return;
+  FAIT[nom] = true;
+  $('e-' + (nom === 'hangar' ? 'hangar' : nom)).innerHTML = svg4(DECORS[nom]());
+  requestAnimationFrame(() => $('pg-' + nom).classList.add('pret'));
+}
 function dessiner4(){
-  $('e-port').innerHTML   = svg4(DEFS_B + baie());
-  $('e-mer').innerHTML    = svg4(defsT('clair') + traverseeT('clair', null));
-  $('e-bateau').innerHTML = svg4(svgBateau());
-  $('e-hangar').innerHTML = svg4(svgHangar());
+  /* l'écran visible d'abord, les autres juste après */
+  peindre(PAGES4[page4] || 'port');
+  requestAnimationFrame(() => {
+    setTimeout(() => PAGES4.forEach(n => peindre(n)), 60);
+  });
   $('pc-port').textContent = 'Niveau 1';
   $('pc-mer').textContent  = 'Au repos';
-  $('pc-bat').textContent  = 'Le pédalo canard';
-  $('pc-han').textContent  = '3 chaînes';
+  $('pc-bat').textContent  = 'Niveau 1';
+  $('pc-han').textContent  = 'Niveau 1';
   $('so-port').textContent = 'Une anse, une cabane. Rien d\'autre.';
   $('so-mer').textContent  = 'Aucune traversée en cours';
-  $('so-bat').textContent  = 'Cale : 3 emplacements';
-  $('so-han').textContent  = 'Savonnerie, distillerie, filets';
+  $('so-bat').textContent  = 'Le berceau attend une quille';
+  $('so-han').textContent  = 'Rien n\'a encore de nom';
 }
 function ronds4(){
   const NOMS = { port:'Le port', mer:'La mer', bateau:'Ton bateau', hangar:'Le hangar' };
