@@ -128,6 +128,63 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .charge .fenetre4{background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4,.charge .chantier4{opacity:0}
 
+
+/* --- la baie : animations --- */
+.onde{will-change:transform}
+.o0{animation:va0 26s linear infinite}
+.o1{animation:va1 34s linear infinite}
+.o2{animation:va2 44s linear infinite}
+.o3{animation:va3 56s linear infinite}
+@keyframes va0{to{transform:translateX(68px)}}
+@keyframes va1{to{transform:translateX(-68px)}}
+@keyframes va2{to{transform:translateX(68px)}}
+@keyframes va3{to{transform:translateX(-68px)}}
+.voile{animation:va1 62s linear infinite}
+.paillette{animation:brille 5.6s ease-in-out infinite}
+.pa1{animation-duration:7.8s;animation-delay:1.1s}
+.pa2{animation-duration:4.4s;animation-delay:2.2s}
+.pa3{animation-duration:9s;animation-delay:3.3s}
+@keyframes brille{0%,100%{opacity:.06}50%{opacity:.5}}
+.ressac{animation:lecher 8.4s ease-in-out infinite}
+.ressac.r1{animation-duration:10.6s;animation-delay:.9s}
+.ressac.r2{animation-duration:12.8s;animation-delay:1.8s}
+@keyframes lecher{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(1.8px);opacity:.62}}
+.nuages-loin g{animation:passeN 150s linear infinite}
+.nuages-pres g{animation:passeN 100s linear infinite}
+.nuages-pres g:nth-child(2n){animation-duration:128s}
+.nuages-pres g:nth-child(3n){animation-duration:172s}
+@keyframes passeN{to{transform:translateX(600px)}}
+.oiseau{animation:planerO 34s ease-in-out infinite}
+.oiseau:nth-of-type(2){animation-duration:44s;animation-delay:-12s}
+.oiseau:nth-of-type(3){animation-duration:38s;animation-delay:-22s}
+.oiseau:nth-of-type(4){animation-duration:50s;animation-delay:-30s}
+@keyframes planerO{0%,100%{transform:translate(0,0)}50%{transform:translate(-160px,-12px)}}
+.pin{animation:briseA 8s ease-in-out infinite}
+.pin.p1{animation-duration:9.6s;animation-delay:.7s}
+.pin.p2{animation-duration:7.2s;animation-delay:1.4s}
+.pin.p3{animation-duration:10.8s;animation-delay:2.1s}
+@keyframes briseA{0%,100%{transform:rotate(-.5deg)}50%{transform:rotate(.5deg)}}
+.cypres{animation:oscilleA 6.6s ease-in-out infinite}
+.cypres:nth-of-type(2n){animation-duration:8.2s;animation-delay:.9s}
+@keyframes oscilleA{0%,100%{transform:rotate(-.9deg)}50%{transform:rotate(.9deg)}}
+.olivier{animation:briseA 9.4s ease-in-out infinite .5s}
+.oyat{animation:ventA 5.2s ease-in-out infinite}
+.oyat:nth-of-type(2n){animation-duration:6.8s;animation-delay:.6s}
+.oyat:nth-of-type(3n){animation-duration:4.4s;animation-delay:1.2s}
+@keyframes ventA{0%,100%{transform:skewX(0)}50%{transform:skewX(-8deg)}}
+.linge{animation:flotterA 4.6s ease-in-out infinite}
+.linge:nth-of-type(2n){animation-duration:6s;animation-delay:.5s}
+@keyframes flotterA{0%,100%{transform:skewX(0) rotate(0)}50%{transform:skewX(-9deg) rotate(1.4deg)}}
+.lanterne{animation:vacilleA 4.2s ease-in-out infinite}
+@keyframes vacilleA{0%,100%{opacity:.7}40%{opacity:1}66%{opacity:.82}}
+.fenetre{animation:lueurA 9s ease-in-out infinite}
+.fenetre:nth-of-type(2n){animation-duration:12s;animation-delay:2s}
+@keyframes lueurA{0%,100%{opacity:.55}50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){
+  .onde,.voile,.paillette,.ressac,.nuages-loin g,.nuages-pres g,.oiseau,
+  .pin,.cypres,.olivier,.oyat,.linge,.lanterne,.fenetre{animation:none}
+}
+
 .hud{position:sticky;top:0;z-index:20;
   padding:calc(env(safe-area-inset-top) + 10px) 13px 11px;
   background:#e8e0cc;border-bottom:3px solid #b8a882}
@@ -153,6 +210,63 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
 .pedalo{animation:flotteP 4.2s ease-in-out infinite}
 @keyframes flotteP{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
+
+
+/* --- la baie : animations --- */
+.onde{will-change:transform}
+.o0{animation:va0 26s linear infinite}
+.o1{animation:va1 34s linear infinite}
+.o2{animation:va2 44s linear infinite}
+.o3{animation:va3 56s linear infinite}
+@keyframes va0{to{transform:translateX(68px)}}
+@keyframes va1{to{transform:translateX(-68px)}}
+@keyframes va2{to{transform:translateX(68px)}}
+@keyframes va3{to{transform:translateX(-68px)}}
+.voile{animation:va1 62s linear infinite}
+.paillette{animation:brille 5.6s ease-in-out infinite}
+.pa1{animation-duration:7.8s;animation-delay:1.1s}
+.pa2{animation-duration:4.4s;animation-delay:2.2s}
+.pa3{animation-duration:9s;animation-delay:3.3s}
+@keyframes brille{0%,100%{opacity:.06}50%{opacity:.5}}
+.ressac{animation:lecher 8.4s ease-in-out infinite}
+.ressac.r1{animation-duration:10.6s;animation-delay:.9s}
+.ressac.r2{animation-duration:12.8s;animation-delay:1.8s}
+@keyframes lecher{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(1.8px);opacity:.62}}
+.nuages-loin g{animation:passeN 150s linear infinite}
+.nuages-pres g{animation:passeN 100s linear infinite}
+.nuages-pres g:nth-child(2n){animation-duration:128s}
+.nuages-pres g:nth-child(3n){animation-duration:172s}
+@keyframes passeN{to{transform:translateX(600px)}}
+.oiseau{animation:planerO 34s ease-in-out infinite}
+.oiseau:nth-of-type(2){animation-duration:44s;animation-delay:-12s}
+.oiseau:nth-of-type(3){animation-duration:38s;animation-delay:-22s}
+.oiseau:nth-of-type(4){animation-duration:50s;animation-delay:-30s}
+@keyframes planerO{0%,100%{transform:translate(0,0)}50%{transform:translate(-160px,-12px)}}
+.pin{animation:briseA 8s ease-in-out infinite}
+.pin.p1{animation-duration:9.6s;animation-delay:.7s}
+.pin.p2{animation-duration:7.2s;animation-delay:1.4s}
+.pin.p3{animation-duration:10.8s;animation-delay:2.1s}
+@keyframes briseA{0%,100%{transform:rotate(-.5deg)}50%{transform:rotate(.5deg)}}
+.cypres{animation:oscilleA 6.6s ease-in-out infinite}
+.cypres:nth-of-type(2n){animation-duration:8.2s;animation-delay:.9s}
+@keyframes oscilleA{0%,100%{transform:rotate(-.9deg)}50%{transform:rotate(.9deg)}}
+.olivier{animation:briseA 9.4s ease-in-out infinite .5s}
+.oyat{animation:ventA 5.2s ease-in-out infinite}
+.oyat:nth-of-type(2n){animation-duration:6.8s;animation-delay:.6s}
+.oyat:nth-of-type(3n){animation-duration:4.4s;animation-delay:1.2s}
+@keyframes ventA{0%,100%{transform:skewX(0)}50%{transform:skewX(-8deg)}}
+.linge{animation:flotterA 4.6s ease-in-out infinite}
+.linge:nth-of-type(2n){animation-duration:6s;animation-delay:.5s}
+@keyframes flotterA{0%,100%{transform:skewX(0) rotate(0)}50%{transform:skewX(-9deg) rotate(1.4deg)}}
+.lanterne{animation:vacilleA 4.2s ease-in-out infinite}
+@keyframes vacilleA{0%,100%{opacity:.7}40%{opacity:1}66%{opacity:.82}}
+.fenetre{animation:lueurA 9s ease-in-out infinite}
+.fenetre:nth-of-type(2n){animation-duration:12s;animation-delay:2s}
+@keyframes lueurA{0%,100%{opacity:.55}50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){
+  .onde,.voile,.paillette,.ressac,.nuages-loin g,.nuages-pres g,.oiseau,
+  .pin,.cypres,.olivier,.oyat,.linge,.lanterne,.fenetre{animation:none}
+}
 
 .hud{position:sticky;top:0;z-index:20;
   padding:calc(env(safe-area-inset-top) + 10px) 13px 11px;
@@ -187,6 +301,63 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
 .pedalo{animation:flotteP 4.2s ease-in-out infinite}
 @keyframes flotteP{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
+
+
+/* --- la baie : animations --- */
+.onde{will-change:transform}
+.o0{animation:va0 26s linear infinite}
+.o1{animation:va1 34s linear infinite}
+.o2{animation:va2 44s linear infinite}
+.o3{animation:va3 56s linear infinite}
+@keyframes va0{to{transform:translateX(68px)}}
+@keyframes va1{to{transform:translateX(-68px)}}
+@keyframes va2{to{transform:translateX(68px)}}
+@keyframes va3{to{transform:translateX(-68px)}}
+.voile{animation:va1 62s linear infinite}
+.paillette{animation:brille 5.6s ease-in-out infinite}
+.pa1{animation-duration:7.8s;animation-delay:1.1s}
+.pa2{animation-duration:4.4s;animation-delay:2.2s}
+.pa3{animation-duration:9s;animation-delay:3.3s}
+@keyframes brille{0%,100%{opacity:.06}50%{opacity:.5}}
+.ressac{animation:lecher 8.4s ease-in-out infinite}
+.ressac.r1{animation-duration:10.6s;animation-delay:.9s}
+.ressac.r2{animation-duration:12.8s;animation-delay:1.8s}
+@keyframes lecher{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(1.8px);opacity:.62}}
+.nuages-loin g{animation:passeN 150s linear infinite}
+.nuages-pres g{animation:passeN 100s linear infinite}
+.nuages-pres g:nth-child(2n){animation-duration:128s}
+.nuages-pres g:nth-child(3n){animation-duration:172s}
+@keyframes passeN{to{transform:translateX(600px)}}
+.oiseau{animation:planerO 34s ease-in-out infinite}
+.oiseau:nth-of-type(2){animation-duration:44s;animation-delay:-12s}
+.oiseau:nth-of-type(3){animation-duration:38s;animation-delay:-22s}
+.oiseau:nth-of-type(4){animation-duration:50s;animation-delay:-30s}
+@keyframes planerO{0%,100%{transform:translate(0,0)}50%{transform:translate(-160px,-12px)}}
+.pin{animation:briseA 8s ease-in-out infinite}
+.pin.p1{animation-duration:9.6s;animation-delay:.7s}
+.pin.p2{animation-duration:7.2s;animation-delay:1.4s}
+.pin.p3{animation-duration:10.8s;animation-delay:2.1s}
+@keyframes briseA{0%,100%{transform:rotate(-.5deg)}50%{transform:rotate(.5deg)}}
+.cypres{animation:oscilleA 6.6s ease-in-out infinite}
+.cypres:nth-of-type(2n){animation-duration:8.2s;animation-delay:.9s}
+@keyframes oscilleA{0%,100%{transform:rotate(-.9deg)}50%{transform:rotate(.9deg)}}
+.olivier{animation:briseA 9.4s ease-in-out infinite .5s}
+.oyat{animation:ventA 5.2s ease-in-out infinite}
+.oyat:nth-of-type(2n){animation-duration:6.8s;animation-delay:.6s}
+.oyat:nth-of-type(3n){animation-duration:4.4s;animation-delay:1.2s}
+@keyframes ventA{0%,100%{transform:skewX(0)}50%{transform:skewX(-8deg)}}
+.linge{animation:flotterA 4.6s ease-in-out infinite}
+.linge:nth-of-type(2n){animation-duration:6s;animation-delay:.5s}
+@keyframes flotterA{0%,100%{transform:skewX(0) rotate(0)}50%{transform:skewX(-9deg) rotate(1.4deg)}}
+.lanterne{animation:vacilleA 4.2s ease-in-out infinite}
+@keyframes vacilleA{0%,100%{opacity:.7}40%{opacity:1}66%{opacity:.82}}
+.fenetre{animation:lueurA 9s ease-in-out infinite}
+.fenetre:nth-of-type(2n){animation-duration:12s;animation-delay:2s}
+@keyframes lueurA{0%,100%{opacity:.55}50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){
+  .onde,.voile,.paillette,.ressac,.nuages-loin g,.nuages-pres g,.oiseau,
+  .pin,.cypres,.olivier,.oyat,.linge,.lanterne,.fenetre{animation:none}
+}
 
 .hud{position:sticky;top:0;z-index:20;
   padding:calc(env(safe-area-inset-top) + 8px) 13px 9px;
@@ -1536,362 +1707,622 @@ return ville;
 }
 
 
-const rnd4 = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
-const DEFS4 = `<defs>
-<linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#4f9bcc"/><stop offset="26%" stop-color="#83bdde"/>
-  <stop offset="54%" stop-color="#bcd9ea"/><stop offset="78%" stop-color="#e6e2d8"/>
-  <stop offset="100%" stop-color="#f7dcaf"/></linearGradient>
-<linearGradient id="mer" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#93d8e0"/><stop offset="18%" stop-color="#5cb4cd"/>
-  <stop offset="52%" stop-color="#2d81a6"/><stop offset="100%" stop-color="#0e4363"/></linearGradient>
-<linearGradient id="bassin" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#6dbfd4"/><stop offset="100%" stop-color="#1c5f82"/></linearGradient>
-<linearGradient id="quai" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#efe9db"/><stop offset="42%" stop-color="#ddd5c2"/>
-  <stop offset="100%" stop-color="#c4bba6"/></linearGradient>
-<linearGradient id="colline" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#e2ddcd"/><stop offset="100%" stop-color="#bcb7a4"/></linearGradient>
-<radialGradient id="soleil"><stop offset="0%" stop-color="#fff9e6" stop-opacity="1"/>
-  <stop offset="38%" stop-color="#ffe6b4" stop-opacity=".5"/>
-  <stop offset="100%" stop-color="#ffd9a0" stop-opacity="0"/></radialGradient>
-<linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
-  <stop offset="0%" stop-color="#f2a83a"/><stop offset="45%" stop-color="#e0913a"/>
-  <stop offset="100%" stop-color="#b06a1e"/></linearGradient>
-<linearGradient id="metalG" x1="0" y1="0" x2="1" y2="0">
-  <stop offset="0%" stop-color="#8fa2ad"/><stop offset="50%" stop-color="#6d808c"/>
-  <stop offset="100%" stop-color="#4e5f6a"/></linearGradient>
-<linearGradient id="halo" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="0%" stop-color="#fff3d0" stop-opacity=".5"/>
-  <stop offset="100%" stop-color="#fff3d0" stop-opacity="0"/></linearGradient>
+/* ============================================================
+   Ton port — niveau 1 : la baie
+   Une anse, un hameau, des pins, une mer calme.
+   ============================================================ */
+const rndB = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+
+const DEFS_B = `<defs>
+<linearGradient id="b-ciel" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%"   stop-color="#4d9dcc"/>
+  <stop offset="20%"  stop-color="#7bb9db"/>
+  <stop offset="42%"  stop-color="#a9d0e5"/>
+  <stop offset="64%"  stop-color="#d6e5e8"/>
+  <stop offset="82%"  stop-color="#f0e6d4"/>
+  <stop offset="100%" stop-color="#fbdfb2"/></linearGradient>
+<radialGradient id="b-soleil" cx="0.5" cy="0.5">
+  <stop offset="0%"   stop-color="#fffdf2" stop-opacity="1"/>
+  <stop offset="22%"  stop-color="#fff2cf" stop-opacity=".72"/>
+  <stop offset="52%"  stop-color="#ffe0a4" stop-opacity=".3"/>
+  <stop offset="100%" stop-color="#ffd28a" stop-opacity="0"/></radialGradient>
+<linearGradient id="b-loin" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#b8cdd8"/><stop offset="100%" stop-color="#9db6c4"/></linearGradient>
+<linearGradient id="b-coll" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#e4dfcb"/><stop offset="55%" stop-color="#cdc6ac"/>
+  <stop offset="100%" stop-color="#b0a88c"/></linearGradient>
+<linearGradient id="b-mer" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%"   stop-color="#a5dfe4"/>
+  <stop offset="12%"  stop-color="#7ccbd8"/>
+  <stop offset="34%"  stop-color="#48a8c4"/>
+  <stop offset="62%"  stop-color="#2680a8"/>
+  <stop offset="100%" stop-color="#12547c"/></linearGradient>
+<linearGradient id="b-sable" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0%" stop-color="#efe3c8"/><stop offset="45%" stop-color="#ddceac"/>
+  <stop offset="100%" stop-color="#c6b48e"/></linearGradient>
+<linearGradient id="b-roche" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0%" stop-color="#d8cfb8"/><stop offset="100%" stop-color="#a89e84"/></linearGradient>
 </defs>`;
 
-/* ---------- ciel et fond, communs ---------- */
-function fond(n){
-  let s = `<rect width="480" height="240" fill="url(#ciel)"/>`;
-  s += `<ellipse cx="392" cy="46" rx="120" ry="54" fill="url(#soleil)"/>`;
-  s += `<circle cx="392" cy="42" r="16" fill="#fffdf2"/>`;
-  for (let i = 0; i < 11; i++){
-    const cx = rnd4(i+2)*520, cy = 14 + rnd4(i+9)*38, w = 26 + rnd4(i)*46;
-    s += `<g opacity="${(.18 + rnd4(i+5)*.2).toFixed(2)}" fill="#fff">
-      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="5"/>
-      <ellipse cx="${(cx+w*.34).toFixed(0)}" cy="${(cy-4).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="4.4"/></g>`;
-  }
-  /* collines : deux plans */
-  s += `<path d="M0 104 L44 84 L92 98 L142 76 L196 94 L248 72 L302 90 L356 76 L410 92 L480 82 L480 150 L0 150 Z"
-    fill="#c6d2d8" opacity=".75"/>`;
-  s += `<path d="M0 116 L52 98 L106 112 L162 92 L220 108 L276 88 L334 106 L392 92 L446 108 L480 100 L480 152 L0 152 Z"
-    fill="url(#colline)"/>`;
-  for (let i = 0; i < 52; i++)
-    s += `<ellipse cx="${(rnd4(i)*480).toFixed(0)}" cy="${(96 + rnd4(i+30)*52).toFixed(0)}" rx="3" ry="2.4"
-      fill="#93a583" opacity="${(.18+rnd4(i+7)*.26).toFixed(2)}"/>`;
-  /* la ville au loin, apparaît dès le niveau 1 */
-  if (n >= 1){
-    const murs = ['#f2e5cd','#ead9ba','#f5ecdb','#e4d2b2'];
-    const toits = ['#c4714a','#b4643e','#cf7d52','#a95a36'];
-    for (let i = 0; i < 22; i++){
-      const x = i*22 - 6, h = 12 + rnd4(i+40)*16, y = 132 - h;
-      if (x > 150 && x < 340) continue;
-      s += `<rect x="${x}" y="${y.toFixed(0)}" width="20" height="${h.toFixed(0)}" fill="${murs[i%4]}"/>`;
-      s += `<path d="M${x-2} ${y.toFixed(0)} h24 l-3 -4 h-18 z" fill="${toits[i%4]}"/>`;
-      for (let k = 0; k < 2; k++)
-        s += `<rect x="${x+4+k*8}" y="${(y+5).toFixed(0)}" width="5" height="6" fill="#7c9cb0" opacity=".8"/>`;
-    }
-  }
-  return s;
-}
-
-/* ---------- la mer et le bassin ---------- */
-function eau(n){
-  let s = `<rect x="0" y="152" width="480" height="88" fill="url(#mer)"/>`;
-  s += `<path d="M0 158 q66 6 134 1 q68 -5 132 3 q60 5 116 -3 q52 -4 98 2 v-9 H0 Z" fill="#a8e4e8" opacity=".28"/>`;
-  for (let i = 0; i < 5; i++)
-    s += `<path class="houle" d="M-50 ${164+i*11} q28 -4 56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0 t56 0"
-      stroke="#fff" stroke-width="${(1.5-i*.16).toFixed(2)}" fill="none" opacity="${(.34-i*.05).toFixed(2)}"/>`;
-  for (let i = 0; i < 14; i++)
-    s += `<ellipse class="ecume" cx="${(rnd4(i+31)*480).toFixed(0)}" cy="${(166+rnd4(i+41)*66).toFixed(0)}"
-      rx="${(3+rnd4(i)*7).toFixed(1)}" ry="1.2" fill="#fff" opacity="${(.2+rnd4(i+4)*.3).toFixed(2)}"/>`;
-  return s;
-}
-
-/* ---------- pièces du port ---------- */
-function quai(x, y, w, h){
-  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#quai)"/>`;
-  s += `<rect x="${x}" y="${y}" width="${w}" height="3" fill="#f7f2e6"/>`;
-  s += `<rect x="${x}" y="${y+h-3}" width="${w}" height="3" fill="#a89e88"/>`;
-  for (let i = 0; i * 16 < w; i++)
-    s += `<rect x="${x + i*16}" y="${y+3}" width="1.4" height="${h-6}" fill="#c0b6a0" opacity=".7"/>`;
-  return s;
-}
-function bollard(x, y){
-  return `<path d="M${x} ${y} q0 -7 5 -7 q5 0 5 7 z" fill="#4a5560"/>
-    <ellipse cx="${x+5}" cy="${y-7}" rx="5" ry="2" fill="#5f6c78"/>`;
-}
-function conteneur(x, y, w, h, c, o){
-  let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1" fill="${c}"/>`;
-  s += `<rect x="${x}" y="${y}" width="${w}" height="${(h*.22).toFixed(1)}" fill="#fff" opacity=".16"/>`;
-  s += `<rect x="${x}" y="${y+h-h*.2}" width="${w}" height="${(h*.2).toFixed(1)}" fill="${o}" opacity=".55"/>`;
-  for (let i = 1; i * 7 < w; i++)
-    s += `<rect x="${x + i*7}" y="${y+1}" width="1.2" height="${h-2}" fill="${o}" opacity=".5"/>`;
-  return s;
-}
-function pileConteneurs(x, sol, cols, rangs, graine){
-  const C = [['#2f7fb0','#1a527a'],['#4f8f68','#2f5f42'],['#b06a3a','#7c4522'],
-             ['#8a5a9c','#5c3a6c'],['#c2711a','#8a4d0e'],['#5c7f8f','#3a5a68']];
-  let s = '';
-  for (let c = 0; c < cols; c++){
-    const h = 1 + Math.floor(rnd4(graine + c) * rangs);
-    for (let r = 0; r < h; r++){
-      const t = C[Math.floor(rnd4(graine + c*7 + r*3) * C.length)];
-      s += conteneur(x + c*22, sol - (r+1)*10, 20, 9, t[0], t[1]);
-    }
-  }
-  return s;
-}
-function portique(x, sol, h, ouvert){
-  const ecart = 30, fleche = 46;
-  let s = `<g class="portique">`;
-  s += `<rect x="${x-10}" y="${sol-2}" width="${ecart+fleche+22}" height="2.4" fill="#8c8272"/>`;
-  /* deux jambes en A */
-  s += `<path d="M${x-3} ${sol} L${x+1} ${sol-h} h4 L${x+7} ${sol} z" fill="url(#metalG)"/>`;
-  s += `<path d="M${x+ecart-3} ${sol} L${x+ecart+1} ${sol-h} h4 L${x+ecart+7} ${sol} z" fill="url(#metalG)"/>`;
-  s += `<path d="M${x+3} ${sol-h*.5} L${x+ecart+3} ${sol-h*.78} M${x+ecart+3} ${sol-h*.5} L${x+3} ${sol-h*.78}"
-    stroke="#6d808c" stroke-width="1.6"/>`;
-  s += `<rect x="${x-2}" y="${sol-h*.5}" width="${ecart+8}" height="2.4" fill="#6d808c"/>`;
-  /* poutre horizontale */
-  s += `<rect x="${x-14}" y="${sol-h-7}" width="${ecart+fleche+24}" height="6" rx="1" fill="url(#metal)"/>`;
-  s += `<rect x="${x-14}" y="${sol-h-7}" width="${ecart+fleche+24}" height="1.8" fill="#ffc86a" opacity=".5"/>`;
+/* ================= le ciel ================= */
+function ciel(){
+  let s = `<rect width="480" height="240" fill="url(#b-ciel)"/>`;
+  /* halo et disque */
+  s += `<ellipse cx="368" cy="52" rx="110" ry="56" fill="url(#b-soleil)" opacity=".7"/>`;
+  s += `<circle cx="368" cy="50" r="15" fill="#fffef8"/>`;
+  s += `<circle cx="368" cy="50" r="22" fill="#fff6dc" opacity=".45"/>`;
+  /* nuages : trois couches, du plus lointain au plus proche */
+  s += `<g class="nuages-loin">`;
   for (let i = 0; i < 7; i++){
-    const px = x - 10 + i*(ecart+fleche+18)/7;
-    s += `<path d="M${px.toFixed(1)} ${sol-h-7} l${((ecart+fleche+18)/14).toFixed(1)} 7"
-      stroke="#c07a1c" stroke-width="1.2"/>`;
+    const cx = -60 + rndB(i+3)*600, cy = 20 + rndB(i+11)*22, w = 30 + rndB(i)*40;
+    s += `<g opacity="${(.14 + rndB(i+5)*.12).toFixed(2)}" fill="#fff">
+      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="3.6"/>
+      <ellipse cx="${(cx+w*.3).toFixed(0)}" cy="${(cy-2.6).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="3"/></g>`;
   }
-  /* contrepoids côté terre */
-  s += `<rect x="${x-19}" y="${sol-h-13}" width="11" height="8" rx="1" fill="#5c6a74"/>`;
-  /* cabine */
-  s += `<rect x="${x+6}" y="${sol-h-16}" width="16" height="9" rx="1.5" fill="#2f3f4a"/>`;
-  s += `<rect x="${x+8}" y="${sol-h-14}" width="12" height="4.4" fill="#8fd0ee" opacity=".7"/>`;
-  /* chariot suspendu */
-  const cx = x + (ouvert ? ecart + 34 : 14);
-  s += `<rect x="${cx-5}" y="${sol-h-5}" width="10" height="4" fill="#4e5f6a"/>`;
-  s += `<g class="crochet"><path d="M${cx} ${sol-h-1} V${sol-h+22}" stroke="#4e5f6a" stroke-width="1.2"/>`;
-  s += `<rect x="${cx-8}" y="${sol-h+22}" width="16" height="8" rx="1" fill="#2f7fb0"/>`;
-  s += `<rect x="${cx-8}" y="${sol-h+22}" width="16" height="1.8" fill="#fff" opacity=".22"/></g>`;
-  s += `<circle class="feu" cx="${x+ecart+fleche+6}" cy="${sol-h-10}" r="2.2" fill="#e04a33"/>`;
-  return s + `</g>`;
+  s += `</g><g class="nuages-pres">`;
+  for (let i = 0; i < 6; i++){
+    const cx = -80 + rndB(i+21)*620, cy = 30 + rndB(i+31)*30, w = 34 + rndB(i+7)*46;
+    const teinte = cx > 240 ? '#fff4e0' : '#ffffff';
+    s += `<g opacity="${(.2 + rndB(i+9)*.2).toFixed(2)}" fill="${teinte}">
+      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="5.4"/>
+      <ellipse cx="${(cx+w*.36).toFixed(0)}" cy="${(cy-4.6).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="4.6"/>
+      <ellipse cx="${(cx-w*.42).toFixed(0)}" cy="${(cy-2.2).toFixed(0)}" rx="${(w*.32).toFixed(0)}" ry="3.8"/>
+      <ellipse cx="${(cx+w*.06).toFixed(0)}" cy="${(cy-7).toFixed(0)}" rx="${(w*.3).toFixed(0)}" ry="3.4"/></g>`;
+  }
+  s += `</g>`;
+  /* oiseaux très haut */
+  for (let i = 0; i < 4; i++){
+    const x = 200 + i*46, y = 34 + (i%2)*13;
+    s += `<g class="oiseau" opacity="${(.42 - i*.06).toFixed(2)}">
+      <path d="M${x} ${y} q4.4 -3.4 8.8 0 q4.4 -3.4 8.8 0" stroke="#7d94a2" stroke-width="1.2"
+        fill="none" stroke-linecap="round"/></g>`;
+  }
+  return s;
 }
 
-function hangar(x, sol, w, h, nom){
-  let s = `<path d="M${x} ${sol} L${x} ${sol-h} L${x+w/2} ${sol-h-13} L${x+w} ${sol-h} L${x+w} ${sol} Z" fill="#cfd6d2"/>`;
-  s += `<path d="M${x} ${sol-h} L${x+w/2} ${sol-h-13} L${x+w/2} ${sol} L${x} ${sol} Z" fill="#e2e7e2"/>`;
-  for (let i = 1; i * 12 < w; i++)
-    s += `<rect x="${x + i*12}" y="${sol-h}" width="1.6" height="${h}" fill="#b4bcb8" opacity=".8"/>`;
-  s += `<rect x="${x+w*.3}" y="${sol-h*.62}" width="${w*.4}" height="${h*.62}" fill="#5a6a72"/>`;
-  for (let i = 0; i < 5; i++)
-    s += `<rect x="${x+w*.3}" y="${sol-h*.62 + i*(h*.62/5)}" width="${w*.4}" height="1.4" fill="#485660"/>`;
-  s += `<rect x="${x+w*.12}" y="${sol-h*.86}" width="${w*.14}" height="${h*.2}" fill="#8fd0ee" opacity=".55"/>`;
-  s += `<rect x="${x+w*.74}" y="${sol-h*.86}" width="${w*.14}" height="${h*.2}" fill="#8fd0ee" opacity=".45"/>`;
-  if (nom){
-    s += `<rect x="${x+w*.26}" y="${sol-h-6}" width="${w*.48}" height="11" rx="2" fill="#c2711a"/>`;
-    s += `<text x="${x+w*.5}" y="${sol-h+2.5}" font-family="Barlow,sans-serif" font-size="7"
-      font-weight="600" fill="#fff" text-anchor="middle">${nom}</text>`;
+/* ================= le relief ================= */
+/* une crête est décrite par une suite de sommets ; on la lisse en courbe */
+function crete(pts, base, remplissage, opacite){
+  let d = `M${pts[0][0]} ${base} L${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++){
+    const [x1, y1] = pts[i], [x2, y2] = pts[i+1];
+    const mx = (x1 + x2) / 2;
+    d += ` Q${mx} ${y1} ${mx} ${(y1+y2)/2} Q${mx} ${y2} ${x2} ${y2}`;
   }
-  return s;
+  d += ` L${pts[pts.length-1][0]} ${base} Z`;
+  return `<path d="${d}" fill="${remplissage}"${opacite ? ` opacity="${opacite}"` : ''}/>`;
 }
-function grueMobile(x, sol, s2){
-  return `<g transform="translate(${x},${sol}) scale(${s2})">
-    <rect x="-16" y="-14" width="34" height="12" rx="2" fill="#e0913a"/>
-    <rect x="-16" y="-14" width="34" height="3" fill="#f2b45c"/>
-    <circle cx="-9" cy="0" r="5.4" fill="#2b3038"/><circle cx="11" cy="0" r="5.4" fill="#2b3038"/>
-    <circle cx="-9" cy="0" r="2" fill="#6d7a84"/><circle cx="11" cy="0" r="2" fill="#6d7a84"/>
-    <path d="M6 -14 L34 -40" stroke="url(#metal)" stroke-width="5"/>
-    <path d="M34 -40 V-30" stroke="#4e5f6a" stroke-width="1.2"/>
-    <rect x="30" y="-30" width="9" height="6" rx="1" fill="#4f8f68"/>
-    <rect x="-8" y="-22" width="12" height="8" rx="1.5" fill="#2f3f4a"/></g>`;
-}
-function capitainerie(x, sol){
-  let s = `<rect x="${x}" y="${sol-34}" width="52" height="34" fill="#f0e9dc"/>`;
-  s += `<rect x="${x}" y="${sol-34}" width="52" height="4" fill="#c4714a"/>`;
-  s += `<path d="M${x-3} ${sol-34} h58 l-4 -5 h-50 z" fill="#b4643e"/>`;
-  for (let r = 0; r < 2; r++)
-    for (let c = 0; c < 4; c++)
-      s += `<rect x="${x+6+c*12}" y="${sol-27+r*13}" width="7" height="9" rx="1" fill="#6d94ac"/>`;
-  s += `<rect x="${x+34}" y="${sol-56}" width="14" height="23" fill="#f6f1e6"/>`;
-  s += `<rect x="${x+36}" y="${sol-52}" width="10" height="9" fill="#8fd0ee" opacity=".7"/>`;
-  s += `<rect x="${x+32}" y="${sol-60}" width="18" height="5" rx="1" fill="#4e5f6a"/>`;
-  s += `<path d="M${x+41} ${sol-60} V${sol-72}" stroke="#8c8272" stroke-width="1.4"/>`;
-  s += `<path d="M${x+41.7} ${sol-72} h12 v7 h-12 z" fill="#0055a4"/>`;
-  s += `<path d="M${x+45.7} ${sol-72} h4 v7 h-4 z" fill="#fff"/>`;
-  s += `<path d="M${x+49.7} ${sol-72} h4 v7 h-4 z" fill="#ef4135"/>`;
-  s += `<circle class="feu2" cx="${x+41}" cy="${sol-62}" r="2" fill="#4fb286"/>`;
-  return s;
-}
-function phare(x, sol){
-  let s = `<path d="M${x-8} ${sol} L${x-5} ${sol-46} L${x+5} ${sol-46} L${x+8} ${sol} Z" fill="#f6f1e6"/>`;
-  s += `<path d="M${x} ${sol} L${x} ${sol-46} L${x+5} ${sol-46} L${x+8} ${sol} Z" fill="#ddd5c2"/>`;
-  s += `<g fill="#c74a33"><path d="M${x-7.2} ${sol-12} h14.4 l.3 5 h-15 z"/>
-    <path d="M${x-6.2} ${sol-30} h12.4 l.3 5 h-13 z"/></g>`;
-  s += `<rect x="${x-7}" y="${sol-54}" width="14" height="8" fill="#4e5f6a"/>`;
-  s += `<rect x="${x-5}" y="${sol-52}" width="10" height="5" fill="#ffe8b4"/>`;
-  s += `<path d="M${x-9} ${sol-54} h18 l-3 -4 h-12 z" fill="#3a4a54"/>`;
-  s += `<circle class="feu" cx="${x}" cy="${sol-49}" r="13" fill="#ffe8b4" opacity=".18"/>`;
-  return s;
-}
-function navire(x, y, taille, c){
-  const w = 92 * taille, h = 15 * taille;
-  let s = `<g class="navire">`;
-  s += `<path d="M${x} ${y} h${w} l${12*taille} ${5*taille} l${-4*taille} ${h} H${x+6*taille} Z" fill="#2b3a45"/>`;
-  s += `<path d="M${x} ${y} h${w} l${12*taille} ${5*taille} H${x} Z" fill="#48606e"/>`;
-  s += `<rect x="${x+3*taille}" y="${y-11*taille}" width="${18*taille}" height="${11*taille}" fill="#f2eee2"/>`;
-  for (let i = 0; i < 3; i++)
-    s += `<rect x="${x+5*taille+i*5*taille}" y="${y-8*taille}" width="${3*taille}" height="${3*taille}" fill="#7fa8bc"/>`;
-  s += `<rect x="${x+6*taille}" y="${y-17*taille}" width="${8*taille}" height="${6*taille}" fill="#f2eee2"/>`;
-  const C = [['#2f7fb0','#1a527a'],['#4f8f68','#2f5f42'],['#b06a3a','#7c4522'],['#8a5a9c','#5c3a6c']];
-  for (let i = 0; i < 6; i++)
-    for (let r = 0; r < (i % 2 ? 2 : 1); r++){
-      const t = C[(i+r) % C.length];
-      s += conteneur(x + (26 + i*11)*taille, y - (5 + r*7)*taille, 10*taille, 6*taille, t[0], t[1]);
+
+/* hauteur de la crête gauche à l'abscisse x */
+const CRETE_G = [[-20,140],[12,112],[40,96],[70,104],[100,86],[130,98],[160,88],[186,104],[208,124],[228,146],[244,158]];
+const CRETE_D = [[252,158],[276,138],[302,118],[330,102],[360,94],[392,102],[422,90],[452,100],[500,116]];
+
+function hauteurCrete(pts, x){
+  for (let i = 0; i < pts.length - 1; i++){
+    if (x >= pts[i][0] && x <= pts[i+1][0]){
+      const t = (x - pts[i][0]) / (pts[i+1][0] - pts[i][0]);
+      const u = t*t*(3 - 2*t);           /* lissage */
+      return pts[i][1] + (pts[i+1][1] - pts[i][1]) * u;
     }
-  s += `<rect x="${x+w-6*taille}" y="${y-14*taille}" width="${5*taille}" height="${9*taille}" fill="${c}"/>`;
-  s += `<ellipse cx="${x+w/2}" cy="${y+h+3}" rx="${w*.55}" ry="3" fill="#fff" opacity=".16"/>`;
+  }
+  return 999;
+}
+
+function relief(){
+  let s = '';
+
+  /* --- fond : deux chaînes lointaines, très pâles --- */
+  s += crete([[-20,124],[40,102],[96,116],[152,96],[214,112],[272,92],[330,110],
+              [392,94],[448,112],[500,100]], 158, 'url(#b-loin)', '.32');
+  s += crete([[-20,136],[52,116],[112,130],[176,110],[240,126],[302,108],[364,124],
+              [428,110],[500,126]], 158, '#c2ccd0', '.42');
+
+  /* --- massif de gauche --- */
+  s += crete(CRETE_G, 158, 'url(#b-coll)');
+  /* versant éclairé : une bande qui suit la crête */
+  let ecl = `M${CRETE_G[0][0]} 158`;
+  CRETE_G.forEach(([x, y], i) => { ecl += ` L${x} ${y}`; });
+  ecl += ` L${CRETE_G[CRETE_G.length-1][0]} 158 Z`;
+  s += `<g opacity=".26"><path d="${ecl}" fill="#fff4de"
+    transform="translate(-4,3)" clip-path="url(#clipG)"/></g>`;
+
+  /* --- massif de droite --- */
+  s += crete(CRETE_D, 158, 'url(#b-coll)');
+
+  /* --- ombre dans les combes --- */
+  s += `<path d="M70 104 Q85 95 100 86 L100 158 L70 158 Z" fill="#8a8270" opacity=".1"/>`;
+  s += `<path d="M186 104 Q197 114 208 124 L208 158 L186 158 Z" fill="#8a8270" opacity=".13"/>`;
+  s += `<path d="M360 94 Q376 98 392 102 L392 158 L360 158 Z" fill="#8a8270" opacity=".1"/>`;
+
+  /* --- restanques : elles épousent la pente --- */
+  s += `<g opacity=".45">`;
+  [14, 26, 38, 50].forEach((dy, k) => {
+    let d = '';
+    for (let x = 4; x <= 230; x += 8){
+      const y = hauteurCrete(CRETE_G, x) + dy;
+      if (y > 156) continue;
+      d += (d ? ' L' : 'M') + x + ' ' + y.toFixed(1);
+    }
+    if (d){
+      s += `<path d="${d}" stroke="#a89e84" stroke-width="1.8" fill="none"/>`;
+      s += `<path d="${d}" stroke="#e6dec6" stroke-width=".9" fill="none" transform="translate(0,-1.2)"/>`;
+    }
+  });
+  s += `</g>`;
+
+  /* --- strates : des arcs parallèles à la crête --- */
+  s += `<g stroke="#ffffff" stroke-width="1.1" fill="none" opacity=".18">`;
+  [8, 20, 32].forEach(dy => {
+    let d = '';
+    for (let x = 256; x <= 478; x += 10){
+      const y = hauteurCrete(CRETE_D, x) + dy;
+      if (y > 156) continue;
+      d += (d ? ' L' : 'M') + x + ' ' + y.toFixed(1);
+    }
+    if (d) s += `<path d="${d}"/>`;
+  });
+  s += `</g>`;
+
+  /* --- garrigue : semée sous la crête, densité croissante vers le bas --- */
+  const TEINTES = ['#8ea07c','#98a684','#829472','#a2ad8c','#8ba077'];
+  for (let i = 0; i < 300; i++){
+    const gauche = rndB(i) > .46;
+    const x = gauche ? -6 + rndB(i+2)*252 : 250 + rndB(i+2)*234;
+    const haut = hauteurCrete(gauche ? CRETE_G : CRETE_D, x);
+    if (haut > 156) continue;
+    const t = Math.pow(rndB(i+30), .5);
+    const y = haut + 2 + t * (157 - haut);
+    const r = 1.2 + rndB(i+7) * (1.4 + t * 2);
+    s += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(1)}" rx="${r.toFixed(1)}"
+      ry="${(r*.7).toFixed(1)}" fill="${TEINTES[i % 5]}"
+      opacity="${(.2 + rndB(i+11)*.32).toFixed(2)}"/>`;
+  }
+
+  /* --- rochers affleurants sur les crêtes --- */
+  for (let i = 0; i < 30; i++){
+    const gauche = rndB(i+90) > .5;
+    const x = gauche ? 8 + rndB(i+2)*222 : 258 + rndB(i+2)*212;
+    const haut = hauteurCrete(gauche ? CRETE_G : CRETE_D, x);
+    if (haut > 152) continue;
+    const y = haut + 3 + rndB(i+30)*32;
+    const w = 5 + rndB(i)*7;
+    s += `<path d="M${x.toFixed(0)} ${y.toFixed(1)} q${(w*.3).toFixed(1)} -${(3+rndB(i+5)*3).toFixed(1)}
+      ${w.toFixed(1)} 0 z" fill="#bdb399" opacity="${(.32+rndB(i+11)*.3).toFixed(2)}"/>`;
+    s += `<path d="M${x.toFixed(0)} ${y.toFixed(1)} q${(w*.3).toFixed(1)} -${(3+rndB(i+5)*3).toFixed(1)}
+      ${(w*.5).toFixed(1)} -1 z" fill="#e0d8c2" opacity="${(.28+rndB(i+3)*.24).toFixed(2)}"/>`;
+  }
+
+  return s;
+}
+
+/* ================= un pin parasol ================= */
+function pin(x, sol, h, g){
+  const t = h / 30;
+  const pen = (rndB(g) - .5) * 9 * t;
+  const cx = x + pen, cy = sol - h * .8;
+  const PAL = [
+    ['#2f5638','#3f6b46','#54855a','#6d9c6e'],
+    ['#35603f','#487750','#5c8f64','#78a878'],
+    ['#2b5034','#3d6842','#517f56','#6b9668']
+  ][g % 3];
+  const [tres, fonce, moyen, clair] = PAL;
+
+  let s = `<g class="pin p${g % 4}" style="transform-origin:${x}px ${sol}px">`;
+
+  /* tronc : deux courbes qui se rejoignent, écorce visible */
+  s += `<path d="M${(x - 2.6*t).toFixed(1)} ${sol}
+    C${(x - 2*t + pen*.3).toFixed(1)} ${(sol - h*.34).toFixed(1)}
+     ${(x - 1.4*t + pen*.7).toFixed(1)} ${(sol - h*.56).toFixed(1)}
+     ${(cx - 1.6*t).toFixed(1)} ${(sol - h*.76).toFixed(1)}
+    L${(cx + 1.6*t).toFixed(1)} ${(sol - h*.76).toFixed(1)}
+    C${(x + 2.4*t + pen*.7).toFixed(1)} ${(sol - h*.56).toFixed(1)}
+     ${(x + 3*t + pen*.3).toFixed(1)} ${(sol - h*.34).toFixed(1)}
+     ${(x + 3.4*t).toFixed(1)} ${sol} Z" fill="#6b4f33"/>`;
+  s += `<path d="M${(x - 2.6*t).toFixed(1)} ${sol}
+    C${(x - 2*t + pen*.3).toFixed(1)} ${(sol - h*.34).toFixed(1)}
+     ${(x - 1.4*t + pen*.7).toFixed(1)} ${(sol - h*.56).toFixed(1)}
+     ${(cx - 1.6*t).toFixed(1)} ${(sol - h*.76).toFixed(1)}
+    l${(1.4*t).toFixed(1)} 0
+    C${(x + pen*.7).toFixed(1)} ${(sol - h*.56).toFixed(1)}
+     ${(x - .4*t + pen*.3).toFixed(1)} ${(sol - h*.34).toFixed(1)}
+     ${(x - .4*t).toFixed(1)} ${sol} Z" fill="#8f6c45"/>`;
+  /* stries d'écorce */
+  s += `<g stroke="#5c4229" stroke-width="${(.6*t).toFixed(2)}" opacity=".45" fill="none">`;
+  for (let k = 0; k < 4; k++)
+    s += `<path d="M${(x - 1.6*t + k*1.4*t).toFixed(1)} ${(sol - 1).toFixed(1)}
+      q${(pen*.5).toFixed(1)} ${(-h*.32).toFixed(1)} ${(pen*.8).toFixed(1)} ${(-h*.62).toFixed(1)}"/>`;
+  s += `</g>`;
+
+  /* branches maîtresses, qui portent la couronne */
+  s += `<g stroke="#6b4f33" stroke-width="${(1.5*t).toFixed(2)}" fill="none" stroke-linecap="round">
+    <path d="M${(cx).toFixed(1)} ${(sol - h*.74).toFixed(1)} q${(-7*t).toFixed(1)} ${(-2*t).toFixed(1)} ${(-13*t).toFixed(1)} ${(-4.4*t).toFixed(1)}"/>
+    <path d="M${(cx).toFixed(1)} ${(sol - h*.76).toFixed(1)} q${(7*t).toFixed(1)} ${(-2.4*t).toFixed(1)} ${(13*t).toFixed(1)} ${(-4*t).toFixed(1)}"/>
+    <path d="M${(cx).toFixed(1)} ${(sol - h*.78).toFixed(1)} q${(-3*t).toFixed(1)} ${(-4*t).toFixed(1)} ${(-6*t).toFixed(1)} ${(-7*t).toFixed(1)}"/></g>`;
+
+  /* la couronne : un grand parasol composé de touffes irrégulières */
+  const T = [
+    [-15,  3, 11, 4.6, tres], [ 15,  3.4, 10, 4.2, tres],
+    [ -6,  4, 13, 5,   tres], [  7,  4.2, 12, 4.6, tres],
+    [-13, -1, 10, 5,   fonce], [ 13, -.4, 10, 4.6, fonce],
+    [ -4,  0, 13, 5.4, fonce], [  6,  .6, 12, 5,   fonce],
+    [-10, -4.6, 9, 4.4, moyen], [  9, -4,  9, 4.2, moyen],
+    [ -1, -5.4, 12, 5,  moyen],
+    [ -5, -8,  8, 3.6, clair], [  5, -7.4, 8, 3.4, clair],
+    [  0, -9.6, 6, 2.8, clair]
+  ];
+  T.forEach(([dx, dy, rx, ry, c]) => {
+    s += `<ellipse cx="${(cx + dx*t).toFixed(1)}" cy="${(cy + dy*t).toFixed(1)}"
+      rx="${(rx*t).toFixed(1)}" ry="${(ry*t).toFixed(1)}" fill="${c}"/>`;
+  });
+  /* aiguilles suggérées sur le pourtour */
+  s += `<g stroke="${moyen}" stroke-width="${(.7*t).toFixed(2)}" opacity=".7" stroke-linecap="round">`;
+  for (let k = 0; k < 14; k++){
+    const a = Math.PI * (0.06 + k / 15 * 0.88);
+    const rx0 = 16 * t, ry0 = 6.4 * t;
+    const px = cx - Math.cos(a) * rx0, py = cy + 1.4*t - Math.sin(a) * ry0;
+    const l = 2.4 * t;
+    s += `<path d="M${px.toFixed(1)} ${py.toFixed(1)} l${(-Math.cos(a)*l).toFixed(1)} ${(-Math.sin(a)*l).toFixed(1)}"/>`;
+  }
+  s += `</g>`;
+  /* rehaut du couchant */
+  s += `<ellipse cx="${(cx + 6*t).toFixed(1)}" cy="${(cy - 7.4*t).toFixed(1)}" rx="${(7.4*t).toFixed(1)}"
+    ry="${(2.6*t).toFixed(1)}" fill="#a8c48c" opacity=".5"/>`;
+  s += `<ellipse cx="${(cx + 11*t).toFixed(1)}" cy="${(cy - 1*t).toFixed(1)}" rx="${(5*t).toFixed(1)}"
+    ry="${(2.2*t).toFixed(1)}" fill="#94b47e" opacity=".34"/>`;
+
+  s += `</g>`;
+  /* ombre portée, allongée vers la gauche */
+  s += `<ellipse cx="${(x + pen*.3 - 4*t).toFixed(1)}" cy="${(sol + .6).toFixed(1)}"
+    rx="${(15*t).toFixed(1)}" ry="${(2.4*t).toFixed(1)}" fill="#8a7d5c" opacity=".24"/>`;
+  return s;
+}
+
+/* ================= un cyprès ================= */
+function cypres(x, sol, h){
+  const t = h / 26;
+  let s = `<g class="cypres" style="transform-origin:${x}px ${sol}px">`;
+  s += `<ellipse cx="${(x-3*t).toFixed(1)}" cy="${sol}" rx="${(5*t).toFixed(1)}" ry="${(1.8*t).toFixed(1)}"
+    fill="#8a7d5c" opacity=".24"/>`;
+  /* silhouette en flamme, contour irrégulier */
+  s += `<path d="M${(x - 3.6*t).toFixed(1)} ${sol}
+    q${(-1.6*t).toFixed(1)} ${(-h*.28).toFixed(1)} ${(-.4*t).toFixed(1)} ${(-h*.5).toFixed(1)}
+    q${(-1*t).toFixed(1)} ${(-h*.16).toFixed(1)} ${(.6*t).toFixed(1)} ${(-h*.28).toFixed(1)}
+    q${(-.6*t).toFixed(1)} ${(-h*.12).toFixed(1)} ${(1.4*t).toFixed(1)} ${(-h*.2).toFixed(1)}
+    q${(1.2*t).toFixed(1)} ${(-h*.08).toFixed(1)} ${(2.2*t).toFixed(1)} ${(h*.04).toFixed(1)}
+    q${(1.6*t).toFixed(1)} ${(h*.1).toFixed(1)} ${(.8*t).toFixed(1)} ${(h*.22).toFixed(1)}
+    q${(1.4*t).toFixed(1)} ${(h*.14).toFixed(1)} ${(.2*t).toFixed(1)} ${(h*.3).toFixed(1)}
+    q${(1.2*t).toFixed(1)} ${(h*.2).toFixed(1)} ${(-.6*t).toFixed(1)} ${(h*.44).toFixed(1)} z"
+    fill="#2f5638"/>`;
+  /* face éclairée */
+  s += `<path d="M${(x - .4*t).toFixed(1)} ${sol}
+    q${(-1*t).toFixed(1)} ${(-h*.3).toFixed(1)} ${(-.2*t).toFixed(1)} ${(-h*.52).toFixed(1)}
+    q${(-.4*t).toFixed(1)} ${(-h*.2).toFixed(1)} ${(1*t).toFixed(1)} ${(-h*.24).toFixed(1)}
+    q${(1.6*t).toFixed(1)} ${(-.02*h).toFixed(1)} ${(1.8*t).toFixed(1)} ${(h*.18).toFixed(1)}
+    q${(.6*t).toFixed(1)} ${(h*.26).toFixed(1)} ${(-.6*t).toFixed(1)} ${(h*.6).toFixed(1)} z"
+    fill="#4a7852" opacity=".85"/>`;
+  /* touffes sur le bord */
+  for (let k = 0; k < 5; k++){
+    const y = sol - h*(.2 + k*.16);
+    s += `<ellipse cx="${(x - 3.4*t + (k%2)*7*t).toFixed(1)}" cy="${y.toFixed(1)}"
+      rx="${(1.6*t).toFixed(1)}" ry="${(2.2*t).toFixed(1)}" fill="${k%2 ? '#3f6b46' : '#2f5638'}" opacity=".8"/>`;
+  }
+  s += `<rect x="${(x-.8).toFixed(1)}" y="${(sol-3*t).toFixed(1)}" width="1.6" height="${(3*t).toFixed(1)}" fill="#6b4f33"/>`;
   return s + `</g>`;
 }
-function remorqueur(x, y){
-  return `<g class="remorqueur">
-    <path d="M${x} ${y} h26 l4 3 l-2 6 h-26 z" fill="#2b3a45"/>
-    <path d="M${x} ${y} h26 l4 3 h-30 z" fill="#c74a33"/>
-    <rect x="${x+6}" y="${y-8}" width="11" height="8" fill="#f2eee2"/>
-    <rect x="${x+8}" y="${y-6}" width="7" height="3.4" fill="#7fa8bc"/>
-    <rect x="${x+18}" y="${y-11}" width="4" height="11" fill="#3a4a54"/>
-    <ellipse cx="${x+15}" cy="${y+11}" rx="17" ry="2.4" fill="#fff" opacity=".18"/></g>`;
+
+/* ================= un olivier ================= */
+function olivier(x, sol, h){
+  const t = h / 22;
+  let s = `<g class="olivier" style="transform-origin:${x}px ${sol}px">`;
+  s += `<ellipse cx="${(x-3*t).toFixed(1)}" cy="${sol}" rx="${(11*t).toFixed(1)}" ry="${(2.2*t).toFixed(1)}"
+    fill="#8a7d5c" opacity=".24"/>`;
+  /* tronc noueux, deux branches maîtresses */
+  s += `<path d="M${(x - 3.4*t).toFixed(1)} ${sol}
+    q${(-1.4*t).toFixed(1)} ${(-h*.18).toFixed(1)} ${(.4*t).toFixed(1)} ${(-h*.3).toFixed(1)}
+    q${(1.4*t).toFixed(1)} ${(-h*.1).toFixed(1)} ${(3*t).toFixed(1)} ${(-h*.04).toFixed(1)}
+    q${(2*t).toFixed(1)} ${(h*.06).toFixed(1)} ${(1.4*t).toFixed(1)} ${(h*.34).toFixed(1)} z" fill="#8a7a5c"/>`;
+  s += `<path d="M${(x - 2*t).toFixed(1)} ${(sol - h*.26).toFixed(1)}
+    q${(-1.4*t).toFixed(1)} ${(-h*.12).toFixed(1)} ${(-1*t).toFixed(1)} ${(-h*.2).toFixed(1)}" 
+    stroke="#8a7a5c" stroke-width="${(1.8*t).toFixed(1)}" fill="none" stroke-linecap="round"/>`;
+  s += `<g stroke="#8a7a5c" stroke-width="${(1.5*t).toFixed(1)}" fill="none" stroke-linecap="round">
+    <path d="M${(x).toFixed(1)} ${(sol - h*.3).toFixed(1)} q${(-3*t).toFixed(1)} ${(-3*t).toFixed(1)} ${(-6*t).toFixed(1)} ${(-5*t).toFixed(1)}"/>
+    <path d="M${(x).toFixed(1)} ${(sol - h*.32).toFixed(1)} q${(3.4*t).toFixed(1)} ${(-2.6*t).toFixed(1)} ${(6.4*t).toFixed(1)} ${(-4.4*t).toFixed(1)}"/>
+    <path d="M${(x).toFixed(1)} ${(sol - h*.34).toFixed(1)} v${(-4*t).toFixed(1)}"/></g>`;
+  /* stries du tronc */
+  s += `<g stroke="#6d6144" stroke-width="${(.5*t).toFixed(2)}" opacity=".4" fill="none">
+    <path d="M${(x - 2.4*t).toFixed(1)} ${(sol-1).toFixed(1)} q${(.6*t).toFixed(1)} ${(-h*.14).toFixed(1)} ${(.8*t).toFixed(1)} ${(-h*.26).toFixed(1)}"/>
+    <path d="M${(x - .4*t).toFixed(1)} ${(sol-1).toFixed(1)} q${(.4*t).toFixed(1)} ${(-h*.14).toFixed(1)} ${(.4*t).toFixed(1)} ${(-h*.24).toFixed(1)}"/></g>`;
+  /* feuillage : nuage de petites masses gris-vert */
+  const cy = sol - h*.62;
+  const F = [
+    [-6, 2, 7, 5, '#6d8163'], [6, 2.4, 6.4, 4.6, '#6d8163'],
+    [0, .4, 8, 5.6, '#7d8f6a'], [-8, -2, 6, 4.4, '#7d8f6a'], [8, -1.6, 5.6, 4.2, '#7d8f6a'],
+    [-3, -4, 7, 4.6, '#8fa07c'], [4, -4.4, 6.4, 4.2, '#8fa07c'],
+    [0, -7, 5.4, 3.2, '#a2b28c'], [-5, -6.6, 4, 2.6, '#a2b28c']
+  ];
+  F.forEach(([dx, dy, rx, ry, c]) => {
+    s += `<ellipse cx="${(x + dx*t).toFixed(1)}" cy="${(cy + dy*t).toFixed(1)}"
+      rx="${(rx*t).toFixed(1)}" ry="${(ry*t).toFixed(1)}" fill="${c}"/>`;
+  });
+  /* feuilles isolées sur le pourtour */
+  s += `<g fill="#a2b28c" opacity=".8">`;
+  for (let k = 0; k < 9; k++){
+    const a = Math.PI * (0.1 + k / 9 * 0.85);
+    const px = x - Math.cos(a) * 9.4 * t, py = cy - Math.sin(a) * 6.4 * t;
+    s += `<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${(1.6*t).toFixed(1)}" ry="${(.8*t).toFixed(1)}"
+      transform="rotate(${(a*57 - 30).toFixed(0)} ${px.toFixed(1)} ${py.toFixed(1)})"/>`;
+  }
+  s += `</g>`;
+  s += `<ellipse cx="${(x + 4*t).toFixed(1)}" cy="${(cy - 6*t).toFixed(1)}" rx="${(4.4*t).toFixed(1)}"
+    ry="${(1.8*t).toFixed(1)}" fill="#bcc9a2" opacity=".5"/>`;
+  return s + `</g>`;
 }
-function digue(x, y, w){
-  let s = `<path d="M${x} ${y} h${w} l-6 9 h-${w-12} z" fill="#b8b0a0"/>`;
-  s += `<path d="M${x} ${y} h${w} v2.6 h-${w} z" fill="#d4cdb8"/>`;
-  for (let i = 0; i < w/9; i++)
-    s += `<path d="M${x+4+i*9} ${y+2.6} l3 6 l-6 0 z" fill="#9c9484" opacity=".7"/>`;
+
+/* ================= une maison ================= */
+function maison(x, sol, w, h, g){
+  const MURS  = ['#f6ead2','#f0dfc0','#f8f0de','#ead6b4','#f4e6ca','#eddcbc'];
+  const TOITS = ['#c9714a','#b8623c','#d4805a','#a95836','#c2694a'];
+  const VOLETS = ['#6f8f7a','#5d7f96','#8a6a5c','#6b8592'];
+  const mur = MURS[g % 6], toit = TOITS[g % 5], vol = VOLETS[g % 4];
+  const y = sol - h;
+  let s = `<g class="maison">`;
+  /* ombre portée */
+  s += `<ellipse cx="${x + w/2}" cy="${sol + 1}" rx="${(w*.62).toFixed(1)}" ry="3" fill="#8a7d5c" opacity=".22"/>`;
+  /* corps */
+  s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${mur}"/>`;
+  /* face ombrée à droite, lumière chaude à gauche */
+  s += `<rect x="${x + w*.7}" y="${y}" width="${w*.3}" height="${h}" fill="#3a2a1a" opacity=".1"/>`;
+  s += `<rect x="${x}" y="${y}" width="${w*.34}" height="${h}" fill="#ffe8b4" opacity=".22"/>`;
+  /* soubassement */
+  s += `<rect x="${x}" y="${sol-3}" width="${w}" height="3" fill="#00000014"/>`;
+  /* toit à deux pentes, débordant, avec génoise */
+  const dh = 5 + h*.1;
+  s += `<path d="M${x-3} ${y} L${x + w/2} ${y - dh} L${x + w + 3} ${y} Z" fill="${toit}"/>`;
+  s += `<path d="M${x-3} ${y} L${x + w/2} ${y - dh} L${x + w/2} ${y} Z" fill="#ffffff" opacity=".14"/>`;
+  /* rangée de tuiles rondes sous le toit */
+  s += `<rect x="${x-3}" y="${y}" width="${w+6}" height="2.2" fill="#00000020"/>`;
+  for (let k = 0; k * 4 < w + 6; k++)
+    s += `<circle cx="${x - 2 + k*4}" cy="${y + 1}" r="1.6" fill="${toit}" opacity=".9"/>`;
+  /* cheminée */
+  if (rndB(g+3) > .35){
+    const cx = x + w*.68;
+    s += `<rect x="${cx.toFixed(1)}" y="${(y - dh - 5).toFixed(1)}" width="4" height="${(dh + 5).toFixed(1)}" fill="${mur}"/>`;
+    s += `<rect x="${(cx - .8).toFixed(1)}" y="${(y - dh - 6.4).toFixed(1)}" width="5.6" height="1.8" fill="${toit}"/>`;
+  }
+  /* fenêtres à volets */
+  const cols = Math.max(1, Math.round((w - 6) / 12));
+  const rows = Math.max(1, Math.floor((h - 10) / 13));
+  for (let c = 0; c < cols; c++)
+    for (let r = 0; r < rows; r++){
+      const fx = x + 4 + c * ((w - 8) / cols);
+      const fy = y + 5 + r * ((h - 8) / rows);
+      s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="5" height="6.4" fill="#57748a"/>`;
+      s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="5" height="2.6" fill="#7fa0b4" opacity=".8"/>`;
+      const ouvert = rndB(g*11 + c*5 + r) > .35;
+      if (ouvert){
+        s += `<rect x="${(fx-1.8).toFixed(1)}" y="${fy.toFixed(1)}" width="1.6" height="6.4" fill="${vol}"/>`;
+        s += `<rect x="${(fx+5.2).toFixed(1)}" y="${fy.toFixed(1)}" width="1.6" height="6.4" fill="${vol}" opacity=".8"/>`;
+      } else {
+        s += `<rect x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="5" height="6.4" fill="${vol}"/>`;
+        s += `<path d="M${(fx+2.5).toFixed(1)} ${fy.toFixed(1)} v6.4" stroke="#00000022" stroke-width=".8"/>`;
+      }
+      if (ouvert && rndB(g*13 + c + r*3) > .72)
+        s += `<rect class="fenetre" x="${fx.toFixed(1)}" y="${fy.toFixed(1)}" width="5" height="6.4" fill="#f6d68a" opacity=".8"/>`;
+      s += `<rect x="${(fx-1).toFixed(1)}" y="${(fy+6.4).toFixed(1)}" width="7" height="1" fill="#00000018"/>`;
+    }
+  /* porte au rez-de-chaussée */
+  s += `<rect x="${(x + w*.42).toFixed(1)}" y="${(sol - 9).toFixed(1)}" width="6" height="9" fill="#6d5334"/>`;
+  s += `<rect x="${(x + w*.42).toFixed(1)}" y="${(sol - 9).toFixed(1)}" width="6" height="1" fill="#8a6a42"/>`;
+  return s + `</g>`;
+}
+
+/* ================= la végétation des collines ================= */
+function vegetation(){
+  const POSES = [
+    /* versant gauche : deux bosquets, quelques isolés */
+    [18, 'p', 7], [24, 'p', 6],
+    [52, 'p', 8], [58, 'c', 6], [64, 'p', 6],
+    [104, 'p', 7], [110, 'p', 5],
+    [172, 'p', 6], [178, 'o', 6],
+    [214, 'p', 6],
+    /* versant droit : plus clairsemé encore */
+    [280, 'p', 6],
+    [312, 'p', 7], [318, 'p', 5],
+    [348, 'c', 6], [354, 'p', 7],
+    [396, 'p', 6],
+    [428, 'p', 7], [434, 'o', 5],
+    [464, 'p', 6]
+  ];
+  let s = '';
+  /* on trie par taille pour que les petits soient dessinés derrière */
+  POSES.slice().sort((a, b) => a[2] - b[2]).forEach(([x, t, h], i) => {
+    const pts = x < 240 ? CRETE_G : CRETE_D;
+    const sol = hauteurCrete(pts, x) + 4 + rndB(i + 200) * 12;
+    if (sol > 156) return;
+    if (t === 'p') s += pin(x, sol, h, i + 3);
+    else if (t === 'c') s += cypres(x, sol, h);
+    else s += olivier(x, sol, h);
+  });
   return s;
 }
 
-/* ============ le port, par niveau ============ */
-function port(n){
-  let s = fond(n);
+/* ================= le hameau ================= */
+function hameau(){
+  let s = '';
+  /* terrasse de pierre sur laquelle il repose */
+  s += `<path d="M0 148 q42 -6 88 -3 q48 3 92 -5 L196 164 L0 164 Z" fill="url(#b-roche)"/>`;
+  s += `<path d="M0 148 q42 -6 88 -3 q48 3 92 -5 L188 154 q-48 6 -94 3 q-46 -3 -94 2 Z" fill="#ffffff" opacity=".2"/>`;
+  /* muret de soutènement */
+  s += `<path d="M0 156 q46 -5 94 -2 q48 3 94 -4 v5 q-46 7 -94 4 q-48 -3 -94 2 z" fill="#b8ab8a"/>`;
+  for (let i = 0; i < 22; i++)
+    s += `<rect x="${i*8.6}" y="${(157 + Math.sin(i*.7)*2).toFixed(1)}" width="6.6" height="3.6" rx="1"
+      fill="#c9bc9a" opacity="${(.5+rndB(i)*.4).toFixed(2)}"/>`;
+  const M = [
+    [20, 148, 26, 22, 1], [46, 146, 20, 26, 2], [66, 150, 24, 20, 3],
+    [90, 144, 18, 27, 4], [108, 148, 26, 22, 5], [134, 147, 20, 24, 6], [154, 150, 24, 19, 7]
+  ];
+  M.forEach(([x, sol, w, h, g]) => { s += maison(x, sol, w, h, g); });
+  /* du linge tendu entre deux maisons */
+  s += `<path d="M68 134 q28 5 54 -2" stroke="#a89a76" stroke-width=".8" fill="none"/>`;
+  ['#e8e2d4','#c97a68','#8fa8bc','#e0cf9c'].forEach((c, i) => {
+    s += `<rect class="linge" x="${76 + i*13}" y="${(136 + Math.sin(i)*1.6).toFixed(1)}"
+      width="${(5 + (i%2)*2).toFixed(0)}" height="${(7 + (i%3)*2).toFixed(0)}" rx="1"
+      fill="${c}" opacity=".85" style="transform-origin:${78 + i*13}px 136px"/>`;
+  });
 
-  /* le bassin se creuse dès le niveau 2 */
-  if (n >= 2){
-    s += `<path d="M96 152 h268 v46 h-268 z" fill="url(#bassin)"/>`;
-  }
+  /* le clocher */
+  s += `<rect x="180" y="126" width="12" height="24" fill="#f4e6ca"/>`;
+  s += `<rect x="189" y="126" width="3" height="24" fill="#00000012"/>`;
+  s += `<path d="M177 126 h18 l-9 -10 z" fill="#a95836"/>`;
+  s += `<path d="M184 131 h4.4 v6 a2.2 2.2 0 0 1 -4.4 0 z" fill="#4a4438"/>`;
+  s += `<path d="M186 116 v-5 M184 113 h4" stroke="#a89a76" stroke-width="1.1"/>`;
+  /* la végétation du hameau */
+  s += cypres(42, 150, 26) + cypres(102, 148, 22) + cypres(148, 151, 24);
+  s += olivier(10, 155, 20) + olivier(172, 156, 22);
+  return s;
+}
 
-  s += eau(n);
+/* ================= la mer ================= */
+function mer(){
+  let s = `<rect x="0" y="150" width="480" height="90" fill="url(#b-mer)"/>`;
 
-  /* --- niveau 0 : une côte nue --- */
-  if (n === 0){
-    s += `<path d="M0 152 h480 v14 H0 Z" fill="#cfc7b2"/>`;
-    for (let i = 0; i < 26; i++)
-      s += `<ellipse cx="${(rnd4(i)*480).toFixed(0)}" cy="${(156+rnd4(i+5)*8).toFixed(0)}"
-        rx="${(3+rnd4(i+2)*6).toFixed(1)}" ry="${(1.4+rnd4(i+3)*1.6).toFixed(1)}" fill="#b4ab96"/>`;
-    s += `<path d="M0 166 h480 v74 H0 Z" fill="#a89f88" opacity=".22"/>`;
-    return s;
-  }
+  /* paliers de fond : des aplats doux, jamais de traits */
+  s += `<path d="M0 184 q54 -9 112 -5 q58 4 116 -7 q60 -11 122 3 q56 13 110 -6 L480 240 H0 Z"
+    fill="#5cbccd" opacity=".22"/>`;
+  s += `<path d="M0 202 q46 -8 96 -4 q50 4 100 -6 q52 -10 104 3 q48 11 96 -5 L480 240 H0 Z"
+    fill="#86d4d8" opacity=".26"/>`;
+  s += `<path d="M0 217 q42 -6 88 -2 q46 3 92 -5 q48 -8 96 2 q44 9 88 -4 L480 240 H0 Z"
+    fill="#b0e6e4" opacity=".3"/>`;
 
-  /* --- le quai principal --- */
-  s += quai(0, 152, 480, 18);
-  if (n >= 2){
-    /* le bassin découpe le quai */
-    s += `<rect x="96" y="152" width="268" height="46" fill="url(#bassin)"/>`;
-    s += `<rect x="96" y="152" width="268" height="2.4" fill="#8fd0dc" opacity=".6"/>`;
-    s += quai(0, 152, 96, 18);
-    s += quai(364, 152, 116, 18);
-    s += `<rect x="0" y="196" width="480" height="44" fill="url(#quai)"/>`;
-    s += `<rect x="0" y="196" width="480" height="3" fill="#f7f2e6"/>`;
-    for (let i = 0; i < 30; i++)
-      s += `<rect x="${i*16}" y="199" width="1.4" height="41" fill="#c0b6a0" opacity=".55"/>`;
-    /* margelles du bassin */
-    s += `<rect x="92" y="150" width="6" height="48" fill="#c4bba6"/>`;
-    s += `<rect x="362" y="150" width="6" height="48" fill="#c4bba6"/>`;
-  } else {
-    s += `<rect x="0" y="170" width="480" height="70" fill="url(#quai)"/>`;
-    for (let i = 0; i < 30; i++)
-      s += `<rect x="${i*16}" y="173" width="1.4" height="67" fill="#c0b6a0" opacity=".55"/>`;
-  }
+  /* reflets des massifs, en taches molles */
+  s += `<path d="M0 152 q30 14 58 4 q30 -10 58 12 q28 20 52 4 q22 -14 34 4 L192 152 Z"
+    fill="#8a9a94" opacity=".12"/>`;
+  s += `<path d="M480 152 q-32 14 -62 4 q-30 -10 -56 12 q-24 18 -42 4 L300 152 Z"
+    fill="#8a9a94" opacity=".1"/>`;
 
-  /* marquages au sol */
-  if (n >= 1){
-    s += `<g fill="#d9b23a" opacity=".6">`;
-    for (let i = 0; i < 12; i++) s += `<rect x="${8+i*40}" y="${n>=2?206:180}" width="24" height="3.4"/>`;
-    s += `</g>`;
-  }
-  if (n >= 3){
-    s += `<g stroke="#8c8272" stroke-width="1.6" opacity=".5" stroke-dasharray="7 6">
-      <path d="M0 ${n>=2?222:196} H480"/></g>`;
-  }
-
-  /* bollards */
-  const solQuai = n >= 2 ? 152 : 170;
-  for (let i = 0; i < 9; i++){
-    const x = 14 + i*54;
-    if (n >= 2 && x > 88 && x < 366) continue;
-    s += bollard(x, solQuai);
-  }
-
-  /* --- niveau 1 : un quai, une grue mobile, quelques caisses --- */
-  if (n >= 1){
-    s += pileConteneurs(28, 196, 2, 2, 3);
-    s += grueMobile(150, 194, .9);
-    s += `<g><rect x="316" y="180" width="30" height="14" rx="2" fill="#8a6a4a"/>
-      <rect x="316" y="180" width="30" height="3" fill="#a5825c"/></g>`;
-  }
-
-  /* --- niveau 2 : le bassin, un premier portique, un hangar --- */
-  if (n >= 2){
-    s += portique(124, 152, 52, false);
-    s += hangar(382, 196, 88, 40, 'HANGAR 1');
-    s += pileConteneurs(6, 196, 3, 3, 11);
-    s += remorqueur(300, 176);
-  }
-
-  /* --- niveau 3 : deux portiques, navire à quai, plus de stock --- */
-  if (n >= 3){
-    s += navire(140, 168, 1, '#c74a33');
-    s += portique(232, 152, 56, true);
-    s += hangar(276, 196, 96, 44, 'HANGAR 2');
-    s += pileConteneurs(6, 240, 4, 4, 21);
-    s += grueMobile(238, 236, 1);
-  }
-
-  /* --- niveau 4 : capitainerie, digue, phare, trafic --- */
-  if (n >= 4){
-    s += digue(0, 148, 92);
-    s += phare(74, 148);
-    s += capitainerie(392, 196);
-    s += portique(300, 152, 60, false);
-    s += navire(378, 172, .74, '#2f7fb0');
-    s += pileConteneurs(112, 240, 5, 4, 31);
-    s += `<g class="camion"><rect x="176" y="226" width="30" height="12" rx="2" fill="#4f8f68"/>
-      <rect x="206" y="222" width="16" height="16" rx="2" fill="#3f7a56"/>
-      <circle cx="186" cy="239" r="3.4" fill="#2b3038"/><circle cx="214" cy="239" r="3.4" fill="#2b3038"/></g>`;
-  }
-
-  /* --- niveau 5 : tout tourne --- */
-  if (n >= 5){
-    s += portique(52, 152, 58, true);
-    s += navire(30, 166, .68, '#4f8f68');
-    s += pileConteneurs(240, 240, 6, 5, 41);
-    s += grueMobile(400, 236, 1.05);
-    s += `<g class="camion2"><rect x="60" y="226" width="30" height="12" rx="2" fill="#c2711a"/>
-      <rect x="90" y="222" width="16" height="16" rx="2" fill="#9a570f"/>
-      <circle cx="70" cy="239" r="3.4" fill="#2b3038"/><circle cx="98" cy="239" r="3.4" fill="#2b3038"/></g>`;
-    s += remorqueur(214, 178);
-    /* halos des projecteurs */
-    s += `<g opacity=".45"><path d="M138 96 L116 152 h44 z" fill="url(#halo)"/>
-      <path d="M246 92 L224 152 h44 z" fill="url(#halo)"/>
-      <path d="M314 88 L292 152 h44 z" fill="url(#halo)"/></g>`;
+  /* respiration de la surface : quatre voiles clairs très étalés */
+  for (let n = 0; n < 4; n++){
+    const y = 160 + n*19;
+    s += `<path class="voile v${n}" d="M-90 ${y} q60 -${(5-n).toFixed(1)} 120 0 t120 0 t120 0 t120 0 t120 0 t120 0
+      L660 ${y+13} q-60 ${(4-n*.6).toFixed(1)} -120 0 t-120 0 t-120 0 t-120 0 t-120 0 t-120 0 Z"
+      fill="#ffffff" opacity="${(.09 - n*.014).toFixed(3)}"/>`;
   }
 
   return s;
 }
 
-const PEDALO = (x, y, s) => `<g class="pedalo" transform="translate(${x},${y}) scale(${s})">
+/* ================= la plage ================= */
+function plage(){
+  const RIVE = 'M0 216 q30 -5 62 -3 q34 2 68 -4 q36 -6 72 2 q38 8 74 -3 q34 -9 68 -2 q30 6 62 -3 q26 -6 54 -2 L480 240 H0 Z';
+  let s = `<path d="${RIVE}" fill="url(#b-sable)"/>`;
+  /* trois lignes d'écume qui viennent lécher */
+  s += `<path class="ressac r0" d="M0 216 q30 -5 62 -3 q34 2 68 -4 q36 -6 72 2 q38 8 74 -3 q34 -9 68 -2 q30 6 62 -3 q26 -6 54 -2"
+    stroke="#ffffff" stroke-width="3" fill="none" opacity=".62"/>`;
+  s += `<path class="ressac r1" d="M0 220 q30 -5 62 -3 q34 2 68 -4 q36 -6 72 2 q38 8 74 -3 q34 -9 68 -2 q30 6 62 -3 q26 -6 54 -2"
+    stroke="#f4ecd8" stroke-width="2.4" fill="none" opacity=".5"/>`;
+  s += `<path class="ressac r2" d="M0 224 q30 -4 62 -2 q34 2 68 -3 q36 -5 72 2 q38 7 74 -2 q34 -8 68 -1 q30 5 62 -3"
+    stroke="#e8dcbc" stroke-width="1.8" fill="none" opacity=".38"/>`;
+  /* sable mouillé, plus foncé près de l'eau */
+  s += `<path d="M0 222 q30 -4 62 -2 q34 2 68 -3 q36 -5 72 2 q38 7 74 -2 q34 -8 68 -1 q30 5 62 -3 q26 -5 54 -1 L480 234 H0 Z"
+    fill="#c9b892" opacity=".45"/>`;
+  /* galets et coquillages */
+  for (let i = 0; i < 60; i++){
+    const x = rndB(i+3)*480, y = 222 + rndB(i+13)*17;
+    s += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(1.2+rndB(i+5)*2.8).toFixed(1)}"
+      ry="${(.8+rndB(i+9)*1.4).toFixed(1)}" fill="${rndB(i+7)>.6?'#b8a680':'#cbbb96'}"
+      opacity="${(.3+rndB(i+11)*.4).toFixed(2)}"/>`;
+  }
+  /* rochers à gauche et à droite, là où la colline touche l'eau */
+  s += `<path d="M0 200 q14 -14 32 -10 q16 3 22 14 q4 8 -6 12 L0 218 Z" fill="url(#b-roche)"/>`;
+  s += `<path d="M0 200 q14 -14 32 -10 q8 2 14 7 L0 208 Z" fill="#ffffff" opacity=".16"/>`;
+  s += `<path d="M480 196 q-18 -12 -36 -6 q-14 5 -18 15 q-3 8 8 11 L480 216 Z" fill="url(#b-roche)"/>`;
+  s += `<path d="M480 196 q-18 -12 -36 -6 q-9 3 -14 8 L480 204 Z" fill="#ffffff" opacity=".13"/>`;
+  /* touffes de végétation sur le sable sec */
+  for (let i = 0; i < 12; i++){
+    const x = 20 + rndB(i+61)*440, y = 232 + rndB(i+71)*7;
+    s += `<g class="oyat" style="transform-origin:${x}px ${y}px" stroke="#a8a06e" stroke-width="1"
+      fill="none" opacity=".6" stroke-linecap="round">
+      <path d="M${x} ${y} l-3.4 -8 M${x} ${y} l-1 -9.4 M${x} ${y} l2 -8.6 M${x} ${y} l4 -7"/></g>`;
+  }
+  return s;
+}
+
+/* ================= la barque ================= */
+function barque(x, y, k){
+  return `<g class="barque" transform="translate(${x},${y}) scale(${k})">
+    <ellipse cx="30" cy="20" rx="30" ry="3.4" fill="#0e4a68" opacity=".24"/>
+    <path d="M0 2 q3 14 14 17 h34 q11 -3 14 -17 q-8 5 -18 5 H18 q-10 0 -18 -5 z" fill="#7a5c38"/>
+    <path d="M0 2 q3 12 13 15 h36 q10 -3 13 -15 q-8 5 -18 5 H18 q-10 0 -18 -5 z" fill="#9a7a4e"/>
+    <path d="M-1 0 q7 6 19 6 h26 q12 0 19 -6 l-1.6 4 q-7 5 -17 5 H17 q-10 0 -17 -5 z" fill="#b58f60"/>
+    <path d="M-1 -3 q7 5 18 5 h28 q11 0 18 -5 v3.4 q-7 5 -18 5 H17 q-11 0 -18 -5 z" fill="#cfa87a"/>
+    <path d="M-1 -3 q7 5 18 5 h28 q11 0 18 -5 v2 q-7 4 -18 4 H17 q-11 0 -18 -4 z" fill="#e4c79c"/>
+    <path d="M4 -1 q7 4 15 4 h24 q8 0 15 -4 v3 q-7 4 -15 4 H19 q-8 0 -15 -4 z" fill="#5c4930"/>
+    <rect x="16" y="0" width="20" height="2.6" rx="1" fill="#8a6a42"/>
+    <rect x="42" y="0" width="12" height="2.4" rx="1" fill="#8a6a42"/>
+    <path d="M38 1 l19 -12" stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M55 -10 l6 -4 l2 3 l-6 4 z" fill="#c9a374"/>
+    <path d="M24 1 l-17 -10" stroke="#96754a" stroke-width="2" stroke-linecap="round"/>
+    <path d="M9 -8 l-5 -3 l-1.8 2.6 l5 3 z" fill="#b08a5c"/>
+    <rect x="6" y="-3" width="7" height="4.2" rx="1.2" fill="#6d8fa4"/>
+    <g stroke="#c9b58c" stroke-width="1.1" fill="none">
+      <ellipse cx="32" cy="-1" rx="4" ry="1.4"/></g>
+    <path d="M-6 13 q-16 2 -30 -1" stroke="#fff" stroke-width="1.4" fill="none" opacity=".34"/>
+    <path d="M-4 16 q-20 3 -38 0" stroke="#fff" stroke-width="1" fill="none" opacity=".2"/>
+  </g>`;
+}
+
+/* ================= la cabane sur la plage ================= */
+function cabane(x, sol){
+  let s = `<g class="cabane">`;
+  s += `<ellipse cx="${x+22}" cy="${sol+1}" rx="30" ry="3.4" fill="#8a7d5c" opacity=".28"/>`;
+  s += `<path d="M${x-2} ${sol} h48 v-4 h-48 z" fill="#a89a76"/>`;
+  for (let i = 0; i < 7; i++)
+    s += `<rect x="${x-1+i*6.8}" y="${sol-4}" width="5.6" height="4" rx="1" fill="#b8ab8a" opacity=".85"/>`;
+  s += `<path d="M${x} ${sol-4} v-24 h44 v24 z" fill="#cba97c"/>`;
+  s += `<path d="M${x+32} ${sol-4} v-24 h12 v24 z" fill="#00000014"/>`;
+  for (let i = 0; i < 8; i++)
+    s += `<rect x="${x+2+i*5.4}" y="${sol-28}" width="1.1" height="24" fill="#a5825c" opacity="${(.4+rndB(i)*.35).toFixed(2)}"/>`;
+  s += `<rect x="${x+10}" y="${sol-20}" width="5" height="16" fill="#d8b688"/>`;
+  s += `<path d="M${x-5} ${sol-28} h54 l-5 -8 h-44 z" fill="#8a4a3a"/>`;
+  s += `<path d="M${x-5} ${sol-28} h54 v2.4 h-54 z" fill="#6d3529"/>`;
+  for (let i = 0; i < 9; i++)
+    s += `<path d="M${x-2+i*6} ${sol-28} l3 -8" stroke="#7a3f31" stroke-width="1.1" opacity=".55"/>`;
+  s += `<rect x="${x+16}" y="${sol-17}" width="12" height="13" fill="#5c4930"/>`;
+  s += `<path d="M${x+17} ${sol-16} l10 11 M${x+27} ${sol-16} l-10 11" stroke="#6d5334" stroke-width="1"/>`;
+  s += `<rect x="${x+5}" y="${sol-23}" width="8" height="7" fill="#57748a"/>`;
+  s += `<rect x="${x+5}" y="${sol-23}" width="8" height="3" fill="#7fa0b4" opacity=".8"/>`;
+  s += `<path d="M${x+9} ${sol-23} v7 M${x+5} ${sol-19.5} h8" stroke="#7a5c38" stroke-width=".9"/>`;
+  s += `<path d="M${x+47} ${sol-30} v4" stroke="#7a5c38" stroke-width="1.1"/>`;
+  s += `<rect x="${x+44.4}" y="${sol-26}" width="5.4" height="6.4" rx="1" fill="#6d6152"/>`;
+  s += `<rect class="lanterne" x="${x+45.4}" y="${sol-25}" width="3.4" height="4.4" fill="#f2d98a"/>`;
+  s += `<circle class="lanterne" cx="${x+47}" cy="${sol-22.8}" r="8" fill="#f2d98a" opacity=".14"/>`;
+  return s + `</g>`;
+}
+
+/* ================= la scène ================= */
+function baie(){
+  let s = ciel();
+  s += relief();
+  s += hameau();
+  /* la végétation des collines : semée sous les crêtes, jamais alignée */
+  s += vegetation();
+  s += mer();
+  s += plage();
+  /* premier plan : un bosquet à gauche, la cabane à son pied */
+  s += pin(24, 234, 32, 6);
+  s += pin(56, 230, 38, 11);
+  s += olivier(84, 236, 21);
+  s += cabane(118, 238);
+  /* au bout de la plage, contre le rocher */
+  s += cypres(426, 234, 22);
+  s += pin(454, 232, 28, 7);
+  return s;
+}
+
+
+
+/* --- ce qui reste de l'ancien moteur : mer, bateau, hangar --- */
+const PEDALO = (x, y, k) => `<g class="pedalo" transform="translate(${x},${y}) scale(${k})">
   <ellipse cx="30" cy="19" rx="26" ry="2.6" fill="#0c2434" opacity=".22"/>
   <path d="M8 15 q-2 -11 9 -12 h28 q11 1 9 12 z" fill="#e8a0b4"/>
   <path d="M34 3 h11 q11 1 9 12 h-20 z" fill="#d98aa0" opacity=".5"/>
@@ -1904,6 +2335,8 @@ const PEDALO = (x, y, s) => `<g class="pedalo" transform="translate(${x},${y}) s
     <path d="M-5.5 0 h11 M0 -5.5 v11 M-4 -4 l8 8 M-4 4 l8 -8" stroke="#9aa3a8" stroke-width="1.1"/></g>
 </g>`;
 
+const rnd4 = rndB;
+const DEFS4 = DEFS_B;
 function merOuverte(enRoute){
   let s = DEFS4 + `<rect width="480" height="240" fill="url(#ciel)"/>
     <ellipse cx="304" cy="58" rx="132" ry="58" fill="url(#soleil)"/>
@@ -2109,7 +2542,7 @@ function svg4(inner){
     + 'xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
 }
 function dessiner4(){
-  $('e-port').innerHTML   = svg4(DEFS4 + port(1));
+  $('e-port').innerHTML   = svg4(DEFS_B + baie());
   $('e-mer').innerHTML    = svg4(merOuverte(false));
   $('e-bateau').innerHTML = svg4(svgBateau());
   $('e-hangar').innerHTML = svg4(svgHangar());
@@ -2117,7 +2550,7 @@ function dessiner4(){
   $('pc-mer').textContent  = '2 escales';
   $('pc-bat').textContent  = 'Le pédalo canard';
   $('pc-han').textContent  = '3 chaînes';
-  $('so-port').textContent = 'Ton terminal — à construire';
+  $('so-port').textContent = 'Une anse, une cabane. Rien d\'autre.';
   $('so-mer').textContent  = 'Barcelone, Gênes';
   $('so-bat').textContent  = 'Cale : 3 emplacements';
   $('so-han').textContent  = 'Savonnerie, distillerie, filets';
