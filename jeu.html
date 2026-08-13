@@ -22,13 +22,8 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .mod.ferme:active{transform:none}
 .mod .cadenas{position:absolute;top:10px;right:10px;width:16px;height:16px;opacity:.5}
 .nav button.ferme{opacity:.42;cursor:default}
-.chantier{
-  margin:12px 13px 0;background:#eef2f6;border:1px dashed #c3ccd4;border-radius:14px;
   padding:11px 14px;display:flex;gap:10px;align-items:center;
 }
-.chantier svg{flex:0 0 20px;width:20px;height:20px}
-.chantier p{font-size:12.5px;color:#5f6b75;line-height:1.45}
-.chantier p b{color:#33404a;font-weight:600}
 
 /* --- squelette de chargement --- */
 @keyframes respireOs{0%,100%{opacity:.55}50%{opacity:.9}}
@@ -672,12 +667,6 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
     </div>
   </div>
   <div class="ronds" id="ronds"></div>
-</div>
-
-<div class="chantier">
-  <svg viewBox="0 0 24 24" fill="none" stroke="#5f6b75" stroke-width="1.8">
-    <path d="M12 3l9 16H3zM12 9v5M12 17v.01"/></svg>
-  <p><b>Hub en construction.</b> Les modules sont désactivés le temps qu'on les bâtisse.</p>
 </div>
 
 <div class="evenement" id="evenement">
