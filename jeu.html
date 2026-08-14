@@ -875,7 +875,6 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 <div class="evenement" id="evenement">
   <span class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="#c2711a" stroke-width="1.8"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/></svg></span>
   <span class="tx">
-    <span class="et">Aujourd'hui — exemple</span>
     <b id="ev-titre" class="os">Chargement de la journée</b>
     <p id="ev-texte" class="os">Le port se réveille doucement, comme tous les matins.</p>
   </span>
@@ -3057,31 +3056,12 @@ function coteT(dx, opac, graine, ville){
 
 /* ---------- la mer ---------- */
 function merT(a){
-  const A = CIEUX_T[a];
   let s = `<rect x="0" y="150" width="480" height="90" fill="url(#t-mer)"/>`;
-  const nb = a === 'mistral' ? 6 : 4;
-  for (let n = 0; n < nb; n++){
-    s += `<g class="onde o${n}">`;
-    for (let i = 0; i < 5; i++){
-      const y = 154 + n*4 + i*17;
-      const amp = (a === 'mistral' ? 4.4 : a === 'brume' ? 1.2 : 2.4) - n*.3;
-      s += `<path d="M-70 ${y} q34 -${amp.toFixed(1)} 68 0 t68 0 t68 0 t68 0 t68 0 t68 0 t68 0 t68 0 t68 0"
-        stroke="#ffffff" stroke-width="${(1.3 - n*.14).toFixed(2)}" fill="none"
-        opacity="${(A.ecume*.9 - n*.04 - i*.02).toFixed(3)}"/>`;
-    }
-    s += `</g>`;
-  }
-  /* moutons par mistral */
-  if (a === 'mistral'){
-    for (let i = 0; i < 26; i++)
-      s += `<path class="mouton m${i%4}" d="M${(rndT(i+70)*480).toFixed(0)} ${(162+rndT(i+80)*70).toFixed(0)}
-        q5 -3 11 0 q-5 2 -11 0 z" fill="#ffffff" opacity="${(.3+rndT(i)*.4).toFixed(2)}"/>`;
-  }
-  /* paillettes */
-  for (let i = 0; i < 14; i++)
-    s += `<ellipse class="paillette pa${i%4}" cx="${(rndT(i+41)*480).toFixed(0)}"
-      cy="${(158+rndT(i+51)*74).toFixed(0)}" rx="${(2+rndT(i)*4).toFixed(1)}" ry=".9"
-      fill="#ffffff" opacity="${(A.ecume*.5+rndT(i+7)*.16).toFixed(2)}"/>`;
+  /* deux paliers de fond, sans angle vif */
+  s += `<path d="M0 190 q60 -6 120 -2 q64 4 128 -5 q66 -9 132 3 q60 10 100 -3 L480 240 H0 Z"
+    fill="#63c0cf" opacity=".14"/>`;
+  s += `<path d="M0 216 q54 -5 110 -2 q58 3 116 -4 q60 -7 120 2 q52 8 134 -3 L480 240 H0 Z"
+    fill="#8ed8dc" opacity=".18"/>`;
   return s;
 }
 
@@ -3113,15 +3093,8 @@ function traverseeT(ambiance, t){
   let s = cielT(ambiance);
   const A = CIEUX_T[ambiance];
   if (t === null){
-    /* au repos : le large, vu depuis la plage */
-    s += coteT(-300, .5, 3, false);
+    /* au repos : rien que le large */
     s += merT(ambiance);
-    /* trois voiles minuscules à l'horizon */
-    [[112, 154], [258, 152], [372, 156]].forEach(([x, y], i) => {
-      s += `<g class="voileLoin" opacity="${(.42 - i*.08).toFixed(2)}">
-        <path d="M${x} ${y} l0 -7 l5 7 z" fill="#f4efe2"/>
-        <path d="M${x-3} ${y} h9 l-1.6 2 h-6 z" fill="#8a8270"/></g>`;
-    });
   } else {
     /* la côte quittée s'éloigne par la gauche */
     const gx = 40 - t*280;
