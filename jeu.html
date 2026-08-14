@@ -4203,7 +4203,7 @@ function repeindre(nom){
 
 /* ---------- la barque au mouillage dans la baie ---------- */
 function auMouillage(n){
-  return `<g transform="translate(312,206) scale(.3) translate(-150,-122)">
+  return `<g transform="translate(322,198) scale(.4) translate(-150,-122)">
     <g class="flotteQ">${barqueQ(n, false)}</g></g>`;
 }
 /* ---------- la barque au large, en route ---------- */
@@ -4427,6 +4427,8 @@ function livret(d, MED, EQ, CP){
   }
   majHud(false);
   majTuile();
+  /* les décors ont été peints avant que la barque soit connue */
+  if (J.barque){ repeindre('port'); repeindre('mer'); repeindre('bateau'); }
   await new Promise(r => requestAnimationFrame(r));
   document.body.classList.remove('charge');
   document.body.classList.add('pret');
