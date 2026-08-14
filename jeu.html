@@ -936,6 +936,13 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   <button class="fermer" data-x>Fermer</button>
 </section>
 
+<section class="feuille" id="f-mer">
+  <h2>Prendre la mer</h2><p class="st">Une barque au mouillage ne rapporte rien.</p>
+  <div class="vueB" id="vueM"></div>
+  <div class="chantierB" id="merB"></div>
+  <button class="fermer" data-x>Fermer</button>
+</section>
+
 <section class="feuille" id="f-marche">
   <h2>Le marché</h2><p class="st">Les prix bougent toutes les heures. Personne ne sait vraiment pourquoi.</p>
   <div id="l-marche"></div>
@@ -1265,7 +1272,7 @@ function svgPix(pied, e){
 $('face').insertAdjacentHTML('afterbegin', svgPix(false));
 
 /* ---------- état ---------- */
-const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100, barque:0 };
+const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100, barque:0, enMer:false };
 const euro = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
 
 function majHud(pop){
@@ -1276,6 +1283,7 @@ function majHud(pop){
 
 /* ---------- modules ---------- */
 const ICONES = {
+  mer:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2 -4H7zM12 10V4M12 4l6 3-6 2" stroke="#2f7fb0" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
   chantier:'<path d="M3 20h18M6 20V9l6-4 6 4v11M9 20v-6h6v6M10 11h4" stroke="#c2711a" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
   contrats:'<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h3" stroke="#c2711a" stroke-width="1.8" fill="none"/>',
   quart:'<path d="M4 22V4h12M4 8h9M13 4v6M13 10l4 4v3" stroke="#c2711a" stroke-width="1.9" fill="none" stroke-linecap="round"/>',
@@ -1297,6 +1305,7 @@ const MODULES = {
   ],
   port: [
     { k:'chantier', n:'Le chantier', a:'Le berceau attend une quille.', c:'Ouvert', ouvert:true, f:()=>ouvrirChantier() },
+    { k:'mer', n:'Prendre la mer', a:'Il te faut une barque.', c:'Ouvert', ouvert:true, f:()=>ouvrirMer() },
     { k:'dockers', n:'Ton équipe', a:'Nono est de mauvaise humeur.', c:'6 dockers', badge:1, f:()=>ouvrir('f-dockers') },
     { k:'batiments', n:'Bâtiments', a:'Entrepôt plein à 91 %.', c:'2 améliorables', prog:91, f:()=>gen('Bâtiments','Ce que tu as construit. Ce que tu peux agrandir.', BATIMENTS) },
     { k:'flotte', n:'Ta flotte', a:'Le pédalo est rentré. Il manque une pédale.', c:'1 en mer', f:()=>gen('Ta flotte','Tes bateaux. Leur état est une question de point de vue.', FLOTTE) },
@@ -1472,6 +1481,67 @@ function ouvrir(id){
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 function auPort(){ ouvrir(null); }
+
+/* ---------- la feuille de la mer ---------- */
+function ouvrirMer(){
+  ouvrir('f-mer');
+  majMer();
+}
+
+function majMer(){
+  const el = $('merB'), vue = $('vueM');
+  if (!el) return;
+
+  /* le décor du haut */
+  if (vue)
+    vue.innerHTML = '<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg">'
+      + defsT('clair') + traverseeT('clair', null)
+      + (J.barque && J.enMer ? auLarge(J.barque) : '') + '</svg>';
+
+  if (!J.barque){
+    el.innerHTML = '<div class="vide"><p>Tu n\'as pas de bateau. '
+      + 'Monte au chantier voir Toussaint.</p></div>';
+    return;
+  }
+
+  const p = PALIERS_Q[J.barque - 1];
+  if (J.enMer){
+    el.innerHTML = '<div class="haut"><p class="pal">En traversée</p>'
+      + '<p class="nomP">' + p.nom + '</p>'
+      + '<p class="dd">Elle est sortie. Tant qu\'elle est en mer, '
+      + 'tu ne peux pas y toucher.</p></div>'
+      + '<div class="bas"><button id="mr-rentrer">Rentrer au port</button>'
+      + '<p class="journal" id="mr-j"></p></div>';
+    const b = $('mr-rentrer');
+    if (b) b.addEventListener('click', async () => {
+      J.enMer = false;
+      await sauverBarque();
+      majMer(); majChantier(); majTuile(); majEcrans();
+      repeindre('port'); repeindre('mer'); repeindre('bateau');
+      const j = $('mr-j'); if (j) j.textContent = 'Elle est rentrée. Amarrée dans l\'anse.';
+    });
+    return;
+  }
+
+  el.innerHTML = '<div class="haut"><p class="pal">Au mouillage</p>'
+    + '<p class="nomP">' + p.nom + '</p>'
+    + '<p class="dd">Elle attend dans l\'anse. Rien ne rentre tant qu\'elle ne sort pas.</p></div>'
+    + '<div class="st">'
+    + bloc4('Cale', p.places, PALIERS_Q[19].places, '#c2711a,#e8a94e', 0)
+    + bloc4('Charge', p.kg, PALIERS_Q[19].kg, '#2f8f66,#5cc194', 0)
+    + bloc4('Vitesse', p.vit, PALIERS_Q[19].vit, '#2f7fb0,#5aa3cc', 1)
+    + '</div>'
+    + '<div class="bas"><button id="mr-sortir">Larguer les amarres</button>'
+    + '<p class="journal" id="mr-j"></p></div>';
+  const b = $('mr-sortir');
+  if (b) b.addEventListener('click', async () => {
+    J.enMer = true;
+    await sauverBarque();
+    majMer(); majChantier(); majTuile(); majEcrans();
+    repeindre('port'); repeindre('mer'); repeindre('bateau');
+    const j = $('mr-j'); if (j) j.textContent = 'Elle est sortie de l\'anse.';
+  });
+}
 
 /* ---------- la feuille du chantier ---------- */
 function ouvrirChantier(){
@@ -4109,6 +4179,13 @@ function majChantier(){
   const el = $('chantierB');
   if (!el) return;
   vueBarque();
+
+  /* on ne travaille pas sur un bateau qui n'est pas là */
+  if (J.barque && J.enMer){
+    el.innerHTML = '<div class="vide"><p>Elle est en mer. Toussaint ne peut rien faire '
+      + 'tant qu\'elle n\'est pas remontée sur le ber.</p></div>';
+    return;
+  }
   const n = J.barque;
 
   /* rien sur le ber */
@@ -4120,7 +4197,7 @@ function majChantier(){
     if (b) b.addEventListener('click', async () => {
       J.barque = 1;
       await sauverBarque();
-      majChantier(); repeindre('bateau'); repeindre('port');
+      majChantier(); repeindre('bateau'); repeindre('port'); majEcrans();
       journalB('La quille est posée. <b>' + PALIERS_Q[0].nom + '</b>');
       majTuile();
     });
@@ -4161,7 +4238,7 @@ function majChantier(){
     J.euros -= su.prix; J.barque = su.n;
     await sauverBarque();
     majChantier(); majHud(true);
-    repeindre('bateau'); repeindre('port'); repeindre('mer');
+    repeindre('bateau'); repeindre('port'); repeindre('mer'); majEcrans();
     journalB('<b>' + su.nom + '</b> — ' + su.d);
   });
 }
@@ -4169,11 +4246,18 @@ function majChantier(){
 function majTuile(){
   const a = document.querySelector('[data-ap="chantier"]');
   const c = document.querySelector('[data-co="chantier"]');
-  if (!a) return;
-  if (!J.barque){ a.textContent = 'Le berceau attend une quille.'; c.textContent = 'Ouvert'; return; }
-  const p = PALIERS_Q[J.barque - 1];
-  a.textContent = p.nom + '.';
-  c.textContent = 'Palier ' + J.barque + ' / 20';
+  if (a){
+    if (!J.barque){ a.textContent = 'Le berceau attend une quille.'; c.textContent = 'Ouvert'; }
+    else if (J.enMer){ a.textContent = 'Elle est en mer.'; c.textContent = 'Indisponible'; }
+    else { a.textContent = PALIERS_Q[J.barque - 1].nom + '.'; c.textContent = 'Palier ' + J.barque + ' / 20'; }
+  }
+  const am = document.querySelector('[data-ap="mer"]');
+  const cm = document.querySelector('[data-co="mer"]');
+  if (am){
+    if (!J.barque){ am.textContent = 'Il te faut une barque.'; cm.textContent = 'Ouvert'; }
+    else if (J.enMer){ am.textContent = 'Ta barque est sortie.'; cm.textContent = 'En mer'; }
+    else { am.textContent = 'Elle attend au mouillage.'; cm.textContent = 'Au port'; }
+  }
 }
 
 function bloc4(k, v, mx, grad, dec){
@@ -4191,7 +4275,7 @@ function journalB(t){
 
 async function sauverBarque(){
   try {
-    await BD.enregistrer({ euros: J.euros, barque: J.barque });
+    await BD.enregistrer({ euros: J.euros, barque: J.barque, barque_en_mer: J.enMer });
   } catch (e) { console.warn('barque non sauvée', e); }
 }
 
@@ -4229,12 +4313,27 @@ function svg4(inner){
     + 'xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
 }
 const DECORS = {
-  port:   () => DEFS_B + baie() + (J.barque ? auMouillage(J.barque) : ''),
-  mer:    () => defsT('clair') + traverseeT('clair', null) + (J.barque ? auLarge(J.barque) : ''),
-  bateau: () => DEFSA + atelierA() + (J.barque ? berBarque(J.barque) : ''),
+  port:   () => DEFS_B + baie() + (J.barque && !J.enMer ? auMouillage(J.barque) : ''),
+  mer:    () => defsT('clair') + traverseeT('clair', null) + (J.barque && J.enMer ? auLarge(J.barque) : ''),
+  bateau: () => DEFSA + atelierA() + (J.barque && !J.enMer ? berBarque(J.barque) : ''),
   hangar: () => DEFSL + laboL()
 };
 const FAIT = {};
+
+/* les libellés des écrans suivent l'état de la barque */
+function majEcrans(){
+  const p = J.barque ? PALIERS_Q[J.barque - 1] : null;
+  if ($('so-port'))
+    $('so-port').textContent = !J.barque ? "Une anse, une cabane. Rien d'autre."
+      : J.enMer ? 'Ta barque est sortie.' : p.nom + ' au mouillage.';
+  if ($('pc-mer')) $('pc-mer').textContent = J.enMer ? 'En mer' : 'Au repos';
+  if ($('so-mer'))
+    $('so-mer').textContent = J.enMer ? 'Traversée en cours' : 'Aucune traversée en cours';
+  if ($('so-bat'))
+    $('so-bat').textContent = !J.barque ? 'Le berceau attend une quille'
+      : J.enMer ? 'Le berceau est vide — elle est sortie' : p.nom;
+  if ($('pc-bat')) $('pc-bat').textContent = J.barque ? 'Palier ' + J.barque : 'Niveau 1';
+}
 function peindre(nom){
   if (FAIT[nom]) return;
   FAIT[nom] = true;
@@ -4252,7 +4351,8 @@ function dessiner4(){
   $('pc-bat').textContent  = 'Niveau 1';
   $('pc-han').textContent  = 'Niveau 1';
   $('so-port').textContent = 'Une anse, une cabane. Rien d\'autre.';
-  $('so-mer').textContent  = 'Aucune traversée en cours';
+  $('so-mer').textContent  = J.enMer ? 'Traversée en cours' : 'Aucune traversée en cours';
+  $('pc-mer').textContent  = J.enMer ? 'En mer' : 'Au repos';
   $('so-bat').textContent  = 'Le berceau attend une quille';
   $('so-han').textContent  = 'Rien n\'a encore de nom';
 }
@@ -4411,6 +4511,7 @@ function livret(d, MED, EQ, CP){
   $('matricule').textContent = 'Matricule ' + (d.id || '').slice(0, 6).toUpperCase();
   J.euros = Number(d.euros) || 0;
   J.barque = Number(d.barque) || 0;
+  J.enMer = !!d.barque_en_mer;
   J.energie = d.energie ?? 100;
   J.niveau = d.niveau || 1;
   J.xp = d.xp || 0;
@@ -4428,7 +4529,7 @@ function livret(d, MED, EQ, CP){
   majHud(false);
   majTuile();
   /* les décors ont été peints avant que la barque soit connue */
-  if (J.barque){ repeindre('port'); repeindre('mer'); repeindre('bateau'); }
+  if (J.barque){ repeindre('port'); repeindre('mer'); repeindre('bateau'); majEcrans(); }
   await new Promise(r => requestAnimationFrame(r));
   document.body.classList.remove('charge');
   document.body.classList.add('pret');
