@@ -221,6 +221,8 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 @keyframes deriveV{0%,100%{transform:translateX(0)}50%{transform:translateX(-46px)}}
 
 /* --- le chantier --- */
+.vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
+.vueB svg{display:block;width:100%;height:auto}
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
 .chantierB .nomP{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.05}
@@ -251,6 +253,11 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* la barque, sur le ber et à l'eau */
 .surBer{animation:pose .8s ease-out}
 @keyframes pose{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.vueB .w0{animation:dQ0 22s linear infinite}
+.vueB .w1{animation:dQ1 30s linear infinite}
+.vueB .w2{animation:dQ0 40s linear infinite}
+@keyframes dQ0{to{transform:translateX(60px)}}
+@keyframes dQ1{to{transform:translateX(-60px)}}
 .flotteQ{animation:tangueQ 5.4s ease-in-out infinite;transform-origin:150px 122px;transform-box:view-box}
 @keyframes tangueQ{0%,100%{transform:translateY(0) rotate(-1deg)}
   50%{transform:translateY(-1.6px) rotate(1deg)}}
@@ -392,6 +399,8 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 @keyframes deriveV{0%,100%{transform:translateX(0)}50%{transform:translateX(-46px)}}
 
 /* --- le chantier --- */
+.vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
+.vueB svg{display:block;width:100%;height:auto}
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
 .chantierB .nomP{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.05}
@@ -422,6 +431,11 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* la barque, sur le ber et à l'eau */
 .surBer{animation:pose .8s ease-out}
 @keyframes pose{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.vueB .w0{animation:dQ0 22s linear infinite}
+.vueB .w1{animation:dQ1 30s linear infinite}
+.vueB .w2{animation:dQ0 40s linear infinite}
+@keyframes dQ0{to{transform:translateX(60px)}}
+@keyframes dQ1{to{transform:translateX(-60px)}}
 .flotteQ{animation:tangueQ 5.4s ease-in-out infinite;transform-origin:150px 122px;transform-box:view-box}
 @keyframes tangueQ{0%,100%{transform:translateY(0) rotate(-1deg)}
   50%{transform:translateY(-1.6px) rotate(1deg)}}
@@ -571,6 +585,8 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 @keyframes deriveV{0%,100%{transform:translateX(0)}50%{transform:translateX(-46px)}}
 
 /* --- le chantier --- */
+.vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
+.vueB svg{display:block;width:100%;height:auto}
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
 .chantierB .nomP{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.05}
@@ -601,6 +617,11 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* la barque, sur le ber et à l'eau */
 .surBer{animation:pose .8s ease-out}
 @keyframes pose{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.vueB .w0{animation:dQ0 22s linear infinite}
+.vueB .w1{animation:dQ1 30s linear infinite}
+.vueB .w2{animation:dQ0 40s linear infinite}
+@keyframes dQ0{to{transform:translateX(60px)}}
+@keyframes dQ1{to{transform:translateX(-60px)}}
 .flotteQ{animation:tangueQ 5.4s ease-in-out infinite;transform-origin:150px 122px;transform-box:view-box}
 @keyframes tangueQ{0%,100%{transform:translateY(0) rotate(-1deg)}
   50%{transform:translateY(-1.6px) rotate(1deg)}}
@@ -849,9 +870,6 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   <div class="ronds" id="ronds"></div>
 </div>
 
-<div class="section" id="s-chantier" style="display:none">
-  <p class="t">Le chantier</p>
-  <div class="chantierB" id="chantierB"></div>
 </div>
 
 <div class="evenement" id="evenement">
@@ -909,6 +927,13 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 
 <section class="feuille" id="f-fiche">
   <div id="l-fiche"></div>
+</section>
+
+<section class="feuille" id="f-chantier">
+  <h2>Le chantier</h2><p class="st">Ce que Toussaint peut faire de ta barque.</p>
+  <div class="vueB" id="vueB"></div>
+  <div class="chantierB" id="chantierB"></div>
+  <button class="fermer" data-x>Fermer</button>
 </section>
 
 <section class="feuille" id="f-marche">
@@ -1251,6 +1276,7 @@ function majHud(pop){
 
 /* ---------- modules ---------- */
 const ICONES = {
+  chantier:'<path d="M3 20h18M6 20V9l6-4 6 4v11M9 20v-6h6v6M10 11h4" stroke="#c2711a" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
   contrats:'<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h3" stroke="#c2711a" stroke-width="1.8" fill="none"/>',
   quart:'<path d="M4 22V4h12M4 8h9M13 4v6M13 10l4 4v3" stroke="#c2711a" stroke-width="1.9" fill="none" stroke-linecap="round"/>',
   contrebande:'<path d="M4 8h16v12H4zM9 8V5a3 3 0 0 1 6 0v3M12 12v4" stroke="#6d4fa8" stroke-width="1.8" fill="none"/>',
@@ -1270,6 +1296,7 @@ const MODULES = {
     { k:'defis', n:'Défis du jour', a:'Série en cours : 6 jours.', c:'2 / 3 faits', badge:1, prog:66, f:()=>gen('Défis du jour','Trois par jour. La série se casse si tu en rates un.', DEFIS) }
   ],
   port: [
+    { k:'chantier', n:'Le chantier', a:'Le berceau attend une quille.', c:'Ouvert', ouvert:true, f:()=>ouvrirChantier() },
     { k:'dockers', n:'Ton équipe', a:'Nono est de mauvaise humeur.', c:'6 dockers', badge:1, f:()=>ouvrir('f-dockers') },
     { k:'batiments', n:'Bâtiments', a:'Entrepôt plein à 91 %.', c:'2 améliorables', prog:91, f:()=>gen('Bâtiments','Ce que tu as construit. Ce que tu peux agrandir.', BATIMENTS) },
     { k:'flotte', n:'Ta flotte', a:'Le pédalo est rentré. Il manque une pédale.', c:'1 en mer', f:()=>gen('Ta flotte','Tes bateaux. Leur état est une question de point de vue.', FLOTTE) },
@@ -1284,6 +1311,12 @@ const MODULES = {
 const VERROUILLE = true;
 
 function carte(m){
+  if (m.ouvert)
+    return `<button class="mod" data-k="${m.k}">
+      <svg class="ic" viewBox="0 0 24 24">${ICONES[m.k]}</svg>
+      <b>${m.n}</b><span class="ap" data-ap="${m.k}">${m.a}</span>
+      <span class="bas"><span class="co ok" data-co="${m.k}">${m.c}</span></span>
+    </button>`;
   return `<button class="mod ferme" data-k="${m.k}" disabled aria-disabled="true">
     <svg class="cadenas" viewBox="0 0 24 24" fill="none" stroke="#75705f" stroke-width="1.9">
       <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
@@ -1295,9 +1328,11 @@ function carte(m){
 }
 function poser(cible, liste){
   $(cible).innerHTML = liste.map(carte).join('');
-  if (VERROUILLE) return;
-  $(cible).querySelectorAll('.mod').forEach((b,i) =>
-    b.addEventListener('click', () => liste[i].f && liste[i].f()));
+  $(cible).querySelectorAll('.mod').forEach((b, i) => {
+    const m = liste[i];
+    if (m.ouvert || !VERROUILLE)
+      b.addEventListener('click', () => m.f && m.f());
+  });
 }
 
 /* ---------- contenus ---------- */
@@ -1437,6 +1472,49 @@ function ouvrir(id){
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 function auPort(){ ouvrir(null); }
+
+/* ---------- la feuille du chantier ---------- */
+function ouvrirChantier(){
+  ouvrir('f-chantier');
+  majChantier();
+}
+
+/* la barque, en tête de feuille */
+function vueBarque(){
+  const el = $('vueB');
+  if (!el) return;
+  if (!J.barque){
+    el.innerHTML = '<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg">'
+      + DEFSA + atelierA() + '</svg>';
+    return;
+  }
+  el.innerHTML = '<svg viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg">'
+    + fondBarque() + '<g class="flotteQ">' + barqueQ(J.barque, false) + '</g></svg>';
+}
+
+function fondBarque(){
+  let s = `<defs><linearGradient id="fb-ciel" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#7fbcdd"/><stop offset="52%" stop-color="#b6d8e8"/>
+    <stop offset="100%" stop-color="#e8e2d2"/></linearGradient>
+    <linearGradient id="fb-mer" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#8ed4de"/><stop offset="26%" stop-color="#57b0c9"/>
+    <stop offset="100%" stop-color="#1c5f82"/></linearGradient></defs>`;
+  s += `<rect width="300" height="170" fill="url(#fb-ciel)"/>`;
+  s += `<circle cx="252" cy="30" r="11" fill="#fffbe8"/>`;
+  s += `<ellipse cx="252" cy="30" rx="30" ry="15" fill="#fff2cc" opacity=".3"/>`;
+  s += `<path d="M0 92 L36 82 L74 90 L114 78 L156 88 L196 76 L238 86 L278 78 L300 84 L300 122 L0 122 Z"
+    fill="#c4d2d8" opacity=".6"/>`;
+  s += `<rect x="0" y="122" width="300" height="48" fill="url(#fb-mer)"/>`;
+  for (let n = 0; n < 3; n++){
+    s += `<g class="onde w${n}">`;
+    for (let i = 0; i < 3; i++)
+      s += `<path d="M-40 ${130+n*3+i*12} q22 -2 44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0"
+        stroke="#fff" stroke-width="${(1-n*.14).toFixed(2)}" fill="none"
+        opacity="${(.26-n*.05-i*.04).toFixed(2)}"/>`;
+    s += `</g>`;
+  }
+  return s;
+}
 document.querySelectorAll('[data-x]').forEach(b => b.addEventListener('click', () => {
   auPort();
   document.querySelectorAll('.nav button').forEach(x => x.classList.remove('actif'));
@@ -4030,6 +4108,7 @@ function barqueQ(n, route){
 function majChantier(){
   const el = $('chantierB');
   if (!el) return;
+  vueBarque();
   const n = J.barque;
 
   /* rien sur le ber */
@@ -4043,6 +4122,7 @@ function majChantier(){
       await sauverBarque();
       majChantier(); repeindre('bateau'); repeindre('port');
       journalB('La quille est posée. <b>' + PALIERS_Q[0].nom + '</b>');
+      majTuile();
     });
     return;
   }
@@ -4084,6 +4164,16 @@ function majChantier(){
     repeindre('bateau'); repeindre('port'); repeindre('mer');
     journalB('<b>' + su.nom + '</b> — ' + su.d);
   });
+}
+
+function majTuile(){
+  const a = document.querySelector('[data-ap="chantier"]');
+  const c = document.querySelector('[data-co="chantier"]');
+  if (!a) return;
+  if (!J.barque){ a.textContent = 'Le berceau attend une quille.'; c.textContent = 'Ouvert'; return; }
+  const p = PALIERS_Q[J.barque - 1];
+  a.textContent = p.nom + '.';
+  c.textContent = 'Palier ' + J.barque + ' / 20';
 }
 
 function bloc4(k, v, mx, grad, dec){
@@ -4179,16 +4269,6 @@ function aller4(i){
   $('rail4').classList.remove('suit');
   $('rail4').style.transform = 'translateX(' + (-page4 * 100) + '%)';
   ronds4();
-  majPanneau();
-}
-
-/* le panneau sous les écrans change avec l'écran affiché */
-function majPanneau(){
-  const sec = $('s-chantier');
-  if (!sec) return;
-  const ici = PAGES4[page4];
-  sec.style.display = ici === 'bateau' ? '' : 'none';
-  if (ici === 'bateau') majChantier();
 }
 (() => {
   const g = $('fenetre4'), rail = $('rail4');
@@ -4346,7 +4426,7 @@ function livret(d, MED, EQ, CP){
     if (sac.length) window.__sac = sac;
   }
   majHud(false);
-  majPanneau();
+  majTuile();
   await new Promise(r => requestAnimationFrame(r));
   document.body.classList.remove('charge');
   document.body.classList.add('pret');
