@@ -284,6 +284,21 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 @keyframes claqueQ{0%,100%{transform:skewY(0) scaleX(1)}
   35%{transform:skewY(-4deg) scaleX(.94)}70%{transform:skewY(3deg) scaleX(1.04)}}
 
+/* --- la barre d'actions du hub --- */
+.actions4{display:flex;background:#fff;border-bottom:1px solid var(--bord)}
+.actions4 button{flex:1;border:0;background:none;padding:12px 5px 11px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  border-right:1px solid #f0ece2;transition:background .15s;position:relative}
+.actions4 button:last-child{border-right:0}
+.actions4 button:active{background:#faf6ec}
+.actions4 button:disabled{opacity:.38;cursor:default}
+.actions4 button svg{width:20px;height:20px;flex:0 0 20px}
+.actions4 button span{font-size:10.5px;font-weight:600;color:var(--doux);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.actions4 button.vif span{color:var(--ocre)}
+.actions4 .pastille{position:absolute;top:8px;right:calc(50% - 20px);width:7px;height:7px;
+  border-radius:50%;background:var(--ocre)}
+
 .hud{position:sticky;top:0;z-index:20;
   padding:calc(env(safe-area-inset-top) + 10px) 13px 11px;
   background:#e8e0cc;border-bottom:3px solid #b8a882}
@@ -461,6 +476,21 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .pavillon{animation:claqueQ 2.8s ease-in-out infinite}
 @keyframes claqueQ{0%,100%{transform:skewY(0) scaleX(1)}
   35%{transform:skewY(-4deg) scaleX(.94)}70%{transform:skewY(3deg) scaleX(1.04)}}
+
+/* --- la barre d'actions du hub --- */
+.actions4{display:flex;background:#fff;border-bottom:1px solid var(--bord)}
+.actions4 button{flex:1;border:0;background:none;padding:12px 5px 11px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  border-right:1px solid #f0ece2;transition:background .15s;position:relative}
+.actions4 button:last-child{border-right:0}
+.actions4 button:active{background:#faf6ec}
+.actions4 button:disabled{opacity:.38;cursor:default}
+.actions4 button svg{width:20px;height:20px;flex:0 0 20px}
+.actions4 button span{font-size:10.5px;font-weight:600;color:var(--doux);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.actions4 button.vif span{color:var(--ocre)}
+.actions4 .pastille{position:absolute;top:8px;right:calc(50% - 20px);width:7px;height:7px;
+  border-radius:50%;background:var(--ocre)}
 
 .hud{position:sticky;top:0;z-index:20;
   padding:calc(env(safe-area-inset-top) + 10px) 13px 11px;
@@ -647,6 +677,21 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .pavillon{animation:claqueQ 2.8s ease-in-out infinite}
 @keyframes claqueQ{0%,100%{transform:skewY(0) scaleX(1)}
   35%{transform:skewY(-4deg) scaleX(.94)}70%{transform:skewY(3deg) scaleX(1.04)}}
+
+/* --- la barre d'actions du hub --- */
+.actions4{display:flex;background:#fff;border-bottom:1px solid var(--bord)}
+.actions4 button{flex:1;border:0;background:none;padding:12px 5px 11px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  border-right:1px solid #f0ece2;transition:background .15s;position:relative}
+.actions4 button:last-child{border-right:0}
+.actions4 button:active{background:#faf6ec}
+.actions4 button:disabled{opacity:.38;cursor:default}
+.actions4 button svg{width:20px;height:20px;flex:0 0 20px}
+.actions4 button span{font-size:10.5px;font-weight:600;color:var(--doux);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.actions4 button.vif span{color:var(--ocre)}
+.actions4 .pastille{position:absolute;top:8px;right:calc(50% - 20px);width:7px;height:7px;
+  border-radius:50%;background:var(--ocre)}
 
 .hud{position:sticky;top:0;z-index:20;
   padding:calc(env(safe-area-inset-top) + 8px) 13px 9px;
@@ -857,6 +902,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
         <span class="lg4"><b>Ton laboratoire</b><span class="sous" id="so-han"></span></span></div>
     </div>
   </div>
+  <div class="actions4" id="actions4"></div>
   <div class="ronds" id="ronds"></div>
 </div>
 
@@ -1261,6 +1307,19 @@ function majHud(pop){
 }
 
 /* ---------- modules ---------- */
+const ACT_ICO = {
+  chantier:'<path d="M3 20h18M6 20V9l6-4 6 4v11M9 20v-6h6v6" stroke="#c2711a" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  equipe:'<path d="M8 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2 21c0-4 3-6 6-6s6 2 6 6M17 8a2.6 2.6 0 1 0 0-5M16 15c3 0 6 1.6 6 5.4" stroke="#75705f" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
+  batir:'<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M8 11h2M14 11h2" stroke="#75705f" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
+  partir:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2" stroke="#c2711a" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  carte:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14" stroke="#75705f" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  ameliorer:'<path d="M12 20V6M6 12l6-6 6 6" stroke="#c2711a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  reparer:'<path d="M14.7 6.3a4 4 0 1 0 5 5L21 21l-2 2-9.7-9.7a4 4 0 0 0-5-5z" stroke="#75705f" stroke-width="1.7" fill="none" stroke-linejoin="round"/>',
+  peindre:'<path d="M19 3H5v6h14zM12 9v3M9 12h6v9H9z" stroke="#75705f" stroke-width="1.7" fill="none" stroke-linejoin="round"/>',
+  creer:'<path d="M9 3h6v5l4 9a2 2 0 0 1-2 3H7a2 2 0 0 1-2-3l4-9zM8 15h8" stroke="#c2711a" stroke-width="1.7" fill="none" stroke-linejoin="round"/>',
+  stock:'<path d="M4 8h16v13H4zM4 8l2-4h12l2 4M12 8v13M4 14h16" stroke="#75705f" stroke-width="1.7" fill="none" stroke-linejoin="round"/>'
+};
+
 const ICONES = {
   mer:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2 -4H7zM12 10V4M12 4l6 3-6 2" stroke="#2f7fb0" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
   chantier:'<path d="M3 20h18M6 20V9l6-4 6 4v11M9 20v-6h6v6M10 11h4" stroke="#c2711a" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -1283,8 +1342,6 @@ const MODULES = {
     { k:'defis', n:'Défis du jour', a:'Série en cours : 6 jours.', c:'2 / 3 faits', badge:1, prog:66, f:()=>gen('Défis du jour','Trois par jour. La série se casse si tu en rates un.', DEFIS) }
   ],
   port: [
-    { k:'chantier', n:'Le chantier', a:'Le berceau attend une quille.', c:'Ouvert', ouvert:true, f:()=>ouvrirChantier() },
-    { k:'mer', n:'Prendre la mer', a:'Il te faut une barque.', c:'Ouvert', ouvert:true, f:()=>ouvrirMer() },
     { k:'dockers', n:'Ton équipe', a:'Nono est de mauvaise humeur.', c:'6 dockers', badge:1, f:()=>ouvrir('f-dockers') },
     { k:'batiments', n:'Bâtiments', a:'Entrepôt plein à 91 %.', c:'2 améliorables', prog:91, f:()=>gen('Bâtiments','Ce que tu as construit. Ce que tu peux agrandir.', BATIMENTS) },
     { k:'flotte', n:'Ta flotte', a:'Le pédalo est rentré. Il manque une pédale.', c:'1 en mer', f:()=>gen('Ta flotte','Tes bateaux. Leur état est une question de point de vue.', FLOTTE) },
@@ -1495,7 +1552,7 @@ function majMer(){
     if (b) b.addEventListener('click', async () => {
       J.enMer = false;
       await sauverBarque();
-      majMer(); majChantier(); majTuile(); majEcrans();
+      majMer(); majChantier(); majTuile(); majEcrans(); actions4();
       repeindre('port'); repeindre('mer'); repeindre('bateau');
       const j = $('mr-j'); if (j) j.textContent = 'Elle est rentrée. Amarrée dans l\'anse.';
     });
@@ -1516,7 +1573,7 @@ function majMer(){
   if (b) b.addEventListener('click', async () => {
     J.enMer = true;
     await sauverBarque();
-    majMer(); majChantier(); majTuile(); majEcrans();
+    majMer(); majChantier(); majTuile(); majEcrans(); actions4();
     repeindre('port'); repeindre('mer'); repeindre('bateau');
     const j = $('mr-j'); if (j) j.textContent = 'Elle est sortie de l\'anse.';
   });
@@ -4150,7 +4207,7 @@ function majChantier(){
     if (b) b.addEventListener('click', async () => {
       J.barque = 1;
       await sauverBarque();
-      majChantier(); repeindre('bateau'); repeindre('port'); majEcrans();
+      majChantier(); repeindre('bateau'); repeindre('port'); majEcrans(); actions4();
       journalB('La quille est posée. <b>' + PALIERS_Q[0].nom + '</b>');
       majTuile();
     });
@@ -4191,15 +4248,16 @@ function majChantier(){
     J.euros -= su.prix; J.barque = su.n;
     await sauverBarque();
     majChantier(); majHud(true);
-    repeindre('bateau'); repeindre('port'); repeindre('mer'); majEcrans();
+    repeindre('bateau'); repeindre('port'); repeindre('mer'); majEcrans(); actions4();
     journalB('<b>' + su.nom + '</b> — ' + su.d);
   });
 }
 
 function majTuile(){
+  /* les tuiles ont été remplacées par la barre d'actions du hub */
   const a = document.querySelector('[data-ap="chantier"]');
   const c = document.querySelector('[data-co="chantier"]');
-  if (a){
+  if (a && c){
     if (!J.barque){ a.textContent = 'Le berceau attend une quille.'; c.textContent = 'Ouvert'; }
     else if (J.enMer){ a.textContent = 'Elle est en mer.'; c.textContent = 'Indisponible'; }
     else { a.textContent = PALIERS_Q[J.barque - 1].nom + '.'; c.textContent = 'Palier ' + J.barque + ' / 20'; }
@@ -4322,6 +4380,45 @@ function aller4(i){
   $('rail4').classList.remove('suit');
   $('rail4').style.transform = 'translateX(' + (-page4 * 100) + '%)';
   ronds4();
+  actions4();
+}
+
+/* ---------- ce qu'on peut faire dans le lieu affiché ---------- */
+function actions4(){
+  const el = $('actions4');
+  if (!el) return;
+  const ici = PAGES4[page4];
+  let A = [];
+
+  if (ici === 'port'){
+    A = [['chantier','Chantier', true, () => ouvrirChantier()],
+         ['equipe','Équipe', false, null],
+         ['batir','Bâtiments', false, null]];
+  }
+  else if (ici === 'mer'){
+    A = [['partir', J.enMer ? 'Rentrer' : 'Larguer', !!J.barque, () => ouvrirMer()],
+         ['carte','Destinations', false, null]];
+  }
+  else if (ici === 'bateau'){
+    A = [['ameliorer', J.barque ? 'Améliorer' : 'Construire', !J.enMer, () => ouvrirChantier()],
+         ['reparer','Réparer', false, null],
+         ['peindre','Peindre', false, null]];
+  }
+  else {
+    A = [['creer','Créer', false, null],
+         ['stock','Stock', false, null]];
+  }
+
+  el.innerHTML = A.map(([k, n, actif]) =>
+    '<button data-k="' + k + '" class="' + (actif ? 'vif' : '') + '"'
+    + (actif ? '' : ' disabled') + '>'
+    + '<svg viewBox="0 0 24 24">' + ACT_ICO[k] + '</svg>'
+    + '<span>' + n + '</span></button>').join('');
+
+  el.querySelectorAll('button').forEach((b, i) => {
+    const f = A[i][3];
+    if (f) b.addEventListener('click', f);
+  });
 }
 (() => {
   const g = $('fenetre4'), rail = $('rail4');
@@ -4481,6 +4578,7 @@ function livret(d, MED, EQ, CP){
   }
   majHud(false);
   majTuile();
+  actions4();
   /* les décors ont été peints avant que la barque soit connue */
   if (J.barque){ repeindre('port'); repeindre('mer'); repeindre('bateau'); majEcrans(); }
   await new Promise(r => requestAnimationFrame(r));
