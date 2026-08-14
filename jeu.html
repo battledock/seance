@@ -849,7 +849,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   <div class="ronds" id="ronds"></div>
 </div>
 
-<div class="section" id="s-chantier">
+<div class="section" id="s-chantier" style="display:none">
   <p class="t">Le chantier</p>
   <div class="chantierB" id="chantierB"></div>
 </div>
@@ -4179,6 +4179,16 @@ function aller4(i){
   $('rail4').classList.remove('suit');
   $('rail4').style.transform = 'translateX(' + (-page4 * 100) + '%)';
   ronds4();
+  majPanneau();
+}
+
+/* le panneau sous les écrans change avec l'écran affiché */
+function majPanneau(){
+  const sec = $('s-chantier');
+  if (!sec) return;
+  const ici = PAGES4[page4];
+  sec.style.display = ici === 'bateau' ? '' : 'none';
+  if (ici === 'bateau') majChantier();
 }
 (() => {
   const g = $('fenetre4'), rail = $('rail4');
@@ -4336,7 +4346,7 @@ function livret(d, MED, EQ, CP){
     if (sac.length) window.__sac = sac;
   }
   majHud(false);
-  majChantier();
+  majPanneau();
   await new Promise(r => requestAnimationFrame(r));
   document.body.classList.remove('charge');
   document.body.classList.add('pret');
