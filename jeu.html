@@ -4034,17 +4034,14 @@ function majChantier(){
 
   /* rien sur le ber */
   if (n === 0){
-    const p = PALIERS_Q[0];
     el.innerHTML = '<div class="vide">'
-      + '<p>Le berceau est vide. Toussaint attend que tu te décides.</p>'
-      + '<button id="bq-go"' + (J.euros < 1200 ? ' disabled' : '') + '>'
-      + (J.euros < 1200 ? 'Il faut 1 200 €' : 'Poser la quille — 1 200 €') + '</button></div>';
+      + '<p>Le berceau est vide. Toussaint sort le bois sans parler de prix.</p>'
+      + '<button id="bq-go">Poser la quille</button></div>';
     const b = $('bq-go');
     if (b) b.addEventListener('click', async () => {
-      if (J.euros < 1200) return;
-      J.euros -= 1200; J.barque = 1;
+      J.barque = 1;
       await sauverBarque();
-      majChantier(); majHud(true); repeindre('bateau'); repeindre('port');
+      majChantier(); repeindre('bateau'); repeindre('port');
       journalB('La quille est posée. <b>' + PALIERS_Q[0].nom + '</b>');
     });
     return;
@@ -4339,6 +4336,7 @@ function livret(d, MED, EQ, CP){
     if (sac.length) window.__sac = sac;
   }
   majHud(false);
+  majChantier();
   await new Promise(r => requestAnimationFrame(r));
   document.body.classList.remove('charge');
   document.body.classList.add('pret');
