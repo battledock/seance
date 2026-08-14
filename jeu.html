@@ -3007,7 +3007,7 @@ function cielT(a){
   s += `<ellipse cx="${sx}" cy="${sy}" rx="${sr*7}" ry="${sr*3.6}" fill="url(#t-soleil)" opacity="${sop}"/>`;
   s += `<circle cx="${sx}" cy="${sy}" r="${sr}" fill="${sc}" opacity="${a==='brume'?.5:1}"/>`;
   /* nuages */
-  s += `<g class="nuages">`;
+  s += `<g>`;
   for (let i = 0; i < A.nuages; i++){
     const cx = -80 + rndT(i+3)*620, cy = 16 + rndT(i+11)*44, w = 26 + rndT(i)*50;
     const etire = a === 'mistral' ? 1.8 : 1;
@@ -4266,7 +4266,7 @@ function auMouillage(n){
 /* ---------- la barque au large, en route ---------- */
 function auLarge(n){
   return `<g transform="translate(232,182) scale(.46) translate(-150,-122)">
-    <g class="flotteQ route">${barqueQ(n, true)}</g></g>`;
+    <g class="flotteQ">${barqueQ(n, false)}</g></g>`;
 }
 
 /* ---------- la barque posée sur le ber ---------- */
