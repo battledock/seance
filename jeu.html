@@ -5462,6 +5462,7 @@ async function sauverBarque(){
 function repeindre(nom){
   FAIT[nom] = true;
   $('e-' + nom).innerHTML = svg4(DECORS[nom]());
+  $('pg-' + nom).classList.add('pret');
 }
 
 /* ---------- la barque au mouillage dans la baie ---------- */
@@ -5555,7 +5556,22 @@ function enMerDecor(){
 }
 const FAIT = {};
 
-/* les libellés des écrans suivent l'état de la barque */
+function svg4(inner){
+  return '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" '
+    + 'xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
+}
+function peindre(nom){
+  if (FAIT[nom]) return;
+  FAIT[nom] = true;
+  $('e-' + nom).innerHTML = svg4(DECORS[nom]());
+  requestAnimationFrame(() => $('pg-' + nom).classList.add('pret'));
+}
+function dessiner4(){
+  peindre(PAGES4[page4] || 'port');
+  requestAnimationFrame(() => setTimeout(() => PAGES4.forEach(peindre), 60));
+}
+
+/* les libellés des écrans */
 function majEcrans(){
   const P = PORTS[J.port], p = J.barque ? PALIERS_Q[J.barque - 1] : null;
   /* premier écran : le port où tu es */
@@ -5575,6 +5591,7 @@ function majEcrans(){
   if ($('pc-bat')) $('pc-bat').textContent = P.chezToi ? (J.barque ? 'Palier ' + J.barque : 'Vide') : 'Fermé';
 }
 
+let rondsPrets = false;
 function ronds4(){
   const el = $('ronds');
   if (!rondsPrets){
