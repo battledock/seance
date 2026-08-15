@@ -25,6 +25,59 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
+/* ---------- la fiche ---------- */
+.fiche{position:fixed;z-index:22;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
+  background:rgba(20,34,50,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 12px 40px rgba(6,16,28,.6);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.fiche.on{opacity:1;transform:none;pointer-events:auto}
+.fiche::-webkit-scrollbar{display:none}
+
+.fiche .haut{display:flex;align-items:center;gap:12px;padding:15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.fiche .haut .por{flex:0 0 54px;height:54px;border-radius:5px;overflow:hidden;
+  border:1.6px solid rgba(255,255,255,.34);background:#dfe8ee}
+.fiche .haut .por svg{display:block;width:100%;height:100%}
+.fiche .haut .id{flex:1;min-width:0}
+.fiche .haut .id b{display:block;font-size:16px;color:#fff;font-weight:700;letter-spacing:.04em}
+.fiche .haut .id span{display:block;font-size:8.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:3px}
+.fiche .haut .fer{flex:0 0 auto;background:none;border:0;cursor:pointer;
+  color:rgba(255,255,255,.5);font-size:22px;line-height:1;padding:4px 2px}
+
+.fiche .tt{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.42);padding:14px 15px 8px}
+
+/* les compétences */
+.cmp{padding:0 15px 4px}
+.cmp .l{display:flex;align-items:center;gap:9px;padding:6px 0}
+.cmp .l .nm{flex:0 0 84px;font-size:11.5px;color:rgba(255,255,255,.86)}
+.cmp .l .ba{flex:1;height:7px;background:rgba(255,255,255,.14);border-radius:4px;
+  overflow:hidden;display:flex;gap:1.6px;padding:0}
+.cmp .l .ba i{flex:1;background:rgba(255,255,255,.09);border-radius:1px}
+.cmp .l .ba i.on{background:var(--c)}
+.cmp .l .vl{flex:0 0 16px;text-align:right;font-size:12px;font-weight:700;color:#fff}
+
+/* ce que ça donne */
+.eff{margin:6px 15px 15px;padding:11px 12px;background:rgba(255,255,255,.06);
+  border-radius:6px;font-size:11px;line-height:1.8;color:rgba(255,255,255,.7)}
+.eff b{color:#ffd894;font-weight:700}
+
+/* les jauges du bas */
+.jbas{display:flex;border-top:1px solid rgba(255,255,255,.14)}
+.jbas > div{flex:1;padding:11px 8px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.1)}
+.jbas > div:last-child{border-right:0}
+.jbas .k{font-size:7px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.46)}
+.jbas .v{font-size:14px;font-weight:700;margin-top:3px}
+
 .voile{position:fixed;inset:0;z-index:20;background:rgba(8,18,30,.5);
   backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
   opacity:0;pointer-events:none;transition:opacity .26s}
@@ -54,14 +107,6 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .menu .tete .id span{display:block;font-size:8.5px;letter-spacing:.16em;
   text-transform:uppercase;color:rgba(255,255,255,.52);margin-top:3px}
 
-/* les trois compteurs */
-.menu .cpt{display:flex;border-bottom:1px solid rgba(255,255,255,.14)}
-.menu .cpt > div{flex:1;padding:11px 6px;text-align:center;
-  border-right:1px solid rgba(255,255,255,.1)}
-.menu .cpt > div:last-child{border-right:0}
-.menu .cpt .k{font-size:7px;letter-spacing:.16em;text-transform:uppercase;
-  color:rgba(255,255,255,.5)}
-.menu .cpt .v{font-size:14px;font-weight:700;margin-top:3px}
 
 /* les lignes du menu */
 .menu ul{list-style:none}
@@ -175,15 +220,26 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 
 <div class="voile" id="voile"></div>
 
+<section class="fiche" id="fiche">
+  <div class="haut">
+    <span class="por" id="f-por"></span>
+    <span class="id"><b id="f-nom">—</b><span id="f-sous">Docker</span></span>
+    <button class="fer" id="f-fer">×</button>
+  </div>
+  <p class="tt">Ce que tu sais faire</p>
+  <div class="cmp" id="f-cmp"></div>
+  <p class="eff" id="f-eff"></p>
+  <div class="jbas">
+    <div><p class="k">Niveau</p><p class="v" style="color:#f0c46a" id="f-niv">—</p></div>
+    <div><p class="k">Expérience</p><p class="v" style="color:#c9a8e0" id="f-xp">—</p></div>
+    <div><p class="k">Réputation</p><p class="v" style="color:#8ce0a8" id="f-rep">—</p></div>
+  </div>
+</section>
+
 <nav class="menu" id="menu">
   <div class="tete">
     <span class="por" id="m-por"></span>
     <span class="id"><b id="m-nom">—</b><span id="m-sous">Docker</span></span>
-  </div>
-  <div class="cpt">
-    <div><p class="k">Caisse</p><p class="v" style="color:#ffd894" id="m-eur">—</p></div>
-    <div><p class="k">Niveau</p><p class="v" style="color:#f0c46a" id="m-niv">—</p></div>
-    <div><p class="k">Énergie</p><p class="v" style="color:#8ce0a8" id="m-nrj">—</p></div>
   </div>
   <ul id="m-liste"></ul>
 </nav>
@@ -1710,6 +1766,56 @@ function matricule(d){
   return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
 }
 
+/* ---------- la fiche ---------- */
+const CMP = [
+  ['force',      'Force',      '#e08a6a', 'la puissance de tes coups'],
+  ['endurance',  'Endurance',  '#8ce0a8', 'ce que tu encaisses'],
+  ['precision_', 'Précision',  '#f0c46a', 'la régularité de tes gestes'],
+  ['discussion', 'Discussion', '#8ab8e0', 'ta façon de parler aux gens'],
+  ['negociation','Négociation','#c9a8e0', 'les prix que tu obtiens']
+];
+
+function poserFiche(d, c){
+  const el = document.getElementById('f-cmp');
+  if (!el) return;
+  const V = c || {};
+
+  el.innerHTML = CMP.map(([k, n, coul]) => {
+    const v = Math.max(0, Math.min(8, Number(V[k] ?? 0)));
+    return '<div class="l"><span class="nm">' + n + '</span>'
+      + '<span class="ba" style="--c:' + coul + '">'
+      + Array.from({length:8}, (_, i) =>
+          '<i class="' + (i < v ? 'on' : '') + '"></i>').join('')
+      + '</span><span class="vl">' + v + '</span></div>';
+  }).join('');
+
+  /* ce que les chiffres donnent concrètement */
+  const F = Number(V.force ?? 0), E = Number(V.endurance ?? 0);
+  const P = Number(V.precision_ ?? 0), D2 = Number(V.discussion ?? 0);
+  const N = Number(V.negociation ?? 0);
+  document.getElementById('f-eff').innerHTML =
+    'Tu tiens <b>' + (20 + E * 5) + '</b> de calme avant de craquer.<br>'
+    + 'Un coup de gueule fait <b>' + (5 + Math.round(F * 1.5)) + '</b> de dégâts.<br>'
+    + 'Tes gestes varient de <b>±' + Math.max(0, 4 - P) + '</b>.<br>'
+    + 'Quand tu parles, tu marques <b>' + (2 + D2) + '</b> points.<br>'
+    + 'Tu obtiens un arrangement <b>' + Math.min(92, 25 + N * 12) + ' %</b> du temps.';
+
+  document.getElementById('f-por').innerHTML = BD.avatarSVG(d);
+  document.getElementById('f-nom').textContent = d.pseudo || 'Sans nom';
+  document.getElementById('f-sous').textContent = 'Docker — matricule ' + matricule(d);
+  document.getElementById('f-niv').textContent = d.niveau || 1;
+  document.getElementById('f-xp').textContent =
+    (d.xp || 0) + ' / ' + XP_PALIER(d.niveau || 1);
+  document.getElementById('f-rep').textContent = (d.reputation ?? 50);
+}
+
+let ficheOuverte = false;
+function basculerFiche(forcer){
+  ficheOuverte = forcer === undefined ? !ficheOuverte : forcer;
+  document.getElementById('fiche').classList.toggle('on', ficheOuverte);
+  document.getElementById('voile').classList.toggle('on', ficheOuverte || menuOuvert);
+}
+
 /* ---------- le menu ---------- */
 const ICONES = {
   fiche:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
@@ -1726,8 +1832,8 @@ function poserMenu(d){
   const p = PALIERS_B[Math.max(0, (d.barque || 1) - 1)];
 
   const L = [
-    { k:'fiche',  n:'Ta fiche',     s:'Ce que tu vaux',            ouvert:true,
-      f:() => location.href = 'personnage.html' },
+    { k:'fiche',  n:'Ta fiche',     s:'Ce que tu sais faire',      ouvert:true,
+      f:() => { basculerMenu(false); basculerFiche(true); } },
     { k:'barque', n:'Ta barque',    s:d.barque ? p.nom : 'Tu n\'en as pas encore',
       ouvert:!!d.barque, f:null },
     { k:'livret', n:'Le livret',    s:'Ce que tu as appris',       ouvert:false },
@@ -1755,9 +1861,6 @@ function poserMenu(d){
   document.getElementById('m-por').innerHTML = BD.avatarSVG(d);
   document.getElementById('m-nom').textContent = d.pseudo || 'Sans nom';
   document.getElementById('m-sous').textContent = 'Docker — matricule ' + matricule(d);
-  document.getElementById('m-eur').textContent = euro(d.euros).replace(' €', '');
-  document.getElementById('m-niv').textContent = d.niveau || 1;
-  document.getElementById('m-nrj').textContent = Math.round(d.energie ?? 100);
 }
 
 let menuOuvert = false;
@@ -1768,8 +1871,10 @@ function basculerMenu(forcer){
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
 document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
-document.getElementById('voile').onclick = () => basculerMenu(false);
-addEventListener('keydown', e => { if (e.key === 'Escape') basculerMenu(false); });
+document.getElementById('voile').onclick = () => { basculerFiche(false); basculerMenu(false); };
+document.getElementById('f-fer').onclick = () => basculerFiche(false);
+addEventListener('keydown', e => {
+  if (e.key === 'Escape'){ basculerFiche(false); basculerMenu(false); } });
 
 function poserAvatar(d){
   const el = document.getElementById('av');
@@ -1792,6 +1897,13 @@ function poserAvatar(d){
     poserAvatar(d);
     poserBarre(d);
     poserMenu(d);
+    /* les compétences vivent dans leur propre table */
+    try {
+      const c = await BD.client();
+      const { data: cmp } = await c.from('competences')
+        .select('*').eq('docker_id', d.id).maybeSingle();
+      poserFiche(d, cmp);
+    } catch(e){ poserFiche(d, null); }
   } catch (e){
     /* hors ligne ou pas connecté : on laisse le carré vide plutôt que de planter */
     console.warn('avatar indisponible', e);
