@@ -25,6 +25,67 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
+/* ---------- la barque ---------- */
+.bq{position:fixed;z-index:22;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
+  background:rgba(20,34,50,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 12px 40px rgba(6,16,28,.6);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.bq.on{opacity:1;transform:none;pointer-events:auto}
+.bq::-webkit-scrollbar{display:none}
+
+/* le portrait de la barque, sur l'eau */
+.bq .vue{position:relative;height:118px;overflow:hidden;
+  background:linear-gradient(180deg,#3d7fa8 0%,#2e6d94 42%,#1f5478 100%);
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.bq .vue svg{display:block;width:100%;height:100%}
+.bq .vue .pal{position:absolute;top:9px;left:11px;
+  background:rgba(10,22,34,.62);border-radius:20px;padding:4px 10px;
+  font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#f0c46a;font-weight:700}
+.bq .vue .fer{position:absolute;top:7px;right:9px;background:none;border:0;cursor:pointer;
+  color:rgba(255,255,255,.7);font-size:22px;line-height:1;padding:3px 6px}
+
+.bq .nom{padding:13px 15px 11px;border-bottom:1px solid rgba(255,255,255,.14)}
+.bq .nom b{display:block;font-size:17px;color:#fff;font-weight:700;letter-spacing:.03em}
+.bq .nom span{display:block;font-size:11.5px;color:rgba(255,255,255,.6);
+  line-height:1.5;margin-top:5px;font-family:system-ui,sans-serif}
+
+/* les trois chiffres */
+.bq .trois{display:flex;border-bottom:1px solid rgba(255,255,255,.14)}
+.bq .trois > div{flex:1;padding:11px 6px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.1)}
+.bq .trois > div:last-child{border-right:0}
+.bq .trois .k{font-size:7px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.46)}
+.bq .trois .v{font-size:15px;font-weight:700;margin-top:3px;color:#fff}
+.bq .trois .v small{font-size:9px;color:rgba(255,255,255,.5);font-weight:400}
+
+/* le palier suivant */
+.bq .suite{padding:13px 15px 15px}
+.bq .suite .tt{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.42);margin-bottom:9px}
+.bq .suite .prochain{display:flex;align-items:center;gap:11px;
+  background:rgba(255,255,255,.06);border-radius:6px;padding:11px 12px}
+.bq .suite .prochain .tx{flex:1;min-width:0}
+.bq .suite .prochain .tx b{display:block;font-size:13px;color:#fff;font-weight:700}
+.bq .suite .prochain .tx span{display:block;font-size:10.5px;color:rgba(255,255,255,.55);
+  margin-top:3px;line-height:1.45;font-family:system-ui,sans-serif}
+.bq .suite .prochain .px{flex:0 0 auto;text-align:right}
+.bq .suite .prochain .px em{display:block;font-style:normal;font-size:14px;
+  font-weight:700;color:#ffd894;white-space:nowrap}
+.bq .suite .prochain .px i{display:block;font-style:normal;font-size:8.5px;
+  color:rgba(255,255,255,.4);margin-top:2px}
+.bq .suite .jauge{height:5px;background:rgba(255,255,255,.14);border-radius:3px;
+  overflow:hidden;margin-top:10px}
+.bq .suite .jauge i{display:block;height:100%;border-radius:3px;
+  background:linear-gradient(90deg,#b8934a,#ffd894);transition:width .6s}
+.bq .suite .man{font-size:10px;color:rgba(255,255,255,.5);margin-top:7px;text-align:center}
+.bq .suite .fin{font-size:11.5px;color:#f0c46a;text-align:center;padding:6px 0}
+
 /* ---------- la fiche ---------- */
 .fiche{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -219,6 +280,20 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 <div class="av" id="av"></div>
 
 <div class="voile" id="voile"></div>
+
+<section class="bq" id="bq">
+  <div class="vue" id="q-vue">
+    <span class="pal" id="q-pal">—</span>
+    <button class="fer" id="q-fer">×</button>
+  </div>
+  <div class="nom"><b id="q-nom">—</b><span id="q-d">—</span></div>
+  <div class="trois">
+    <div><p class="k">Cale</p><p class="v" id="q-cale">—</p></div>
+    <div><p class="k">Charge</p><p class="v" id="q-kg">—</p></div>
+    <div><p class="k">Allure</p><p class="v" id="q-vit">—</p></div>
+  </div>
+  <div class="suite" id="q-suite"></div>
+</section>
 
 <section class="fiche" id="fiche">
   <div class="haut">
@@ -1766,6 +1841,66 @@ function matricule(d){
   return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
 }
 
+/* ---------- la barque ---------- */
+function poserBarque(d){
+  const n = Number(d.barque || 0);
+  const el = document.getElementById('q-suite');
+  if (!el) return;
+
+  if (!n){
+    document.getElementById('q-vue').querySelector('svg')?.remove();
+    document.getElementById('q-pal').textContent = 'Sans bateau';
+    document.getElementById('q-nom').textContent = 'Tu n\'as pas de barque';
+    document.getElementById('q-d').textContent =
+      'Toussaint sort le bois quand tu veux. La quille ne coûte rien.';
+    ['q-cale','q-kg','q-vit'].forEach(k => document.getElementById(k).textContent = '—');
+    el.innerHTML = '<p class="fin">Monte au chantier.</p>';
+    return;
+  }
+
+  const P = PALIERS_B[n - 1];
+
+  /* le portrait : la barque au mouillage, cadrée dans sa vue */
+  const vue = document.getElementById('q-vue');
+  vue.querySelector('svg')?.remove();
+  const svg = '<svg viewBox="30 44 240 104" xmlns="http://www.w3.org/2000/svg">'
+    + barqueQ(n, false) + '</svg>';
+  vue.insertAdjacentHTML('afterbegin', svg);
+
+  document.getElementById('q-pal').textContent = 'Palier ' + n + ' sur 20';
+  document.getElementById('q-nom').textContent = P.nom;
+  document.getElementById('q-d').textContent = P.d;
+  document.getElementById('q-cale').innerHTML = P.places + ' <small>places</small>';
+  document.getElementById('q-kg').innerHTML = P.kg + ' <small>kg</small>';
+  document.getElementById('q-vit').innerHTML = P.vit.toFixed(1) + ' <small>nœuds</small>';
+
+  /* le palier suivant */
+  if (n >= 20){
+    el.innerHTML = '<p class="fin">Il n\'y a rien au-dessus.<br>'
+      + 'Tu as le plus beau bateau du bassin.</p>';
+    return;
+  }
+  const S = PALIERS_B[n];
+  const eur = Number(d.euros || 0), reste = Math.max(0, S.prix - eur);
+  el.innerHTML = '<p class="tt">Ce qui vient après</p>'
+    + '<div class="prochain"><span class="tx"><b>' + S.nom + '</b>'
+    + '<span>' + S.d + '</span></span>'
+    + '<span class="px"><em>' + S.prix.toLocaleString('fr-FR') + ' €</em>'
+    + '<i>palier ' + S.n + '</i></span></div>'
+    + '<div class="jauge"><i style="width:'
+    + Math.max(0, Math.min(100, eur / S.prix * 100)).toFixed(1) + '%"></i></div>'
+    + '<p class="man">' + (reste > 0
+        ? 'Il te manque ' + reste.toLocaleString('fr-FR') + ' €'
+        : 'Tu peux te le payer — va voir Toussaint') + '</p>';
+}
+
+let bqOuverte = false;
+function basculerBarque(forcer){
+  bqOuverte = forcer === undefined ? !bqOuverte : forcer;
+  document.getElementById('bq').classList.toggle('on', bqOuverte);
+  document.getElementById('voile').classList.toggle('on', bqOuverte || ficheOuverte || menuOuvert);
+}
+
 /* ---------- la fiche ---------- */
 const CMP = [
   ['force',      'Force',      '#e08a6a', 'la puissance de tes coups'],
@@ -1835,7 +1970,7 @@ function poserMenu(d){
     { k:'fiche',  n:'Ta fiche',     s:'Ce que tu sais faire',      ouvert:true,
       f:() => { basculerMenu(false); basculerFiche(true); } },
     { k:'barque', n:'Ta barque',    s:d.barque ? p.nom : 'Tu n\'en as pas encore',
-      ouvert:!!d.barque, f:null },
+      ouvert:true, f:() => { basculerMenu(false); basculerBarque(true); } },
     { k:'livret', n:'Le livret',    s:'Ce que tu as appris',       ouvert:false },
     { k:'gens',   n:'Les dockers',  s:'Qui traîne sur le quai',    ouvert:false },
     { k:'reglages', n:'Réglages',   s:'Son, animations',           ouvert:false },
@@ -1871,10 +2006,11 @@ function basculerMenu(forcer){
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
 document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
-document.getElementById('voile').onclick = () => { basculerFiche(false); basculerMenu(false); };
+function toutFermer(){ basculerBarque(false); basculerFiche(false); basculerMenu(false); }
+document.getElementById('voile').onclick = toutFermer;
 document.getElementById('f-fer').onclick = () => basculerFiche(false);
-addEventListener('keydown', e => {
-  if (e.key === 'Escape'){ basculerFiche(false); basculerMenu(false); } });
+document.getElementById('q-fer').onclick = () => basculerBarque(false);
+addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
 
 function poserAvatar(d){
   const el = document.getElementById('av');
@@ -1897,6 +2033,7 @@ function poserAvatar(d){
     poserAvatar(d);
     poserBarre(d);
     poserMenu(d);
+    poserBarque(d);
     /* les compétences vivent dans leur propre table */
     try {
       const c = await BD.client();
