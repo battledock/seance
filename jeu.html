@@ -25,6 +25,66 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
+.voile{position:fixed;inset:0;z-index:20;background:rgba(8,18,30,.5);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .26s}
+.voile.on{opacity:1;pointer-events:auto}
+
+.menu{position:fixed;z-index:21;
+  top:calc(env(safe-area-inset-top) + 78px);left:14px;width:266px;
+  background:rgba(20,34,50,.9);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 10px 34px rgba(6,16,28,.56);
+  overflow:hidden;transform-origin:24px 0;
+  opacity:0;transform:scale(.9) translateY(-8px);pointer-events:none;
+  transition:opacity .22s,transform .24s cubic-bezier(.2,.9,.3,1)}
+.menu.on{opacity:1;transform:none;pointer-events:auto}
+
+/* l'entête : le portrait en grand */
+.menu .tete{display:flex;align-items:center;gap:12px;padding:14px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.menu .tete .por{flex:0 0 50px;height:50px;border-radius:5px;overflow:hidden;
+  border:1.6px solid rgba(255,255,255,.34);background:#dfe8ee}
+.menu .tete .por svg{display:block;width:100%;height:100%}
+.menu .tete .id{flex:1;min-width:0}
+.menu .tete .id b{display:block;font-size:15px;color:#fff;font-weight:700;
+  letter-spacing:.04em}
+.menu .tete .id span{display:block;font-size:8.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.52);margin-top:3px}
+
+/* les trois compteurs */
+.menu .cpt{display:flex;border-bottom:1px solid rgba(255,255,255,.14)}
+.menu .cpt > div{flex:1;padding:11px 6px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.1)}
+.menu .cpt > div:last-child{border-right:0}
+.menu .cpt .k{font-size:7px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.5)}
+.menu .cpt .v{font-size:14px;font-weight:700;margin-top:3px}
+
+/* les lignes du menu */
+.menu ul{list-style:none}
+.menu li button{width:100%;display:flex;align-items:center;gap:11px;
+  padding:12px 15px;background:none;border:0;cursor:pointer;text-align:left;
+  color:rgba(255,255,255,.92);font-family:'Courier Prime',monospace;font-size:12.5px;
+  border-bottom:1px solid rgba(255,255,255,.07);transition:background .14s}
+.menu li:last-child button{border-bottom:0}
+.menu li button:active{background:rgba(255,255,255,.1)}
+.menu li button svg{flex:0 0 17px;height:17px;stroke:#f0c46a;fill:none;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.menu li button .tx{flex:1}
+.menu li button .tx b{display:block;font-weight:400;letter-spacing:.03em}
+.menu li button .tx span{display:block;font-size:9.5px;color:rgba(255,255,255,.46);
+  margin-top:1.5px;font-family:system-ui,sans-serif}
+.menu li button .fl{flex:0 0 auto;color:rgba(255,255,255,.3);font-size:14px}
+.menu li button:disabled{opacity:.36;cursor:default}
+.menu li button.sortie{color:#f0a88a}
+.menu li button.sortie svg{stroke:#f0a88a}
+
+.av{cursor:pointer}
+.av.ouvert{border-color:rgba(240,196,106,.9)}
+
 .barre{position:fixed;z-index:10;
   top:calc(env(safe-area-inset-top) + 14px);left:82px;right:14px;
   height:56px;border-radius:6px;overflow:hidden;
@@ -112,6 +172,21 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 <div id="sc"></div>
 
 <div class="av" id="av"></div>
+
+<div class="voile" id="voile"></div>
+
+<nav class="menu" id="menu">
+  <div class="tete">
+    <span class="por" id="m-por"></span>
+    <span class="id"><b id="m-nom">—</b><span id="m-sous">Docker</span></span>
+  </div>
+  <div class="cpt">
+    <div><p class="k">Caisse</p><p class="v" style="color:#ffd894" id="m-eur">—</p></div>
+    <div><p class="k">Niveau</p><p class="v" style="color:#f0c46a" id="m-niv">—</p></div>
+    <div><p class="k">Énergie</p><p class="v" style="color:#8ce0a8" id="m-nrj">—</p></div>
+  </div>
+  <ul id="m-liste"></ul>
+</nav>
 
 <div class="barre" id="barre">
   <span class="sous">
@@ -1626,6 +1701,76 @@ function poserBarre(d){
   el.classList.add('pret');
 }
 
+/* le matricule : on le dérive de l'identifiant, il ne change jamais */
+function matricule(d){
+  const src = String((d && d.id) || (d && d.pseudo) || '');
+  let h = 0;
+  for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) >>> 0;
+  const L = 'ABCDEFGHJKLMNPRSTUVWXYZ';
+  return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
+}
+
+/* ---------- le menu ---------- */
+const ICONES = {
+  fiche:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  barque:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>',
+  livret:'<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h3"/>',
+  gens:'<path d="M8 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2 21c0-4 3-6 6-6s6 2 6 6M17 8a2.6 2.6 0 1 0 0-5M16 15c3 0 6 1.6 6 5.4"/>',
+  reglages:'<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1A1.7 1.7 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1z"/>',
+  sortie:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'
+};
+
+function poserMenu(d){
+  const el = document.getElementById('m-liste');
+  if (!el) return;
+  const p = PALIERS_B[Math.max(0, (d.barque || 1) - 1)];
+
+  const L = [
+    { k:'fiche',  n:'Ta fiche',     s:'Ce que tu vaux',            ouvert:true,
+      f:() => location.href = 'personnage.html' },
+    { k:'barque', n:'Ta barque',    s:d.barque ? p.nom : 'Tu n\'en as pas encore',
+      ouvert:!!d.barque, f:null },
+    { k:'livret', n:'Le livret',    s:'Ce que tu as appris',       ouvert:false },
+    { k:'gens',   n:'Les dockers',  s:'Qui traîne sur le quai',    ouvert:false },
+    { k:'reglages', n:'Réglages',   s:'Son, animations',           ouvert:false },
+    { k:'sortie', n:'Se déconnecter', s:'',                        ouvert:true, sortie:true,
+      f:async () => { try { await BD.deconnexion(); } catch(e){} location.href = 'index.html'; } }
+  ];
+
+  el.innerHTML = L.map((m, i) =>
+    '<li><button data-i="' + i + '"' + (m.ouvert ? '' : ' disabled')
+    + (m.sortie ? ' class="sortie"' : '') + '>'
+    + '<svg viewBox="0 0 24 24">' + ICONES[m.k] + '</svg>'
+    + '<span class="tx"><b>' + m.n + '</b>'
+    + (m.s ? '<span>' + m.s + '</span>' : '') + '</span>'
+    + (m.ouvert && !m.sortie ? '<span class="fl">›</span>' : '')
+    + '</button></li>').join('');
+
+  el.querySelectorAll('[data-i]').forEach(b => {
+    const m = L[+b.dataset.i];
+    if (m.f) b.onclick = m.f;
+  });
+
+  /* l'entête et les compteurs */
+  document.getElementById('m-por').innerHTML = BD.avatarSVG(d);
+  document.getElementById('m-nom').textContent = d.pseudo || 'Sans nom';
+  document.getElementById('m-sous').textContent = 'Docker — matricule ' + matricule(d);
+  document.getElementById('m-eur').textContent = euro(d.euros).replace(' €', '');
+  document.getElementById('m-niv').textContent = d.niveau || 1;
+  document.getElementById('m-nrj').textContent = Math.round(d.energie ?? 100);
+}
+
+let menuOuvert = false;
+function basculerMenu(forcer){
+  menuOuvert = forcer === undefined ? !menuOuvert : forcer;
+  document.getElementById('menu').classList.toggle('on', menuOuvert);
+  document.getElementById('voile').classList.toggle('on', menuOuvert);
+  document.getElementById('av').classList.toggle('ouvert', menuOuvert);
+}
+document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
+document.getElementById('voile').onclick = () => basculerMenu(false);
+addEventListener('keydown', e => { if (e.key === 'Escape') basculerMenu(false); });
+
 function poserAvatar(d){
   const el = document.getElementById('av');
   if (!el) return;
@@ -1646,6 +1791,7 @@ function poserAvatar(d){
     }
     poserAvatar(d);
     poserBarre(d);
+    poserMenu(d);
   } catch (e){
     /* hors ligne ou pas connecté : on laisse le carré vide plutôt que de planter */
     console.warn('avatar indisponible', e);
