@@ -98,13 +98,15 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   border-bottom:1px solid rgba(34,32,28,.07);position:relative;background:#dceaf2;
   touch-action:pan-y;aspect-ratio:2/1;box-shadow:inset 0 -18px 26px -18px rgba(10,22,34,.28)}
 .rail4{display:flex;height:100%;
-  transition:transform .38s cubic-bezier(.22,.72,.24,1);
-  will-change:transform;backface-visibility:hidden}
+  transition:transform .28s cubic-bezier(.2,.78,.28,1);
+  will-change:transform;backface-visibility:hidden;transform:translate3d(0,0,0)}
 .rail4.suit{transition:none}
 .page4{flex:0 0 100%;position:relative;overflow:hidden;contain:paint;
   transform:translateZ(0);backface-visibility:hidden}
 /* on n'anime que l'écran regardé, et rien pendant le glissement */
 .page4:not(.actif) *{animation-play-state:paused !important}
+/* un écran à deux pages de distance n'est jamais visible : on ne le rend pas */
+.page4.loin{content-visibility:auto;contain-intrinsic-size:100% 100%}
 .rail4.suit *{animation-play-state:paused !important}
 .page4 > .toile4{position:absolute;inset:0}
 .page4 svg{position:absolute;inset:0;width:100%;height:100%}
@@ -2321,21 +2323,21 @@ function relief(){
 
   /* --- garrigue : semée sous la crête, densité croissante vers le bas --- */
   const TEINTES = ['#8ea07c','#98a684','#829472','#a2ad8c','#8ba077'];
-  for (let i = 0; i < 300; i++){
+  for (let i = 0; i < 130; i++){
     const gauche = rndB(i) > .46;
     const x = gauche ? -6 + rndB(i+2)*252 : 250 + rndB(i+2)*234;
     const haut = hauteurCrete(gauche ? CRETE_G : CRETE_D, x);
     if (haut > 156) continue;
     const t = Math.pow(rndB(i+30), .5);
     const y = haut + 2 + t * (157 - haut);
-    const r = 1.2 + rndB(i+7) * (1.4 + t * 2);
+    const r = 1.8 + rndB(i+7) * (2.2 + t * 2.8);
     s += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(1)}" rx="${r.toFixed(1)}"
       ry="${(r*.7).toFixed(1)}" fill="${TEINTES[i % 5]}"
       opacity="${(.2 + rndB(i+11)*.32).toFixed(2)}"/>`;
   }
 
   /* --- rochers affleurants sur les crêtes --- */
-  for (let i = 0; i < 30; i++){
+  for (let i = 0; i < 14; i++){
     const gauche = rndB(i+90) > .5;
     const x = gauche ? 8 + rndB(i+2)*222 : 258 + rndB(i+2)*212;
     const haut = hauteurCrete(gauche ? CRETE_G : CRETE_D, x);
@@ -2352,165 +2354,45 @@ function relief(){
 }
 
 /* ================= un pin parasol ================= */
-function pin(x, sol, h, g){
+function pin(x, sol, h, graine){
   const t = h / 30;
-  const pen = (rndB(g) - .5) * 9 * t;
-  const cx = x + pen, cy = sol - h * .8;
-  const PAL = [
-    ['#2f5638','#3f6b46','#54855a','#6d9c6e'],
-    ['#35603f','#487750','#5c8f64','#78a878'],
-    ['#2b5034','#3d6842','#517f56','#6b9668']
-  ][g % 3];
-  const [tres, fonce, moyen, clair] = PAL;
-
-  let s = `<g class="pin p${g % 4}" style="transform-origin:${x}px ${sol}px">`;
-
-  /* tronc : deux courbes qui se rejoignent, écorce visible */
-  s += `<path d="M${(x - 2.6*t).toFixed(1)} ${sol}
-    C${(x - 2*t + pen*.3).toFixed(1)} ${(sol - h*.34).toFixed(1)}
-     ${(x - 1.4*t + pen*.7).toFixed(1)} ${(sol - h*.56).toFixed(1)}
-     ${(cx - 1.6*t).toFixed(1)} ${(sol - h*.76).toFixed(1)}
-    L${(cx + 1.6*t).toFixed(1)} ${(sol - h*.76).toFixed(1)}
-    C${(x + 2.4*t + pen*.7).toFixed(1)} ${(sol - h*.56).toFixed(1)}
-     ${(x + 3*t + pen*.3).toFixed(1)} ${(sol - h*.34).toFixed(1)}
-     ${(x + 3.4*t).toFixed(1)} ${sol} Z" fill="#6b4f33"/>`;
-  s += `<path d="M${(x - 2.6*t).toFixed(1)} ${sol}
-    C${(x - 2*t + pen*.3).toFixed(1)} ${(sol - h*.34).toFixed(1)}
-     ${(x - 1.4*t + pen*.7).toFixed(1)} ${(sol - h*.56).toFixed(1)}
-     ${(cx - 1.6*t).toFixed(1)} ${(sol - h*.76).toFixed(1)}
-    l${(1.4*t).toFixed(1)} 0
-    C${(x + pen*.7).toFixed(1)} ${(sol - h*.56).toFixed(1)}
-     ${(x - .4*t + pen*.3).toFixed(1)} ${(sol - h*.34).toFixed(1)}
-     ${(x - .4*t).toFixed(1)} ${sol} Z" fill="#8f6c45"/>`;
-  /* stries d'écorce */
-  s += `<g stroke="#5c4229" stroke-width="${(.6*t).toFixed(2)}" opacity=".45" fill="none">`;
-  for (let k = 0; k < 4; k++)
-    s += `<path d="M${(x - 1.6*t + k*1.4*t).toFixed(1)} ${(sol - 1).toFixed(1)}
-      q${(pen*.5).toFixed(1)} ${(-h*.32).toFixed(1)} ${(pen*.8).toFixed(1)} ${(-h*.62).toFixed(1)}"/>`;
-  s += `</g>`;
-
-  /* branches maîtresses, qui portent la couronne */
-  s += `<g stroke="#6b4f33" stroke-width="${(1.5*t).toFixed(2)}" fill="none" stroke-linecap="round">
-    <path d="M${(cx).toFixed(1)} ${(sol - h*.74).toFixed(1)} q${(-7*t).toFixed(1)} ${(-2*t).toFixed(1)} ${(-13*t).toFixed(1)} ${(-4.4*t).toFixed(1)}"/>
-    <path d="M${(cx).toFixed(1)} ${(sol - h*.76).toFixed(1)} q${(7*t).toFixed(1)} ${(-2.4*t).toFixed(1)} ${(13*t).toFixed(1)} ${(-4*t).toFixed(1)}"/>
-    <path d="M${(cx).toFixed(1)} ${(sol - h*.78).toFixed(1)} q${(-3*t).toFixed(1)} ${(-4*t).toFixed(1)} ${(-6*t).toFixed(1)} ${(-7*t).toFixed(1)}"/></g>`;
-
-  /* la couronne : un grand parasol composé de touffes irrégulières */
-  const T = [
-    [-15,  3, 11, 4.6, tres], [ 15,  3.4, 10, 4.2, tres],
-    [ -6,  4, 13, 5,   tres], [  7,  4.2, 12, 4.6, tres],
-    [-13, -1, 10, 5,   fonce], [ 13, -.4, 10, 4.6, fonce],
-    [ -4,  0, 13, 5.4, fonce], [  6,  .6, 12, 5,   fonce],
-    [-10, -4.6, 9, 4.4, moyen], [  9, -4,  9, 4.2, moyen],
-    [ -1, -5.4, 12, 5,  moyen],
-    [ -5, -8,  8, 3.6, clair], [  5, -7.4, 8, 3.4, clair],
-    [  0, -9.6, 6, 2.8, clair]
-  ];
-  T.forEach(([dx, dy, rx, ry, c]) => {
-    s += `<ellipse cx="${(cx + dx*t).toFixed(1)}" cy="${(cy + dy*t).toFixed(1)}"
-      rx="${(rx*t).toFixed(1)}" ry="${(ry*t).toFixed(1)}" fill="${c}"/>`;
-  });
-  /* aiguilles suggérées sur le pourtour */
-  s += `<g stroke="${moyen}" stroke-width="${(.7*t).toFixed(2)}" opacity=".7" stroke-linecap="round">`;
-  for (let k = 0; k < 14; k++){
-    const a = Math.PI * (0.06 + k / 15 * 0.88);
-    const rx0 = 16 * t, ry0 = 6.4 * t;
-    const px = cx - Math.cos(a) * rx0, py = cy + 1.4*t - Math.sin(a) * ry0;
-    const l = 2.4 * t;
-    s += `<path d="M${px.toFixed(1)} ${py.toFixed(1)} l${(-Math.cos(a)*l).toFixed(1)} ${(-Math.sin(a)*l).toFixed(1)}"/>`;
-  }
-  s += `</g>`;
-  /* rehaut du couchant */
-  s += `<ellipse cx="${(cx + 6*t).toFixed(1)}" cy="${(cy - 7.4*t).toFixed(1)}" rx="${(7.4*t).toFixed(1)}"
-    ry="${(2.6*t).toFixed(1)}" fill="#a8c48c" opacity=".5"/>`;
-  s += `<ellipse cx="${(cx + 11*t).toFixed(1)}" cy="${(cy - 1*t).toFixed(1)}" rx="${(5*t).toFixed(1)}"
-    ry="${(2.2*t).toFixed(1)}" fill="#94b47e" opacity=".34"/>`;
-
-  s += `</g>`;
-  /* ombre portée, allongée vers la gauche */
-  s += `<ellipse cx="${(x + pen*.3 - 4*t).toFixed(1)}" cy="${(sol + .6).toFixed(1)}"
-    rx="${(15*t).toFixed(1)}" ry="${(2.4*t).toFixed(1)}" fill="#8a7d5c" opacity=".24"/>`;
+  let s = `<g class="pin p${graine % 4}" style="transform-origin:${x}px ${sol}px">`;
+  const pen = (rndB(graine) - .5) * 8 * t;
+  /* tronc */
+  s += `<path d="M${x-2*t} ${sol} q${pen*.4} -${h*.5} ${pen} -${h*.72} l${3.4*t} 0
+    q-${pen*.5} ${h*.44} ${-pen*.2} ${h*.28} z" fill="#7a5c3c"/>`;
+  /* couronne : trois masses suffisent à la lecture */
+  const cx = x + pen, cy = sol - h*.78;
+  const VERTS = [['#3f6b46','#4f8055'],['#4a7850','#5c8c62'],['#456f48','#547f58']];
+  const [fonce, clair] = VERTS[graine % 3];
+  s += `<ellipse cx="${cx.toFixed(1)}" cy="${(cy+2.4*t).toFixed(1)}" rx="${(16*t).toFixed(1)}" ry="${(5.6*t).toFixed(1)}" fill="${fonce}"/>`;
+  s += `<ellipse cx="${(cx-4*t).toFixed(1)}" cy="${(cy-2.4*t).toFixed(1)}" rx="${(12*t).toFixed(1)}" ry="${(5.4*t).toFixed(1)}" fill="${clair}"/>`;
+  s += `<ellipse cx="${(cx+5*t).toFixed(1)}" cy="${(cy-4.6*t).toFixed(1)}" rx="${(7.6*t).toFixed(1)}"
+    ry="${(3*t).toFixed(1)}" fill="#8fb07a" opacity=".55"/>`;
+  s += `</g><ellipse cx="${(x+pen*.4).toFixed(1)}" cy="${sol}" rx="${(13*t).toFixed(1)}"
+    ry="${(2.6*t).toFixed(1)}" fill="#8a7d5c" opacity=".26"/>`;
   return s;
 }
 
 /* ================= un cyprès ================= */
 function cypres(x, sol, h){
   const t = h / 26;
-  let s = `<g class="cypres" style="transform-origin:${x}px ${sol}px">`;
-  s += `<ellipse cx="${(x-3*t).toFixed(1)}" cy="${sol}" rx="${(5*t).toFixed(1)}" ry="${(1.8*t).toFixed(1)}"
-    fill="#8a7d5c" opacity=".24"/>`;
-  /* silhouette en flamme, contour irrégulier */
-  s += `<path d="M${(x - 3.6*t).toFixed(1)} ${sol}
-    q${(-1.6*t).toFixed(1)} ${(-h*.28).toFixed(1)} ${(-.4*t).toFixed(1)} ${(-h*.5).toFixed(1)}
-    q${(-1*t).toFixed(1)} ${(-h*.16).toFixed(1)} ${(.6*t).toFixed(1)} ${(-h*.28).toFixed(1)}
-    q${(-.6*t).toFixed(1)} ${(-h*.12).toFixed(1)} ${(1.4*t).toFixed(1)} ${(-h*.2).toFixed(1)}
-    q${(1.2*t).toFixed(1)} ${(-h*.08).toFixed(1)} ${(2.2*t).toFixed(1)} ${(h*.04).toFixed(1)}
-    q${(1.6*t).toFixed(1)} ${(h*.1).toFixed(1)} ${(.8*t).toFixed(1)} ${(h*.22).toFixed(1)}
-    q${(1.4*t).toFixed(1)} ${(h*.14).toFixed(1)} ${(.2*t).toFixed(1)} ${(h*.3).toFixed(1)}
-    q${(1.2*t).toFixed(1)} ${(h*.2).toFixed(1)} ${(-.6*t).toFixed(1)} ${(h*.44).toFixed(1)} z"
-    fill="#2f5638"/>`;
-  /* face éclairée */
-  s += `<path d="M${(x - .4*t).toFixed(1)} ${sol}
-    q${(-1*t).toFixed(1)} ${(-h*.3).toFixed(1)} ${(-.2*t).toFixed(1)} ${(-h*.52).toFixed(1)}
-    q${(-.4*t).toFixed(1)} ${(-h*.2).toFixed(1)} ${(1*t).toFixed(1)} ${(-h*.24).toFixed(1)}
-    q${(1.6*t).toFixed(1)} ${(-.02*h).toFixed(1)} ${(1.8*t).toFixed(1)} ${(h*.18).toFixed(1)}
-    q${(.6*t).toFixed(1)} ${(h*.26).toFixed(1)} ${(-.6*t).toFixed(1)} ${(h*.6).toFixed(1)} z"
-    fill="#4a7852" opacity=".85"/>`;
-  /* touffes sur le bord */
-  for (let k = 0; k < 5; k++){
-    const y = sol - h*(.2 + k*.16);
-    s += `<ellipse cx="${(x - 3.4*t + (k%2)*7*t).toFixed(1)}" cy="${y.toFixed(1)}"
-      rx="${(1.6*t).toFixed(1)}" ry="${(2.2*t).toFixed(1)}" fill="${k%2 ? '#3f6b46' : '#2f5638'}" opacity=".8"/>`;
-  }
-  s += `<rect x="${(x-.8).toFixed(1)}" y="${(sol-3*t).toFixed(1)}" width="1.6" height="${(3*t).toFixed(1)}" fill="#6b4f33"/>`;
-  return s + `</g>`;
+  return `<g class="cypres" style="transform-origin:${x}px ${sol}px">
+    <path d="M${x-3.4*t} ${sol} q-1.4 -${h*.5} 0 -${h*.74} q1.6 -${h*.3} 3.4 -${h*.26}
+      q1.8 -.4 3.4 ${h*.26} q1.4 ${h*.24} 0 ${h*.74} z" fill="#3a5f42"/>
+    <path d="M${x} ${sol} q-1.4 -${h*.5} 0 -${h*.74} q1.6 -${h*.3} 3.4 -${h*.26}
+      q1.4 ${h*.24} 0 ${h*.74} z" fill="#4a7350" opacity=".8"/></g>`;
 }
 
 /* ================= un olivier ================= */
 function olivier(x, sol, h){
   const t = h / 22;
   let s = `<g class="olivier" style="transform-origin:${x}px ${sol}px">`;
-  s += `<ellipse cx="${(x-3*t).toFixed(1)}" cy="${sol}" rx="${(11*t).toFixed(1)}" ry="${(2.2*t).toFixed(1)}"
-    fill="#8a7d5c" opacity=".24"/>`;
-  /* tronc noueux, deux branches maîtresses */
-  s += `<path d="M${(x - 3.4*t).toFixed(1)} ${sol}
-    q${(-1.4*t).toFixed(1)} ${(-h*.18).toFixed(1)} ${(.4*t).toFixed(1)} ${(-h*.3).toFixed(1)}
-    q${(1.4*t).toFixed(1)} ${(-h*.1).toFixed(1)} ${(3*t).toFixed(1)} ${(-h*.04).toFixed(1)}
-    q${(2*t).toFixed(1)} ${(h*.06).toFixed(1)} ${(1.4*t).toFixed(1)} ${(h*.34).toFixed(1)} z" fill="#8a7a5c"/>`;
-  s += `<path d="M${(x - 2*t).toFixed(1)} ${(sol - h*.26).toFixed(1)}
-    q${(-1.4*t).toFixed(1)} ${(-h*.12).toFixed(1)} ${(-1*t).toFixed(1)} ${(-h*.2).toFixed(1)}" 
-    stroke="#8a7a5c" stroke-width="${(1.8*t).toFixed(1)}" fill="none" stroke-linecap="round"/>`;
-  s += `<g stroke="#8a7a5c" stroke-width="${(1.5*t).toFixed(1)}" fill="none" stroke-linecap="round">
-    <path d="M${(x).toFixed(1)} ${(sol - h*.3).toFixed(1)} q${(-3*t).toFixed(1)} ${(-3*t).toFixed(1)} ${(-6*t).toFixed(1)} ${(-5*t).toFixed(1)}"/>
-    <path d="M${(x).toFixed(1)} ${(sol - h*.32).toFixed(1)} q${(3.4*t).toFixed(1)} ${(-2.6*t).toFixed(1)} ${(6.4*t).toFixed(1)} ${(-4.4*t).toFixed(1)}"/>
-    <path d="M${(x).toFixed(1)} ${(sol - h*.34).toFixed(1)} v${(-4*t).toFixed(1)}"/></g>`;
-  /* stries du tronc */
-  s += `<g stroke="#6d6144" stroke-width="${(.5*t).toFixed(2)}" opacity=".4" fill="none">
-    <path d="M${(x - 2.4*t).toFixed(1)} ${(sol-1).toFixed(1)} q${(.6*t).toFixed(1)} ${(-h*.14).toFixed(1)} ${(.8*t).toFixed(1)} ${(-h*.26).toFixed(1)}"/>
-    <path d="M${(x - .4*t).toFixed(1)} ${(sol-1).toFixed(1)} q${(.4*t).toFixed(1)} ${(-h*.14).toFixed(1)} ${(.4*t).toFixed(1)} ${(-h*.24).toFixed(1)}"/></g>`;
-  /* feuillage : nuage de petites masses gris-vert */
-  const cy = sol - h*.62;
-  const F = [
-    [-6, 2, 7, 5, '#6d8163'], [6, 2.4, 6.4, 4.6, '#6d8163'],
-    [0, .4, 8, 5.6, '#7d8f6a'], [-8, -2, 6, 4.4, '#7d8f6a'], [8, -1.6, 5.6, 4.2, '#7d8f6a'],
-    [-3, -4, 7, 4.6, '#8fa07c'], [4, -4.4, 6.4, 4.2, '#8fa07c'],
-    [0, -7, 5.4, 3.2, '#a2b28c'], [-5, -6.6, 4, 2.6, '#a2b28c']
-  ];
-  F.forEach(([dx, dy, rx, ry, c]) => {
-    s += `<ellipse cx="${(x + dx*t).toFixed(1)}" cy="${(cy + dy*t).toFixed(1)}"
-      rx="${(rx*t).toFixed(1)}" ry="${(ry*t).toFixed(1)}" fill="${c}"/>`;
-  });
-  /* feuilles isolées sur le pourtour */
-  s += `<g fill="#a2b28c" opacity=".8">`;
-  for (let k = 0; k < 9; k++){
-    const a = Math.PI * (0.1 + k / 9 * 0.85);
-    const px = x - Math.cos(a) * 9.4 * t, py = cy - Math.sin(a) * 6.4 * t;
-    s += `<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${(1.6*t).toFixed(1)}" ry="${(.8*t).toFixed(1)}"
-      transform="rotate(${(a*57 - 30).toFixed(0)} ${px.toFixed(1)} ${py.toFixed(1)})"/>`;
-  }
-  s += `</g>`;
-  s += `<ellipse cx="${(x + 4*t).toFixed(1)}" cy="${(cy - 6*t).toFixed(1)}" rx="${(4.4*t).toFixed(1)}"
-    ry="${(1.8*t).toFixed(1)}" fill="#bcc9a2" opacity=".5"/>`;
+  s += `<path d="M${x-2.6*t} ${sol} q-1 -${h*.3} .6 -${h*.44} l${3.4*t} 0
+    q1.6 ${h*.14} .6 ${h*.44} z" fill="#8a7a5c"/>`;
+  const cy = sol - h*.66;
+  s += `<ellipse cx="${(x-3.4*t).toFixed(1)}" cy="${cy.toFixed(1)}" rx="${(8.4*t).toFixed(1)}" ry="${(5.6*t).toFixed(1)}" fill="#7d8f6a"/>`;
+  s += `<ellipse cx="${(x+3.4*t).toFixed(1)}" cy="${(cy-2*t).toFixed(1)}" rx="${(7.4*t).toFixed(1)}" ry="${(5*t).toFixed(1)}" fill="#8fa07c"/>`;
   return s + `</g>`;
 }
 
@@ -2682,7 +2564,7 @@ function plage(){
   s += `<path d="M0 222 q30 -4 62 -2 q34 2 68 -3 q36 -5 72 2 q38 7 74 -2 q34 -8 68 -1 q30 5 62 -3 q26 -5 54 -1 L480 234 H0 Z"
     fill="#c9b892" opacity=".45"/>`;
   /* galets et coquillages */
-  for (let i = 0; i < 60; i++){
+  for (let i = 0; i < 34; i++){
     const x = rndB(i+3)*480, y = 222 + rndB(i+13)*17;
     s += `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(1.2+rndB(i+5)*2.8).toFixed(1)}"
       ry="${(.8+rndB(i+9)*1.4).toFixed(1)}" fill="${rndB(i+7)>.6?'#b8a680':'#cbbb96'}"
@@ -4396,7 +4278,10 @@ function aller4(i){
   rail.classList.remove('suit');
   rail.style.transform = 'translate3d(' + (-page4 * 100) + '%,0,0)';
   const P = document.querySelectorAll('.page4');
-  P.forEach((p, k) => p.classList.toggle('actif', k === page4));
+  P.forEach((p, k) => {
+    p.classList.toggle('actif', k === page4);
+    p.classList.toggle('loin', Math.abs(k - page4) > 1);
+  });
   ronds4();
   /* la barre d'actions se reconstruit une fois le glissement fini */
   if (finGlisse) clearTimeout(finGlisse);
@@ -4455,10 +4340,15 @@ function actions4(){
     if (boucle === null) boucle = requestAnimationFrame(poser);
   };
 
+  /* la largeur ne change qu'au redimensionnement */
+  const mesurer = () => { large = g.clientWidth || 340; };
+  mesurer();
+  addEventListener('resize', mesurer, { passive:true });
+  addEventListener('orientationchange', () => setTimeout(mesurer, 120), { passive:true });
+
   g.addEventListener('touchstart', e => {
     const t = e.touches[0];
     x0 = t.clientX; y0 = t.clientY; dx = 0; actif = false;
-    large = g.clientWidth || 340;
     t0 = tPrec = performance.now(); xPrec = t.clientX; vitesse = 0;
     /* on fige la position courante pour partir sans à-coup */
     if (rail.classList.contains('suit')) return;
