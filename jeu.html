@@ -87,19 +87,25 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .page4 .os4 i{position:absolute;background:#d8d2c4;border-radius:4px;display:block}
 .page4:not(.pret) .lg4,.page4:not(.pret) .puce4{opacity:0}
 .lg4,.puce4{transition:opacity .4s ease}
-.charge .fenetre4{background:#e6e1d6}
+.charge .fenetre4{touch-action:pan-y;background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
 .pedalo{animation:flotteP 4.2s ease-in-out infinite}
 @keyframes flotteP{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
 
 /* ================= les quatre écrans ================= */
 .ecrans{position:relative;margin:10px 0 0}
-.fenetre4{overflow:hidden;border-top:1px solid rgba(34,32,28,.07);
+.fenetre4{touch-action:pan-y;overflow:hidden;border-top:1px solid rgba(34,32,28,.07);
   border-bottom:1px solid rgba(34,32,28,.07);position:relative;background:#dceaf2;
   touch-action:pan-y;aspect-ratio:2/1;box-shadow:inset 0 -18px 26px -18px rgba(10,22,34,.28)}
-.rail4{display:flex;height:100%;transition:transform .46s cubic-bezier(.32,.86,.3,1)}
+.rail4{display:flex;height:100%;
+  transition:transform .38s cubic-bezier(.22,.72,.24,1);
+  will-change:transform;backface-visibility:hidden}
 .rail4.suit{transition:none}
-.page4{flex:0 0 100%;position:relative;overflow:hidden}
+.page4{flex:0 0 100%;position:relative;overflow:hidden;contain:paint;
+  transform:translateZ(0);backface-visibility:hidden}
+/* on n'anime que l'écran regardé, et rien pendant le glissement */
+.page4:not(.actif) *{animation-play-state:paused !important}
+.rail4.suit *{animation-play-state:paused !important}
 .page4 > .toile4{position:absolute;inset:0}
 .page4 svg{position:absolute;inset:0;width:100%;height:100%}
 .lg4{position:absolute;left:0;right:0;bottom:0;padding:44px 16px 15px;
@@ -141,7 +147,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .page4 .os4 i{position:absolute;background:#d8d2c4;border-radius:4px;display:block}
 .page4:not(.pret) .lg4,.page4:not(.pret) .puce4{opacity:0}
 .lg4,.puce4{transition:opacity .4s ease}
-.charge .fenetre4{background:#e6e1d6}
+.charge .fenetre4{touch-action:pan-y;background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4,.charge .chantier4{opacity:0}
 
 
@@ -332,7 +338,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .page4 .os4 i{position:absolute;background:#d8d2c4;border-radius:4px;display:block}
 .page4:not(.pret) .lg4,.page4:not(.pret) .puce4{opacity:0}
 .lg4,.puce4{transition:opacity .4s ease}
-.charge .fenetre4{background:#e6e1d6}
+.charge .fenetre4{touch-action:pan-y;background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
 .pedalo{animation:flotteP 4.2s ease-in-out infinite}
 @keyframes flotteP{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
@@ -533,7 +539,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .page4 .os4 i{position:absolute;background:#d8d2c4;border-radius:4px;display:block}
 .page4:not(.pret) .lg4,.page4:not(.pret) .puce4{opacity:0}
 .lg4,.puce4{transition:opacity .4s ease}
-.charge .fenetre4{background:#e6e1d6}
+.charge .fenetre4{touch-action:pan-y;background:#e6e1d6}
 .charge .fenetre4 svg,.charge .lg4,.charge .puce4{opacity:0}
 .pedalo{animation:flotteP 4.2s ease-in-out infinite}
 @keyframes flotteP{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-2px) rotate(.5deg)}}
@@ -4367,20 +4373,34 @@ function dessiner4(){
   $('so-bat').textContent  = 'Le berceau attend une quille';
   $('so-han').textContent  = 'Rien n\'a encore de nom';
 }
+let rondsPrets = false;
 function ronds4(){
-  const NOMS = { port:'Le port', mer:'La mer', bateau:'Ton bateau', hangar:'Le hangar' };
-  $('ronds').innerHTML = PAGES4.map((n, i) =>
-    '<button data-i="' + i + '" class="' + (i === page4 ? 'on' : '') + '"'
-    + ' aria-label="' + NOMS[n] + '" aria-current="' + (i === page4 ? 'true' : 'false') + '"></button>').join('');
-  $('ronds').querySelectorAll('button').forEach(b =>
-    b.addEventListener('click', () => aller4(+b.dataset.i)));
+  const el = $('ronds');
+  if (!rondsPrets){
+    const NOMS = { port:'Le port', mer:'La mer', bateau:'Ton bateau', hangar:'Le hangar' };
+    el.innerHTML = PAGES4.map((n, i) =>
+      '<button data-i="' + i + '" aria-label="' + NOMS[n] + '"></button>').join('');
+    el.querySelectorAll('button').forEach(b =>
+      b.addEventListener('click', () => aller4(+b.dataset.i)));
+    rondsPrets = true;
+  }
+  el.querySelectorAll('button').forEach((b, i) => {
+    b.classList.toggle('on', i === page4);
+    b.setAttribute('aria-current', i === page4 ? 'true' : 'false');
+  });
 }
+let finGlisse = null;
 function aller4(i){
   page4 = Math.max(0, Math.min(PAGES4.length - 1, i));
-  $('rail4').classList.remove('suit');
-  $('rail4').style.transform = 'translateX(' + (-page4 * 100) + '%)';
+  const rail = $('rail4');
+  rail.classList.remove('suit');
+  rail.style.transform = 'translate3d(' + (-page4 * 100) + '%,0,0)';
+  const P = document.querySelectorAll('.page4');
+  P.forEach((p, k) => p.classList.toggle('actif', k === page4));
   ronds4();
-  actions4();
+  /* la barre d'actions se reconstruit une fois le glissement fini */
+  if (finGlisse) clearTimeout(finGlisse);
+  finGlisse = setTimeout(() => { actions4(); finGlisse = null; }, 260);
 }
 
 /* ---------- ce qu'on peut faire dans le lieu affiché ---------- */
@@ -4423,30 +4443,72 @@ function actions4(){
 (() => {
   const g = $('fenetre4'), rail = $('rail4');
   let x0 = null, y0 = null, dx = 0, actif = false, large = 0;
+  let t0 = 0, xPrec = 0, tPrec = 0, vitesse = 0, boucle = null, cible = 0;
+
+  /* on n'écrit le transform qu'une fois par image */
+  const poser = () => {
+    boucle = null;
+    rail.style.transform = 'translate3d(' + cible.toFixed(2) + 'px,0,0)';
+  };
+  const demander = v => {
+    cible = v;
+    if (boucle === null) boucle = requestAnimationFrame(poser);
+  };
+
   g.addEventListener('touchstart', e => {
-    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = 0; actif = false;
+    const t = e.touches[0];
+    x0 = t.clientX; y0 = t.clientY; dx = 0; actif = false;
     large = g.clientWidth || 340;
+    t0 = tPrec = performance.now(); xPrec = t.clientX; vitesse = 0;
+    /* on fige la position courante pour partir sans à-coup */
+    if (rail.classList.contains('suit')) return;
   }, { passive:true });
+
   g.addEventListener('touchmove', e => {
     if (x0 === null) return;
-    dx = e.touches[0].clientX - x0;
-    const dy = e.touches[0].clientY - y0;
+    const t = e.touches[0];
+    dx = t.clientX - x0;
+    const dy = t.clientY - y0;
+
     if (!actif){
-      if (Math.abs(dx) < 12) return;
-      if (Math.abs(dy) > Math.abs(dx)){ x0 = null; return; }
-      actif = true; rail.classList.add('suit');
+      /* on tranche tôt : geste horizontal ou défilement vertical */
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      if (Math.abs(dy) > Math.abs(dx) * 1.1){ x0 = null; return; }
+      actif = true;
+      rail.classList.add('suit');
     }
+
+    /* la vitesse instantanée, lissée */
+    const now = performance.now(), dt = now - tPrec;
+    if (dt > 0){
+      const v = (t.clientX - xPrec) / dt;
+      vitesse = vitesse * .7 + v * .3;
+      xPrec = t.clientX; tPrec = now;
+    }
+
+    /* résistance aux extrémités */
     let d2 = dx;
-    if ((page4 === 0 && d2 > 0) || (page4 === PAGES4.length - 1 && d2 < 0)) d2 *= .3;
-    rail.style.transform = 'translateX(' + (-page4 * large + d2) + 'px)';
+    if ((page4 === 0 && d2 > 0) || (page4 === PAGES4.length - 1 && d2 < 0))
+      d2 = Math.sign(d2) * large * .28 * (1 - Math.exp(-Math.abs(d2) / (large * .4)));
+
+    demander(-page4 * large + d2);
   }, { passive:true });
-  g.addEventListener('touchend', () => {
+
+  const finir = () => {
     if (x0 === null) return;
+    if (boucle !== null){ cancelAnimationFrame(boucle); boucle = null; }
     rail.classList.remove('suit');
-    if (actif && Math.abs(dx) > large * .16) aller4(page4 + (dx < 0 ? 1 : -1));
-    else aller4(page4);
-    x0 = null; actif = false;
-  });
+
+    if (actif){
+      const assez = Math.abs(dx) > large * .18;
+      const lance = Math.abs(vitesse) > .35 && Math.abs(dx) > 18;
+      if (assez || lance) aller4(page4 + (dx < 0 ? 1 : -1));
+      else aller4(page4);
+    }
+    x0 = null; actif = false; vitesse = 0;
+  };
+  g.addEventListener('touchend', finir);
+  g.addEventListener('touchcancel', finir);
 })();
 dessiner4();
 aller4(0);
