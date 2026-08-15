@@ -228,24 +228,59 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* --- le chantier --- */
 .vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
 .vueB svg{display:block;width:100%;height:auto}
-.dests{display:flex;flex-direction:column;gap:8px}
-.dest{width:100%;text-align:left;background:var(--carte);border:1px solid var(--bord);
-  border-radius:13px;padding:0;cursor:pointer;display:flex;align-items:stretch;gap:0;
-  overflow:hidden;transition:border-color .2s,transform .12s}
-.dest:active{transform:scale(.99)}
-.dest:hover{border-color:var(--ocre)}
-.dest.ferme{opacity:.45;cursor:default}
-.dest .vg{flex:0 0 96px;overflow:hidden;background:#a5cadf}
+.dests{display:flex;flex-direction:column;gap:10px}
+.dest{position:relative;width:100%;text-align:left;border:0;padding:0;cursor:pointer;
+  border-radius:16px;overflow:hidden;display:block;background:#0e2c40;
+  box-shadow:0 3px 14px rgba(20,40,58,.16);transition:transform .13s,box-shadow .22s}
+.dest:active{transform:scale(.985)}
+.dest .vg{display:block;height:118px;overflow:hidden;position:relative}
 .dest .vg svg{display:block;width:100%;height:100%}
-.dest .tx{flex:1;min-width:0;padding:11px 12px}
-.dest .tx b{display:block;font-size:14.5px;font-weight:600}
-.dest .tx span{display:block;font-size:11.5px;color:var(--doux);line-height:1.4;margin-top:2px}
-.dest .ch{flex:0 0 auto;padding:11px 13px;text-align:right;align-self:center}
-.dest .ch em{display:block;font-style:normal;font-family:'Courier Prime',monospace;
-  font-size:13px;font-weight:700;color:var(--ocre)}
-.dest .ch i{display:block;font-style:normal;font-size:10px;color:var(--doux);margin-top:2px}
-.chantierB button.second{background:none;border:1px solid var(--bord);color:var(--encre);
-  margin-top:7px}
+.dest .vg::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(8,20,32,.05) 0%,rgba(8,20,32,.12) 46%,rgba(8,20,32,.82))}
+.dest .tx{position:absolute;left:14px;right:76px;bottom:11px;z-index:2}
+.dest .tx b{display:block;font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1.02;
+  color:#fff;letter-spacing:.02em;text-shadow:0 2px 10px rgba(6,14,24,.5)}
+.dest .tx span{display:block;font-size:11.5px;color:rgba(255,255,255,.82);line-height:1.4;
+  margin-top:3px;text-shadow:0 1px 7px rgba(6,14,24,.7)}
+.dest .ch{position:absolute;right:12px;bottom:11px;z-index:2;text-align:center;
+  background:rgba(255,255,255,.94);border-radius:12px;padding:7px 11px;min-width:54px;
+  box-shadow:0 2px 9px rgba(8,20,32,.24)}
+.dest .ch em{display:block;font-style:normal;font-family:'Bebas Neue',sans-serif;
+  font-size:19px;line-height:1;color:var(--ocre)}
+.dest .ch i{display:block;font-style:normal;font-size:8.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--doux);margin-top:2px}
+.dest .cap{position:absolute;top:11px;left:12px;z-index:2;background:rgba(255,255,255,.9);
+  border-radius:20px;padding:4px 10px;font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:600;color:#3f3a30}
+.dest.ferme{background:#5c6470}
+.dest.ferme .vg svg{filter:grayscale(.85) brightness(.72)}
+.dest.ferme .ch{background:rgba(255,255,255,.72)}
+.dest.ferme .ch em{color:var(--doux);font-size:15px}
+.dest.ferme{cursor:default}
+.dest .cad{position:absolute;top:10px;right:12px;z-index:2;width:15px;height:15px;opacity:.9}
+
+/* l'entête de la feuille : d'où l'on part */
+.dou{display:flex;align-items:center;gap:11px;background:#f6f2e8;border:1px solid var(--bord);
+  border-radius:13px;padding:11px 13px;margin-bottom:14px}
+.dou .rd{flex:0 0 9px;height:9px;border-radius:50%;background:var(--ocre);
+  box-shadow:0 0 0 4px rgba(194,113,26,.16)}
+.dou .tx{flex:1;min-width:0}
+.dou .tx b{display:block;font-size:14px;font-weight:600}
+.dou .tx span{display:block;font-size:11.5px;color:var(--doux);margin-top:1px}
+.dou .pal{font-family:'Courier Prime',monospace;font-size:11px;color:var(--doux);
+  text-align:right;white-space:nowrap}
+
+/* la traversée en cours */
+.route{background:#0e2c40;border-radius:16px;overflow:hidden;margin-bottom:12px;position:relative}
+.route .vg{height:140px;overflow:hidden}
+.route .vg svg{display:block;width:100%;height:100%}
+.route .tx{position:absolute;left:0;right:0;bottom:0;padding:40px 15px 13px;
+  background:linear-gradient(180deg,transparent,rgba(8,20,32,.8));color:#fff}
+.route .tx .et{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.75)}
+.route .tx b{display:block;font-family:'Bebas Neue',sans-serif;font-size:25px;line-height:1.05;
+  margin-top:2px}
+.route .tx span{display:block;font-size:12px;color:rgba(255,255,255,.84);margin-top:2px}
 
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
@@ -440,24 +475,7 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* --- le chantier --- */
 .vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
 .vueB svg{display:block;width:100%;height:auto}
-.dests{display:flex;flex-direction:column;gap:8px}
-.dest{width:100%;text-align:left;background:var(--carte);border:1px solid var(--bord);
-  border-radius:13px;padding:0;cursor:pointer;display:flex;align-items:stretch;gap:0;
-  overflow:hidden;transition:border-color .2s,transform .12s}
-.dest:active{transform:scale(.99)}
-.dest:hover{border-color:var(--ocre)}
-.dest.ferme{opacity:.45;cursor:default}
-.dest .vg{flex:0 0 96px;overflow:hidden;background:#a5cadf}
-.dest .vg svg{display:block;width:100%;height:100%}
-.dest .tx{flex:1;min-width:0;padding:11px 12px}
-.dest .tx b{display:block;font-size:14.5px;font-weight:600}
-.dest .tx span{display:block;font-size:11.5px;color:var(--doux);line-height:1.4;margin-top:2px}
-.dest .ch{flex:0 0 auto;padding:11px 13px;text-align:right;align-self:center}
-.dest .ch em{display:block;font-style:normal;font-family:'Courier Prime',monospace;
-  font-size:13px;font-weight:700;color:var(--ocre)}
-.dest .ch i{display:block;font-style:normal;font-size:10px;color:var(--doux);margin-top:2px}
-.chantierB button.second{background:none;border:1px solid var(--bord);color:var(--encre);
-  margin-top:7px}
+.chantierB button.second{background:none;border:1px solid var(--bord);color:var(--encre);margin-top:7px}
 
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
@@ -660,25 +678,6 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* --- le chantier --- */
 .vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
 .vueB svg{display:block;width:100%;height:auto}
-.dests{display:flex;flex-direction:column;gap:8px}
-.dest{width:100%;text-align:left;background:var(--carte);border:1px solid var(--bord);
-  border-radius:13px;padding:0;cursor:pointer;display:flex;align-items:stretch;gap:0;
-  overflow:hidden;transition:border-color .2s,transform .12s}
-.dest:active{transform:scale(.99)}
-.dest:hover{border-color:var(--ocre)}
-.dest.ferme{opacity:.45;cursor:default}
-.dest .vg{flex:0 0 96px;overflow:hidden;background:#a5cadf}
-.dest .vg svg{display:block;width:100%;height:100%}
-.dest .tx{flex:1;min-width:0;padding:11px 12px}
-.dest .tx b{display:block;font-size:14.5px;font-weight:600}
-.dest .tx span{display:block;font-size:11.5px;color:var(--doux);line-height:1.4;margin-top:2px}
-.dest .ch{flex:0 0 auto;padding:11px 13px;text-align:right;align-self:center}
-.dest .ch em{display:block;font-style:normal;font-family:'Courier Prime',monospace;
-  font-size:13px;font-weight:700;color:var(--ocre)}
-.dest .ch i{display:block;font-style:normal;font-size:10px;color:var(--doux);margin-top:2px}
-.chantierB button.second{background:none;border:1px solid var(--bord);color:var(--encre);
-  margin-top:7px}
-
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
 .chantierB .nomP{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.05}
@@ -1590,31 +1589,35 @@ function majMer(){
   const el = $('merB'), vue = $('vueM');
   if (!el) return;
   const P = PORTS[J.port];
-  if (vue)
-    vue.innerHTML = '<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg">'
-      + enMerDecor() + '</svg>';
+  if (vue) vue.innerHTML = '';
 
   if (!J.barque){
-    el.innerHTML = '<div class="vide"><p>Tu n\'as pas de bateau. '
+    el.innerHTML = '<div class="vide"><p>Tu n\'as pas de bateau.<br>'
       + 'Monte au chantier voir Toussaint.</p></div>';
     return;
   }
 
+  /* en traversée */
   if (J.enMer){
     const A = PORTS[J.cap || 'barcelone'];
-    el.innerHTML = '<div class="haut"><p class="pal">En traversée</p>'
-      + '<p class="nomP">Cap sur ' + A.n + '</p><p class="dd">' + A.d + '</p></div>'
-      + '<div class="bas"><button id="mr-arriver">Accoster à ' + A.n + '</button>'
-      + '<p class="journal" id="mr-j">La mer est calme.</p></div>';
+    el.innerHTML = '<div class="route"><div class="vg">'
+      + '<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice">' + enMerDecor() + '</svg></div>'
+      + '<div class="tx"><p class="et">En traversée</p><b>Cap sur ' + A.n + '</b>'
+      + '<span>' + A.d + '</span></div></div>'
+      + '<button class="principal" id="mr-arriver">Accoster à ' + A.n + '</button>'
+      + '<p class="journal" id="mr-j">La mer est calme. Personne à l\'horizon.</p>';
     $('mr-arriver').addEventListener('click', () => accoster(J.cap));
     return;
   }
 
+  /* au mouillage : d'où l'on part, puis où aller */
   const p = PALIERS_Q[J.barque - 1];
-  let h = '<div class="haut"><p class="pal">Au mouillage à ' + P.n + '</p>'
-    + '<p class="nomP">' + p.nom + '</p>'
-    + '<p class="dd">Une barque au mouillage ne rapporte rien.</p></div>'
+  let h = '<div class="dou"><span class="rd"></span>'
+    + '<span class="tx"><b>Tu es à ' + P.n + '</b>'
+    + '<span>' + p.nom + ' — cale de ' + p.cale + ' places</span></span>'
+    + '<span class="pal">palier ' + J.barque + '</span></div>'
     + '<p class="tt">Où mettre le cap</p><div class="dests">';
+
   h += ORDRE_PORTS.filter(k => k !== J.port).map(k => {
     const A = PORTS[k];
     const jours = Math.abs(A.jours - P.jours) || 1;
@@ -1624,9 +1627,14 @@ function majMer(){
       + (ok ? ' data-p="' + k + '"' : ' disabled') + '>'
       + '<span class="vg"><svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice">'
       + A.f() + '</svg></span>'
+      + '<span class="cap">' + (A.chezToi ? 'Chez toi' : A.lieu) + '</span>'
+      + (ok ? '' : '<svg class="cad" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">'
+          + '<rect x="4" y="10" width="16" height="11" rx="2"/>'
+          + '<path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>')
       + '<span class="tx"><b>' + A.n + '</b><span>'
-      + (ok ? A.d : 'Il faut une barque de palier ' + requis + '.') + '</span></span>'
-      + '<span class="ch"><em>' + jours + ' j</em><i>' + (ok ? 'y aller' : 'fermé') + '</i></span>'
+      + (ok ? A.d : 'Il te faut une barque de palier ' + requis + '.') + '</span></span>'
+      + '<span class="ch"><em>' + (ok ? jours : '—') + '</em><i>'
+      + (ok ? (jours > 1 ? 'jours' : 'jour') : 'fermé') + '</i></span>'
       + '</button>';
   }).join('') + '</div><p class="journal" id="mr-j"></p>';
   el.innerHTML = h;
