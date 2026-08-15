@@ -228,6 +228,25 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* --- le chantier --- */
 .vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
 .vueB svg{display:block;width:100%;height:auto}
+.dests{display:flex;flex-direction:column;gap:8px}
+.dest{width:100%;text-align:left;background:var(--carte);border:1px solid var(--bord);
+  border-radius:13px;padding:0;cursor:pointer;display:flex;align-items:stretch;gap:0;
+  overflow:hidden;transition:border-color .2s,transform .12s}
+.dest:active{transform:scale(.99)}
+.dest:hover{border-color:var(--ocre)}
+.dest.ferme{opacity:.45;cursor:default}
+.dest .vg{flex:0 0 96px;overflow:hidden;background:#a5cadf}
+.dest .vg svg{display:block;width:100%;height:100%}
+.dest .tx{flex:1;min-width:0;padding:11px 12px}
+.dest .tx b{display:block;font-size:14.5px;font-weight:600}
+.dest .tx span{display:block;font-size:11.5px;color:var(--doux);line-height:1.4;margin-top:2px}
+.dest .ch{flex:0 0 auto;padding:11px 13px;text-align:right;align-self:center}
+.dest .ch em{display:block;font-style:normal;font-family:'Courier Prime',monospace;
+  font-size:13px;font-weight:700;color:var(--ocre)}
+.dest .ch i{display:block;font-style:normal;font-size:10px;color:var(--doux);margin-top:2px}
+.chantierB button.second{background:none;border:1px solid var(--bord);color:var(--encre);
+  margin-top:7px}
+
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
 .chantierB .nomP{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.05}
@@ -421,6 +440,25 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* --- le chantier --- */
 .vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
 .vueB svg{display:block;width:100%;height:auto}
+.dests{display:flex;flex-direction:column;gap:8px}
+.dest{width:100%;text-align:left;background:var(--carte);border:1px solid var(--bord);
+  border-radius:13px;padding:0;cursor:pointer;display:flex;align-items:stretch;gap:0;
+  overflow:hidden;transition:border-color .2s,transform .12s}
+.dest:active{transform:scale(.99)}
+.dest:hover{border-color:var(--ocre)}
+.dest.ferme{opacity:.45;cursor:default}
+.dest .vg{flex:0 0 96px;overflow:hidden;background:#a5cadf}
+.dest .vg svg{display:block;width:100%;height:100%}
+.dest .tx{flex:1;min-width:0;padding:11px 12px}
+.dest .tx b{display:block;font-size:14.5px;font-weight:600}
+.dest .tx span{display:block;font-size:11.5px;color:var(--doux);line-height:1.4;margin-top:2px}
+.dest .ch{flex:0 0 auto;padding:11px 13px;text-align:right;align-self:center}
+.dest .ch em{display:block;font-style:normal;font-family:'Courier Prime',monospace;
+  font-size:13px;font-weight:700;color:var(--ocre)}
+.dest .ch i{display:block;font-style:normal;font-size:10px;color:var(--doux);margin-top:2px}
+.chantierB button.second{background:none;border:1px solid var(--bord);color:var(--encre);
+  margin-top:7px}
+
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
 .chantierB .nomP{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.05}
@@ -622,6 +660,25 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* --- le chantier --- */
 .vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
 .vueB svg{display:block;width:100%;height:auto}
+.dests{display:flex;flex-direction:column;gap:8px}
+.dest{width:100%;text-align:left;background:var(--carte);border:1px solid var(--bord);
+  border-radius:13px;padding:0;cursor:pointer;display:flex;align-items:stretch;gap:0;
+  overflow:hidden;transition:border-color .2s,transform .12s}
+.dest:active{transform:scale(.99)}
+.dest:hover{border-color:var(--ocre)}
+.dest.ferme{opacity:.45;cursor:default}
+.dest .vg{flex:0 0 96px;overflow:hidden;background:#a5cadf}
+.dest .vg svg{display:block;width:100%;height:100%}
+.dest .tx{flex:1;min-width:0;padding:11px 12px}
+.dest .tx b{display:block;font-size:14.5px;font-weight:600}
+.dest .tx span{display:block;font-size:11.5px;color:var(--doux);line-height:1.4;margin-top:2px}
+.dest .ch{flex:0 0 auto;padding:11px 13px;text-align:right;align-self:center}
+.dest .ch em{display:block;font-style:normal;font-family:'Courier Prime',monospace;
+  font-size:13px;font-weight:700;color:var(--ocre)}
+.dest .ch i{display:block;font-style:normal;font-size:10px;color:var(--doux);margin-top:2px}
+.chantierB button.second{background:none;border:1px solid var(--bord);color:var(--encre);
+  margin-top:7px}
+
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
 .chantierB .haut{padding:14px 15px 12px;border-bottom:1px solid #f0ece2}
 .chantierB .nomP{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1.05}
@@ -1305,7 +1362,7 @@ function svgPix(pied, e){
 $('face').insertAdjacentHTML('afterbegin', svgPix(false));
 
 /* ---------- état ---------- */
-const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100, barque:0, enMer:false };
+const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100, barque:0, enMer:false, port:'anse' };
 const euro = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
 
 function majHud(pop){
@@ -1526,21 +1583,16 @@ function ouvrir(id){
 }
 function auPort(){ ouvrir(null); }
 
-/* ---------- la feuille de la mer ---------- */
-function ouvrirMer(){
-  ouvrir('f-mer');
-  majMer();
-}
+/* ---------- la feuille de la mer : où aller ---------- */
+function ouvrirMer(){ ouvrir('f-mer'); majMer(); }
 
 function majMer(){
   const el = $('merB'), vue = $('vueM');
   if (!el) return;
-
-  /* le décor du haut */
+  const P = PORTS[J.port];
   if (vue)
     vue.innerHTML = '<svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg">'
-      + defsT('clair') + traverseeT('clair', null)
-      + (J.barque && J.enMer ? auLarge(J.barque) : '') + '</svg>';
+      + enMerDecor() + '</svg>';
 
   if (!J.barque){
     el.innerHTML = '<div class="vide"><p>Tu n\'as pas de bateau. '
@@ -1548,43 +1600,56 @@ function majMer(){
     return;
   }
 
-  const p = PALIERS_Q[J.barque - 1];
   if (J.enMer){
+    const A = PORTS[J.cap || 'barcelone'];
     el.innerHTML = '<div class="haut"><p class="pal">En traversée</p>'
-      + '<p class="nomP">' + p.nom + '</p>'
-      + '<p class="dd">Elle est sortie. Tant qu\'elle est en mer, '
-      + 'tu ne peux pas y toucher.</p></div>'
-      + '<div class="bas"><button id="mr-rentrer">Rentrer au port</button>'
-      + '<p class="journal" id="mr-j"></p></div>';
-    const b = $('mr-rentrer');
-    if (b) b.addEventListener('click', async () => {
-      J.enMer = false;
-      await sauverBarque();
-      majMer(); majChantier(); majTuile(); majEcrans(); actions4();
-      repeindre('port'); repeindre('mer'); repeindre('bateau');
-      const j = $('mr-j'); if (j) j.textContent = 'Elle est rentrée. Amarrée dans l\'anse.';
-    });
+      + '<p class="nomP">Cap sur ' + A.n + '</p><p class="dd">' + A.d + '</p></div>'
+      + '<div class="bas"><button id="mr-arriver">Accoster à ' + A.n + '</button>'
+      + '<p class="journal" id="mr-j">La mer est calme.</p></div>';
+    $('mr-arriver').addEventListener('click', () => accoster(J.cap));
     return;
   }
 
-  el.innerHTML = '<div class="haut"><p class="pal">Au mouillage</p>'
+  const p = PALIERS_Q[J.barque - 1];
+  let h = '<div class="haut"><p class="pal">Au mouillage à ' + P.n + '</p>'
     + '<p class="nomP">' + p.nom + '</p>'
-    + '<p class="dd">Elle attend dans l\'anse. Rien ne rentre tant qu\'elle ne sort pas.</p></div>'
-    + '<div class="st">'
-    + bloc4('Cale', p.places, PALIERS_Q[19].places, '#c2711a,#e8a94e', 0)
-    + bloc4('Charge', p.kg, PALIERS_Q[19].kg, '#2f8f66,#5cc194', 0)
-    + bloc4('Vitesse', p.vit, PALIERS_Q[19].vit, '#2f7fb0,#5aa3cc', 1)
-    + '</div>'
-    + '<div class="bas"><button id="mr-sortir">Larguer les amarres</button>'
-    + '<p class="journal" id="mr-j"></p></div>';
-  const b = $('mr-sortir');
-  if (b) b.addEventListener('click', async () => {
-    J.enMer = true;
-    await sauverBarque();
-    majMer(); majChantier(); majTuile(); majEcrans(); actions4();
-    repeindre('port'); repeindre('mer'); repeindre('bateau');
-    const j = $('mr-j'); if (j) j.textContent = 'Elle est sortie de l\'anse.';
-  });
+    + '<p class="dd">Une barque au mouillage ne rapporte rien.</p></div>'
+    + '<p class="tt">Où mettre le cap</p><div class="dests">';
+  h += ORDRE_PORTS.filter(k => k !== J.port).map(k => {
+    const A = PORTS[k];
+    const jours = Math.abs(A.jours - P.jours) || 1;
+    const requis = k === 'naples' ? 8 : k === 'alger' ? 4 : 1;
+    const ok = J.barque >= requis;
+    return '<button class="dest' + (ok ? '' : ' ferme') + '"'
+      + (ok ? ' data-p="' + k + '"' : ' disabled') + '>'
+      + '<span class="vg"><svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice">'
+      + A.f() + '</svg></span>'
+      + '<span class="tx"><b>' + A.n + '</b><span>'
+      + (ok ? A.d : 'Il faut une barque de palier ' + requis + '.') + '</span></span>'
+      + '<span class="ch"><em>' + jours + ' j</em><i>' + (ok ? 'y aller' : 'fermé') + '</i></span>'
+      + '</button>';
+  }).join('') + '</div><p class="journal" id="mr-j"></p>';
+  el.innerHTML = h;
+  el.querySelectorAll('[data-p]').forEach(b => b.onclick = () => partirVers(b.dataset.p));
+}
+
+async function partirVers(k){
+  J.cap = k; J.dep = J.port; J.enMer = true;
+  await sauverBarque();
+  majMer(); majChantier(); majTuile(); majEcrans(); actions4();
+  repeindre('port'); repeindre('mer'); repeindre('bateau');
+  const j = $('mr-j');
+  if (j) j.innerHTML = 'Tu sors du port. Cap sur <b>' + PORTS[k].n + '</b>.';
+}
+
+async function accoster(k){
+  J.port = k; J.enMer = false; J.cap = null;
+  await sauverBarque();
+  majMer(); majChantier(); majTuile(); majEcrans(); actions4();
+  repeindre('port'); repeindre('mer'); repeindre('bateau');
+  aller4(0);
+  const j = $('mr-j');
+  if (j) j.innerHTML = 'Tu accostes à <b>' + PORTS[k].n + '</b>.';
 }
 
 /* ---------- la feuille du chantier ---------- */
@@ -5287,6 +5352,12 @@ function majChantier(){
   if (!el) return;
   vueBarque();
 
+  if (!PORTS[J.port].chezToi){
+    el.innerHTML = '<div class="vide"><p>Il n\'y a pas de chantier ici. '
+      + 'Toussaint travaille dans ton anse, et nulle part ailleurs.</p></div>';
+    return;
+  }
+
   /* on ne travaille pas sur un bateau qui n'est pas là */
   if (J.barque && J.enMer){
     el.innerHTML = '<div class="vide"><p>Elle est en mer. Toussaint ne peut rien faire '
@@ -5383,13 +5454,13 @@ function journalB(t){
 
 async function sauverBarque(){
   try {
-    await BD.enregistrer({ euros: J.euros, barque: J.barque, barque_en_mer: J.enMer });
+    await BD.enregistrer({ euros: J.euros, barque: J.barque, barque_en_mer: J.enMer, port: J.port });
   } catch (e) { console.warn('barque non sauvée', e); }
 }
 
 /* repeindre un écran du hub après changement */
 function repeindre(nom){
-  if (!FAIT[nom]) return;
+  FAIT[nom] = true;
   $('e-' + nom).innerHTML = svg4(DECORS[nom]());
 }
 
@@ -5416,12 +5487,23 @@ function berBarque(n){
 
 /* ---------- les quatre écrans ---------- */
 const PAGES4 = ['port', 'mer', 'bateau', 'hangar'];
-const PORTS4 = {
-  port:   { n:'Ton anse',  s:'Quelque part près de Marseille', f:() => anse_A() },
-  mer:    { n:'Barcelone', s:'Port Vell — 1 jour de mer',      f:() => barcelone_B() },
-  bateau: { n:'Alger',     s:'La Casbah — 2 jours de mer',     f:() => alger() },
-  hangar: { n:'Naples',    s:'Le Vésuve — 3 jours de mer',     f:() => naples() }
+
+/* ---------- les ports du monde ---------- */
+const PORTS = {
+  anse:      { n:"Ton anse",  lieu:"Quelque part près de Marseille", chezToi:true,
+               d:"Trois cailloux et une cabane. Mais c'est chez toi.",
+               f:() => anse_A(), jours:0 },
+  barcelone: { n:"Barcelone", lieu:"Port Vell", chezToi:false,
+               d:"Tout se vend, tout se rachète, tout se sait.",
+               f:() => barcelone_B(), jours:1 },
+  alger:     { n:"Alger",     lieu:"La Casbah", chezToi:false,
+               d:"La ville blanche qui dégringole vers la mer.",
+               f:() => alger(), jours:2 },
+  naples:    { n:"Naples",    lieu:"Santa Lucia", chezToi:false,
+               d:"Le Vésuve regarde tout le monde de haut.",
+               f:() => naples(), jours:3 }
 };
+const ORDRE_PORTS = ['anse', 'barcelone', 'alger', 'naples'];
 let page4 = 0;
 
 function svg4(inner){
@@ -5429,47 +5511,70 @@ function svg4(inner){
     + 'xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
 }
 const DECORS = {
-  port:   () => PORTS4.port.f()   + (J.barque && !J.enMer ? auMouillage(J.barque) : ''),
-  mer:    () => PORTS4.mer.f(),
-  bateau: () => PORTS4.bateau.f(),
-  hangar: () => PORTS4.hangar.f()
+  port:   () => PORTS[J.port].f() + (J.barque && !J.enMer ? auMouillage(J.barque) : ''),
+  mer:    () => enMerDecor(),
+  bateau: () => DEFSA + atelierA() + (J.barque && !J.enMer && PORTS[J.port].chezToi
+            ? berBarque(J.barque) : ''),
+  hangar: () => DEFSL + laboL()
 };
+
+/* l'écran du large : vide au mouillage, ta barque dessus en traversée */
+function enMerDecor(){
+  let s = `<defs><linearGradient id="lg-ciel" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#3f8ec4"/><stop offset="34%" stop-color="#7cbcdc"/>
+    <stop offset="70%" stop-color="#b0d2de"/><stop offset="100%" stop-color="#e0e2d4"/></linearGradient>
+    <linearGradient id="lg-mer" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#7fc4d4"/><stop offset="22%" stop-color="#3f9cbc"/>
+    <stop offset="100%" stop-color="#12456a"/></linearGradient></defs>`;
+  s += `<rect width="480" height="240" fill="url(#lg-ciel)"/>`;
+  s += `<circle cx="368" cy="40" r="12" fill="#fffdf6"/>`;
+  s += `<ellipse cx="368" cy="40" rx="66" ry="34" fill="#fff2cc" opacity=".24"/>`;
+  s += `<rect x="0" y="${sol(9000).toFixed(1)}" width="480"
+    height="${(240-sol(9000)).toFixed(1)}" fill="url(#lg-mer)"/>`;
+  for (let n = 0; n < 5; n++){
+    const d = 1400 / Math.pow(n + 1, 1.4);
+    const y = sol(d), amp = px(.3, d), esp = px(11, d);
+    if (y > 238 || y < 128) continue;
+    s += `<g class="onde o${n % 4}">`;
+    for (let i = 0; i < 4; i++){
+      const yy = y + i * esp * .45;
+      if (yy > 238) break;
+      let p = `M-90 ${yy.toFixed(1)} `;
+      for (let k = 0; k < 14; k++) p += `q${(esp*.5).toFixed(1)} ${(-amp).toFixed(1)} ${esp.toFixed(1)} 0 `;
+      s += `<path d="${p}" stroke="#fff" stroke-width="${Math.max(.45, amp*.3).toFixed(2)}"
+        fill="none" opacity="${(.2 - n*.026).toFixed(2)}"/>`;
+    }
+    s += `</g>`;
+  }
+  if (J.barque && J.enMer){
+    const k = px(1.4, 60) / 30;
+    s += `<g transform="translate(240,${sol(60).toFixed(1)}) scale(${k.toFixed(3)}) translate(-150,-122)">
+      <g class="flotteQ route">${barqueQ(J.barque, true)}</g></g>`;
+  }
+  return s;
+}
 const FAIT = {};
 
 /* les libellés des écrans suivent l'état de la barque */
 function majEcrans(){
-  PAGES4.forEach(k => {
-    const P = PORTS4[k];
-    if ($('so-' + k)) $('so-' + k).textContent = P.s;
-    if ($('pc-' + k)) $('pc-' + k).textContent = P.n;
-    const t = document.querySelector('#pg-' + k + ' .lg4 b');
-    if (t) t.textContent = P.n;
-  });
-  const p = J.barque ? PALIERS_Q[J.barque - 1] : null;
+  const P = PORTS[J.port], p = J.barque ? PALIERS_Q[J.barque - 1] : null;
+  /* premier écran : le port où tu es */
+  const t = document.querySelector('#pg-port .lg4 b');
+  if (t) t.textContent = P.n;
+  if ($('so-port')) $('so-port').textContent = J.enMer ? "Ta barque est sortie" : P.d;
+  if ($('pc-port')) $('pc-port').textContent = P.lieu;
+  /* le large */
+  if ($('pc-mer')) $('pc-mer').textContent = J.enMer ? 'En mer' : 'Au repos';
+  if ($('so-mer'))
+    $('so-mer').textContent = J.enMer ? 'Traversée en cours' : 'Aucune traversée en cours';
+  /* le chantier : il n'existe que chez toi */
+  if ($('so-bat'))
+    $('so-bat').textContent = !P.chezToi ? "Il n'y a pas de chantier ici"
+      : !J.barque ? 'Le berceau attend une quille'
+      : J.enMer ? 'Le berceau est vide — elle est sortie' : p.nom;
+  if ($('pc-bat')) $('pc-bat').textContent = P.chezToi ? (J.barque ? 'Palier ' + J.barque : 'Vide') : 'Fermé';
 }
-function peindre(nom){
-  if (FAIT[nom]) return;
-  FAIT[nom] = true;
-  $('e-' + (nom === 'hangar' ? 'hangar' : nom)).innerHTML = svg4(DECORS[nom]());
-  requestAnimationFrame(() => $('pg-' + nom).classList.add('pret'));
-}
-function dessiner4(){
-  /* l'écran visible d'abord, les autres juste après */
-  peindre(PAGES4[page4] || 'port');
-  requestAnimationFrame(() => {
-    setTimeout(() => PAGES4.forEach(n => peindre(n)), 60);
-  });
-  $('pc-port').textContent = 'Niveau 1';
-  $('pc-mer').textContent  = 'Au repos';
-  $('pc-bat').textContent  = 'Niveau 1';
-  $('pc-han').textContent  = 'Niveau 1';
-  $('so-port').textContent = 'Une anse, une cabane. Rien d\'autre.';
-  $('so-mer').textContent  = J.enMer ? 'Traversée en cours' : 'Aucune traversée en cours';
-  $('pc-mer').textContent  = J.enMer ? 'En mer' : 'Au repos';
-  $('so-bat').textContent  = 'Le berceau attend une quille';
-  $('so-han').textContent  = 'Rien n\'a encore de nom';
-}
-let rondsPrets = false;
+
 function ronds4(){
   const el = $('ronds');
   if (!rondsPrets){
@@ -5506,26 +5611,25 @@ function aller4(i){
 function actions4(){
   const el = $('actions4');
   if (!el) return;
-  const ici = PAGES4[page4];
+  const ici = PAGES4[page4], P = PORTS[J.port];
   let A = [];
 
   if (ici === 'port'){
-    A = [['chantier','Chantier', true, () => ouvrirChantier()],
-         ['equipe','Équipe', false, null],
-         ['batir','Bâtiments', false, null]];
+    A = [['chantier', P.chezToi ? 'Chantier' : 'Le marché', P.chezToi, () => ouvrirChantier()],
+         ['equipe','Les gens', false, null],
+         ['batir', P.chezToi ? 'Bâtiments' : 'La ville', false, null]];
   }
   else if (ici === 'mer'){
-    A = [['partir', J.enMer ? 'Rentrer' : 'Larguer', !!J.barque, () => ouvrirMer()],
-         ['carte','Destinations', false, null]];
+    A = [['partir', J.enMer ? 'Accoster' : 'Prendre la mer', !!J.barque, () => ouvrirMer()],
+         ['carte','Destinations', !!J.barque && !J.enMer, () => ouvrirMer()]];
   }
   else if (ici === 'bateau'){
-    A = [['ameliorer', J.barque ? 'Améliorer' : 'Construire', !J.enMer, () => ouvrirChantier()],
+    A = [['ameliorer', J.barque ? 'Améliorer' : 'Construire', P.chezToi && !J.enMer, () => ouvrirChantier()],
          ['reparer','Réparer', false, null],
          ['peindre','Peindre', false, null]];
   }
   else {
-    A = [['creer','Créer', false, null],
-         ['stock','Stock', false, null]];
+    A = [['creer','Créer', false, null], ['stock','Stock', false, null]];
   }
 
   el.innerHTML = A.map(([k, n, actif]) =>
@@ -5533,12 +5637,12 @@ function actions4(){
     + (actif ? '' : ' disabled') + '>'
     + '<svg viewBox="0 0 24 24">' + ACT_ICO[k] + '</svg>'
     + '<span>' + n + '</span></button>').join('');
-
   el.querySelectorAll('button').forEach((b, i) => {
-    const f = A[i][3];
-    if (f) b.addEventListener('click', f);
+    const fx = A[i][3];
+    if (fx) b.addEventListener('click', fx);
   });
 }
+
 (() => {
   const g = $('fenetre4'), rail = $('rail4');
   let x0 = null, y0 = null, dx = 0, actif = false, large = 0;
@@ -5728,6 +5832,7 @@ function livret(d, MED, EQ, CP){
   J.euros = Number(d.euros) || 0;
   J.barque = Number(d.barque) || 0;
   J.enMer = !!d.barque_en_mer;
+  J.port = d.port || 'anse';
   J.energie = d.energie ?? 100;
   J.niveau = d.niveau || 1;
   J.xp = d.xp || 0;
