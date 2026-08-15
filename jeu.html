@@ -32,13 +32,22 @@ html,body{height:100%;overflow:hidden;background:#2f7fb8;
 
 /* le bandeau du bas */
 .bas{position:fixed;bottom:0;left:0;right:0;z-index:5;
-  padding:44px 16px calc(env(safe-area-inset-bottom) + 20px);
+  padding:52px 16px calc(env(safe-area-inset-bottom) + 18px);
   background:linear-gradient(180deg,transparent,rgba(8,22,36,.5) 52%,rgba(8,22,36,.82));
   text-align:center}
 .bas .mot{font-size:13px;line-height:1.5;color:rgba(255,255,255,.9);
   text-shadow:0 1px 10px rgba(6,14,24,.6);max-width:320px;margin:0 auto}
+.bas .avis{display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border-radius:14px;padding:9px 14px;font-size:12px;line-height:1.45;
+  color:rgba(255,255,255,.94);text-shadow:0 1px 8px rgba(6,14,24,.5)}
+.bas .avis .pt{flex:0 0 7px;height:7px;border-radius:50%;background:#f6c47e;
+  box-shadow:0 0 0 3px rgba(246,196,126,.24);animation:cl 2.2s ease-in-out infinite}
+@keyframes cl{0%,100%{opacity:.55}50%{opacity:1}}
+.bas .avis b{font-family:'Courier Prime',monospace;font-weight:700;color:#f6c47e}
 .bas .sig{font-family:'Courier Prime',monospace;font-size:9.5px;letter-spacing:.24em;
-  text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:12px}
+  text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:13px}
 
 /* animations de la scène */
 .nuages g{animation:pa 190s linear infinite}
@@ -76,6 +85,8 @@ html,body{height:100%;overflow:hidden;background:#2f7fb8;
 
 <footer class="bas">
   <p class="mot">Un jeu de docker. Le port, les bateaux, les gens.</p>
+  <p><span class="avis"><span class="pt"></span>
+    Mise à jour cette nuit vers <b>23 h 45</b></span></p>
   <p class="sig">battledock.fr</p>
 </footer>
 
