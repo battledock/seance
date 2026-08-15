@@ -239,9 +239,10 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   background:linear-gradient(180deg,rgba(8,20,32,.05) 0%,rgba(8,20,32,.12) 46%,rgba(8,20,32,.82))}
 .dest .tx{position:absolute;left:14px;right:76px;bottom:11px;z-index:2}
 .dest .tx b{display:block;font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1.02;
-  color:#fff;letter-spacing:.02em;text-shadow:0 2px 10px rgba(6,14,24,.5)}
-.dest .tx span{display:block;font-size:11.5px;color:rgba(255,255,255,.82);line-height:1.4;
-  margin-top:3px;text-shadow:0 1px 7px rgba(6,14,24,.7)}
+  color:#fff;letter-spacing:.02em;text-transform:none;text-shadow:0 2px 10px rgba(6,14,24,.5)}
+.dest .tx span{display:block;font-family:'Barlow',sans-serif;font-size:11.5px;
+  color:rgba(255,255,255,.82);line-height:1.4;margin-top:3px;text-transform:none;
+  letter-spacing:0;text-shadow:0 1px 7px rgba(6,14,24,.7)}
 .dest .ch{position:absolute;right:12px;bottom:11px;z-index:2;text-align:center;
   background:rgba(255,255,255,.94);border-radius:12px;padding:7px 11px;min-width:54px;
   box-shadow:0 2px 9px rgba(8,20,32,.24)}
@@ -265,8 +266,10 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .dou .rd{flex:0 0 9px;height:9px;border-radius:50%;background:var(--ocre);
   box-shadow:0 0 0 4px rgba(194,113,26,.16)}
 .dou .tx{flex:1;min-width:0}
-.dou .tx b{display:block;font-size:14px;font-weight:600}
-.dou .tx span{display:block;font-size:11.5px;color:var(--doux);margin-top:1px}
+.dou .tx b{display:block;font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;
+  text-transform:none;letter-spacing:0}
+.dou .tx span{display:block;font-family:'Barlow',sans-serif;
+  font-size:11.5px;color:var(--doux);margin-top:1px;text-transform:none;letter-spacing:0}
 .dou .pal{font-family:'Courier Prime',monospace;font-size:11px;color:var(--doux);
   text-align:right;white-space:nowrap}
 
@@ -475,6 +478,52 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 /* --- le chantier --- */
 .vueB{border-radius:14px;overflow:hidden;border:1px solid #e2ddd2;margin-bottom:12px;background:#bfe0ea}
 .vueB svg{display:block;width:100%;height:auto}
+.cale-b{display:flex;align-items:center;gap:12px;background:#f6f2e8;border:1px solid var(--bord);
+  border-radius:13px;padding:12px 14px;margin-bottom:12px}
+.cale-b .tx{flex:0 0 auto}
+.cale-b .tx b{display:block;font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;
+  text-transform:none;letter-spacing:0}
+.cale-b .tx span{display:block;font-family:'Barlow',sans-serif;font-size:11.5px;
+  color:var(--doux);margin-top:1px;text-transform:none;letter-spacing:0}
+.cale-b .jg{flex:1;height:8px;border-radius:5px;background:#e2ddd2;overflow:hidden}
+.cale-b .jg i{display:block;height:100%;border-radius:5px;
+  background:linear-gradient(90deg,#c2711a,#e0a052);transition:width .4s}
+.tx-taxe{font-size:12px;color:var(--doux);margin-bottom:10px;padding-left:2px}
+.tx-taxe b{color:#c74a33}
+.bien{background:var(--carte);border:1px solid var(--bord);border-radius:13px;
+  padding:12px 13px;margin-bottom:8px;box-shadow:0 2px 8px rgba(34,32,28,.04)}
+.bien .h{display:flex;align-items:center;gap:11px}
+.bien .pt{flex:0 0 34px;height:34px;border-radius:10px;position:relative}
+.bien .pt em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-style:normal;font-family:'Courier Prime',monospace;font-size:11.5px;font-weight:700;
+  color:rgba(0,0,0,.5)}
+.bien .nm{flex:1;min-width:0}
+.bien .nm b{display:block;font-family:'Barlow',sans-serif;font-size:14.5px;font-weight:600;
+  text-transform:none;letter-spacing:0}
+.bien .nm span{display:block;font-family:'Barlow',sans-serif;font-size:11.5px;color:var(--doux);
+  line-height:1.35;margin-top:1px;text-transform:none;letter-spacing:0}
+.bien .px{text-align:right;white-space:nowrap}
+.bien .px em{display:block;font-style:normal;font-family:'Courier Prime',monospace;
+  font-size:16px;font-weight:700}
+.bien .px i{display:block;font-style:normal;font-size:10px;font-weight:600;margin-top:1px}
+.bien .px .bas{color:#2f8f66}
+.bien .px .haut{color:#c74a33}
+.bien .px .moyen{color:var(--doux)}
+.bien .dans{font-size:12px;color:var(--doux);margin-top:9px;padding:8px 10px;
+  background:#f6f2e8;border-radius:9px;line-height:1.4}
+.bien .dans b{color:var(--encre)}
+.bien .dans .p{color:#2f8f66}
+.bien .dans .m{color:#c74a33}
+.bien .act{display:flex;gap:6px;margin-top:10px}
+.bien .act button{flex:1;border:1px solid var(--bord);background:#faf8f2;border-radius:10px;
+  padding:10px 4px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;
+  color:var(--encre);cursor:pointer;transition:background .15s}
+.bien .act button:active{background:#efe9db}
+.bien .act button:disabled{opacity:.3}
+.bien .act .ach{border-color:#cfe0d4;background:#f2f9f4;color:#1f6f4c}
+.bien .act .ven{border-color:#e8d4cc;background:#fdf4f0;color:#a4402c}
+#mq-j .p{color:#2f8f66}
+#mq-j .m{color:#c74a33}
 .chantierB button.second{background:none;border:1px solid var(--bord);color:var(--encre);margin-top:7px}
 
 .chantierB{background:#fff;border:1px solid #e2ddd2;border-radius:14px;overflow:hidden}
@@ -1032,6 +1081,12 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
   <button class="fermer" data-x>Fermer</button>
 </section>
 
+<section class="feuille" id="f-quai">
+  <h2 id="mq-titre">Le marché</h2><p class="st" id="mq-sous"></p>
+  <div id="marcheB"></div>
+  <button class="fermer" data-x>Fermer</button>
+</section>
+
 <section class="feuille" id="f-marche">
   <h2>Le marché</h2><p class="st">Les prix bougent toutes les heures. Personne ne sait vraiment pourquoi.</p>
   <div id="l-marche"></div>
@@ -1361,7 +1416,7 @@ function svgPix(pied, e){
 $('face').insertAdjacentHTML('afterbegin', svgPix(false));
 
 /* ---------- état ---------- */
-const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100, barque:0, enMer:false, port:'anse' };
+const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100, barque:0, enMer:false, port:'anse', cale:[], graine:0 };
 const euro = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
 
 function majHud(pop){
@@ -1372,6 +1427,7 @@ function majHud(pop){
 
 /* ---------- modules ---------- */
 const ACT_ICO = {
+  boutique:'<path d="M4 8h16v13H4zM4 8l2-4h12l2 4M9 21v-7h6v7" stroke="#c2711a" stroke-width="1.7" fill="none" stroke-linejoin="round"/>',
   chantier:'<path d="M3 20h18M6 20V9l6-4 6 4v11M9 20v-6h6v6" stroke="#c2711a" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
   equipe:'<path d="M8 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2 21c0-4 3-6 6-6s6 2 6 6M17 8a2.6 2.6 0 1 0 0-5M16 15c3 0 6 1.6 6 5.4" stroke="#75705f" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
   batir:'<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5h6v5M8 11h2M14 11h2" stroke="#75705f" stroke-width="1.7" fill="none" stroke-linecap="round"/>',
@@ -1581,6 +1637,99 @@ function ouvrir(id){
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
 function auPort(){ ouvrir(null); }
+
+/* ================= le marché ================= */
+function ouvrirMarche(){ ouvrir('f-quai'); majMarche(); }
+
+const placesPrises = () => J.cale.reduce((s, l) =>
+  s + l.n * BIENS.find(b => b.k === l.k).v, 0);
+const placesTotal = () => J.barque ? PALIERS_Q[J.barque - 1].cale : 0;
+
+function majMarche(){
+  const el = $('marcheB');
+  if (!el) return;
+  const P = PORTS[J.port], M = MARCHES[J.port];
+  $('mq-titre').textContent = 'Le marché de ' + P.n;
+  $('mq-sous').textContent = M.gens;
+
+  const libre = placesTotal() - placesPrises();
+  let h = '<div class="cale-b"><span class="tx"><b>Ta cale</b>'
+    + '<span>' + placesPrises() + ' places sur ' + placesTotal() + '</span></span>'
+    + '<span class="jg"><i style="width:' + (placesTotal() ? placesPrises() / placesTotal() * 100 : 0)
+    + '%"></i></span></div>';
+
+  if (M.taxe)
+    h += '<p class="tx-taxe">Le port prend <b>' + M.taxe + ' %</b> sur chaque vente.</p>';
+
+  h += '<p class="tt">À vendre ici</p>';
+  h += BIENS.map(b => {
+    const px2 = prixDe(J.port, b.k, J.graine);
+    const r = jugerPrix(J.port, b.k, J.graine);
+    const [mot, cls] = MOT(r);
+    const lot = J.cale.find(l => l.k === b.k);
+    const enCale = lot ? lot.n : 0;
+    const peutA = J.euros >= px2 && libre >= b.v;
+    const gain = lot ? Math.round((px2 - lot.px) * lot.n) : 0;
+    return '<div class="bien"><div class="h">'
+      + '<span class="pt" style="background:' + b.c + '"><em>' + b.v + '</em></span>'
+      + '<span class="nm"><b>' + b.n + '</b><span>' + b.d + '</span></span>'
+      + '<span class="px"><em>' + px2 + ' €</em><i class="' + cls + '">' + mot + '</i></span>'
+      + '</div>'
+      + (enCale ? '<p class="dans">Tu en as <b>' + enCale + '</b>, achetés '
+          + lot.px + ' € — ' + (gain >= 0 ? '<b class="p">+' : '<b class="m">')
+          + gain + ' €</b> si tu vends tout ici.</p>' : '')
+      + '<div class="act">'
+      + '<button class="ach" data-a="' + b.k + '" data-q="1"' + (peutA ? '' : ' disabled') + '>Acheter</button>'
+      + '<button class="ach" data-a="' + b.k + '" data-q="5"' + (peutA ? '' : ' disabled') + '>×5</button>'
+      + '<button class="ven" data-v="' + b.k + '" data-q="1"' + (enCale ? '' : ' disabled') + '>Vendre</button>'
+      + '<button class="ven" data-v="' + b.k + '" data-q="99"' + (enCale ? '' : ' disabled') + '>Tout</button>'
+      + '</div></div>';
+  }).join('');
+  h += '<p class="journal" id="mq-j"></p>';
+  el.innerHTML = h;
+
+  el.querySelectorAll('[data-a]').forEach(b => b.onclick = () => acheter(b.dataset.a, +b.dataset.q));
+  el.querySelectorAll('[data-v]').forEach(b => b.onclick = () => vendre(b.dataset.v, +b.dataset.q));
+}
+
+async function acheter(k, q){
+  const b = BIENS.find(x => x.k === k), px2 = prixDe(J.port, k, J.graine);
+  let n = 0;
+  for (let i = 0; i < q; i++){
+    if (J.euros < px2) break;
+    if (placesTotal() - placesPrises() < b.v) break;
+    J.euros -= px2;
+    const lot = J.cale.find(l => l.k === k && l.px === px2);
+    if (lot) lot.n++; else J.cale.push({ k, n:1, px:px2 });
+    n++;
+  }
+  if (!n){ dire2("Pas la place, ou pas les sous."); return; }
+  await sauverBarque(); majHud(true); majMarche();
+  dire2('Acheté <b>' + n + ' ' + b.n.toLowerCase() + '</b> à ' + px2 + ' €.');
+}
+
+async function vendre(k, q){
+  const b = BIENS.find(x => x.k === k), px2 = prixDe(J.port, k, J.graine);
+  const taxe = MARCHES[J.port].taxe;
+  let n = 0, brut = 0, cout = 0;
+  for (let i = 0; i < q; i++){
+    const lot = J.cale.find(l => l.k === k);
+    if (!lot) break;
+    lot.n--; cout += lot.px;
+    if (lot.n <= 0) J.cale.splice(J.cale.indexOf(lot), 1);
+    brut += px2; n++;
+  }
+  if (!n) return;
+  const t = Math.round(brut * taxe / 100);
+  J.euros += brut - t;
+  const net = brut - t - cout;
+  await sauverBarque(); majHud(true); majMarche();
+  dire2('Vendu <b>' + n + ' ' + b.n.toLowerCase() + '</b> — '
+    + (net >= 0 ? '<b class="p">+' : '<b class="m">') + net + ' €</b>'
+    + (t ? ' (taxe ' + t + ' €)' : ''));
+}
+
+function dire2(t){ const j = $('mq-j'); if (j) j.innerHTML = t; }
 
 /* ---------- la feuille de la mer : où aller ---------- */
 function ouvrirMer(){ ouvrir('f-mer'); majMer(); }
@@ -5462,7 +5611,8 @@ function journalB(t){
 
 async function sauverBarque(){
   try {
-    await BD.enregistrer({ euros: J.euros, barque: J.barque, barque_en_mer: J.enMer, port: J.port });
+    await BD.enregistrer({ euros: J.euros, barque: J.barque, barque_en_mer: J.enMer,
+      port: J.port, cale: J.cale, marche_graine: J.graine });
   } catch (e) { console.warn('barque non sauvée', e); }
 }
 
@@ -5496,6 +5646,69 @@ function berBarque(n){
 
 /* ---------- les quatre écrans ---------- */
 const PAGES4 = ['port', 'mer', 'bateau', 'hangar'];
+
+/* ============================================================
+   LE MARCHÉ — acheter ici, revendre là-bas
+   ============================================================ */
+
+/* ---------- les marchandises ---------- */
+const BIENS = [
+  { k:'savon',     n:"Savon",        base:42,  v:2, c:'#e4dcc4',
+    d:"Cube de 300 grammes. Le vrai, pas celui des touristes." },
+  { k:'vin',       n:"Vin",          base:96,  v:3, c:'#7a3a4a',
+    d:"Rouge, épais. On le coupe avec de l'eau et on ne le dit à personne." },
+  { k:'huile',     n:"Huile",        base:74,  v:3, c:'#c9a83a',
+    d:"Première pression. Elle sent le poivre au fond de la gorge." },
+  { k:'epices',    n:"Épices",       base:168, v:1, c:'#b0603a',
+    d:"Cumin, ras el-hanout, safran. Ça parfume toute la cale." },
+  { k:'tapis',     n:"Tapis",        base:210, v:4, c:'#8a3a44',
+    d:"Noués main. Le vendeur jure qu'il a mis deux ans." },
+  { k:'corail',    n:"Corail",       base:255, v:1, c:'#c95a4a',
+    d:"Rouge sang. Interdit à peu près partout." },
+  { k:'poisson',   n:"Poisson",      base:34,  v:3, c:'#7fa8c0',
+    d:"Frais le matin, discutable l'après-midi." },
+  { k:'poutargue', n:"Poutargue",    base:185, v:1, c:'#c9843a',
+    d:"Œufs de mulet séchés. Ça vaut de l'or et ça sent fort." }
+];
+
+/* ---------- ce que chaque port produit et ce qu'il réclame ---------- */
+const MARCHES = {
+  anse:      { produit:['poisson','poutargue'], veut:['savon','vin','epices'], taxe:0,
+               gens:"Nono te regarde faire, assis sur son rocher." },
+  barcelone: { produit:['savon','vin'],         veut:['epices','poutargue','corail'], taxe:5,
+               gens:"Le vendeur parle vite et regarde ailleurs." },
+  alger:     { produit:['epices','tapis'],      veut:['huile','poisson','savon'], taxe:2,
+               gens:"On te sert le thé avant même de parler du prix." },
+  naples:    { produit:['huile','corail'],      veut:['tapis','vin','poutargue'], taxe:7,
+               gens:"Tout le monde crie. C'est normal, paraît-il." }
+};
+
+/* ---------- les prix ---------- */
+/* chaque port a une humeur par bien, qui dérive avec la graine du jour */
+function humeur(port, bien, graine){
+  const x = Math.sin((port.length * 31 + bien.length * 17 + graine) * 12.9898) * 43758.5;
+  const r = x - Math.floor(x);
+  return .74 + r * .56;                     /* de 0,74 à 1,30 */
+}
+
+function prixDe(portK, bienK, graine){
+  const B = BIENS.find(b => b.k === bienK), M = MARCHES[portK];
+  let v = B.base * humeur(portK, bienK, graine);
+  if (M.produit.includes(bienK)) v *= .58;   /* on le fait ici : c'est donné */
+  if (M.veut.includes(bienK))    v *= 1.62;  /* on le réclame : c'est cher */
+  return Math.max(1, Math.round(v));
+}
+
+/* est-ce une bonne affaire ? on compare aux autres ports */
+function jugerPrix(portK, bienK, graine){
+  const autres = Object.keys(MARCHES).filter(p => p !== portK);
+  const moy = autres.reduce((s, p) => s + prixDe(p, bienK, graine), 0) / autres.length;
+  return prixDe(portK, bienK, graine) / moy;
+}
+
+const MOT = r => r < .68 ? ['Donné', 'bas'] : r < .84 ? ['Bon prix', 'bas']
+  : r > 1.42 ? ['Du vol', 'haut'] : r > 1.2 ? ['Cher', 'haut'] : ['Normal', 'moyen'];
+
 
 /* ---------- les ports du monde ---------- */
 const PORTS = {
@@ -5640,9 +5853,9 @@ function actions4(){
   let A = [];
 
   if (ici === 'port'){
-    A = [['chantier', P.chezToi ? 'Chantier' : 'Le marché', P.chezToi, () => ouvrirChantier()],
-         ['equipe','Les gens', false, null],
-         ['batir', P.chezToi ? 'Bâtiments' : 'La ville', false, null]];
+    A = [['boutique','Le marché', !!J.barque, () => ouvrirMarche()],
+         ['chantier', 'Chantier', P.chezToi && !J.enMer, () => ouvrirChantier()],
+         ['equipe','Les gens', false, null]];
   }
   else if (ici === 'mer'){
     A = [['partir', J.enMer ? 'Accoster' : 'Prendre la mer', !!J.barque, () => ouvrirMer()],
@@ -5858,6 +6071,9 @@ function livret(d, MED, EQ, CP){
   J.barque = Number(d.barque) || 0;
   J.enMer = !!d.barque_en_mer;
   J.port = d.port || 'anse';
+  try { J.cale = Array.isArray(d.cale) ? d.cale : JSON.parse(d.cale || '[]'); }
+  catch(e){ J.cale = []; }
+  J.graine = Number(d.marche_graine) || Math.floor(Date.now() / 864e5);
   J.energie = d.energie ?? 100;
   J.niveau = d.niveau || 1;
   J.xp = d.xp || 0;
