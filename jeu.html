@@ -1653,7 +1653,7 @@ function majMarche(){
   if (!el) return;
   const P = PORTS[J.port], M = MARCHES[J.port];
   $('mq-titre').textContent = 'Le marché de ' + P.n;
-  $('mq-sous').textContent = 'Jour ' + J.jour + ' — ' + M.gens;
+  $('mq-sous').textContent = M.gens;
 
   const libre = placesTotal() - placesPrises();
   let h = '<div class="cale-b"><span class="tx"><b>Ta cale</b>'
