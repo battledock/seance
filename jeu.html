@@ -86,40 +86,6 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .bq .suite .man{font-size:10px;color:rgba(255,255,255,.5);margin-top:7px;text-align:center}
 .bq .suite .fin{font-size:11.5px;color:#f0c46a;text-align:center;padding:6px 0}
 
-/* la liste des vingt paliers */
-.bq .liste{border-top:1px solid rgba(255,255,255,.14)}
-.bq .liste .tt{padding:13px 15px 8px}
-.bq .liste ul{list-style:none;padding:0 8px 12px}
-.bq .liste li button{width:100%;display:flex;align-items:center;gap:10px;
-  padding:8px 8px;background:none;border:0;cursor:pointer;text-align:left;
-  border-radius:5px;transition:background .14s;font-family:'Courier Prime',monospace}
-.bq .liste li button:active{background:rgba(255,255,255,.09)}
-.bq .liste li button.mien{background:rgba(240,196,106,.13)}
-.bq .liste li button.ici{box-shadow:inset 0 0 0 1.4px rgba(255,255,255,.42)}
-.bq .liste li button.vu{opacity:.6}
-
-.bq .liste .no{flex:0 0 21px;height:21px;border-radius:4px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:9.5px;font-weight:700;
-  background:rgba(255,255,255,.1);color:rgba(255,255,255,.5)}
-.bq .liste .no.vu{background:rgba(140,224,168,.2);color:#8ce0a8}
-.bq .liste .no.mien{background:#f0c46a;color:#22201c}
-.bq .liste .nm{flex:1;min-width:0;font-size:11.5px;color:rgba(255,255,255,.88);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bq .liste .px{flex:0 0 auto;font-size:10px;color:rgba(255,255,255,.44);white-space:nowrap}
-.bq .liste .px.mien{color:#f0c46a}
-
-/* le bandeau quand on regarde un autre palier */
-.bq .apercu{display:none;align-items:center;gap:9px;
-  padding:9px 15px;background:rgba(240,196,106,.12);
-  border-bottom:1px solid rgba(240,196,106,.24);
-  font-size:10.5px;color:#f0c46a}
-.bq .apercu.on{display:flex}
-.bq .apercu span{flex:1}
-.bq .apercu button{background:rgba(255,255,255,.14);border:0;border-radius:12px;
-  padding:4px 10px;font-size:9.5px;color:#fff;cursor:pointer;
-  font-family:'Courier Prime',monospace;white-space:nowrap}
-
 /* ---------- la fiche ---------- */
 .fiche{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -320,10 +286,6 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
     <span class="pal" id="q-pal">—</span>
     <button class="fer" id="q-fer">×</button>
   </div>
-  <div class="apercu" id="q-ap">
-    <span>Tu regardes un palier que tu n'as pas.</span>
-    <button id="q-retour">Revenir</button>
-  </div>
   <div class="nom"><b id="q-nom">—</b><span id="q-d">—</span></div>
   <div class="trois">
     <div><p class="k">Cale</p><p class="v" id="q-cale">—</p></div>
@@ -331,10 +293,6 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
     <div><p class="k">Allure</p><p class="v" id="q-vit">—</p></div>
   </div>
   <div class="suite" id="q-suite"></div>
-  <div class="liste">
-    <p class="tt">Les vingt paliers</p>
-    <ul id="q-liste"></ul>
-  </div>
 </section>
 
 <section class="fiche" id="fiche">
@@ -1866,42 +1824,7 @@ function matricule(d){
 }
 
 /* ---------- la barque ---------- */
-let bqJoueur = 0, bqVu = 0;
-
-/* montre un palier : le sien, ou un autre qu'on regarde */
-function montrerPalier(n, d){
-  bqVu = n;
-  const P = PALIERS_B[n - 1];
-  const sien = n === bqJoueur;
-
-  const vue = document.getElementById('q-vue');
-  vue.querySelector('svg')?.remove();
-  vue.insertAdjacentHTML('afterbegin',
-    '<svg viewBox="30 44 240 104" xmlns="http://www.w3.org/2000/svg">'
-    + barqueQ(n, false) + '</svg>');
-
-  document.getElementById('q-pal').textContent = 'Palier ' + n + ' sur 20';
-  document.getElementById('q-nom').textContent = P.nom;
-  document.getElementById('q-d').textContent = P.d;
-  document.getElementById('q-cale').innerHTML = P.places + ' <small>places</small>';
-  document.getElementById('q-kg').innerHTML = P.kg + ' <small>kg</small>';
-  document.getElementById('q-vit').innerHTML = P.vit.toFixed(1) + ' <small>nœuds</small>';
-
-  /* le bandeau n'apparaît que si on s'est éloigné de sa propre barque */
-  const ap = document.getElementById('q-ap');
-  ap.classList.toggle('on', !sien);
-  if (!sien)
-    ap.querySelector('span').textContent = n < bqJoueur
-      ? 'Tu regardes un palier que tu as dépassé.'
-      : 'Tu regardes un palier que tu n\'as pas encore.';
-
-  /* on souligne la ligne courante dans la liste */
-  document.querySelectorAll('#q-liste button').forEach(b =>
-    b.classList.toggle('ici', +b.dataset.n === n));
-
-  /* la partie « ce qui vient après » ne parle que de ta vraie barque */
-  poserSuite(d);
-}
+let bqJoueur = 0;
 
 function poserSuite(d){
   const el = document.getElementById('q-suite');
@@ -1942,26 +1865,23 @@ function poserBarque(d){
   }
 
   bqJoueur = n;
+  const P = PALIERS_B[n - 1];
 
-  /* la liste des vingt paliers */
-  const liste = document.getElementById('q-liste');
-  liste.innerHTML = PALIERS_B.map(P => {
-    const vu = P.n < n, mien = P.n === n;
-    return '<li><button data-n="' + P.n + '"'
-      + ' class="' + (mien ? 'mien' : vu ? 'vu' : '') + '">'
-      + '<span class="no ' + (mien ? 'mien' : vu ? 'vu' : '') + '">'
-      + (vu ? '✓' : P.n) + '</span>'
-      + '<span class="nm">' + P.nom + '</span>'
-      + '<span class="px ' + (mien ? 'mien' : '') + '">'
-      + (mien ? 'la tienne' : vu ? 'acquis' : P.prix.toLocaleString('fr-FR') + ' €')
-      + '</span></button></li>';
-  }).join('');
-  liste.querySelectorAll('[data-n]').forEach(b =>
-    b.onclick = () => montrerPalier(+b.dataset.n, d));
+  /* le portrait de ta barque */
+  const vue = document.getElementById('q-vue');
+  vue.querySelector('svg')?.remove();
+  vue.insertAdjacentHTML('afterbegin',
+    '<svg viewBox="30 44 240 104" xmlns="http://www.w3.org/2000/svg">'
+    + barqueQ(n, false) + '</svg>');
 
-  document.getElementById('q-retour').onclick = () => montrerPalier(bqJoueur, d);
+  document.getElementById('q-pal').textContent = 'Palier ' + n + ' sur 20';
+  document.getElementById('q-nom').textContent = P.nom;
+  document.getElementById('q-d').textContent = P.d;
+  document.getElementById('q-cale').innerHTML = P.places + ' <small>places</small>';
+  document.getElementById('q-kg').innerHTML = P.kg + ' <small>kg</small>';
+  document.getElementById('q-vit').innerHTML = P.vit.toFixed(1) + ' <small>nœuds</small>';
 
-  montrerPalier(n, d);
+  poserSuite(d);
 }
 
 let bqOuverte = false;
