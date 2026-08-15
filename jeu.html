@@ -205,8 +205,8 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 /* la caisse, à gauche, la plus lisible */
 .barre .sous{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
   justify-content:center;padding:0 11px;border-right:1px solid rgba(255,255,255,.16)}
-.barre .sous .lb{font-size:7px;letter-spacing:.18em;text-transform:uppercase;
-  color:rgba(255,255,255,.6)}
+.barre .sous .lb{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.56);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .barre .sous .vl{font-size:16px;font-weight:700;color:#ffd894;line-height:1.15;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .barre .sous .vl.pop{animation:pop .55s ease-out}
@@ -321,7 +321,7 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 
 <div class="barre" id="barre">
   <span class="sous">
-    <span class="lb" id="b-lb">En caisse</span>
+    <span class="lb" id="b-lb">—</span>
     <span class="vl" id="b-vl">—</span>
   </span>
   <span class="jauges">
@@ -1789,33 +1789,15 @@ const XP_PALIER = n => Math.round(60 * Math.pow(n, 1.45));
 const euro = v => Number(v || 0).toLocaleString('fr-FR',
   { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 
-/* la barre alterne entre la caisse et le lieu, pour tenir sur un écran étroit */
-let volet = 0, volets = [];
-function tourner(){
-  if (!volets.length) return;
-  const v = volets[volet % volets.length];
-  const lb = document.getElementById('b-lb'), vl = document.getElementById('b-vl');
-  if (!lb) return;
-  lb.textContent = v[0];
-  vl.textContent = v[1];
-  vl.classList.remove('pop'); void vl.offsetWidth; vl.classList.add('pop');
-  volet++;
-}
-
 function poserBarre(d){
   const el = document.getElementById('barre');
   if (!el || !d) return;
 
   const PORTS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
                   alger:'Alger', naples:'Naples' };
-  volets = [
-    ['En caisse', euro(d.euros)],
-    ['Où tu es',  PORTS[d.port] || 'En mer'],
-    ['Ta barque', d.barque ? 'Palier ' + d.barque : 'Aucune']
-  ];
-  volet = 0; tourner();
-  clearInterval(window.__volet);
-  window.__volet = setInterval(tourner, 4200);
+  /* le lieu en petit, la caisse en grand : rien ne bouge */
+  document.getElementById('b-lb').textContent = PORTS[d.port] || 'En mer';
+  document.getElementById('b-vl').textContent = euro(d.euros);
 
   /* l'énergie */
   const nrj = Number(d.energie ?? 100);
