@@ -509,6 +509,9 @@ body{background:var(--fond);color:var(--encre);font-family:'Barlow',system-ui,sa
 .bien .px .bas{color:#2f8f66}
 .bien .px .haut{color:#c74a33}
 .bien .px .moyen{color:var(--doux)}
+.bien .px .fl{font-size:8px;font-weight:400;vertical-align:1px}
+.bien .px .fl.h{color:#c74a33}
+.bien .px .fl.b{color:#2f8f66}
 .bien .dans{font-size:12px;color:var(--doux);margin-top:9px;padding:8px 10px;
   background:#f6f2e8;border-radius:9px;line-height:1.4}
 .bien .dans b{color:var(--encre)}
@@ -1416,7 +1419,7 @@ function svgPix(pied, e){
 $('face').insertAdjacentHTML('afterbegin', svgPix(false));
 
 /* ---------- état ---------- */
-const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100, barque:0, enMer:false, port:'anse', cale:[], graine:0 };
+const J = { euros:0, prodMin:0, energie:100, niveau:1, xp:0, palier:100, barque:0, enMer:false, port:'anse', cale:[], jour:1 };
 const euro = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
 
 function majHud(pop){
@@ -1650,7 +1653,7 @@ function majMarche(){
   if (!el) return;
   const P = PORTS[J.port], M = MARCHES[J.port];
   $('mq-titre').textContent = 'Le marché de ' + P.n;
-  $('mq-sous').textContent = M.gens;
+  $('mq-sous').textContent = 'Jour ' + J.jour + ' — ' + M.gens;
 
   const libre = placesTotal() - placesPrises();
   let h = '<div class="cale-b"><span class="tx"><b>Ta cale</b>'
@@ -1663,9 +1666,10 @@ function majMarche(){
 
   h += '<p class="tt">À vendre ici</p>';
   h += BIENS.map(b => {
-    const px2 = prixDe(J.port, b.k, J.graine);
-    const r = jugerPrix(J.port, b.k, J.graine);
+    const px2 = prixDe(J.port, b.k, J.jour);
+    const r = jugerPrix(J.port, b.k, J.jour);
     const [mot, cls] = MOT(r);
+    const t = tendance(J.port, b.k, J.jour);
     const lot = J.cale.find(l => l.k === b.k);
     const enCale = lot ? lot.n : 0;
     const peutA = J.euros >= px2 && libre >= b.v;
@@ -1673,8 +1677,9 @@ function majMarche(){
     return '<div class="bien"><div class="h">'
       + '<span class="pt" style="background:' + b.c + '"><em>' + b.v + '</em></span>'
       + '<span class="nm"><b>' + b.n + '</b><span>' + b.d + '</span></span>'
-      + '<span class="px"><em>' + px2 + ' €</em><i class="' + cls + '">' + mot + '</i></span>'
-      + '</div>'
+      + '<span class="px"><em>' + px2 + ' €</em><i class="' + cls + '">'
+      + (t > 0 ? '<b class="fl h">▲</b> ' : t < 0 ? '<b class="fl b">▼</b> ' : '')
+      + mot + '</i></span></div>'
       + (enCale ? '<p class="dans">Tu en as <b>' + enCale + '</b>, achetés '
           + lot.px + ' € — ' + (gain >= 0 ? '<b class="p">+' : '<b class="m">')
           + gain + ' €</b> si tu vends tout ici.</p>' : '')
@@ -1693,7 +1698,7 @@ function majMarche(){
 }
 
 async function acheter(k, q){
-  const b = BIENS.find(x => x.k === k), px2 = prixDe(J.port, k, J.graine);
+  const b = BIENS.find(x => x.k === k), px2 = prixDe(J.port, k, J.jour);
   let n = 0;
   for (let i = 0; i < q; i++){
     if (J.euros < px2) break;
@@ -1709,7 +1714,7 @@ async function acheter(k, q){
 }
 
 async function vendre(k, q){
-  const b = BIENS.find(x => x.k === k), px2 = prixDe(J.port, k, J.graine);
+  const b = BIENS.find(x => x.k === k), px2 = prixDe(J.port, k, J.jour);
   const taxe = MARCHES[J.port].taxe;
   let n = 0, brut = 0, cout = 0;
   for (let i = 0; i < q; i++){
@@ -1791,7 +1796,8 @@ function majMer(){
 }
 
 async function partirVers(k){
-  J.cap = k; J.dep = J.port; J.enMer = true;
+  const jours = Math.abs(PORTS[k].jours - PORTS[J.port].jours) || 1;
+  J.cap = k; J.dep = J.port; J.enMer = true; J.trajet = jours;
   await sauverBarque();
   majMer(); majChantier(); majTuile(); majEcrans(); actions4();
   repeindre('port'); repeindre('mer'); repeindre('bateau');
@@ -1800,7 +1806,8 @@ async function partirVers(k){
 }
 
 async function accoster(k){
-  J.port = k; J.enMer = false; J.cap = null;
+  J.jour += J.trajet || 1;
+  J.port = k; J.enMer = false; J.cap = null; J.trajet = 0;
   await sauverBarque();
   majMer(); majChantier(); majTuile(); majEcrans(); actions4();
   repeindre('port'); repeindre('mer'); repeindre('bateau');
@@ -5612,7 +5619,7 @@ function journalB(t){
 async function sauverBarque(){
   try {
     await BD.enregistrer({ euros: J.euros, barque: J.barque, barque_en_mer: J.enMer,
-      port: J.port, cale: J.cale, marche_graine: J.graine });
+      port: J.port, cale: J.cale, marche_graine: J.jour });
   } catch (e) { console.warn('barque non sauvée', e); }
 }
 
@@ -5704,6 +5711,13 @@ function jugerPrix(portK, bienK, graine){
   const autres = Object.keys(MARCHES).filter(p => p !== portK);
   const moy = autres.reduce((s, p) => s + prixDe(p, bienK, graine), 0) / autres.length;
   return prixDe(portK, bienK, graine) / moy;
+}
+
+/* la tendance : le prix d'aujourd'hui contre celui d'hier */
+function tendance(portK, bienK, jour){
+  const a = prixDe(portK, bienK, jour), b = prixDe(portK, bienK, jour - 1);
+  const d = (a - b) / b;
+  return d > .1 ? 1 : d < -.1 ? -1 : 0;
 }
 
 const MOT = r => r < .68 ? ['Donné', 'bas'] : r < .84 ? ['Bon prix', 'bas']
@@ -6073,7 +6087,7 @@ function livret(d, MED, EQ, CP){
   J.port = d.port || 'anse';
   try { J.cale = Array.isArray(d.cale) ? d.cale : JSON.parse(d.cale || '[]'); }
   catch(e){ J.cale = []; }
-  J.graine = Number(d.marche_graine) || Math.floor(Date.now() / 864e5);
+  J.jour = Number(d.marche_graine) || 1;
   J.energie = d.energie ?? 100;
   J.niveau = d.niveau || 1;
   J.xp = d.xp || 0;
