@@ -2003,10 +2003,21 @@ function poserBarre(d){
   document.getElementById('b-lb').textContent = PORTS[d.port] || 'En mer';
   document.getElementById('b-vl').textContent = euro(d.euros);
 
-  /* l'énergie */
+  /* l'énergie, qui remonte d'un point par minute */
   const nrj = Number(d.energie ?? 100);
   document.getElementById('b-nrj').style.width = Math.max(0, Math.min(100, nrj)) + '%';
   document.getElementById('b-nrjn').textContent = Math.round(nrj);
+  /* on la fait monter à l'écran sans redemander au serveur */
+  clearInterval(window.__nrj);
+  if (nrj < 100){
+    let v = nrj;
+    window.__nrj = setInterval(() => {
+      v = Math.min(100, v + 1);
+      document.getElementById('b-nrj').style.width = v + '%';
+      document.getElementById('b-nrjn').textContent = v;
+      if (v >= 100) clearInterval(window.__nrj);
+    }, 60000);
+  }
 
   /* l'expérience vers le palier suivant */
   const niv = Number(d.niveau || 1), xp = Number(d.xp || 0);
@@ -2401,6 +2412,13 @@ function poserFiche(d, c){
   document.getElementById('f-xp').textContent =
     (d.xp || 0) + ' / ' + XP_PALIER(d.niveau || 1);
   document.getElementById('f-rep').textContent = (d.reputation ?? 50);
+  const manque = 100 - Number(d.energie ?? 100);
+  if (manque > 0){
+    const el = document.getElementById('f-eff');
+    el.innerHTML += '<br><span style="color:#8ce0a8">Plein d\'énergie dans '
+      + (manque >= 60 ? Math.floor(manque/60) + ' h ' + (manque%60) + ' min' : manque + ' min')
+      + '.</span>';
+  }
 }
 
 let ficheOuverte = false;
