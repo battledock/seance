@@ -810,7 +810,17 @@ document.getElementById('ret').onclick = () => location.href = 'jeu.html';
   document.getElementById('sous').textContent = assez
     ? 'Il te restera ' + Math.round(nrj - CAP.nrj) + " d'énergie en arrivant."
     : 'Il te manque ' + Math.round(CAP.nrj - nrj) + " d'énergie. Repose-toi d'abord.";
-  if (assez) bt.onclick = () => location.href = 'mer.html?vers=' + CAP.k;
+  if (assez) bt.onclick = async () => {
+    bt.disabled = true; bt.textContent = 'On largue…';
+    const r = await BD.agir('partir_en_mer', { destination: CAP.k });
+    if (r.ok) location.href = 'mer.html';
+    else {
+      const M = { deja_la:'Tu y es déjà.', sans_bateau:'Il te faut un bateau.',
+                  deja_en_mer:'Tu es déjà en mer.',
+                  trop_fatigue:'Il te manque ' + (r.manque || 0) + " d'énergie." };
+      bt.textContent = M[r.pourquoi] || 'Impossible pour l\'instant';
+    }
+  };
 
   requestAnimationFrame(() =>
     document.querySelectorAll('.fondu').forEach(e => e.classList.add('on')));
