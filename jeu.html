@@ -1992,36 +1992,106 @@ function matricule(d){
 }
 
 /* ---------- le chantier ---------- */
-/* le portrait de Toussaint, dessiné à la main */
 function toussaint(){
-  return '<svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">'
-    + '<rect width="16" height="18" fill="#c9b89a"/>'
-    + '<rect y="12" width="16" height="6" fill="#b8a688"/>'
-    /* les épaules, en toile usée */
-    + '<path d="M3 18v-4q0-2 3-3h4q3 1 3 3v4z" fill="#6d7a5c"/>'
-    + '<path d="M3 18v-4q0-2 3-3h1l-1 7z" fill="#7d8a6c"/>'
-    /* le tablier de cuir */
-    + '<path d="M6 18v-6h4v6z" fill="#8a6440"/>'
-    /* le cou et le visage */
-    + '<rect x="7" y="9" width="3" height="2" fill="#c98f5e"/>'
-    + '<rect x="5" y="3" width="7" height="8" rx="2" fill="#dda772"/>'
-    + '<path d="M9 3h3v8H9z" fill="#c98f5e" opacity=".45"/>'
-    /* les rides */
-    + '<rect x="6" y="5.4" width="2" height=".6" fill="#c08a5c" opacity=".6"/>'
-    + '<rect x="9" y="5.4" width="2" height=".6" fill="#c08a5c" opacity=".6"/>'
-    /* les yeux */
-    + '<rect x="6.6" y="6.4" width="1.4" height="1.4" fill="#3f2a18"/>'
-    + '<rect x="9" y="6.4" width="1.4" height="1.4" fill="#3f2a18"/>'
-    /* la moustache blanche */
-    + '<rect x="6.2" y="8.4" width="4.6" height="1.2" rx=".5" fill="#e8e2d4"/>'
-    /* les cheveux gris sous la casquette */
-    + '<rect x="4.6" y="4.4" width="1.2" height="3" fill="#c8c2b4"/>'
-    + '<rect x="11" y="4.4" width="1.2" height="3" fill="#c8c2b4"/>'
-    /* la casquette de marin */
-    + '<path d="M4.4 4.2q0-2.6 4.2-2.6t4.2 2.6z" fill="#3f4a5c"/>'
-    + '<path d="M4.4 4.2q0-2.6 4.2-2.6v2.6z" fill="#4f5c70"/>'
-    + '<rect x="3.6" y="4" width="9.8" height="1.2" rx=".6" fill="#2f3a48"/>'
-    + '</svg>';
+  const P = [];
+  const r = (x, y, w, h, c) => P.push([x, y, w, h, c]);
+
+  const FOND = '#c9b89a', FOND2 = '#b6a486';
+  const PEAU = '#d8a06a', PEAU_O = '#bb8350', PEAU_C = '#e8b57c';
+  const POIL = '#eae4d6', POIL_O = '#c8c1b2';
+  const GRIS = '#b8b1a4';
+  const CAP = '#33404f', CAP_C = '#48576a', CAP_V = '#222c38';
+  const TOILE = '#5f6c52', TOILE_C = '#718061', TOILE_O = '#4c5742';
+  const CUIR = '#7d5636', CUIR_C = '#996b42';
+  const OEIL = '#3a2a1c';
+
+  /* --- le fond --- */
+  r(0, 0, 16, 18, FOND);
+  r(0, 13, 16, 5, FOND2);
+
+  /* --- le buste : des épaules larges et tombantes --- */
+  r(1, 15, 14, 3, TOILE);
+  r(2, 14, 12, 1, TOILE);
+  r(3, 13, 10, 1, TOILE);
+  r(1, 15, 5, 3, TOILE_C);             /* le jour vient de la gauche */
+  r(2, 14, 4, 1, TOILE_C);
+  r(11, 15, 4, 3, TOILE_O);            /* et l'ombre à droite */
+  /* le col ouvert sur la peau */
+  r(7, 13, 3, 2, PEAU_O);
+  r(6, 14, 1, 1, TOILE_C);
+  r(10, 14, 1, 1, TOILE_O);
+  /* le tablier de cuir, étroit, avec ses bretelles */
+  r(6, 16, 5, 2, CUIR);
+  r(6, 16, 2, 2, CUIR_C);
+  r(6, 15, 1, 1, CUIR);
+  r(10, 15, 1, 1, CUIR);
+
+  /* --- le cou --- */
+  r(7, 12, 3, 2, PEAU_O);
+  r(7, 12, 1, 2, PEAU);
+
+  /* --- le visage, large et carré --- */
+  r(4, 5, 9, 8, PEAU);
+  r(9, 5, 4, 8, PEAU_O);
+  r(5, 6, 3, 2, PEAU_C);               /* le front au jour */
+
+  /* les oreilles */
+  r(3, 8, 1, 2, PEAU_O);
+  r(13, 8, 1, 2, PEAU_O);
+
+  /* les sourcils, blancs et broussailleux */
+  r(5, 7, 3, 1, POIL);
+  r(9, 7, 3, 1, POIL_O);
+
+  /* les yeux */
+  r(5, 8, 3, 1, '#f2ebe0');
+  r(9, 8, 3, 1, '#e2dacc');
+  r(6, 8, 1, 1, OEIL);
+  r(10, 8, 1, 1, OEIL);
+  /* les cernes du dessous */
+  r(5, 9, 3, 1, PEAU_O);
+  r(9, 9, 3, 1, PEAU_O);
+
+  /* le nez */
+  r(8, 9, 1, 2, PEAU_C);
+  r(8, 10, 1, 1, PEAU_O);
+
+  /* la moustache, deux brins tombants */
+  r(5, 11, 3, 1, POIL);
+  r(9, 11, 3, 1, POIL_O);
+  r(5, 12, 1, 1, POIL_O);
+  r(11, 12, 1, 1, POIL_O);
+  /* la bouche entre les deux */
+  r(8, 11, 1, 1, '#9a5c44');
+
+  /* la barbe, courte, sur le menton */
+  r(6, 12, 5, 1, POIL);
+  r(9, 12, 2, 1, POIL_O);
+
+  /* les cheveux gris qui dépassent */
+  r(3, 6, 1, 3, GRIS);
+  r(13, 6, 1, 3, GRIS);
+
+  /* --- la casquette de marin : plate et large --- */
+  r(4, 3, 9, 2, CAP);                  /* la calotte, basse */
+  r(4, 3, 4, 2, CAP_C);
+  r(5, 2, 7, 1, CAP);
+  r(5, 2, 3, 1, CAP_C);
+  r(3, 4, 1, 1, CAP);
+  r(13, 4, 1, 1, CAP);
+  /* le bandeau */
+  r(3, 5, 11, 1, CAP_V);
+  r(3, 5, 4, 1, '#3a4757');
+  /* la visière, large, qui ombre le front */
+  r(2, 6, 13, 1, CAP_V);
+  r(2, 6, 5, 1, '#3a4757');
+
+  let s = '<svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg" '
+    + 'shape-rendering="crispEdges">';
+  P.forEach(([x, y, w, h, c]) =>
+    s += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h
+      + '" fill="' + c + '"/>');
+  return s + '</svg>';
 }
 
 function poserChantier(d){
