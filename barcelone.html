@@ -1392,6 +1392,7 @@ addEventListener('keydown', e => { if (e.key === 'Escape') ouvrirVille(false); }
   } catch(e){ return; }
 
   /* on n'est ici que si on y est vraiment */
+  if (d.parti_le){ location.href = 'mer.html'; return; }
   if (d.port !== 'barcelone'){ location.href = 'jeu.html'; return; }
 
   const n = Number(d.barque || 1);
@@ -1410,7 +1411,7 @@ addEventListener('keydown', e => { if (e.key === 'Escape') ouvrirVille(false); }
     'Ta barque reste à quai. Elle ne bougera pas sans toi.';
 
   document.getElementById('debarquer').onclick = () => ouvrirVille(true);
-  document.getElementById('rentrer').onclick = () => location.href = 'jeu.html';
+  document.getElementById('rentrer').onclick = () => location.href = 'voyager.html';
 
   /* le rideau se lève, puis tout apparaît */
   requestAnimationFrame(() => {
