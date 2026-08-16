@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c1830">
+<title>Battle Dock — La Barceloneta</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#0c1830;
+  font-family:'Courier Prime',monospace;color:#fff}
+#rue{position:fixed;inset:0}
+#rue svg{display:block;width:100%;height:100%}
+
+/* ---------- l'entête ---------- */
+.tete{position:fixed;left:0;right:0;top:0;z-index:4;
+  padding:calc(env(safe-area-inset-top) + 14px) 14px 0;
+  display:flex;align-items:center;gap:11px}
+.tete .ret{flex:0 0 42px;height:42px;border-radius:8px;
+  border:1.5px solid rgba(255,255,255,.34);background:rgba(20,28,44,.42);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:transform .12s}
+.tete .ret:active{transform:scale(.94)}
+.tete .ret svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou{flex:1;min-width:0;background:rgba(20,28,44,.42);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,.26);border-radius:8px;padding:7px 13px}
+.tete .ou b{display:block;font-size:14px;font-weight:700;letter-spacing:.03em}
+.tete .ou span{display:block;font-size:8px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);margin-top:2px}
+.tete .eu{flex:0 0 auto;background:rgba(20,28,44,.42);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1.5px solid rgba(255,255,255,.26);border-radius:8px;padding:10px 13px;
+  font-size:13.5px;font-weight:700;color:#ffd894;white-space:nowrap}
+
+/* ---------- la barre des lieux ---------- */
+.bas{position:fixed;left:0;right:0;bottom:0;z-index:5;
+  padding:44px 12px calc(env(safe-area-inset-bottom) + 14px);
+  background:linear-gradient(180deg,transparent,rgba(26,24,20,.5) 44%,rgba(20,18,15,.82))}
+.lieux{display:flex;gap:7px}
+.lieux button{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:11px 3px;border:1.5px solid rgba(255,255,255,.24);border-radius:9px;
+  background:rgba(24,30,44,.56);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer;
+  font-family:'Courier Prime',monospace;transition:transform .11s}
+.lieux button:active{transform:scale(.95)}
+.lieux button:disabled{opacity:.42;cursor:default}
+.lieux button.vif{border-color:rgba(240,196,106,.72);background:rgba(52,44,26,.62)}
+.lieux svg{width:21px;height:21px;stroke:rgba(255,255,255,.7);fill:none;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.lieux button.vif svg{stroke:#f0c46a}
+.lieux span{font-size:9px;color:rgba(255,255,255,.7);letter-spacing:.03em;
+  text-align:center;line-height:1.2}
+.lieux button.vif span{color:#f0c46a;font-weight:700}
+
+/* ---------- le panneau de la barque ---------- */
+.voile{position:fixed;inset:0;z-index:8;background:rgba(6,12,22,.6);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .26s}
+.voile.on{opacity:1;pointer-events:auto}
+
+.bq{position:fixed;z-index:9;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 74px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 200px);overflow-y:auto;
+  background:rgba(18,28,44,.95);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.28);border-radius:9px;
+  box-shadow:0 14px 44px rgba(4,10,20,.66);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.bq.on{opacity:1;transform:none;pointer-events:auto}
+.bq::-webkit-scrollbar{display:none}
+
+.bq .vue{position:relative;height:112px;overflow:hidden;
+  background:linear-gradient(180deg,#1e3a54 0%,#16304a 46%,#0f2338 100%);
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.bq .vue svg{display:block;width:100%;height:100%}
+.bq .vue .pal{position:absolute;top:9px;left:11px;
+  background:rgba(8,16,28,.66);border-radius:20px;padding:4px 10px;
+  font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#f0c46a;font-weight:700}
+.bq .vue .fer{position:absolute;top:6px;right:8px;background:none;border:0;cursor:pointer;
+  color:rgba(255,255,255,.7);font-size:22px;line-height:1;padding:3px 6px}
+
+.bq .nom{padding:13px 15px 11px;border-bottom:1px solid rgba(255,255,255,.14)}
+.bq .nom b{display:block;font-size:17px;color:#fff;font-weight:700;letter-spacing:.03em}
+.bq .nom span{display:block;font-size:11.5px;color:rgba(255,255,255,.58);
+  line-height:1.5;margin-top:5px;font-family:system-ui,sans-serif}
+
+.bq .trois{display:flex;border-bottom:1px solid rgba(255,255,255,.14)}
+.bq .trois > div{flex:1;padding:12px 6px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.1)}
+.bq .trois > div:last-child{border-right:0}
+.bq .trois .k{font-size:7px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.44)}
+.bq .trois .v{font-size:16px;font-weight:700;margin-top:4px;color:#fff}
+.bq .trois .v small{font-size:9px;color:rgba(255,255,255,.5);font-weight:400}
+
+.bq .cale{padding:14px 15px 16px}
+.bq .cale .tt{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.42);margin-bottom:10px}
+.bq .cale .vide{display:flex;align-items:center;gap:11px;
+  background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.18);
+  border-radius:7px;padding:14px}
+.bq .cale .vide .ic{flex:0 0 34px;height:34px;border-radius:8px;
+  background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center}
+.bq .cale .vide .ic svg{width:17px;height:17px;stroke:rgba(255,255,255,.4);fill:none;
+  stroke-width:1.7;stroke-linejoin:round}
+.bq .cale .vide .tx b{display:block;font-size:13px;color:rgba(255,255,255,.8)}
+.bq .cale .vide .tx span{display:block;font-size:10.5px;color:rgba(255,255,255,.44);
+  margin-top:3px;font-family:system-ui,sans-serif;line-height:1.45}
+
+/* ---------- ce qui vit ---------- */
+/* le linge qui pend dans l'air du soir */
+.linge{animation:flotte 9s ease-in-out infinite}
+.linge:nth-of-type(2n){animation-duration:12s;animation-delay:-3s}
+.linge:nth-of-type(3n){animation-duration:7.4s;animation-delay:-5s}
+@keyframes flotte{0%,100%{transform:skewX(-2.4deg)}50%{transform:skewX(2.4deg)}}
+
+/* les arbres */
+.platane{animation:souffle 15s ease-in-out infinite;transform-origin:50% 100%}
+.platane:nth-of-type(2n){animation-duration:18s;animation-delay:-6s}
+.platane:nth-of-type(3n){animation-duration:12s;animation-delay:-9s}
+@keyframes souffle{0%,100%{transform:rotate(-.26deg)}50%{transform:rotate(.26deg)}}
+
+/* les lampadaires qui palpitent à peine */
+.lampe{animation:veilleuse 6s ease-in-out infinite}
+.lampe:nth-of-type(2n){animation-duration:7.8s;animation-delay:-2.6s}
+@keyframes veilleuse{0%,100%{opacity:.86}48%{opacity:1}}
+
+/* les étoiles */
+.etoile{animation:scint 4.4s ease-in-out infinite}
+.e1{animation-duration:6s;animation-delay:-1.4s}
+.e2{animation-duration:3.4s;animation-delay:-2.6s}
+.e3{animation-duration:7.2s;animation-delay:-.8s}
+@keyframes scint{0%,100%{opacity:.18}50%{opacity:.62}}
+
+.pnj{animation:attend 6.4s ease-in-out infinite}
+@keyframes attend{0%,100%{transform:translateY(0)}50%{transform:translateY(-.7px)}}
+.fumee{animation:monte 7s ease-in-out infinite}
+@keyframes monte{0%{opacity:.22;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(3px,-9px) scale(1.7)}}
+.clope{animation:braise 4.2s ease-in-out infinite}
+@keyframes braise{0%,100%{opacity:.5}18%{opacity:1}30%{opacity:.6}}
+.signe{animation:appelle 2.4s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:50% 100%}
+@keyframes appelle{0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-2.4px) scale(1.06)}}
+
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+
+<div id="rue"></div>
+
+<div class="tete">
+  <button class="ret" id="ret"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="ou"><b>La Barceloneta</b><span>Barcelone — 21 h</span></span>
+  <span class="eu" id="eu">—</span>
+</div>
+
+<div class="voile" id="voile"></div>
+
+<section class="bq" id="bq">
+  <div class="vue" id="q-vue">
+    <span class="pal" id="q-pal">—</span>
+    <button class="fer" id="q-fer">×</button>
+  </div>
+  <div class="nom"><b id="q-nom">—</b><span id="q-d">—</span></div>
+  <div class="trois">
+    <div><p class="k">Cale</p><p class="v" id="q-cale">—</p></div>
+    <div><p class="k">Charge</p><p class="v" id="q-kg">—</p></div>
+    <div><p class="k">Allure</p><p class="v" id="q-vit">—</p></div>
+  </div>
+  <div class="cale">
+    <p class="tt">Ce que tu transportes</p>
+    <div class="vide">
+      <span class="ic"><svg viewBox="0 0 24 24">
+        <path d="M4 9h16l-2 11H6zM8 9V6a4 4 0 0 1 8 0v3"/></svg></span>
+      <span class="tx"><b>Ta cale est vide</b>
+        <span>Le marché n'a pas encore ouvert. Reviens quand il y aura de quoi charger.</span></span>
+    </div>
+  </div>
+</section>
+
+<div class="bas">
+  <div class="lieux" id="lieux"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+/* ============================================================
+   UNE RUE DE LA BARCELONETA — vue du sol, en fin d'après-midi
+   ============================================================ */
+
+const W = 480;
+const FOCALE = 727;
+const OEIL = 1.7;            /* on marche : l'œil est à hauteur d'homme */
+const HORIZON = 262;
+
+const px  = (m, d) => m * FOCALE / d;
+const sol = d => HORIZON + OEIL * FOCALE / d;
+const rnd = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+const rnd2 = (a, b) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5; return x - Math.floor(x); };
+
+/* la rue fait huit mètres de large */
+const RUE = 4.2;
+const projX = (X, d) => 240 + X * FOCALE / d;
+
+/* ---------- la lumière : le soleil entre par le fond, à gauche ---------- */
+const SOLEIL = { x: 202, d: 90 };
+function hx(c){ return [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)]; }
+function ch(a){ return '#' + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2,'0')).join(''); }
+function mel(a, b, k){ const A = hx(a), B = hx(b); return ch([0,1,2].map(i => A[i] + (B[i]-A[i]) * k)); }
+
+const OR = '#ffc878', OMBRE = '#0e1626';
+/* la nuit : tout est bleui, sauf ce que touche une lampe */
+const NUIT = '#1a2740';
+const clair  = (c, k) => mel(mel(c, NUIT, .52), OR, (k === undefined ? .34 : k) * .5);
+const sombre = (c, k) => mel(mel(c, NUIT, .62), OMBRE, k === undefined ? .34 : k);
+/* l'air de la rue : plus on va loin, plus ça se voile de lumière */
+const voiler = (c, d) => mel(c, '#2a3a58', Math.min(.68, Math.pow(d / 110, .8)));
+
+let HAUT = -120, BAS = 900;
+function cadrer(l, h){
+  const total = W * h / l;
+  /* l'horizon se pose au tiers : on voit surtout les façades et le sol */
+  HAUT = HORIZON - total * .3;
+  BAS  = HAUT + total;
+  return { y: HAUT, h: total };
+}
+
+/* ---------- les façades ---------- */
+const MURS = ['#e8c49a','#c98a5c','#dcd0b0','#a8886a','#e0b088','#8aa0a8','#d4a878','#b8946c','#e4cca4','#9a8a7a','#cf9a70','#c4b494'];
+const VOLETS = ['#4a6b7c','#5c7a5c','#7a5c4a','#3f5a6b','#6d5c7a','#5a6b4a'];
+
+/* une tranche de façade, d'une profondeur à la suivante */
+function tranche(cote, d1, d2, g){
+  const X = cote * RUE;
+  const x1 = projX(X, d1), x2 = projX(X, d2);
+  const y1 = sol(d1),      y2 = sol(d2);
+  const hauteur = 4 + Math.round(rnd(g * 3) * 2);        /* de 4 à 6 étages */
+  const he = 3.2;                                         /* un étage = 3,2 m */
+  const t1 = y1 - px(hauteur * he, d1), t2 = y2 - px(hauteur * he, d2);
+  const mur = voiler(MURS[g % 12], (d1 + d2) / 2);
+  /* le côté gauche prend le soleil, le droit est à l'ombre */
+  const face = cote < 0 ? clair(mur, .28) : sombre(mur, .6);
+
+  let s = `<g>`;
+  s += `<path d="M${x1.toFixed(1)} ${t1.toFixed(1)} L${x2.toFixed(1)} ${t2.toFixed(1)}
+    L${x2.toFixed(1)} ${y2.toFixed(1)} L${x1.toFixed(1)} ${y1.toFixed(1)} Z" fill="${face}"/>`;
+
+  /* les étages */
+  for (let e = 0; e < hauteur; e++){
+    const a1 = y1 - px((e + 1) * he, d1), a2 = y2 - px((e + 1) * he, d2);
+    const b1 = y1 - px(e * he, d1),       b2 = y2 - px(e * he, d2);
+    /* le bandeau qui sépare les étages */
+    s += `<path d="M${x1.toFixed(1)} ${a1.toFixed(1)} L${x2.toFixed(1)} ${a2.toFixed(1)}
+      L${x2.toFixed(1)} ${(a2 + (b2-a2)*.1).toFixed(1)} L${x1.toFixed(1)} ${(a1 + (b1-a1)*.1).toFixed(1)} Z"
+      fill="${cote < 0 ? clair(mur,.4) : sombre(mur,.16)}" opacity=".6"/>`;
+
+    /* deux fenêtres par tranche */
+    for (let f = 0; f < 2; f++){
+      const dd1 = d1 + (d2 - d1) * (.18 + f * .44);
+      const dd2 = d1 + (d2 - d1) * (.42 + f * .44);
+      const fx1 = projX(X, dd1), fx2 = projX(X, dd2);
+      const fy1h = sol(dd1) - px((e + .82) * he, dd1), fy2h = sol(dd2) - px((e + .82) * he, dd2);
+      const fy1b = sol(dd1) - px((e + .16) * he, dd1), fy2b = sol(dd2) - px((e + .16) * he, dd2);
+      const t = rnd2(g * 11 + e, f);
+      /* l'embrasure */
+      s += `<path d="M${fx1.toFixed(1)} ${fy1h.toFixed(1)} L${fx2.toFixed(1)} ${fy2h.toFixed(1)}
+        L${fx2.toFixed(1)} ${fy2b.toFixed(1)} L${fx1.toFixed(1)} ${fy1b.toFixed(1)} Z"
+        fill="${sombre('#2a2f3a', .1)}"/>`;
+      /* le volet, ouvert ou fermé */
+      if (t > .66){
+        const v = voiler(VOLETS[(g + e + f) % 6], (d1 + d2) / 2);
+        const mi1 = fx1 + (fx2 - fx1) * (t > .68 ? 1 : .46);
+        s += `<path d="M${fx1.toFixed(1)} ${fy1h.toFixed(1)} L${mi1.toFixed(1)} ${(fy1h + (fy2h-fy1h)*.5).toFixed(1)}
+          L${mi1.toFixed(1)} ${(fy1b + (fy2b-fy1b)*.5).toFixed(1)} L${fx1.toFixed(1)} ${fy1b.toFixed(1)} Z"
+          fill="${cote < 0 ? clair(v,.24) : sombre(v,.42)}"/>`;
+      } else {
+        /* une fenêtre allumée de temps en temps */
+        if (t > .1)
+          s += `<path d="M${fx1.toFixed(1)} ${fy1h.toFixed(1)} L${fx2.toFixed(1)} ${fy2h.toFixed(1)}
+            L${fx2.toFixed(1)} ${fy2b.toFixed(1)} L${fx1.toFixed(1)} ${fy1b.toFixed(1)} Z"
+            fill="${['#ffcf82','#ffdda0','#f0b868','#ffe0b0'][Math.floor(t*4)%4]}"
+            opacity="${(.5 + t * .5).toFixed(2)}"/>`;
+          /* la lueur qui déborde sur le mur */
+          s += `<path d="M${(fx1 - px(.2, dd1) * cote).toFixed(1)} ${(fy1h - px(.2, dd1)).toFixed(1)}
+            L${(fx2 - px(.2, dd2) * cote).toFixed(1)} ${(fy2h - px(.2, dd2)).toFixed(1)}
+            L${(fx2 - px(.2, dd2) * cote).toFixed(1)} ${(fy2b + px(.2, dd2)).toFixed(1)}
+            L${(fx1 - px(.2, dd1) * cote).toFixed(1)} ${(fy1b + px(.2, dd1)).toFixed(1)} Z"
+            fill="#ffcf82" opacity=".1"/>`;
+      }
+      /* le petit balcon en fer */
+      if (e > 0 && t > .5){
+        const by1 = sol(dd1) - px(e * he + .1, dd1), by2 = sol(dd2) - px(e * he + .1, dd2);
+        const av = px(.5, (dd1 + dd2) / 2) * -cote;
+        s += `<path d="M${fx1.toFixed(1)} ${by1.toFixed(1)} L${fx2.toFixed(1)} ${by2.toFixed(1)}
+          L${(fx2 + av).toFixed(1)} ${by2.toFixed(1)} L${(fx1 + av).toFixed(1)} ${by1.toFixed(1)} Z"
+          fill="${sombre('#3a3f4a', .2)}" opacity=".8"/>`;
+        s += `<g stroke="${sombre('#4a5058', .18)}" stroke-width="${Math.max(.4, px(.05, dd1)).toFixed(2)}">`;
+        for (let q = 0; q < 4; q++){
+          const qx = fx1 + (fx2 - fx1) * q / 4;
+          const qy = by1 + (by2 - by1) * q / 4;
+          s += `<path d="M${(qx + av * .5).toFixed(1)} ${qy.toFixed(1)} v${(-px(.55, dd1)).toFixed(1)}"/>`;
+        }
+        s += `</g>`;
+      }
+    }
+  }
+
+  /* le rez-de-chaussée : une porte, ou une devanture */
+  const r1 = y1 - px(2.6, d1), r2 = y2 - px(2.6, d2);
+  const quoi = rnd(g * 7 + 3);
+  if (quoi > .62){
+    /* une devanture avec son store */
+    const c = voiler(['#b8483a','#3f7a6a','#c9843a','#5a4a7a'][g % 4], (d1+d2)/2);
+    s += `<path d="M${x1.toFixed(1)} ${r1.toFixed(1)} L${x2.toFixed(1)} ${r2.toFixed(1)}
+      L${x2.toFixed(1)} ${y2.toFixed(1)} L${x1.toFixed(1)} ${y1.toFixed(1)} Z"
+      fill="${sombre('#2a2f38', .18)}"/>`;
+    s += `<path d="M${x1.toFixed(1)} ${r1.toFixed(1)} L${x2.toFixed(1)} ${r2.toFixed(1)}
+      L${(x2 + px(.9, d2) * -cote).toFixed(1)} ${(r2 + px(.35, d2)).toFixed(1)}
+      L${(x1 + px(.9, d1) * -cote).toFixed(1)} ${(r1 + px(.35, d1)).toFixed(1)} Z"
+      fill="${cote < 0 ? clair(c, .2) : sombre(c, .22)}"/>`;
+    /* la lumière qui sort de la boutique */
+    s += `<path d="M${x1.toFixed(1)} ${(r1 + (y1-r1)*.22).toFixed(1)} L${x2.toFixed(1)} ${(r2 + (y2-r2)*.22).toFixed(1)}
+      L${x2.toFixed(1)} ${(y2 - (y2-r2)*.1).toFixed(1)} L${x1.toFixed(1)} ${(y1 - (y1-r1)*.1).toFixed(1)} Z"
+      fill="#ffd894" opacity=".3"/>`;
+  } else {
+    /* une porte étroite */
+    const px1 = x1 + (x2 - x1) * .3, px2 = x1 + (x2 - x1) * .62;
+    const py1 = r1 + (r2 - r1) * .3, py2 = r1 + (r2 - r1) * .62;
+    const gy1 = y1 + (y2 - y1) * .3, gy2 = y1 + (y2 - y1) * .62;
+    s += `<path d="M${px1.toFixed(1)} ${(py1 + (gy1-py1)*.28).toFixed(1)} L${px2.toFixed(1)} ${(py2 + (gy2-py2)*.28).toFixed(1)}
+      L${px2.toFixed(1)} ${gy2.toFixed(1)} L${px1.toFixed(1)} ${gy1.toFixed(1)} Z"
+      fill="${sombre('#4a3628', .22)}"/>`;
+  }
+  return s + `</g>`;
+}
+
+/* ---------- le ciel, entre les toits ---------- */
+function ciel(){
+  let s = `<defs>
+    <linearGradient id="r-ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#0c1830"/>
+      <stop offset="30%"  stop-color="#152442"/>
+      <stop offset="58%"  stop-color="#243a5c"/>
+      <stop offset="82%"  stop-color="#3d5273"/>
+      <stop offset="100%" stop-color="#6a6a78"/></linearGradient>
+    <linearGradient id="r-sol" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#3a4258"/>
+      <stop offset="18%"  stop-color="#2f3648"/>
+      <stop offset="100%" stop-color="#1a2032"/></linearGradient>
+    <radialGradient id="r-halo" cx="0.5" cy="0.5">
+      <stop offset="0%"   stop-color="#ffd8a0" stop-opacity=".44"/>
+      <stop offset="40%"  stop-color="#e0a870" stop-opacity=".2"/>
+      <stop offset="100%" stop-color="#c08850" stop-opacity="0"/></radialGradient>
+  </defs>`;
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(sol(400)-HAUT).toFixed(1)}"
+    fill="url(#r-ciel)"/>`;
+  /* le fond de la rue, qui brûle de lumière */
+  const ys = sol(SOLEIL.d) - px(7, SOLEIL.d);
+  s += `<ellipse cx="${SOLEIL.x}" cy="${ys.toFixed(1)}" rx="210" ry="150" fill="url(#r-halo)"/>`;
+  s += `<ellipse cx="${SOLEIL.x}" cy="${ys.toFixed(1)}" rx="86" ry="58"
+    fill="#e8b878" opacity=".2"/>`;
+  /* des étoiles, entre les toits */
+  for (let i = 0; i < 26; i++){
+    const ex = 130 + rnd(i*17+3) * 220, ey = HAUT + rnd(i*13+7) * 150;
+    s += `<circle class="etoile e${i%4}" cx="${ex.toFixed(0)}" cy="${ey.toFixed(0)}"
+      r="${(.5 + rnd(i*23+2)*.7).toFixed(2)}" fill="#fff" opacity=".5"/>`;
+  }
+  return s;
+}
+
+/* ---------- le sol : des dalles qui s'ouvrent vers nous ---------- */
+function pave(){
+  let s = `<rect x="0" y="${(sol(400)).toFixed(1)}" width="${W}"
+    height="${(BAS - sol(400) + 6).toFixed(1)}" fill="url(#r-sol)"/>`;
+
+  /* les dalles : le pas suit la profondeur, sinon on n'atteint jamais
+     le premier plan. On avance en proportion, pas en mètres fixes. */
+  let d = 90, i = 0;
+  while (d > 3.2 && i < 200){
+    const d2 = d / 1.038;
+    const y1 = sol(d), y2 = sol(d2);
+    if (y1 > BAS) break;
+    if (y2 - y1 > .45){
+      /* la dalle grandit avec la proximité pour rester carrée */
+      const DALLE = Math.max(.5, (d2 - d) * -1.9);
+      const n = Math.ceil(RUE * 2.4 / DALLE) + 2;
+      const dec = (i % 2) * DALLE * .5;
+      for (let c = -n; c <= n; c++){
+        const Xa = c * DALLE + dec, Xb = Xa + DALLE * .93;
+        const xa1 = projX(Xa, d),  xb1 = projX(Xb, d);
+        const xa2 = projX(Xa, d2), xb2 = projX(Xb, d2);
+        if (xb1 < -60 && xb2 < -60) continue;
+        if (xa1 > W + 60 && xa2 > W + 60) continue;
+        const t = rnd2(i, c + 70);
+        s += `<path d="M${xa1.toFixed(1)} ${y1.toFixed(1)} L${xb1.toFixed(1)} ${y1.toFixed(1)}
+          L${xb2.toFixed(1)} ${y2.toFixed(1)} L${xa2.toFixed(1)} ${y2.toFixed(1)} Z"
+          fill="${t > .72 ? '#3a4358' : t > .48 ? '#333b4e' : t > .24 ? '#2c3444' : '#262d3c'}"
+          opacity="${(.62 + t * .3).toFixed(2)}"/>`;
+        /* l'arête qui prend le jour */
+        if (y2 - y1 > 3)
+          s += `<path d="M${xa1.toFixed(1)} ${y1.toFixed(1)} L${xb1.toFixed(1)} ${y1.toFixed(1)}
+            L${(xb1 + (xb2-xb1)*.2).toFixed(1)} ${(y1 + (y2-y1)*.2).toFixed(1)}
+            L${(xa1 + (xa2-xa1)*.2).toFixed(1)} ${(y1 + (y2-y1)*.2).toFixed(1)} Z"
+            fill="#5a6a88" opacity="${(.06 + t * .08).toFixed(2)}"/>`;
+      }
+    }
+    d = d2; i++;
+  }
+
+  /* la rigole au milieu, comme dans les vieilles rues */
+  s += `<path d="M${projX(-.2, 90).toFixed(1)} ${sol(90).toFixed(1)}
+    L${projX(.2, 90).toFixed(1)} ${sol(90).toFixed(1)}
+    L${projX(.2, 3.4).toFixed(1)} ${(BAS + 20).toFixed(1)}
+    L${projX(-.2, 3.4).toFixed(1)} ${(BAS + 20).toFixed(1)} Z"
+    fill="#8a7a62" opacity=".28"/>`;
+
+
+
+  return s;
+}
+
+/* ---------- le linge tendu en travers ---------- */
+function linge(){
+  let s = '';
+  const COULEURS = ['#f2ede0','#c9a8b0','#a8c0d0','#e8d4a0','#b8c9a8','#d4b8c8','#f0e4d0'];
+  [[10, 2.4], [15, 3.1], [22, 2.2], [31, 2.8], [44, 2.4], [60, 2.9]].forEach(([d, h], j) => {
+    const y = sol(d) - px(h * 3.2, d);
+    const xg = projX(-RUE, d), xd = projX(RUE, d);
+    const creux = px(.5, d);
+    /* la corde */
+    s += `<path d="M${xg.toFixed(1)} ${y.toFixed(1)}
+      Q${((xg+xd)/2).toFixed(1)} ${(y + creux).toFixed(1)} ${xd.toFixed(1)} ${y.toFixed(1)}"
+      stroke="${voiler('#8a7a62', d)}" stroke-width="${Math.max(.4, px(.03, d)).toFixed(2)}"
+      fill="none"/>`;
+    /* les pièces qui pendent */
+    const n = 3 + Math.round(rnd(j * 5) * 3);
+    for (let k = 0; k < n; k++){
+      const t = (k + .8) / (n + .6);
+      const lx = xg + (xd - xg) * t;
+      const ly = y + creux * 4 * t * (1 - t);
+      const lw = px(.42 + rnd(j * 9 + k) * .3, d), lh = px(.62 + rnd(j * 3 + k) * .5, d);
+      s += `<g class="linge" style="transform-origin:${lx.toFixed(1)}px ${ly.toFixed(1)}px">`;
+      s += `<path d="M${(lx - lw/2).toFixed(1)} ${ly.toFixed(1)} h${lw.toFixed(1)}
+        v${lh.toFixed(1)} q${(-lw/2).toFixed(1)} ${(lh*.16).toFixed(1)} ${(-lw).toFixed(1)} 0 z"
+        fill="${voiler(COULEURS[(j * 3 + k) % 7], d)}" opacity=".92"/>`;
+      s += `</g>`;
+    }
+  });
+  return s;
+}
+
+/* la rue est vide à cette heure-ci */
+function coursesCSS(){ return ''; }
+
+/* ---------- un platane ---------- *//* ---------- un platane ---------- */
+function platane(d, X, j){
+  const x = projX(X, d), y = sol(d);
+  const H = px(6.4, d);                    /* huit mètres et demi */
+  const tronc = voiler('#a89a86', d);
+  const ecorce = voiler('#8a7c68', d);
+  const feuille = voiler('#5a7a48', d);
+  const feuilleC = voiler('#7d9c5c', d);
+
+  let s = `<g class="platane">`;
+  /* la grille au pied */
+  s += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${px(.62, d).toFixed(1)}"
+    ry="${px(.16, d).toFixed(1)}" fill="${sombre('#4a4438', .2)}" opacity=".7"/>`;
+  /* le tronc, qui s'affine */
+  s += `<path d="M${(x - px(.19, d)).toFixed(1)} ${y.toFixed(1)}
+    q${(px(.03, d)).toFixed(1)} ${(-H*.34).toFixed(1)} ${(px(.05, d)).toFixed(1)} ${(-H*.46).toFixed(1)}
+    h${(px(.24, d)).toFixed(1)}
+    q${(px(.02, d)).toFixed(1)} ${(H*.12).toFixed(1)} ${(px(.09, d)).toFixed(1)} ${(H*.46).toFixed(1)} z"
+    fill="${tronc}"/>`;
+  /* les taches de l'écorce, la signature du platane */
+  for (let k = 0; k < 5; k++){
+    const ty = y - H * (.06 + k * .085);
+    s += `<ellipse cx="${(x + (rnd2(j, k) - .5) * px(.22, d)).toFixed(1)}" cy="${ty.toFixed(1)}"
+      rx="${px(.07, d).toFixed(1)}" ry="${px(.1, d).toFixed(1)}" fill="${ecorce}" opacity=".6"/>`;
+  }
+  /* les branches maîtresses */
+  const yb = y - H * .46;
+  [[-1, .5], [1, .46], [-1, .2], [1, .24]].forEach(([sg, k], q) => {
+    s += `<path d="M${x.toFixed(1)} ${(yb + px(.2, d)).toFixed(1)}
+      q${(sg * px(.34, d)).toFixed(1)} ${(-H * .1).toFixed(1)}
+       ${(sg * px(.58, d)).toFixed(1)} ${(-H * k * .3).toFixed(1)}"
+      stroke="${tronc}" stroke-width="${Math.max(.5, px(.09 - q * .012, d)).toFixed(2)}"
+      fill="none" stroke-linecap="round"/>`;
+  });
+  /* le feuillage : des masses qui se recouvrent */
+  const F = [[0, -.8, 1], [-.5, -.7, .68], [.5, -.68, .7],
+             [-.26, -.9, .54], [.3, -.88, .5]];
+  F.forEach(([dx, dy, r], q) => {
+    s += `<ellipse cx="${(x + dx * px(.72, d)).toFixed(1)}" cy="${(y + dy * H).toFixed(1)}"
+      rx="${(px(.78, d) * r).toFixed(1)}" ry="${(px(.6, d) * r).toFixed(1)}"
+      fill="${q % 2 ? feuille : feuilleC}" opacity="${(.9 + (q % 2) * .08).toFixed(2)}"/>`;
+  });
+  /* la lumière du couchant sur le dessus des feuilles */
+  s += `<ellipse cx="${(x - px(.28, d)).toFixed(1)}" cy="${(y - H * .88).toFixed(1)}"
+    rx="${px(.46, d).toFixed(1)}" ry="${px(.28, d).toFixed(1)}"
+    fill="${clair('#a8c470', .4)}" opacity=".5"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- un lampadaire ---------- */
+function lampadaire(d, X){
+  const x = projX(X, d), y = sol(d), H = px(4.2, d);
+  const fer = sombre('#2a3040', .3);
+  const cote = X < 0 ? -1 : 1;
+  let s = `<g>`;
+  /* la flaque de lumière au sol, sous la lampe */
+  s += `<ellipse cx="${(x - cote * px(.5, d)).toFixed(1)}" cy="${y.toFixed(1)}"
+    rx="${px(1.9, d).toFixed(1)}" ry="${px(.44, d).toFixed(1)}"
+    fill="#ffcf82" opacity=".09"/>`;
+  s += `<ellipse cx="${(x - cote * px(.5, d)).toFixed(1)}" cy="${y.toFixed(1)}"
+    rx="${px(1, d).toFixed(1)}" ry="${px(.24, d).toFixed(1)}"
+    fill="#ffdc9a" opacity=".1"/>`;
+  /* le mât */
+  s += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} v${(-H).toFixed(1)}"
+    stroke="${fer}" stroke-width="${Math.max(.6, px(.09, d)).toFixed(2)}"/>`;
+  /* la potence recourbée */
+  s += `<path d="M${x.toFixed(1)} ${(y - H).toFixed(1)}
+    q0 ${(-px(.5, d)).toFixed(1)} ${(-cote * px(.5, d)).toFixed(1)} ${(-px(.5, d)).toFixed(1)}"
+    stroke="${fer}" stroke-width="${Math.max(.5, px(.07, d)).toFixed(2)}" fill="none"/>`;
+  /* la lanterne */
+  const lx = x - cote * px(.5, d), ly = y - H - px(.5, d);
+  s += `<path d="M${(lx - px(.2, d)).toFixed(1)} ${(ly + px(.26, d)).toFixed(1)}
+    l${px(.09, d).toFixed(1)} ${(-px(.26, d)).toFixed(1)} h${px(.22, d).toFixed(1)}
+    l${px(.09, d).toFixed(1)} ${px(.26, d).toFixed(1)} z" fill="${fer}"/>`;
+  s += `<ellipse class="lampe" cx="${lx.toFixed(1)}" cy="${(ly + px(.16, d)).toFixed(1)}"
+    rx="${px(.16, d).toFixed(1)}" ry="${px(.13, d).toFixed(1)}" fill="#ffe4ae"/>`;
+  /* le halo autour de l'ampoule */
+  s += `<ellipse class="lampe" cx="${lx.toFixed(1)}" cy="${(ly + px(.16, d)).toFixed(1)}"
+    rx="${px(.36, d).toFixed(1)}" ry="${px(.32, d).toFixed(1)}" fill="#ffcf82" opacity=".3"/>`;
+  s += `<ellipse class="lampe" cx="${lx.toFixed(1)}" cy="${(ly + px(.16, d)).toFixed(1)}"
+    rx="${px(.8, d).toFixed(1)}" ry="${px(.7, d).toFixed(1)}" fill="#ffcf82" opacity=".1"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- le long de la rue, et les gens ---------- */
+function centre(){
+  const O = [];
+  /* les platanes, le long des deux trottoirs */
+  [[64, -3.3], [50, 3.35], [39, -3.3], [30, 3.35], [23, -3.3], [17, 3.35]]
+    .forEach(([d, X], j) => O.push([d, () => platane(d, X, j)]));
+  /* les lampadaires, en alternance */
+  [[56, 3.4], [42, -3.35], [33, 3.4], [25, -3.35], [19, 3.4], [13.5, -3.35]]
+    .forEach(([d, X]) => O.push([d + .1, () => lampadaire(d, X)]));
+
+  O.sort((a, b) => b[0] - a[0]);
+  return O.map(o => o[1]()).join('');
+}
+
+/* ---------- quelqu'un attend sous le réverbère ----------
+   Il est là tous les soirs. C'est lui qui donnera du travail.
+   La lampe est au-dessus à sa droite : elle lui fait un liseré
+   sur une joue et laisse l'autre dans le noir. */
+function typeQuiAttend(){
+  const d = 11.5, X = 2.6;
+  const x = projX(X, d), y = sol(d), H = px(1.76, d);
+  const m = (u) => H * u;                       /* une mesure, en parts de sa taille */
+
+  /* --- sa palette --- */
+  const MANT   = voiler('#463a4e', d);          /* le manteau, prune sombre */
+  const MANT_C = clair('#7a6480', .34);         /* ce que la lampe touche */
+  const MANT_O = sombre('#2a2230', .3);         /* les plis et le revers */
+  const PANT   = voiler('#2a3040', d);
+  const PANT_C = clair('#4a5468', .28);
+  const CHAUS  = sombre('#1c1a1e', .2);
+  const PEAU   = voiler('#c08256', d);
+  const PEAU_C = clair('#e0a878', .34);
+  const PEAU_O = sombre('#7a4e34', .24);
+  const POIL   = sombre('#241e22', .2);
+  const CHAP   = voiler('#242028', d);
+  const CHAP_C = clair('#4e4450', .3);
+  const CHEM   = voiler('#c9bda8', d);
+
+  let s = `<g class="pnj">`;
+
+  /* ================= son ombre ================= */
+  /* la lampe est en haut à droite : l'ombre part vers la gauche */
+  s += `<path d="M${(x - m(.09)).toFixed(1)} ${y.toFixed(1)}
+    h${m(.18).toFixed(1)} l${(-m(.62)).toFixed(1)} ${m(.2).toFixed(1)}
+    h${(-m(.22)).toFixed(1)} z" fill="${OMBRE}" opacity=".34"/>`;
+  s += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${m(.15).toFixed(1)}"
+    ry="${m(.035).toFixed(1)}" fill="${OMBRE}" opacity=".4"/>`;
+
+  /* ================= les chaussures ================= */
+  [[-1, .04], [1, -.02]].forEach(([sg, dy]) => {
+    s += `<path d="M${(x + sg * m(.045) - m(.038)).toFixed(1)} ${(y + dy * H).toFixed(1)}
+      q0 ${(-m(.035)).toFixed(1)} ${m(.034).toFixed(1)} ${(-m(.035)).toFixed(1)}
+      h${m(.03).toFixed(1)} q${m(.042).toFixed(1)} 0 ${m(.046).toFixed(1)} ${m(.035).toFixed(1)} z"
+      fill="${CHAUS}"/>`;
+  });
+
+  /* ================= les jambes ================= */
+  [[-1, .052], [1, .052]].forEach(([sg, dx]) => {
+    s += `<path d="M${(x + sg * m(dx) - m(.032)).toFixed(1)} ${(y - m(.42)).toFixed(1)}
+      q${(-m(.004)).toFixed(1)} ${m(.22).toFixed(1)} ${m(.002).toFixed(1)} ${m(.4).toFixed(1)}
+      h${m(.062).toFixed(1)}
+      q${m(.006).toFixed(1)} ${(-m(.18)).toFixed(1)} ${m(.004).toFixed(1)} ${(-m(.4)).toFixed(1)} z"
+      fill="${sg < 0 ? PANT : sombre(PANT, .2)}"/>`;
+  });
+  /* le pli du pantalon, côté lampe */
+  s += `<path d="M${(x + m(.062)).toFixed(1)} ${(y - m(.4)).toFixed(1)} v${m(.36).toFixed(1)}"
+    stroke="${PANT_C}" stroke-width="${Math.max(.4, m(.008)).toFixed(2)}" opacity=".7"/>`;
+
+  /* ================= le manteau ================= */
+  /* le corps : épaules larges, taille marquée, bas évasé */
+  const D = `M${(x - m(.135)).toFixed(1)} ${(y - m(.7)).toFixed(1)}
+    C${(x - m(.148)).toFixed(1)} ${(y - m(.56)).toFixed(1)}
+     ${(x - m(.13)).toFixed(1)} ${(y - m(.44)).toFixed(1)}
+     ${(x - m(.145)).toFixed(1)} ${(y - m(.26)).toFixed(1)}
+    L${(x - m(.155)).toFixed(1)} ${(y - m(.24)).toFixed(1)}
+    L${(x + m(.155)).toFixed(1)} ${(y - m(.24)).toFixed(1)}
+    L${(x + m(.145)).toFixed(1)} ${(y - m(.26)).toFixed(1)}
+    C${(x + m(.13)).toFixed(1)} ${(y - m(.44)).toFixed(1)}
+     ${(x + m(.148)).toFixed(1)} ${(y - m(.56)).toFixed(1)}
+     ${(x + m(.135)).toFixed(1)} ${(y - m(.7)).toFixed(1)}
+    C${(x + m(.1)).toFixed(1)} ${(y - m(.78)).toFixed(1)}
+     ${(x - m(.1)).toFixed(1)} ${(y - m(.78)).toFixed(1)}
+     ${(x - m(.135)).toFixed(1)} ${(y - m(.7)).toFixed(1)} Z`;
+  s += `<path d="${D}" fill="${MANT}"/>`;
+
+  /* le côté droit, que la lampe éclaire */
+  s += `<path d="M${(x + m(.135)).toFixed(1)} ${(y - m(.7)).toFixed(1)}
+    C${(x + m(.148)).toFixed(1)} ${(y - m(.56)).toFixed(1)}
+     ${(x + m(.13)).toFixed(1)} ${(y - m(.44)).toFixed(1)}
+     ${(x + m(.145)).toFixed(1)} ${(y - m(.26)).toFixed(1)}
+    L${(x + m(.155)).toFixed(1)} ${(y - m(.24)).toFixed(1)}
+    L${(x + m(.1)).toFixed(1)} ${(y - m(.24)).toFixed(1)}
+    C${(x + m(.09)).toFixed(1)} ${(y - m(.46)).toFixed(1)}
+     ${(x + m(.1)).toFixed(1)} ${(y - m(.6)).toFixed(1)}
+     ${(x + m(.108)).toFixed(1)} ${(y - m(.74)).toFixed(1)} Z"
+    fill="${MANT_C}" opacity=".85"/>`;
+
+  /* les plis du bas, qui tombent */
+  s += `<g stroke="${MANT_O}" stroke-width="${Math.max(.4, m(.007)).toFixed(2)}"
+    fill="none" opacity=".55">`;
+  [-.07, .01, .075].forEach(dx =>
+    s += `<path d="M${(x + m(dx)).toFixed(1)} ${(y - m(.5)).toFixed(1)}
+      q${m(.006).toFixed(1)} ${(-m(.1)).toFixed(1)} ${m(.002).toFixed(1)} ${(-m(.24)).toFixed(1)}"/>`);
+  s += `</g>`;
+
+  /* le revers gauche, croisé */
+  s += `<path d="M${(x - m(.035)).toFixed(1)} ${(y - m(.745)).toFixed(1)}
+    L${(x + m(.045)).toFixed(1)} ${(y - m(.62)).toFixed(1)}
+    L${(x + m(.02)).toFixed(1)} ${(y - m(.26)).toFixed(1)}
+    L${(x - m(.09)).toFixed(1)} ${(y - m(.26)).toFixed(1)}
+    L${(x - m(.075)).toFixed(1)} ${(y - m(.72)).toFixed(1)} Z"
+    fill="${MANT_O}" opacity=".7"/>`;
+  /* la chemise qui dépasse */
+  s += `<path d="M${(x - m(.03)).toFixed(1)} ${(y - m(.75)).toFixed(1)}
+    l${m(.048).toFixed(1)} ${m(.03).toFixed(1)} l${(-m(.03)).toFixed(1)} ${m(.05).toFixed(1)}
+    l${(-m(.042)).toFixed(1)} ${(-m(.045)).toFixed(1)} z" fill="${CHEM}"/>`;
+
+  /* les boutons */
+  [.62, .52, .42].forEach(u =>
+    s += `<circle cx="${(x + m(.028)).toFixed(1)}" cy="${(y - m(u)).toFixed(1)}"
+      r="${Math.max(.5, m(.011)).toFixed(2)}" fill="${MANT_C}" opacity=".8"/>`);
+
+  /* ================= les bras, mains dans les poches ================= */
+  [[-1, MANT], [1, MANT_C]].forEach(([sg, coul]) => {
+    s += `<path d="M${(x + sg * m(.125)).toFixed(1)} ${(y - m(.72)).toFixed(1)}
+      C${(x + sg * m(.16)).toFixed(1)} ${(y - m(.6)).toFixed(1)}
+       ${(x + sg * m(.155)).toFixed(1)} ${(y - m(.48)).toFixed(1)}
+       ${(x + sg * m(.128)).toFixed(1)} ${(y - m(.4)).toFixed(1)}
+      l${(-sg * m(.05)).toFixed(1)} ${m(.012).toFixed(1)}
+      C${(x + sg * m(.11)).toFixed(1)} ${(y - m(.5)).toFixed(1)}
+       ${(x + sg * m(.105)).toFixed(1)} ${(y - m(.6)).toFixed(1)}
+       ${(x + sg * m(.09)).toFixed(1)} ${(y - m(.7)).toFixed(1)} Z"
+      fill="${sg > 0 ? coul : sombre(MANT, .2)}" opacity="${sg > 0 ? .9 : 1}"/>`;
+    /* la poche, une simple fente */
+    s += `<path d="M${(x + sg * m(.13)).toFixed(1)} ${(y - m(.44)).toFixed(1)}
+      l${(-sg * m(.055)).toFixed(1)} ${m(.014).toFixed(1)}"
+      stroke="${MANT_O}" stroke-width="${Math.max(.4, m(.009)).toFixed(2)}" opacity=".8"/>`;
+  });
+
+  /* ================= le col relevé ================= */
+  s += `<path d="M${(x - m(.085)).toFixed(1)} ${(y - m(.755)).toFixed(1)}
+    L${(x - m(.055)).toFixed(1)} ${(y - m(.845)).toFixed(1)}
+    L${(x - m(.028)).toFixed(1)} ${(y - m(.8)).toFixed(1)} Z" fill="${MANT_O}"/>`;
+  s += `<path d="M${(x + m(.085)).toFixed(1)} ${(y - m(.755)).toFixed(1)}
+    L${(x + m(.055)).toFixed(1)} ${(y - m(.845)).toFixed(1)}
+    L${(x + m(.028)).toFixed(1)} ${(y - m(.8)).toFixed(1)} Z" fill="${MANT_C}" opacity=".9"/>`;
+
+  /* ================= le cou et le visage ================= */
+  s += `<path d="M${(x - m(.028)).toFixed(1)} ${(y - m(.79)).toFixed(1)}
+    h${m(.056).toFixed(1)} v${(-m(.04)).toFixed(1)} h${(-m(.056)).toFixed(1)} z"
+    fill="${PEAU_O}"/>`;
+
+  /* la tête : un ovale légèrement anguleux à la mâchoire */
+  const cy = y - m(.895), r = m(.072);
+  s += `<path d="M${(x - r).toFixed(1)} ${(cy - r * .2).toFixed(1)}
+    C${(x - r).toFixed(1)} ${(cy - r * 1.1).toFixed(1)}
+     ${(x + r).toFixed(1)} ${(cy - r * 1.1).toFixed(1)}
+     ${(x + r).toFixed(1)} ${(cy - r * .2).toFixed(1)}
+    C${(x + r).toFixed(1)} ${(cy + r * .62).toFixed(1)}
+     ${(x + r * .5).toFixed(1)} ${(cy + r * 1.02).toFixed(1)}
+     ${x} ${(cy + r * 1.02).toFixed(1)}
+    C${(x - r * .5).toFixed(1)} ${(cy + r * 1.02).toFixed(1)}
+     ${(x - r).toFixed(1)} ${(cy + r * .62).toFixed(1)}
+     ${(x - r).toFixed(1)} ${(cy - r * .2).toFixed(1)} Z" fill="${PEAU}"/>`;
+  /* la moitié droite, éclairée par la lampe */
+  s += `<path d="M${x} ${(cy - r * .95).toFixed(1)}
+    C${(x + r * .8).toFixed(1)} ${(cy - r * .9).toFixed(1)}
+     ${(x + r).toFixed(1)} ${(cy - r * .3).toFixed(1)}
+     ${(x + r).toFixed(1)} ${(cy - r * .2).toFixed(1)}
+    C${(x + r).toFixed(1)} ${(cy + r * .62).toFixed(1)}
+     ${(x + r * .5).toFixed(1)} ${(cy + r * 1.02).toFixed(1)}
+     ${x} ${(cy + r * 1.02).toFixed(1)} Z" fill="${PEAU_C}" opacity=".72"/>`;
+
+  /* l'ombre du bord du chapeau, en travers du front et des yeux */
+  s += `<path d="M${(x - r).toFixed(1)} ${(cy - r * .2).toFixed(1)}
+    C${(x - r).toFixed(1)} ${(cy - r * 1.1).toFixed(1)}
+     ${(x + r).toFixed(1)} ${(cy - r * 1.1).toFixed(1)}
+     ${(x + r).toFixed(1)} ${(cy - r * .2).toFixed(1)}
+    L${(x + r).toFixed(1)} ${(cy - r * .06).toFixed(1)}
+    L${(x - r).toFixed(1)} ${(cy - r * .06).toFixed(1)} Z"
+    fill="${sombre('#2a1e18', .34)}" opacity=".62"/>`;
+
+  /* les yeux, deux traits dans l'ombre */
+  [[-.036, .9], [.036, 1]].forEach(([dx, op]) =>
+    s += `<path d="M${(x + m(dx) - m(.016)).toFixed(1)} ${(cy - r * .18).toFixed(1)}
+      h${m(.03).toFixed(1)}" stroke="#0e0a0c"
+      stroke-width="${Math.max(.6, m(.014)).toFixed(2)}" stroke-linecap="round"
+      opacity="${op}"/>`);
+  /* une étincelle dans l'œil droit, celui que la lampe atteint */
+  s += `<circle cx="${(x + m(.042)).toFixed(1)}" cy="${(cy - r * .2).toFixed(1)}"
+    r="${Math.max(.35, m(.006)).toFixed(2)}" fill="#e8dcc8" opacity=".8"/>`;
+
+  /* le nez */
+  s += `<path d="M${(x + m(.004)).toFixed(1)} ${(cy - r * .06).toFixed(1)}
+    q${m(.016).toFixed(1)} ${m(.026).toFixed(1)} ${(-m(.004)).toFixed(1)} ${m(.036).toFixed(1)}"
+    stroke="${PEAU_O}" stroke-width="${Math.max(.4, m(.009)).toFixed(2)}"
+    fill="none" stroke-linecap="round"/>`;
+
+  /* la barbe de plusieurs jours, sur la mâchoire */
+  s += `<path d="M${(x - r * .92).toFixed(1)} ${(cy + r * .18).toFixed(1)}
+    C${(x - r * .9).toFixed(1)} ${(cy + r * .72).toFixed(1)}
+     ${(x - r * .5).toFixed(1)} ${(cy + r * 1.02).toFixed(1)}
+     ${x} ${(cy + r * 1.02).toFixed(1)}
+    C${(x + r * .5).toFixed(1)} ${(cy + r * 1.02).toFixed(1)}
+     ${(x + r * .9).toFixed(1)} ${(cy + r * .72).toFixed(1)}
+     ${(x + r * .92).toFixed(1)} ${(cy + r * .18).toFixed(1)}
+    C${(x + r * .6).toFixed(1)} ${(cy + r * .5).toFixed(1)}
+     ${(x - r * .6).toFixed(1)} ${(cy + r * .5).toFixed(1)}
+     ${(x - r * .92).toFixed(1)} ${(cy + r * .18).toFixed(1)} Z"
+    fill="${POIL}" opacity=".46"/>`;
+  /* la moustache et la bouche */
+  s += `<path d="M${(x - m(.03)).toFixed(1)} ${(cy + r * .36).toFixed(1)}
+    h${m(.06).toFixed(1)}" stroke="${POIL}"
+    stroke-width="${Math.max(.5, m(.016)).toFixed(2)}" stroke-linecap="round" opacity=".8"/>`;
+  s += `<path d="M${(x - m(.018)).toFixed(1)} ${(cy + r * .56).toFixed(1)}
+    q${m(.018).toFixed(1)} ${m(.008).toFixed(1)} ${m(.036).toFixed(1)} 0"
+    stroke="${sombre('#5a2e26', .2)}" stroke-width="${Math.max(.4, m(.009)).toFixed(2)}"
+    fill="none" stroke-linecap="round"/>`;
+
+  /* ================= le chapeau ================= */
+  const hy = cy - r * .82;
+  /* le bord, une ellipse vue légèrement de dessous */
+  s += `<ellipse cx="${x.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${m(.125).toFixed(1)}"
+    ry="${m(.028).toFixed(1)}" fill="${CHAP}"/>`;
+  s += `<path d="M${(x - m(.125)).toFixed(1)} ${hy.toFixed(1)}
+    a${m(.125).toFixed(1)} ${m(.028).toFixed(1)} 0 0 0 ${m(.25).toFixed(1)} 0
+    a${m(.125).toFixed(1)} ${m(.028).toFixed(1)} 0 0 0 ${(-m(.25)).toFixed(1)} 0 z"
+    fill="${CHAP_C}" opacity=".3"/>`;
+  /* la calotte, avec son creux */
+  s += `<path d="M${(x - m(.072)).toFixed(1)} ${(hy + m(.004)).toFixed(1)}
+    C${(x - m(.078)).toFixed(1)} ${(hy - m(.06)).toFixed(1)}
+     ${(x - m(.052)).toFixed(1)} ${(hy - m(.088)).toFixed(1)}
+     ${(x - m(.026)).toFixed(1)} ${(hy - m(.084)).toFixed(1)}
+    C${(x - m(.008)).toFixed(1)} ${(hy - m(.07)).toFixed(1)}
+     ${(x + m(.008)).toFixed(1)} ${(hy - m(.07)).toFixed(1)}
+     ${(x + m(.026)).toFixed(1)} ${(hy - m(.084)).toFixed(1)}
+    C${(x + m(.052)).toFixed(1)} ${(hy - m(.088)).toFixed(1)}
+     ${(x + m(.078)).toFixed(1)} ${(hy - m(.06)).toFixed(1)}
+     ${(x + m(.072)).toFixed(1)} ${(hy + m(.004)).toFixed(1)} Z" fill="${CHAP}"/>`;
+  /* la lampe accroche le haut de la calotte, côté droit */
+  s += `<path d="M${(x + m(.01)).toFixed(1)} ${(hy - m(.072)).toFixed(1)}
+    C${(x + m(.05)).toFixed(1)} ${(hy - m(.088)).toFixed(1)}
+     ${(x + m(.078)).toFixed(1)} ${(hy - m(.06)).toFixed(1)}
+     ${(x + m(.072)).toFixed(1)} ${(hy + m(.004)).toFixed(1)}
+    l${(-m(.02)).toFixed(1)} 0
+    C${(x + m(.056)).toFixed(1)} ${(hy - m(.05)).toFixed(1)}
+     ${(x + m(.04)).toFixed(1)} ${(hy - m(.07)).toFixed(1)}
+     ${(x + m(.01)).toFixed(1)} ${(hy - m(.072)).toFixed(1)} Z"
+    fill="${CHAP_C}" opacity=".72"/>`;
+  /* le ruban */
+  s += `<path d="M${(x - m(.074)).toFixed(1)} ${(hy - m(.012)).toFixed(1)}
+    q${m(.074).toFixed(1)} ${m(.022).toFixed(1)} ${m(.148).toFixed(1)} 0
+    l0 ${(-m(.018)).toFixed(1)} q${(-m(.074)).toFixed(1)} ${m(.022).toFixed(1)}
+    ${(-m(.148)).toFixed(1)} 0 z" fill="${sombre('#151218', .2)}"/>`;
+
+  /* ================= la cigarette ================= */
+  const bx = x + m(.062), by = cy + r * .5;
+  s += `<path d="M${bx.toFixed(1)} ${by.toFixed(1)} l${m(.03).toFixed(1)} ${(-m(.008)).toFixed(1)}"
+    stroke="${CHEM}" stroke-width="${Math.max(.4, m(.008)).toFixed(2)}" stroke-linecap="round"/>`;
+  s += `<circle class="clope" cx="${(bx + m(.032)).toFixed(1)}" cy="${(by - m(.009)).toFixed(1)}"
+    r="${Math.max(.4, m(.008)).toFixed(2)}" fill="#ff7a3a"/>`;
+  s += `<circle class="clope" cx="${(bx + m(.032)).toFixed(1)}" cy="${(by - m(.009)).toFixed(1)}"
+    r="${m(.03).toFixed(2)}" fill="#ff8a4a" opacity=".22"/>`;
+  /* la fumée qui monte */
+  s += `<g class="fumee" opacity=".2">`;
+  [0, 1, 2].forEach(k =>
+    s += `<ellipse cx="${(bx + m(.038 + k * .012)).toFixed(1)}"
+      cy="${(by - m(.05 + k * .055)).toFixed(1)}" rx="${m(.016 + k * .008).toFixed(1)}"
+      ry="${m(.01 + k * .006).toFixed(1)} " fill="#d8d0c4"/>`);
+  s += `</g>`;
+
+  /* ================= le signe qu'il veut te parler ================= */
+  const my = y - m(1.24);
+  s += `<g class="signe">`;
+  s += `<circle cx="${x.toFixed(1)}" cy="${my.toFixed(1)}" r="${m(.13).toFixed(1)}"
+    fill="#f0c46a" opacity=".16"/>`;
+  s += `<circle cx="${x.toFixed(1)}" cy="${my.toFixed(1)}" r="${m(.075).toFixed(1)}"
+    fill="#f6cd76"/>`;
+  s += `<path d="M${x} ${(my - m(.038)).toFixed(1)} v${m(.042).toFixed(1)}"
+    stroke="#1c1a16" stroke-width="${m(.021).toFixed(2)}" stroke-linecap="round"/>`;
+  s += `<circle cx="${x.toFixed(1)}" cy="${(my + m(.028)).toFixed(1)}"
+    r="${m(.012).toFixed(2)}" fill="#1c1a16"/>`;
+  s += `</g>`;
+  return s + `</g>`;
+}
+
+/* ---------- la scène ---------- *//* ---------- la scène ---------- */
+function ruelle(){
+  let s = ciel() + pave();
+  /* les façades, du fond vers nous */
+  const P = [90, 74, 60, 48, 38, 30, 24, 19, 15, 11.6, 8.8, 6.4, 4.4, 3.4];
+  for (let i = 0; i < P.length - 1; i++){
+    s += tranche(-1, P[i], P[i + 1], i * 2);
+    s += tranche( 1, P[i], P[i + 1], i * 2 + 1);
+  }
+  s += linge();
+  s += centre();
+  s += typeQuiAttend();
+  /* le voile chaud du fond de rue */
+  s += `<ellipse cx="${SOLEIL.x}" cy="${sol(SOLEIL.d).toFixed(1)}" rx="220" ry="170"
+    fill="#e0a868" opacity=".1"/>`;
+  /* et les bords s'assombrissent : on est dans une ruelle */
+  s += `<defs><radialGradient id="r-vig" cx="0.46" cy="0.4" r="0.8">
+    <stop offset="40%" stop-color="#080e1a" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#060b14" stop-opacity=".62"/></radialGradient></defs>`;
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(1)}"
+    fill="url(#r-vig)"/>`;
+  return s;
+}
+
+/* ============================================================
+   La barque — 20 niveaux d'amélioration
+   ============================================================ */
+const rndB = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+
+/* ---- ce que chaque niveau ajoute ---- */
+const PALIERS_B = [
+  { n:1,  nom:"La coque nue",        prix:0,      places:1, kg:40,  vit:1.0,
+    d:"Trois bordages et rien d'autre. Elle flotte, c'est déjà ça." },
+  { n:2,  nom:"Le calfatage",        prix:900,    places:1, kg:45,  vit:1.0,
+    d:"Étoupe et goudron dans les coutures. Elle ne prend plus l'eau." },
+  { n:3,  nom:"Le banc de nage",     prix:1400,   places:1, kg:50,  vit:1.1,
+    d:"On peut ramer assis. Ça change tout." },
+  { n:4,  nom:"Les avirons",         prix:2200,   places:2, kg:60,  vit:1.3,
+    d:"Deux avirons de frêne et leurs tolets." },
+  { n:5,  nom:"Le plat-bord",        prix:3400,   places:2, kg:70,  vit:1.3,
+    d:"Un liston tout autour. La coque ne travaille plus." },
+  { n:6,  nom:"Le pontage avant",    prix:5000,   places:3, kg:85,  vit:1.4,
+    d:"Un demi-pont à l'avant. Les caisses restent au sec." },
+  { n:7,  nom:"Le mât de fortune",   prix:7200,   places:3, kg:95,  vit:1.7,
+    d:"Une perche et un bout de toile. Ça tire quand le vent veut bien." },
+  { n:8,  nom:"La voile latine",     prix:10000,  places:4, kg:110, vit:2.2,
+    d:"Antenne et voile triangulaire. La vraie voile d'ici." },
+  { n:9,  nom:"Le safran",           prix:13500,  places:4, kg:120, vit:2.3,
+    d:"Un gouvernail et sa barre. Tu choisis où tu vas." },
+  { n:10, nom:"La quille lestée",    prix:18000,  places:5, kg:140, vit:2.5,
+    d:"Du plomb sous la quille. Elle ne se couche plus." },
+  { n:11, nom:"Le tillac",           prix:23000,  places:6, kg:170, vit:2.6,
+    d:"Un pont continu. On marche dessus sans regarder ses pieds." },
+  { n:12, nom:"La cale fermée",      prix:29000,  places:8, kg:220, vit:2.6,
+    d:"Un panneau, une cale étanche. Le double de marchandise." },
+  { n:13, nom:"Le foc",              prix:36000,  places:8, kg:240, vit:3.1,
+    d:"Un beaupré et un foc. Elle remonte enfin au vent." },
+  { n:14, nom:"Le rouf",             prix:44000,  places:9, kg:270, vit:3.1,
+    d:"Un abri sur le pont. On peut dormir à bord." },
+  { n:15, nom:"Le second mât",       prix:54000,  places:10, kg:310, vit:3.6,
+    d:"Un tapecul à l'arrière. Deux voiles valent mieux qu'une." },
+  { n:16, nom:"Le bordé doublé",     prix:66000,  places:12, kg:380, vit:3.6,
+    d:"Une seconde peau de bois. Elle encaisse le mauvais temps." },
+  { n:17, nom:"Le treuil",           prix:80000,  places:14, kg:450, vit:3.7,
+    d:"Un cabestan pour hisser seul. Plus besoin d'être trois." },
+  { n:18, nom:"La chaloupe",         prix:96000,  places:15, kg:500, vit:3.7,
+    d:"Une annexe sur le pont. On accoste où il n'y a pas de quai." },
+  { n:19, nom:"Le pavillon",         prix:115000, places:16, kg:560, vit:3.8,
+    d:"Tes couleurs en tête de mât. On te reconnaît de loin." },
+  { n:20, nom:"Le grand caboteur",   prix:140000, places:20, kg:700, vit:4.2,
+    d:"Coque doublée, trois voiles, un nom peint sur l'étrave. Ce n'est plus une barque." }
+];
+
+/* ---- palettes ---- */
+const BOIS  = ['#b58f60','#c9a374','#a5825c','#96754a','#8a6a42'];
+const CLAIR = '#e4c79c', SOMBRE = '#7a5c38', FOND = '#5c4930';
+
+/* ============================================================
+   Le dessin. Tout est paramétré par le niveau.
+   Repère : la barque est dessinée dans un cadre 300 x 170,
+   la ligne de flottaison est à y = 118.
+   ============================================================ */
+let uidB = 0;
+
+function barqueQ(n, route){
+  const P = PALIERS_B[n-1];
+  const L = 76 + n * 5.6;            /* longueur */
+  const H = 15 + n * 0.62;           /* creux du bordé au-dessus de l'eau */
+  const T = 6 + n * 0.34;            /* tirant d'eau */
+  const cx = 150, flot = 122;
+  const x0 = cx - L / 2;
+  const g = v => (x0 + v).toFixed(1);
+  const u = 'b' + (++uidB);
+  let s = '';
+
+  /* ---------- la ligne de sheer : le haut du bordé ---------- */
+  /* étrave relevée à gauche, creux au milieu, poupe relevée à droite */
+  const yEtrave = flot - H * 1.28;
+  const yCreux  = flot - H * 0.92;
+  const yPoupe  = flot - H * 1.12;
+  const sheer = `M${g(0)} ${yEtrave.toFixed(1)}
+    C${g(L*.2)} ${(yEtrave + (yCreux-yEtrave)*.9).toFixed(1)} ${g(L*.36)} ${yCreux.toFixed(1)} ${g(L*.54)} ${yCreux.toFixed(1)}
+    C${g(L*.74)} ${yCreux.toFixed(1)} ${g(L*.9)} ${(yCreux + (yPoupe-yCreux)*.5).toFixed(1)} ${g(L)} ${yPoupe.toFixed(1)}`;
+
+  /* ---------- la coque complète ---------- */
+  const coque = sheer
+    + ` L${g(L*.965)} ${(flot + T*.42).toFixed(1)}`
+    + ` C${g(L*.78)} ${(flot + T).toFixed(1)} ${g(L*.24)} ${(flot + T).toFixed(1)} ${g(L*.055)} ${(flot + T*.3).toFixed(1)}`
+    + ` Z`;
+
+  s += `<defs><clipPath id="${u}"><path d="${coque}"/></clipPath></defs>`;
+
+  /* reflet dans l'eau */
+  s += `<ellipse cx="${cx}" cy="${(flot + T*.7).toFixed(1)}" rx="${(L*.5).toFixed(0)}" ry="4"
+    fill="#0e4a68" opacity=".2"/>`;
+
+  /* la chaloupe (18+), posée en travers du pont */
+  if (n >= 18){
+    s += `<g transform="translate(${g(L*.58)},${(yCreux - 3).toFixed(1)})">
+      <path d="M0 0 q3 8 10 9 h20 q7 -1 10 -9 q-6 3 -13 3 H13 q-7 0 -13 -3 z" fill="#96754a"/>
+      <path d="M-1 -2 q5 4 12 4 h18 q7 0 12 -4 v3 q-5 3 -12 3 H11 q-7 0 -12 -3 z" fill="#c9a374"/></g>`;
+  }
+
+  /* ---------- le corps de la coque ---------- */
+  s += `<path d="${coque}" fill="${BOIS[2]}"/>`;
+
+  /* les bordages : des courbes parallèles au sheer, découpées par la coque */
+  const nb = Math.min(7, 3 + Math.floor(n / 3.4));
+  s += `<g clip-path="url(#${u})">`;
+  for (let i = 0; i < nb; i++){
+    const dy = (H + T) * (i / nb);
+    const c = BOIS[i % BOIS.length];
+    s += `<path d="${sheer}" transform="translate(0,${dy.toFixed(1)})" fill="none"
+      stroke="${c}" stroke-width="${((H + T) / nb * 1.5).toFixed(1)}"/>`;
+  }
+  /* les coutures calfatées (2+) */
+  if (n >= 2){
+    for (let i = 1; i < nb; i++){
+      const dy = (H + T) * (i / nb);
+      s += `<path d="${sheer}" transform="translate(0,${dy.toFixed(1)})" fill="none"
+        stroke="#3a2c1e" stroke-width=".9" opacity=".45"/>`;
+    }
+  }
+  /* les œuvres vives, sous la flottaison */
+  s += `<rect x="0" y="${flot}" width="300" height="60"
+    fill="${n >= 10 ? '#33454f' : '#6d5334'}" opacity="${n >= 10 ? '.9' : '.55'}"/>`;
+  /* le bordé doublé (16+) */
+  if (n >= 16)
+    s += `<path d="${sheer}" transform="translate(0,${(H*.9).toFixed(1)})" fill="none"
+      stroke="#6d5334" stroke-width="2.4" opacity=".7"/>`;
+  s += `</g>`;
+
+  /* ---------- le liston (5+) ---------- */
+  if (n >= 5){
+    s += `<path d="${sheer}" fill="none" stroke="${CLAIR}" stroke-width="${(2.4 + n*.06).toFixed(1)}"
+      stroke-linecap="round"/>`;
+  } else {
+    s += `<path d="${sheer}" fill="none" stroke="${BOIS[0]}" stroke-width="2" stroke-linecap="round"/>`;
+  }
+  /* l'ourlet clair du dessus */
+  s += `<path d="${sheer}" transform="translate(0,-1)" fill="none" stroke="#f0dcb4"
+    stroke-width="1" opacity=".6"/>`;
+
+  /* ---------- l'étrave et l'étambot ---------- */
+  s += `<path d="M${g(0)} ${yEtrave.toFixed(1)} C${g(-2)} ${(yEtrave + H*.7).toFixed(1)}
+    ${g(1)} ${(flot).toFixed(1)} ${g(L*.055)} ${(flot + T*.3).toFixed(1)}"
+    fill="none" stroke="${SOMBRE}" stroke-width="2.6" stroke-linecap="round"/>`;
+  s += `<path d="M${g(L)} ${yPoupe.toFixed(1)} L${g(L*.965)} ${(flot + T*.42).toFixed(1)}"
+    stroke="${SOMBRE}" stroke-width="2.6" stroke-linecap="round" fill="none"/>`;
+
+  /* ---------- l'intérieur, vu par-dessus le bordé ---------- */
+  s += `<path d="${sheer}" transform="translate(0,2.2)" fill="none" stroke="${FOND}"
+    stroke-width="${Math.max(2.2, H*.22).toFixed(1)}"/>`;
+
+  /* ---------- le pont ---------- */
+  const pont = (a, b, coul, clair) => {
+    s += `<path d="${sheer}" transform="translate(0,2)" fill="none" stroke="${coul}"
+      stroke-width="${Math.max(2.4, H*.2).toFixed(1)}"
+      stroke-dasharray="${(L*(b-a)).toFixed(0)} ${L.toFixed(0)}"
+      stroke-dashoffset="${(-L*a).toFixed(0)}"/>`;
+    s += `<path d="${sheer}" transform="translate(0,.6)" fill="none" stroke="${clair}"
+      stroke-width="1.2" stroke-dasharray="${(L*(b-a)).toFixed(0)} ${L.toFixed(0)}"
+      stroke-dashoffset="${(-L*a).toFixed(0)}"/>`;
+  };
+  if (n >= 11)      pont(.03, .95, '#b8946a', '#dfc094');   /* tillac : pont continu */
+  else if (n >= 6)  pont(.04, .34, '#b8946a', '#dfc094');   /* demi-pont avant */
+
+  /* ---------- le banc de nage (3+) ---------- */
+  if (n >= 3 && n < 11)
+    s += `<rect x="${g(L*.4)}" y="${(yCreux + 1.6).toFixed(1)}" width="${(L*.22).toFixed(0)}"
+      height="${Math.max(2, H*.14).toFixed(1)}" rx="1" fill="#8a6a42"/>`;
+
+  /* ---------- les avirons (4+ jusqu'au pont) ---------- */
+  if (n >= 4 && n < 11){
+    [[L*.34, 'av-1'], [L*.62, 'av-2']].forEach(([dx, cl]) => {
+      const ax = +g(dx), ay = yCreux + 1;
+      const dep = (flot + 7) - ay;      /* la pelle plonge sous la flottaison */
+      /* le tolet, point de pivot */
+      s += `<rect x="${(ax-1.4).toFixed(1)}" y="${(ay-3.6).toFixed(1)}" width="2.8" height="4.4"
+        rx="1" fill="#6d5334"/>`;
+      s += `<g class="aviron ${cl}" style="transform-origin:${ax}px ${ay.toFixed(1)}px">`;
+      /* le manche, vers l'intérieur et vers le haut */
+      s += `<path d="M${ax} ${ay.toFixed(1)} l-13 -6" stroke="#96754a"
+        stroke-width="2.2" stroke-linecap="round"/>`;
+      s += `<circle cx="${(ax-13).toFixed(1)}" cy="${(ay-6).toFixed(1)}" r="1.6" fill="#8a6a42"/>`;
+      /* le fût, vers l'extérieur et vers l'eau */
+      s += `<path d="M${ax} ${ay.toFixed(1)} l21 ${dep.toFixed(1)}" stroke="#a5825c"
+        stroke-width="2.4" stroke-linecap="round"/>`;
+      /* la pelle */
+      s += `<path d="M${(ax+19).toFixed(1)} ${(ay+dep-2).toFixed(1)}
+        q5.4 1 7 6 q1.6 5.4 -2 7.4 q-3.8 2 -6.8 -1.6 q-3 -3.6 -1.6 -8.6 z" fill="#c9a374"/>`;
+      s += `<path d="M${(ax+19.6).toFixed(1)} ${(ay+dep-1).toFixed(1)}
+        q4.4 1.4 5.6 5.4" stroke="#dfc094" stroke-width="1.2" fill="none"/>`;
+      s += `</g>`;
+    });
+  }
+
+  /* ---------- le panneau de cale (12+) ---------- */
+  if (n >= 12){
+    s += `<rect x="${g(L*.46)}" y="${(yCreux - 1.4).toFixed(1)}" width="${(L*.15).toFixed(0)}"
+      height="${Math.max(2.6, H*.12).toFixed(1)}" rx="1" fill="#8a6a42" stroke="#6d5334" stroke-width=".8"/>`;
+  }
+
+  /* ---------- le rouf (14+) ---------- */
+  if (n >= 14){
+    const rx = +g(L*.62), ry = yCreux - 1, rh = H*.5, rw = L*.2;
+    s += `<path d="M${rx} ${ry.toFixed(1)} h${rw.toFixed(0)} v-${rh.toFixed(1)} h-${rw.toFixed(0)} z" fill="#c9a374"/>`;
+    s += `<path d="M${(rx-2).toFixed(1)} ${(ry-rh).toFixed(1)} h${(rw+4).toFixed(0)} l-2.4 -3.4 h-${(rw-.8).toFixed(0)} z" fill="#8a4a3a"/>`;
+    s += `<rect x="${(rx+2.6).toFixed(1)}" y="${(ry-rh+2.4).toFixed(1)}" width="${(rw*.26).toFixed(1)}"
+      height="${(rh*.42).toFixed(1)}" fill="#6d8fa4" opacity=".85"/>`;
+    s += `<rect x="${(rx+rw*.56).toFixed(1)}" y="${(ry-rh+2.4).toFixed(1)}" width="${(rw*.26).toFixed(1)}"
+      height="${(rh*.42).toFixed(1)}" fill="#6d8fa4" opacity=".85"/>`;
+  }
+
+  /* ---------- le grand mât (7+) ---------- */
+  const mxP = n >= 13 ? .34 : .46;
+  if (n >= 7){
+    const mx = +g(L * mxP);
+    const pied = yCreux + 1;
+    const mh = n >= 8 ? 46 + n * 2.3 : 32;
+    s += `<path d="M${mx} ${pied.toFixed(1)} v-${mh.toFixed(0)}" stroke="#8a6a42"
+      stroke-width="${(2 + n*.07).toFixed(1)}" stroke-linecap="round"/>`;
+    s += `<path d="M${(mx-.7).toFixed(1)} ${pied.toFixed(1)} v-${mh.toFixed(0)}" stroke="#c9a374"
+      stroke-width=".9" opacity=".7"/>`;
+    const ay = pied - mh;
+
+    if (n === 7){
+      s += `<path class="voile" d="M${mx} ${(ay+5).toFixed(1)} q15 7 20 21 q-13 5 -20 4 z" fill="#ddd2b6"/>`;
+      s += `<path d="M${mx} ${(ay+5).toFixed(1)} q15 7 20 21 q-8 3 -12 3 z" fill="#f0e8d2"/>`;
+    } else {
+      /* la voile latine : antenne inclinée sur toute la hauteur */
+      s += `<path d="M${(mx-20).toFixed(1)} ${(ay + mh*.5).toFixed(1)} L${(mx+34).toFixed(1)} ${(ay-4).toFixed(1)}"
+        stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
+      s += `<path class="voile" d="M${(mx-18).toFixed(1)} ${(ay + mh*.48).toFixed(1)}
+        L${(mx+32).toFixed(1)} ${(ay-3).toFixed(1)}
+        Q${(mx+14).toFixed(1)} ${(ay + mh*.56).toFixed(1)} ${(mx+2).toFixed(1)} ${pied.toFixed(1)} Z" fill="#e4dbc0"/>`;
+      s += `<path d="M${(mx-18).toFixed(1)} ${(ay + mh*.48).toFixed(1)}
+        L${(mx+32).toFixed(1)} ${(ay-3).toFixed(1)}
+        Q${(mx+20).toFixed(1)} ${(ay + mh*.38).toFixed(1)} ${(mx+8).toFixed(1)} ${(ay + mh*.62).toFixed(1)} Z" fill="#f6f0dc"/>`;
+      s += `<g stroke="#c9bfa2" stroke-width=".7" opacity=".65">
+        <path d="M${(mx-6).toFixed(1)} ${(ay+mh*.5).toFixed(1)} L${(mx+9).toFixed(1)} ${(pied-5).toFixed(1)}"/>
+        <path d="M${(mx+9).toFixed(1)} ${(ay+mh*.26).toFixed(1)} L${(mx+15).toFixed(1)} ${(pied-11).toFixed(1)}"/></g>`;
+      s += `<g stroke="#c9b58c" stroke-width=".8" opacity=".75">
+        <path d="M${mx} ${(ay+5).toFixed(1)} L${g(L*.1)} ${(yCreux-1).toFixed(1)}"/>
+        <path d="M${mx} ${(ay+5).toFixed(1)} L${g(L*.86)} ${(yCreux-1).toFixed(1)}"/></g>`;
+    }
+  }
+
+  /* ---------- le foc et son beaupré (13+) ---------- */
+  if (n >= 13){
+    const bx = +g(-8), by = yEtrave - 3;
+    const mx = +g(L*mxP), mh = 46 + n*2.3, ay = yCreux + 1 - mh;
+    s += `<path d="M${g(L*.02)} ${(yEtrave+2).toFixed(1)} L${bx} ${by.toFixed(1)}"
+      stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
+    s += `<path class="voile" d="M${bx} ${by.toFixed(1)} L${mx} ${(ay + mh*.2).toFixed(1)}
+      Q${(bx+17).toFixed(1)} ${(ay + mh*.66).toFixed(1)} ${(bx+12).toFixed(1)} ${(yEtrave+4).toFixed(1)} Z"
+      fill="#eee6cc"/>`;
+    s += `<path d="M${bx} ${by.toFixed(1)} L${mx} ${(ay + mh*.2).toFixed(1)}
+      Q${(bx+24).toFixed(1)} ${(ay + mh*.5).toFixed(1)} ${(bx+20).toFixed(1)} ${(ay + mh*.8).toFixed(1)} Z"
+      fill="#f8f2de"/>`;
+  }
+
+  /* ---------- le tapecul (15+) ---------- */
+  if (n >= 15){
+    const mx2 = +g(L*.86), mh2 = 30 + n, pied2 = yCreux + 1;
+    s += `<path d="M${mx2} ${pied2.toFixed(1)} v-${mh2.toFixed(0)}" stroke="#8a6a42"
+      stroke-width="2.2" stroke-linecap="round"/>`;
+    s += `<path d="M${(mx2-12).toFixed(1)} ${(pied2 - mh2*.44).toFixed(1)} L${(mx2+18).toFixed(1)} ${(pied2 - mh2 + 2).toFixed(1)}"
+      stroke="#a5825c" stroke-width="1.9" stroke-linecap="round"/>`;
+    s += `<path class="voile" d="M${(mx2-10).toFixed(1)} ${(pied2 - mh2*.42).toFixed(1)}
+      L${(mx2+16).toFixed(1)} ${(pied2 - mh2 + 3).toFixed(1)}
+      Q${(mx2+5).toFixed(1)} ${(pied2 - mh2*.4).toFixed(1)} ${(mx2+2).toFixed(1)} ${pied2.toFixed(1)} Z"
+      fill="#e4dbc0"/>`;
+  }
+
+  /* ---------- le safran (9+) ---------- */
+  if (n >= 9){
+    s += `<path d="M${g(L*.97)} ${(flot - H*.5).toFixed(1)} q6 4 6 ${(T*1.1).toFixed(1)}
+      q0 ${(T*.5).toFixed(1)} -6 ${(T*.5).toFixed(1)} z" fill="#7a5c38"/>`;
+    s += `<path d="M${g(L*.94)} ${(yPoupe + 2).toFixed(1)} l13 -6" stroke="#a5825c"
+      stroke-width="2" stroke-linecap="round"/>`;
+  }
+
+  /* ---------- le treuil (17+) ---------- */
+  if (n >= 17){
+    const tx = +g(L*.44);
+    s += `<rect x="${(tx-4.4).toFixed(1)}" y="${(yCreux - 6).toFixed(1)}" width="9" height="6" rx="2" fill="#5c6a74"/>`;
+    s += `<circle cx="${tx}" cy="${(yCreux - 3).toFixed(1)}" r="2.2" fill="#8a9299"/>`;
+  }
+
+  /* ---------- le pavillon (19+) ---------- */
+  if (n >= 19){
+    const mx = +g(L * mxP), mh = 46 + n * 2.3, tete = yCreux + 1 - mh;
+    /* la drisse et le petit mât de pavillon */
+    s += `<path d="M${mx} ${tete.toFixed(1)} v-9" stroke="#8a6a42" stroke-width="1.6" stroke-linecap="round"/>`;
+    /* le pavillon, qui claque */
+    s += `<g class="pavillon" style="transform-origin:${mx}px ${(tete-8).toFixed(1)}px">`;
+    s += `<path d="M${mx} ${(tete-9).toFixed(1)} q9 1.6 17 -1.4 q-2 4 0 7.4 q-8 3 -17 1.4 z" fill="#c74a33"/>`;
+    s += `<path d="M${mx} ${(tete-9).toFixed(1)} q9 1.6 17 -1.4 q-1 2 -.6 3.6 q-8 2.4 -16.4 1 z" fill="#e0684a"/>`;
+    s += `</g>`;
+  }
+
+  /* ---------- le nom peint (20) ---------- */
+  if (n >= 20)
+    s += `<text x="${g(L*.1)}" y="${(flot - H*.34).toFixed(1)}" font-family="Bebas Neue,sans-serif"
+      font-size="8.4" letter-spacing="1.2" fill="#f2e6c8" opacity=".85">LA ZIZOUIN</text>`;
+
+  /* ---------- l'eau, selon l'allure ---------- */
+  /* la proue est à gauche : le sillage traîne derrière, donc à droite */
+  if (route){
+    const nv = Math.max(2, Math.round(P.vit * 1.6));
+    for (let i = 0; i < nv; i++)
+      s += `<path class="sillage sl${i % 3}" d="M${g(L + 4 + i*4)} ${(flot + 1 + i*2.6).toFixed(1)}
+        q${(16+i*7).toFixed(0)} 2 ${(30+i*13).toFixed(0)} 0"
+        stroke="#fff" stroke-width="${(1.6 - i*.16).toFixed(2)}" fill="none"
+        opacity="${(.44 - i*.05).toFixed(2)}"/>`;
+    /* la moustache d'étrave, elle, est bien à l'avant */
+    s += `<path class="etrave" d="M${g(-3)} ${(flot - 1).toFixed(1)} q-9 4 -19 3"
+      stroke="#fff" stroke-width="2" fill="none" opacity=".55"/>`;
+    s += `<path class="etrave e2" d="M${g(1)} ${(flot + 2.4).toFixed(1)} q-8 4 -17 3"
+      stroke="#fff" stroke-width="1.4" fill="none" opacity=".36"/>`;
+    /* le remous sous la poupe */
+    s += `<ellipse class="remous" cx="${g(L + 2)}" cy="${(flot + 3).toFixed(1)}" rx="9" ry="2.4"
+      fill="#fff" opacity=".24"/>`;
+  } else {
+    /* au mouillage : la chaîne d'ancre à l'étrave */
+    s += `<path d="M${g(L*.03)} ${(yEtrave + 4).toFixed(1)} q-4 8 -3 16"
+      stroke="#6d6a62" stroke-width="1.4" fill="none" stroke-dasharray="2 1.6"/>`;
+    s += `<path d="M${g(-4)} ${(flot + 2).toFixed(1)} q22 3 40 0"
+      stroke="#fff" stroke-width="1.2" fill="none" opacity=".26"/>`;
+  }
+
+  return s;
+}
+
+
+
+const ICO = {
+  marche:'<path d="M4 8h16v13H4zM4 8l2-4h12l2 4M9 21v-7h6v7"/>',
+  taverne:'<path d="M6 3h12l-1 8a5 5 0 0 1-10 0zM12 16v5M8 21h8"/>',
+  docks:'<path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9zM3 12h18"/>',
+  entrepot:'<path d="M3 21V9l9-5 9 5v12M3 21h18M9 21v-7h6v7"/>',
+  bateau:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>'
+};
+const LIEUX = [
+  { k:'marche',   n:'Le marché',   ouvert:false },
+  { k:'taverne',  n:'La taverne',  ouvert:false },
+  { k:'docks',    n:'Les docks',   ouvert:false },
+  { k:'entrepot', n:"L'entrepôt",  ouvert:false },
+  { k:'bateau',   n:'Ta barque',   ouvert:true }
+];
+
+let feuille = null;
+function dessiner(){
+  const v = cadrer(innerWidth, innerHeight);
+  document.getElementById('rue').innerHTML =
+    '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
+    + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+    + ruelle() + '</svg>';
+  if (!feuille){ feuille = document.createElement('style'); document.head.appendChild(feuille); }
+  feuille.textContent = coursesCSS();
+}
+dessiner();
+
+document.getElementById('lieux').innerHTML = LIEUX.map(L =>
+  '<button class="' + (L.ouvert ? 'vif' : '') + '" data-k="' + L.k + '"'
+  + (L.ouvert ? '' : ' disabled') + '>'
+  + '<svg viewBox="0 0 24 24">' + ICO[L.k] + '</svg>'
+  + '<span>' + L.n + '</span></button>').join('');
+
+/* ---------- le panneau de la barque ---------- */
+let ouvert = false;
+function ouvrirBarque(o){
+  ouvert = o;
+  document.getElementById('bq').classList.toggle('on', o);
+  document.getElementById('voile').classList.toggle('on', o);
+}
+document.getElementById('voile').onclick = () => ouvrirBarque(false);
+document.getElementById('q-fer').onclick = () => ouvrirBarque(false);
+addEventListener('keydown', e => { if (e.key === 'Escape') ouvrirBarque(false); });
+document.querySelectorAll('[data-k="bateau"]').forEach(b =>
+  b.onclick = () => ouvrirBarque(true));
+
+document.getElementById('ret').onclick = () => location.href = 'barcelone.html';
+
+/* ---------- la fiche du joueur ---------- */
+(async () => {
+  let d;
+  try {
+    d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+  } catch(e){ return; }
+
+  /* on n'est ici que si on a débarqué à Barcelone */
+  if (d.parti_le){ location.href = 'mer.html'; return; }
+  if (d.port !== 'barcelone'){ location.href = 'jeu.html'; return; }
+
+  document.getElementById('eu').textContent =
+    Number(d.euros || 0).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
+
+  const n = Math.max(1, Number(d.barque || 1));
+  const P = PALIERS_B[n - 1];
+  document.getElementById('q-pal').textContent = 'Palier ' + n + ' sur 20';
+  document.getElementById('q-nom').textContent = P.nom;
+  document.getElementById('q-d').textContent = P.d;
+  document.getElementById('q-cale').innerHTML = P.places
+    + ' <small>' + (P.places > 1 ? 'places' : 'place') + '</small>';
+  document.getElementById('q-kg').innerHTML = P.kg + ' <small>kg</small>';
+  document.getElementById('q-vit').innerHTML = P.vit.toFixed(1) + ' <small>nœuds</small>';
+
+  /* le vrai dessin, au bon palier */
+  const vue = document.getElementById('q-vue');
+  vue.querySelector('svg')?.remove();
+  vue.insertAdjacentHTML('afterbegin',
+    '<svg viewBox="30 44 240 104" xmlns="http://www.w3.org/2000/svg">'
+    + barqueQ(n, false) + '</svg>');
+})();
+
+let t = null;
+addEventListener('resize', () => { clearTimeout(t); t = setTimeout(dessiner, 200); });
+</script>
+</body>
+</html>
