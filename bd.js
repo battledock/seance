@@ -385,7 +385,17 @@ const BD = (() => {
     return s + '</svg>';
   }
 
-  return { client, utilisateur, charger, enregistrer, poser, lire,
+  /* ---------- les actions du jeu ----------
+     Le client ne modifie plus rien lui-même : il demande au serveur,
+     qui vérifie les règles et décide. */
+  async function agir(nom, args){
+    const c = await client();
+    const { data, error } = await c.rpc(nom, args || {});
+    if (error) return { ok:false, pourquoi:'erreur', message:error.message };
+    return data || { ok:false, pourquoi:'vide' };
+  }
+
+  return { client, utilisateur, charger, enregistrer, poser, lire, agir,
            avancer, garder, deconnexion, avatarDe, avatarSVG, ETAPES, PAGES,
            get docker(){ return docker; } };
 })();
