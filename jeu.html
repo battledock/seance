@@ -2489,7 +2489,11 @@ function poserMenu(d){
   const p = PALIERS_B[Math.max(0, (d.barque || 1) - 1)];
 
   const L = [
-    { k:'fiche',  n:'Ta fiche',     s:'Ce que tu sais faire',      ouvert:true,
+    { k:'fiche',  n:'Ta fiche',
+      s: Number(d.points || 0) > 0
+         ? (d.points > 1 ? d.points + ' points à placer' : '1 point à placer')
+         : 'Ce que tu sais faire',
+      ouvert:true,
       f:() => { basculerMenu(false); basculerFiche(true); } },
     { k:'barque', n:'Ta barque',    s:d.barque ? p.nom : 'Tu n\'en as pas encore',
       ouvert:true, f:() => { basculerMenu(false); basculerBarque(true); } },
@@ -2598,6 +2602,11 @@ function poserAvatar(d){
       dessiner();
     }
     poserFiche(d, d.competences);
+    /* on arrive de l'écran de niveau : la fiche s'ouvre d'elle-même */
+    if (new URLSearchParams(location.search).get('fiche')){
+      setTimeout(() => basculerFiche(true), 300);
+      history.replaceState(null, '', location.pathname);
+    }
   } catch (e){
     /* hors ligne ou pas connecté : on laisse le carré vide plutôt que de planter */
     console.warn('avatar indisponible', e);
