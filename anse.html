@@ -263,48 +263,58 @@ function fond(){
       fill="none" opacity="${(.14-n*.02).toFixed(2)}"/></g>`;
   }
 
-  /* --- les collines de garrigue, en trois plans --- */
+  /* --- les collines de garrigue --- */
+  /* On calcule la crête une fois, et on plante les pins DESSUS. */
   const PLANS = [
-    { d:150, h:13, c:mel(T.roche,T.ciel[4],.6),  n:7, amp:6 },
-    { d:80,  h:11, c:mel(T.roche,T.ciel[4],.34), n:6, amp:7 },
-    { d:44,  h:8.5,c:mel(T.roche,T.ciel[5],.1),  n:5, amp:7 }
+    { d:150, base:12, c:mel(T.roche, T.ciel[4], .62), amp:5.5, n:9, pins:0 },
+    { d:82,  base:11, c:mel(T.roche, T.ciel[4], .36), amp:6.5, n:8, pins:9 },
+    { d:46,  base:9,  c:mel(T.roche, T.ciel[5], .12), amp:6,   n:7, pins:11 }
   ];
+
   PLANS.forEach((P, j) => {
     const y0 = sol(P.d);
-    let p = `M-40 ${(y0+40).toFixed(1)} L-40 ${(y0 - px(P.h*.5, P.d)).toFixed(1)} `;
-    for (let k = 0; k <= P.n; k++){
-      const t = k / P.n;
-      const hx2 = P.h + Math.sin(k*1.9 + j*2.3) * P.amp * .5
-        + Math.sin(k*.7 + j) * P.amp * .3;
-      p += `Q${(-40 + (W+80)*(t-.5/P.n)).toFixed(1)} ${(y0 - px(hx2*1.1, P.d)).toFixed(1)}
-        ${(-40 + (W+80)*t).toFixed(1)} ${(y0 - px(hx2, P.d)).toFixed(1)} `;
+    /* la hauteur de la crête, en mètres, pour une position à l'écran */
+    const crete = u => P.base
+      + Math.sin(u * 6.3 + j * 2.1) * P.amp * .5
+      + Math.sin(u * 13.7 + j * 4.4) * P.amp * .26
+      + Math.sin(u * 2.9 + j) * P.amp * .3;
+    /* et la même chose en y à l'écran */
+    const yc = u => y0 - px(crete(u), P.d);
+
+    let p = `M-40 ${(y0 + 60).toFixed(1)} L-40 ${yc(-.08).toFixed(1)} `;
+    for (let k = 0; k <= P.n * 3; k++){
+      const u = k / (P.n * 3);
+      p += `L${(-40 + (W + 80) * u).toFixed(1)} ${yc(u).toFixed(1)} `;
     }
-    p += `L${(W+40)} ${(y0+40).toFixed(1)} Z`;
+    p += `L${(W + 40)} ${(y0 + 60).toFixed(1)} Z`;
     s += `<path d="${p}" fill="${voiler(P.c, P.d)}"/>`;
-    /* les pins, sur les deux plans les plus proches */
-    if (j === 0) return;
-    for (let k = 0; k < 12; k++){
-      const dd = P.d * (.92 + rnd(j*11+k)*.16);
-      const X = (rnd(j*7+k) - .5) * (dd * .62);
-      const hh = 8 + rnd(j*3+k)*5;
-      const x = pX(X, dd), y = sol(dd) - px(hh, dd), t = px(2.2, dd);
-      if (t < .7 || x < -30 || x > W+30) continue;
-      s += `<g class="pin"><path d="M${x.toFixed(1)} ${y.toFixed(1)}
-        l${(t*.05).toFixed(1)} ${(-t*.42).toFixed(1)}"
-        stroke="${voiler(sombre('#5a4a38',.24), dd)}"
-        stroke-width="${Math.max(.4, t*.08).toFixed(2)}"/>`;
-      [[0,-.5,1],[-.42,-.42,.6],[.42,-.44,.64]].forEach(([dx,dy,r],q)=>
-        s += `<ellipse cx="${(x+dx*t*.72).toFixed(1)}" cy="${(y+dy*t).toFixed(1)}"
-          rx="${(t*.52*r).toFixed(1)}" ry="${(t*.25*r).toFixed(1)}"
-          fill="${voiler(q%2 ? T.pin : clair(T.pin,.2), dd)}"/>`);
+
+    /* les pins, plantés sur la crête */
+    for (let k = 0; k < P.pins; k++){
+      const u = (k + .5) / P.pins + (rnd(j * 13 + k) - .5) * .07;
+      if (u < 0 || u > 1) continue;
+      const x = -40 + (W + 80) * u;
+      const y = yc(u) + 1;                    /* le pied touche la crête */
+      const t = px(2.4, P.d) * (.8 + rnd(j * 7 + k) * .5);
+      if (t < .8) continue;
+      s += `<g class="pin">`;
+      s += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} l${(t*.06).toFixed(1)} ${(-t*.5).toFixed(1)}"
+        stroke="${voiler(sombre('#5a4a38', .26), P.d)}"
+        stroke-width="${Math.max(.4, t*.09).toFixed(2)}"/>`;
+      [[0,-.58,1],[-.44,-.48,.62],[.44,-.5,.66]].forEach(([dx,dy,r],q)=>
+        s += `<ellipse cx="${(x + dx*t*.7).toFixed(1)}" cy="${(y + dy*t).toFixed(1)}"
+          rx="${(t*.5*r).toFixed(1)}" ry="${(t*.24*r).toFixed(1)}"
+          fill="${voiler(q%2 ? T.pin : clair(T.pin,.2), P.d)}"/>`);
       s += `</g>`;
     }
   });
+
   /* la brume de l'aube, au pied des collines */
   s += `<defs><linearGradient id="f-brume" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0%" stop-color="${T.ciel[5]}" stop-opacity="0"/>
-    <stop offset="100%" stop-color="${T.ciel[5]}" stop-opacity=".42"/></linearGradient></defs>`;
-  s += `<rect x="0" y="${(sol(60)-26).toFixed(1)}" width="${W}" height="34"
+    <stop offset="70%" stop-color="${T.ciel[5]}" stop-opacity=".34"/>
+    <stop offset="100%" stop-color="${T.ciel[5]}" stop-opacity="0"/></linearGradient></defs>`;
+  s += `<rect x="0" y="${(sol(56)-22).toFixed(1)}" width="${W}" height="40"
     fill="url(#f-brume)"/>`;
   return s;
 }
