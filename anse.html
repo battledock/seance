@@ -135,6 +135,31 @@ html,body{height:100%;overflow:hidden;background:#f4efe3;
 .mot{font-size:10.5px;color:rgba(38,49,63,.4);line-height:1.65;text-align:center;
   margin:16px 6px 4px;font-family:system-ui,sans-serif}
 
+/* ---------- la confirmation ---------- */
+.cf{position:fixed;z-index:30;left:20px;right:20px;top:50%;max-width:320px;margin:0 auto;
+  transform:translateY(-50%) scale(.94);background:#fffdf8;
+  border:1.5px solid rgba(38,49,63,.14);border-radius:12px;
+  box-shadow:0 16px 50px rgba(80,64,40,.24);
+  opacity:0;pointer-events:none;transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.cf.on{opacity:1;transform:translateY(-50%) scale(1);pointer-events:auto}
+.cfv{position:fixed;inset:0;z-index:29;background:rgba(38,49,63,.42);
+  opacity:0;pointer-events:none;transition:opacity .22s}
+.cfv.on{opacity:1;pointer-events:auto}
+.cf .h{padding:22px 20px 0;text-align:center}
+.cf .h .ic{width:46px;height:46px;border-radius:12px;margin:0 auto 14px;
+  background:rgba(184,134,58,.14);display:flex;align-items:center;justify-content:center}
+.cf .h .ic svg{width:22px;height:22px;stroke:#b8863a;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.cf .h b{display:block;font-size:16px;color:#1b2836;font-weight:700}
+.cf .h .px{display:block;font-size:30px;font-weight:700;color:#b8863a;margin-top:12px}
+.cf .h span{display:block;font-size:12px;color:rgba(38,49,63,.52);margin-top:10px;
+  font-family:system-ui,sans-serif;line-height:1.55}
+.cf .bt{display:flex;gap:9px;padding:20px}
+.cf .bt button{flex:1;padding:14px 6px;border-radius:9px;cursor:pointer;
+  font-family:'Courier Prime',monospace;font-size:12.5px;font-weight:700}
+.cf .bt .non{border:1.5px solid rgba(38,49,63,.18);background:#fff;color:rgba(38,49,63,.66)}
+.cf .bt .oui{border:0;background:#1b2836;color:#f6f2e8}
+
 /* ---------- ce qui vit ---------- */
 .onde{will-change:transform}
 .o0{animation:v0 30s linear infinite}.o1{animation:v1 40s linear infinite}
@@ -161,6 +186,18 @@ html,body{height:100%;overflow:hidden;background:#f4efe3;
   <span class="id"><span class="em" id="t-em"></span>
     <span><b id="t-nom">—</b><span id="t-met">—</span></span></span>
   <span class="eu" id="t-eu">—</span>
+</div>
+
+<div class="cfv" id="cfv"></div>
+<div class="cf" id="cf">
+  <div class="h">
+    <span class="ic"><svg viewBox="0 0 24 24">
+      <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
+    </svg></span>
+    <b id="c-t">—</b><span class="px" id="c-px">—</span><span id="c-d">—</span>
+  </div>
+  <div class="bt"><button class="non" id="c-non">Non</button>
+    <button class="oui" id="c-oui">Oui, dépenser</button></div>
 </div>
 
 <div class="w">
@@ -989,13 +1026,47 @@ function poserBatis(){
   document.getElementById('det').innerHTML = s;
 
   const bt = document.querySelector('[data-b]');
-  if (bt) bt.onclick = async () => {
+  if (bt) bt.onclick = () => {
+    const B2 = BATIS.find(x => x.k === bt.dataset.b);
+    const S2 = B2.N[(+((D.affaire||{})[B2.k]) || 0) + 1];
+    demander('Bâtir ' + S2.n.toLowerCase() + ' ?', S2.prix,
+      "Une fois monté, c'est monté.", () => vraimentBatir(bt));
+  };
+}
+
+async function vraimentBatir(bt){
+  {
     bt.disabled = true; bt.textContent = 'On monte…';
     const r = await BD.agir('batir', { p_quoi: bt.dataset.b });
     if (r.ok){ D = await BD.charger(); decor(); entete(); poserProd(); poserBatis(); }
     else bt.textContent = r.pourquoi === 'trop_cher' ? 'Pas assez' : "Ça n'a pas marché";
-  };
+  }
 }
+
+/* ---------- la confirmation ---------- */
+let siOui = null;
+function reglages(){
+  try { return Object.assign({confirmer:true},
+    JSON.parse(localStorage.getItem('bd-reglages') || '{}')); }
+  catch(e){ return { confirmer:true }; }
+}
+function demander(titre, somme, mot, alors){
+  if (!reglages().confirmer || somme < 500){ alors(); return; }
+  document.getElementById('c-t').textContent = titre;
+  document.getElementById('c-px').textContent = somme.toLocaleString('fr-FR') + ' €';
+  document.getElementById('c-d').textContent = mot || '';
+  siOui = alors;
+  document.getElementById('cf').classList.add('on');
+  document.getElementById('cfv').classList.add('on');
+}
+function fermerDemande(){
+  document.getElementById('cf').classList.remove('on');
+  document.getElementById('cfv').classList.remove('on');
+  siOui = null;
+}
+document.getElementById('c-non').onclick = fermerDemande;
+document.getElementById('cfv').onclick = fermerDemande;
+document.getElementById('c-oui').onclick = () => { const f = siOui; fermerDemande(); if (f) f(); };
 
 document.getElementById('ret').onclick = () => location.href = 'jeu.html';
 
