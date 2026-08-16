@@ -2150,10 +2150,13 @@ async function poserContrats(d, forcer){
   el.innerHTML = L.map(c => {
     const pris = c.etat === 'pris';
     const tient = libre >= c.places;
-    const d2 = +c.demande;
-    const mot = d2 >= 1.3 ? ['On en manque là-bas', '#8ce0a8']
-      : d2 >= 1.1 ? ['La demande est bonne', '#c4d88a']
-      : d2 >= 0.9 ? ['Le cours est normal', 'rgba(255,255,255,.5)']
+    const d2 = +c.demande, pr = +c.pression || 0;
+    /* ce qu'on en dit dépend surtout de ce qui arrive au port là-bas */
+    const mot = pr >= 18 ? ['Le port en déborde', '#e08a6a']
+      : pr >= 9 ? ['Il en arrive beaucoup', '#e0a878']
+      : d2 >= 1.2 ? ['On en manque là-bas', '#8ce0a8']
+      : d2 >= 1.02 ? ['La demande est bonne', '#c4d88a']
+      : d2 >= 0.85 ? ['Le cours est normal', 'rgba(255,255,255,.5)']
       : ['Ils en ont déjà beaucoup', '#e0a878'];
     return '<li class="' + (pris ? 'pris' : '') + '">'
       + '<div class="l1"><span class="tx"><b>' + c.nom + '</b>'
@@ -2161,15 +2164,19 @@ async function poserContrats(d, forcer){
       + '<span class="px"><em>' + c.paie + ' €</em>'
       + '<i style="color:' + mot[1] + '">' + mot[0] + '</i></span></div>'
       + '<div class="l2"><span class="d">' + c.kg + ' kg — '
-      + c.places + (c.places > 1 ? ' places' : ' place') + ' en cale</span>'
+      + c.places + (c.places > 1 ? ' places' : ' place') + ' en cale'
+      + (pr >= 3 ? '<br><span style="color:' + mot[1] + '">'
+          + Math.round(pr) + ' livrées ces jours-ci</span>' : '') + '</span>'
       + (pris ? '<span class="fait">À bord ✓</span>'
          : '<button data-c="' + c.id + '"' + (tient ? '' : ' disabled') + '>'
            + (tient ? 'Charger' : 'Cale pleine') + '</button>')
       + '</div></li>';
   }).join('');
 
-  document.getElementById('k-mot').textContent =
-    'Les contrats changent chaque jour. Tu es payé en arrivant à Barcelone.';
+  document.getElementById('k-mot').innerHTML =
+    'Les contrats changent chaque jour. Tu es payé en arrivant à Barcelone.<br>'
+    + '<span style="color:rgba(255,255,255,.34)">Plus une marchandise arrive là-bas, '
+    + 'moins elle vaut — pour tout le monde.</span>';
 
   el.querySelectorAll('[data-c]').forEach(b =>
     b.onclick = async () => {
