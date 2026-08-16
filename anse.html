@@ -135,6 +135,40 @@ html,body{height:100%;overflow:hidden;background:#f4efe3;
 .mot{font-size:10.5px;color:rgba(38,49,63,.4);line-height:1.65;text-align:center;
   margin:16px 6px 4px;font-family:system-ui,sans-serif}
 
+/* ---------- ton enseigne ---------- */
+.ens{background:#fffdf8;border:1.5px solid rgba(38,49,63,.12);border-radius:12px;
+  padding:17px 18px;box-shadow:0 1px 2px rgba(80,64,40,.05),0 8px 22px rgba(80,64,40,.06)}
+.ens .lab{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(38,49,63,.42);margin:0 0 9px}
+.ens .lab.b{margin-top:18px}
+.ens input{width:100%;padding:15px 16px;border:1.5px solid rgba(38,49,63,.16);
+  border-radius:9px;background:#fff;color:#1b2836;
+  font-family:'Courier Prime',monospace;font-size:17px;font-weight:700;
+  text-align:center;-webkit-user-select:text;user-select:text}
+.ens input:focus{outline:none;border-color:#b8863a}
+.ens .gr{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ens .gr button{display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:10px 3px 9px;border:1.5px solid rgba(38,49,63,.12);border-radius:9px;
+  background:#fff;cursor:pointer;transition:all .16s}
+.ens .gr button.on{border-color:#b8863a;background:#fdf6e8}
+.ens .gr .p{width:26px;height:26px;border-radius:6px;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.14)}
+.ens .gr span{font-size:7.5px;color:rgba(38,49,63,.5);text-align:center;line-height:1.15;
+  padding:0 1px}
+.ens .fixe{display:flex;align-items:center;gap:11px;margin-top:16px;padding:13px 14px;
+  border-radius:9px;background:rgba(38,49,63,.04);border:1px solid rgba(38,49,63,.09)}
+.ens .fixe .em{flex:0 0 36px;height:36px;display:flex;align-items:center;justify-content:center}
+.ens .fixe .em svg{width:22px;height:22px}
+.ens .fixe .tx{flex:1;min-width:0}
+.ens .fixe .tx b{display:block;font-size:16px;font-weight:700}
+.ens .fixe .tx span{display:block;font-size:10px;color:rgba(38,49,63,.44);margin-top:3px;
+  font-family:system-ui,sans-serif}
+.ens .go{width:100%;margin-top:15px;padding:15px;border:0;border-radius:9px;cursor:pointer;
+  background:#1b2836;color:#f6f2e8;box-shadow:0 3px 10px rgba(27,40,54,.18);
+  font-family:'Courier Prime',monospace;font-size:13.5px;font-weight:700;letter-spacing:.06em}
+.ens .go:disabled{background:rgba(38,49,63,.09);color:rgba(38,49,63,.34);
+  box-shadow:none;cursor:default}
+
 /* ---------- la confirmation ---------- */
 .cf{position:fixed;z-index:30;left:20px;right:20px;top:50%;max-width:320px;margin:0 auto;
   transform:translateY(-50%) scale(.94);background:#fffdf8;
@@ -206,6 +240,8 @@ html,body{height:100%;overflow:hidden;background:#f4efe3;
   <p class="tt">Ce que tu bâtis</p>
   <div class="ongB" id="ongB"></div>
   <div class="det" id="det"></div>
+  <p class="tt">Ton enseigne</p>
+  <div class="ens" id="ens"></div>
   <p class="mot">Ton anse produit même quand tu es en mer.</p>
 </div>
 
@@ -1068,6 +1104,59 @@ document.getElementById('c-non').onclick = fermerDemande;
 document.getElementById('cfv').onclick = fermerDemande;
 document.getElementById('c-oui').onclick = () => { const f = siOui; fermerDemande(); if (f) f(); };
 
+/* ---------- ton enseigne : le nom et la couleur, rien d'autre ---------- */
+let MQ = null;
+function poserEnseigne(){
+  const el = document.getElementById('ens');
+  const A = D.affaire || {};
+  if (!el) return;
+  if (!MQ) MQ = { nom:A.nom, couleur:A.couleur };
+  const c = COULEURS.find(x => x.k === MQ.couleur) || COULEURS[0];
+  const f = (ECUSSONS.find(x => x.k === A.ecusson) || ECUSSONS[0]).r;
+  const change = MQ.nom !== A.nom || MQ.couleur !== A.couleur;
+  const bon = (MQ.nom || '').trim().length >= 2;
+
+  el.innerHTML = '<p class="lab">Le nom</p>'
+    + '<input id="e-n" maxlength="22" value="' + (MQ.nom || '') + '">'
+    + '<p class="lab b">La couleur</p><div class="gr">' + COULEURS.map(S =>
+        '<button data-c="' + S.k + '" class="' + (S.k === MQ.couleur ? 'on' : '') + '">'
+        + '<span class="p" style="background:' + S.c + '"></span>'
+        + '<span>' + S.n + '</span></button>').join('') + '</div>'
+    + '<div class="fixe"><span class="em" style="background:' + c.c
+    + ';border-radius:' + f + '">' + signe(A.signe, '#fff') + '</span>'
+    + '<span class="tx"><b style="color:' + c.c2 + '">' + (MQ.nom || 'Sans nom') + '</b>'
+    + '<span>Ton signe et sa forme ne changent plus.</span></span></div>'
+    + '<button class="go" id="e-go"' + (change && bon ? '' : ' disabled') + '>'
+    + (change ? (bon ? 'Enregistrer' : 'Il faut au moins deux lettres') : 'Rien à changer')
+    + '</button>';
+
+  const i = document.getElementById('e-n');
+  i.oninput = () => { MQ.nom = i.value; majEnseigne(); };
+  el.querySelectorAll('[data-c]').forEach(b =>
+    b.onclick = () => { MQ.couleur = b.dataset.c; poserEnseigne(); });
+  document.getElementById('e-go').onclick = async () => {
+    const b = document.getElementById('e-go');
+    b.disabled = true; b.textContent = 'On repeint…';
+    const r = await BD.agir('renommer', { p_nom:MQ.nom.trim(), p_couleur:MQ.couleur });
+    if (r.ok){
+      D = await BD.charger(); MQ = null;
+      decor(); entete(); poserEnseigne();
+    } else b.textContent = "Ça n'a pas marché";
+  };
+}
+function majEnseigne(){
+  const A = D.affaire || {}, b = document.getElementById('e-go');
+  if (!b) return;
+  const change = MQ.nom !== A.nom || MQ.couleur !== A.couleur;
+  const bon = (MQ.nom || '').trim().length >= 2;
+  b.disabled = !(change && bon);
+  b.textContent = change ? (bon ? 'Enregistrer' : 'Il faut au moins deux lettres')
+    : 'Rien à changer';
+  /* l'aperçu suit ce qu'on tape */
+  const ap = document.querySelector('.ens .fixe .tx b');
+  if (ap) ap.textContent = MQ.nom || 'Sans nom';
+}
+
 document.getElementById('ret').onclick = () => location.href = 'jeu.html';
 
 (async () => {
@@ -1077,7 +1166,7 @@ document.getElementById('ret').onclick = () => location.href = 'jeu.html';
   } catch(e){ return; }
   if (!D.affaire){ location.href = 'registre.html'; return; }
   if (D.parti_le || D.port !== 'anse'){ location.href = 'jeu.html'; return; }
-  decor(); entete(); poserProd(); poserBatis();
+  decor(); entete(); poserProd(); poserBatis(); poserEnseigne();
 })();
 
 let t = null;
