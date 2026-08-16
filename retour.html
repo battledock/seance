@@ -1313,9 +1313,9 @@ const SCENE = {
         s: "Tu l'as portée. Tu as le droit de savoir.",
         besoin: { discussion: 2 },
         vers: 'demande' },
-      { t: "« Je la garde. »",
-        s: "Elle est à toi. Elle occupera une place, mais elle est à toi.",
-        vers: 'garde' }
+      { t: "Ne rien dire, et la pousser vers lui.",
+        s: "Il a compris. Ce n'est pas la peine d'en parler.",
+        vers: 'fin', issue: 'donne' }
     ]
   },
 
@@ -1333,15 +1333,6 @@ const SCENE = {
     ]
   },
 
-  garde: {
-    dit: ["Il hausse les épaules et retourne à ses planches.",
-          "« Comme tu veux. »",
-          "Il ramasse son couteau.",
-          "« Mais ne la laisse pas à bord quand tu dors. »"],
-    choix: [
-      { t: "Remonter à la barque.", s: "", vers: 'fin', issue: 'garde' }
-    ]
-  }
 };
 
 
