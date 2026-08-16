@@ -456,9 +456,15 @@ const MOTS = {
 })();
 
 function retourner(d, fiche){
-  const ou = d.parti_le ? 'mer.html'
+  let ou = d.parti_le ? 'mer.html'
     : d.port === 'barcelone' ? 'barcelone.html'
     : 'jeu.html';
+  /* si Toussaint attend avec la caisse, il passe avant */
+  if (ou === 'jeu.html'){
+    const aCaisse = (d.cale || []).some(o => o && o.quoi === 'caisse');
+    const vecue = (d.rencontres || []).includes('caisse_toussaint');
+    if (aCaisse && !vecue){ location.href = 'retour.html'; return; }
+  }
   location.href = ou + (fiche ? '?fiche=1' : '');
 }
 
