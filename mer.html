@@ -540,7 +540,7 @@ const CARNET = [
   [54,  "Le soleil cogne. Tu bois ce qui te reste et tu continues."],
   [70,  "Le vent tourne. Tu rentres les avirons, la voile suffit."],
   [86,  "Une odeur de terre. Elle n'est pas loin."],
-  [96,  "Des lumières, droit devant. C'est là.", true]
+  [96,  "Une côte, droit devant. C'est là.", true]
 ];
 
 /* ================= le décor =================
@@ -748,6 +748,11 @@ function journal(txt, fort){
   NIVEAU = Number(d.barque || 1);
   /* on n'est en mer que si le serveur l'a noté */
   if (!d.parti_le){ location.href = 'jeu.html'; return; }
+  const versBcn = d.cap === 'barcelone';
+  document.getElementById('cap').textContent =
+    versBcn ? 'Cap sur Barcelone' : 'Cap sur ton anse';
+  document.getElementById('arriver').textContent =
+    versBcn ? 'Débarquer à Barcelone' : 'Rentrer chez toi';
   /* le temps déjà écoulé compte : on reprend la traversée où elle en est */
   const ecoule = (Date.now() - new Date(d.parti_le).getTime()) / 1000;
   batir();
@@ -779,12 +784,13 @@ function journal(txt, fort){
 })();
 
 async function arriver(){
-  document.getElementById('cap').textContent = 'Barcelone';
   const bt = document.getElementById('arriver');
   const r = await BD.agir('accoster');
   if (r.ok){
+    bt.textContent = r.port === 'barcelone' ? 'Débarquer à Barcelone' : 'Rentrer chez toi';
     bt.classList.add('on');
-    bt.onclick = () => location.href = 'barcelone.html';
+    bt.onclick = () => location.href =
+      r.port === 'barcelone' ? 'barcelone.html' : 'jeu.html';
   } else if (r.pourquoi === 'trop_tot'){
     /* le serveur trouve que c'est trop tôt : on attend le temps qu'il dit */
     setTimeout(arriver, ((r.reste || 2) + 1) * 1000);
