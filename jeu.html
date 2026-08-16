@@ -25,6 +25,62 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
+/* ---------- les contrats ---------- */
+.ct{position:fixed;z-index:22;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
+  background:rgba(20,34,50,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 12px 40px rgba(6,16,28,.6);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.ct.on{opacity:1;transform:none;pointer-events:auto}
+.ct::-webkit-scrollbar{display:none}
+
+.ct .haut{display:flex;align-items:center;padding:14px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.ct .haut .ti{flex:1}
+.ct .haut b{display:block;font-size:15px;color:#fff;font-weight:700;letter-spacing:.04em}
+.ct .haut span{display:block;font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-top:3px}
+.ct .haut .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.5);
+  font-size:22px;line-height:1;padding:3px 2px}
+
+.ct .cale{display:flex;align-items:center;gap:9px;padding:11px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);font-size:10.5px;
+  color:rgba(255,255,255,.6);font-family:system-ui,sans-serif}
+.ct .cale b{color:#f0c46a;font-family:'Courier Prime',monospace;font-size:13px}
+
+.ct ul{list-style:none;padding:8px}
+.ct li{border-radius:8px;padding:13px;margin-bottom:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12)}
+.ct li:last-child{margin-bottom:0}
+.ct li.pris{background:rgba(140,224,168,.1);border-color:rgba(140,224,168,.3)}
+.ct li .l1{display:flex;align-items:flex-start;gap:10px}
+.ct li .l1 .tx{flex:1;min-width:0}
+.ct li .l1 b{display:block;font-size:14px;color:#fff;font-weight:700}
+.ct li .l1 .no{display:block;font-size:10.5px;color:rgba(255,255,255,.48);margin-top:3px;
+  font-family:system-ui,sans-serif;line-height:1.45}
+.ct li .l1 .px{flex:0 0 auto;text-align:right}
+.ct li .l1 .px em{display:block;font-style:normal;font-size:17px;font-weight:700;color:#ffd894}
+.ct li .l1 .px i{display:block;font-style:normal;font-size:8px;letter-spacing:.1em;
+  text-transform:uppercase;margin-top:3px}
+.ct li .l2{display:flex;align-items:center;gap:8px;margin-top:11px}
+.ct li .l2 .d{flex:1;font-size:9.5px;color:rgba(255,255,255,.44);
+  font-family:system-ui,sans-serif}
+.ct li button{flex:0 0 auto;padding:9px 18px;border:0;border-radius:7px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:11.5px;font-weight:700;letter-spacing:.05em}
+.ct li button:disabled{background:rgba(255,255,255,.09);color:rgba(255,255,255,.4);
+  cursor:default}
+.ct li .fait{font-size:11px;color:#8ce0a8;font-weight:700;letter-spacing:.05em}
+.ct .rien{padding:26px 16px;text-align:center;font-size:12px;
+  color:rgba(255,255,255,.5);line-height:1.7}
+.ct .mot{padding:0 15px 15px;font-size:10.5px;color:rgba(255,255,255,.42);
+  line-height:1.6;text-align:center;font-family:system-ui,sans-serif}
+
 /* ---------- le chantier ---------- */
 .ch{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -464,8 +520,8 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
       <svg viewBox="0 0 24 24"><path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/></svg>
       <span id="b-mer-t">Prendre la mer</span></button>
     <button id="b-tra">
-      <svg viewBox="0 0 24 24"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9zM3 12h18"/></svg>
-      <span>Travailler</span></button>
+      <svg viewBox="0 0 24 24"><path d="M8 3h8l2 4v14H6V7zM9 11h6M9 15h6M10 3v4h4V3"/></svg>
+      <span id="b-tra-t">Contrats</span></button>
     <button id="b-mar" disabled>
       <svg viewBox="0 0 24 24"><path d="M4 8h16v13H4zM4 8l2-4h12l2 4M9 21v-7h6v7"/></svg>
       <span>Le marché</span></button>
@@ -473,6 +529,16 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 </div>
 
 <div class="voile" id="voile"></div>
+
+<section class="ct" id="ct">
+  <div class="haut">
+    <span class="ti"><b>Les contrats</b><span>Ce qu'on te propose aujourd'hui</span></span>
+    <button class="fer" id="k-fer">×</button>
+  </div>
+  <p class="cale">Ta cale : <b id="k-cale">—</b></p>
+  <ul id="k-liste"><li class="rien">On regarde ce qu'il y a…</li></ul>
+  <p class="mot" id="k-mot"></p>
+</section>
 
 <section class="ch" id="ch">
   <div class="tous">
@@ -2052,6 +2118,82 @@ function matricule(d){
   return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
 }
 
+/* ---------- les contrats ---------- */
+let chargesCt = false;
+
+async function poserContrats(d, forcer){
+  const el = document.getElementById('k-liste');
+  if (!el) return;
+  if (chargesCt && !forcer) return;
+  chargesCt = true;
+
+  const r = await BD.agir('contrats_du_jour');
+  if (!r.ok){
+    el.innerHTML = '<li class="rien">' + (r.pourquoi === 'sans_bateau'
+      ? "Il te faut un bateau avant qu'on te confie quoi que ce soit."
+      : "Rien pour l'instant. Reviens plus tard.") + '</li>';
+    document.getElementById('k-cale').textContent = '—';
+    return;
+  }
+
+  const occupe = (d.cale || []).reduce((n, o) => n + (+o.places || 1), 0);
+  const libre = r.places - occupe;
+  document.getElementById('k-cale').innerHTML =
+    '<b>' + libre + ' / ' + r.places + '</b> ' + (r.places > 1 ? 'places libres' : 'place libre');
+
+  const L = r.contrats || [];
+  if (!L.length){
+    el.innerHTML = '<li class="rien">Personne ne cherche de bras aujourd\'hui.</li>';
+    return;
+  }
+
+  el.innerHTML = L.map(c => {
+    const pris = c.etat === 'pris';
+    const tient = libre >= c.places;
+    const d2 = +c.demande;
+    const mot = d2 >= 1.3 ? ['On en manque là-bas', '#8ce0a8']
+      : d2 >= 1.1 ? ['La demande est bonne', '#c4d88a']
+      : d2 >= 0.9 ? ['Le cours est normal', 'rgba(255,255,255,.5)']
+      : ['Ils en ont déjà beaucoup', '#e0a878'];
+    return '<li class="' + (pris ? 'pris' : '') + '">'
+      + '<div class="l1"><span class="tx"><b>' + c.nom + '</b>'
+      + '<span class="no">' + c.note + '</span></span>'
+      + '<span class="px"><em>' + c.paie + ' €</em>'
+      + '<i style="color:' + mot[1] + '">' + mot[0] + '</i></span></div>'
+      + '<div class="l2"><span class="d">' + c.kg + ' kg — '
+      + c.places + (c.places > 1 ? ' places' : ' place') + ' en cale</span>'
+      + (pris ? '<span class="fait">À bord ✓</span>'
+         : '<button data-c="' + c.id + '"' + (tient ? '' : ' disabled') + '>'
+           + (tient ? 'Charger' : 'Cale pleine') + '</button>')
+      + '</div></li>';
+  }).join('');
+
+  document.getElementById('k-mot').textContent =
+    'Les contrats changent chaque jour. Tu es payé en arrivant à Barcelone.';
+
+  el.querySelectorAll('[data-c]').forEach(b =>
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = '…';
+      const p = await BD.agir('prendre_contrat', { p_id: b.dataset.c });
+      if (p.ok){
+        const f = await BD.charger();
+        Object.assign(d, f);
+        poserBarre(d); poserMenu(d); poserBarque(d); poserBas(d);
+        poserContrats(d, true);
+      } else {
+        b.textContent = p.pourquoi === 'cale_pleine' ? 'Cale pleine' : 'Impossible';
+      }
+    });
+}
+
+let ctOuvert = false;
+function basculerContrats(o, d){
+  ctOuvert = o === undefined ? !ctOuvert : o;
+  document.getElementById('ct').classList.toggle('on', ctOuvert);
+  majVoile();
+  if (ctOuvert && d) poserContrats(d);
+}
+
 /* ---------- le chantier ---------- */
 function toussaint(){
   const P = [];
@@ -2291,7 +2433,7 @@ function basculerClassement(forcer){
 
 function majVoile(){
   document.getElementById('voile').classList.toggle('on',
-    chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
+    ctOuvert || chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
 }
 
 /* ---------- la barque ---------- */
@@ -2535,13 +2677,14 @@ function basculerMenu(forcer){
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
 document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
-function toutFermer(){ basculerChantier(false); basculerClassement(false);
+function toutFermer(){ basculerContrats(false); basculerChantier(false); basculerClassement(false);
   basculerBarque(false); basculerFiche(false); basculerMenu(false); }
 document.getElementById('voile').onclick = toutFermer;
 document.getElementById('f-fer').onclick = () => basculerFiche(false);
 document.getElementById('q-fer').onclick = () => basculerBarque(false);
 document.getElementById('c-fer').onclick = () => basculerClassement(false);
 document.getElementById('t-fer').onclick = () => basculerChantier(false);
+document.getElementById('k-fer').onclick = () => basculerContrats(false);
 addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
 
 /* ---------- la barre du bas ---------- */
@@ -2558,11 +2701,16 @@ function poserBas(d){
     ? () => location.href = 'voyager.html'
     : () => basculerChantier(true);
 
-  /* le chantier prend la place de Travailler tant qu'on n'a rien à faire */
-  document.getElementById('b-tra').onclick = () => basculerChantier(true);
-  if (!aBateau){
-    document.getElementById('b-tra').classList.add('vif');
-    document.getElementById('b-tra').querySelector('span').textContent = 'Le chantier';
+  /* sans bateau, on ne prend pas de contrat : le chantier passe devant */
+  const tra = document.getElementById('b-tra');
+  if (aBateau){
+    tra.classList.remove('vif');
+    document.getElementById('b-tra-t').textContent = 'Contrats';
+    tra.onclick = () => basculerContrats(true, d);
+  } else {
+    tra.classList.add('vif');
+    document.getElementById('b-tra-t').textContent = 'Le chantier';
+    tra.onclick = () => basculerChantier(true);
   }
 
   el.classList.add('pret');
