@@ -1340,7 +1340,7 @@ const SCENE = {
 const NOMS = { instinct:'Instinct', sang_froid:'Sang-froid', discussion:'Discussion',
                negociation:'Négociation', chance:'Chance' };
 let MOI = { instinct:0, sang_froid:0, discussion:0, negociation:0, chance:0 };
-let issue = null, bonus = {}, fini = false;
+let issue = null, bonus = {}, fini = false, monteNiveau = false;
 
 /* le quai de chez toi, à l'aube */
 function dessiner(){
@@ -1419,6 +1419,12 @@ async function terminer(){
   if (r.ok && r.reputation) P.push('+' + r.reputation + ' réputation');
   if (r.ok && r.xp) P.push('+' + r.xp + " points d'expérience");
   document.getElementById('f-plus').innerHTML = P.map(t => '<span>' + t + '</span>').join('');
+  if (monteNiveau){
+    document.getElementById('f-plus').innerHTML +=
+      '<span style="background:rgba(240,196,106,.18);color:#f0c46a;'
+      + 'border-color:rgba(240,196,106,.4)">Tu changes de niveau</span>';
+    document.getElementById('f-b').textContent = 'Voir ton niveau';
+  }
   setTimeout(() => F.classList.add('on'), 500);
 }
 
@@ -1427,7 +1433,8 @@ document.getElementById('a-ok').onclick = () => {
   document.getElementById('qui').classList.add('on');
   setTimeout(() => jouer('debut'), 300);
 };
-document.getElementById('f-b').onclick = () => location.href = 'jeu.html';
+document.getElementById('f-b').onclick = () => location.href =
+  (monteNiveau ? 'niveau.html' : 'jeu.html');
 
 (async () => {
   let d;
