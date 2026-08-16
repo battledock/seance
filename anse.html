@@ -263,30 +263,49 @@ function fond(){
       fill="none" opacity="${(.14-n*.02).toFixed(2)}"/></g>`;
   }
 
-  /* les falaises, qui ferment derrière */
-  [[-1,0],[1,6]].forEach(([cote,g])=>{
-    const P=[[210,26],[140,22],[92,25],[60,21],[40,26],[26,23],[17,30]];
-    let d='';
-    P.forEach(([dd,X],i)=>{
-      const h = 15 + Math.sin(i*1.6+g)*6 + Math.sin(i*.7)*4;
-      d += (i?'L':'M') + pX(cote*X,dd).toFixed(1) + ' ' + (sol(dd)-px(h,dd)).toFixed(1) + ' ';
-    });
-    for(let i=P.length-1;i>=0;i--) d += 'L'+pX(cote*P[i][1],P[i][0]).toFixed(1)+' '+sol(P[i][0]).toFixed(1)+' ';
-    s += `<path d="${d}Z" fill="${cote<0?clair(T.roche,.14):sombre(T.roche,.26)}"/>`;
-    /* les pins dessus */
-    for(let k=0;k<9;k++){
-      const dd = 20+rnd(g*7+k)*160, X = cote*(23+rnd(g*11+k)*7);
-      const h = 15+rnd(k)*7, x=pX(X,dd), y=sol(dd)-px(h,dd), t=px(2.4,dd);
-      if(t<.8) continue;
-      s += `<g class="pin"><path d="M${x.toFixed(1)} ${y.toFixed(1)} l${(t*.05).toFixed(1)} ${(-t*.45).toFixed(1)}"
-        stroke="${sombre('#5a4a38',.3)}" stroke-width="${Math.max(.4,t*.08).toFixed(2)}"/>`;
-      [[0,-.55,1],[-.45,-.46,.62],[.45,-.48,.66]].forEach(([dx,dy,r],q)=>
-        s += `<ellipse cx="${(x+dx*t*.75).toFixed(1)}" cy="${(y+dy*t).toFixed(1)}"
-          rx="${(t*.56*r).toFixed(1)}" ry="${(t*.27*r).toFixed(1)}"
-          fill="${voiler(q%2?T.pin:clair(T.pin,.22),dd)}"/>`);
+  /* --- les collines de garrigue, en trois plans --- */
+  const PLANS = [
+    { d:150, h:13, c:mel(T.roche,T.ciel[4],.6),  n:7, amp:6 },
+    { d:80,  h:11, c:mel(T.roche,T.ciel[4],.34), n:6, amp:7 },
+    { d:44,  h:8.5,c:mel(T.roche,T.ciel[5],.1),  n:5, amp:7 }
+  ];
+  PLANS.forEach((P, j) => {
+    const y0 = sol(P.d);
+    let p = `M-40 ${(y0+40).toFixed(1)} L-40 ${(y0 - px(P.h*.5, P.d)).toFixed(1)} `;
+    for (let k = 0; k <= P.n; k++){
+      const t = k / P.n;
+      const hx2 = P.h + Math.sin(k*1.9 + j*2.3) * P.amp * .5
+        + Math.sin(k*.7 + j) * P.amp * .3;
+      p += `Q${(-40 + (W+80)*(t-.5/P.n)).toFixed(1)} ${(y0 - px(hx2*1.1, P.d)).toFixed(1)}
+        ${(-40 + (W+80)*t).toFixed(1)} ${(y0 - px(hx2, P.d)).toFixed(1)} `;
+    }
+    p += `L${(W+40)} ${(y0+40).toFixed(1)} Z`;
+    s += `<path d="${p}" fill="${voiler(P.c, P.d)}"/>`;
+    /* les pins, sur les deux plans les plus proches */
+    if (j === 0) return;
+    for (let k = 0; k < 12; k++){
+      const dd = P.d * (.92 + rnd(j*11+k)*.16);
+      const X = (rnd(j*7+k) - .5) * (dd * .62);
+      const hh = 8 + rnd(j*3+k)*5;
+      const x = pX(X, dd), y = sol(dd) - px(hh, dd), t = px(2.2, dd);
+      if (t < .7 || x < -30 || x > W+30) continue;
+      s += `<g class="pin"><path d="M${x.toFixed(1)} ${y.toFixed(1)}
+        l${(t*.05).toFixed(1)} ${(-t*.42).toFixed(1)}"
+        stroke="${voiler(sombre('#5a4a38',.24), dd)}"
+        stroke-width="${Math.max(.4, t*.08).toFixed(2)}"/>`;
+      [[0,-.5,1],[-.42,-.42,.6],[.42,-.44,.64]].forEach(([dx,dy,r],q)=>
+        s += `<ellipse cx="${(x+dx*t*.72).toFixed(1)}" cy="${(y+dy*t).toFixed(1)}"
+          rx="${(t*.52*r).toFixed(1)}" ry="${(t*.25*r).toFixed(1)}"
+          fill="${voiler(q%2 ? T.pin : clair(T.pin,.2), dd)}"/>`);
       s += `</g>`;
     }
   });
+  /* la brume de l'aube, au pied des collines */
+  s += `<defs><linearGradient id="f-brume" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="${T.ciel[5]}" stop-opacity="0"/>
+    <stop offset="100%" stop-color="${T.ciel[5]}" stop-opacity=".42"/></linearGradient></defs>`;
+  s += `<rect x="0" y="${(sol(60)-26).toFixed(1)}" width="${W}" height="34"
+    fill="url(#f-brume)"/>`;
   return s;
 }
 
@@ -548,35 +567,61 @@ function materiel(metier, niv, sechoir, M){
 
   /* ---------- le savon : cuves, moules, blocs qui sèchent ---------- */
   if (metier === 'savon'){
-    /* les cuves de cuisson, à gauche */
     const n = Math.min(3, niv);
     for (let k = 0; k < n; k++){
-      const d = 10.5 + k*1.6, X = -2.4 - k*.35, y = sol(d), m = u => px(u,d);
+      const d = 10.2 + k*1.6, X = -1.85 - k*.3, y = sol(d), m = u => px(u,d);
       const x = pX(X, d);
-      s += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${m(.9).toFixed(1)}"
-        ry="${m(.22).toFixed(1)}" fill="${T.ombre}" opacity=".2"/>`;
-      /* le foyer de pierre */
-      s += `<path d="M${(x-m(.8)).toFixed(1)} ${y.toFixed(1)} v${(-m(.5)).toFixed(1)}
-        h${m(1.6).toFixed(1)} v${m(.5).toFixed(1)} z" fill="${voiler(sombre(T.roche,.24),d)}"/>`;
-      if (nuit())
-        s += `<ellipse class="braise" cx="${x.toFixed(1)}" cy="${(y-m(.24)).toFixed(1)}"
-          rx="${m(.5).toFixed(1)}" ry="${m(.16).toFixed(1)}" fill="#ff8a3a" opacity=".5"/>`;
-      /* la cuve de cuivre */
-      s += `<path d="M${(x-m(.78)).toFixed(1)} ${(y-m(.5)).toFixed(1)}
-        q0 ${(-m(.9)).toFixed(1)} ${m(.78).toFixed(1)} ${(-m(.9)).toFixed(1)}
-        q${m(.78).toFixed(1)} 0 ${m(.78).toFixed(1)} ${m(.9).toFixed(1)} z"
-        fill="${voiler(sombre('#a8763a',.14),d)}"/>`;
-      s += `<path d="M${(x-m(.78)).toFixed(1)} ${(y-m(.5)).toFixed(1)}
-        q0 ${(-m(.9)).toFixed(1)} ${m(.78).toFixed(1)} ${(-m(.9)).toFixed(1)}
-        q${(-m(.24)).toFixed(1)} ${m(.24).toFixed(1)} ${(-m(.42)).toFixed(1)} ${m(.9).toFixed(1)} z"
-        fill="${clair('#e0a860',.34)}" opacity=".8"/>`;
-      s += `<ellipse cx="${x.toFixed(1)}" cy="${(y-m(1.4)).toFixed(1)}" rx="${m(.78).toFixed(1)}"
-        ry="${m(.2).toFixed(1)}" fill="${voiler(sombre('#6d4a28',.2),d)}"/>`;
+      const fer = voiler(sombre('#3a3a42', .18), d);
+      const cuivre = voiler(sombre('#a8763a', .1), d);
+
+      /* l'ombre au sol */
+      s += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${m(.75).toFixed(1)}"
+        ry="${m(.18).toFixed(1)}" fill="${T.ombre}" opacity=".18"/>`;
+
+      /* le foyer : un socle de pierres, pas un champignon */
+      s += `<path d="M${(x-m(.62)).toFixed(1)} ${y.toFixed(1)} v${(-m(.55)).toFixed(1)}
+        h${m(1.24).toFixed(1)} v${m(.55).toFixed(1)} z"
+        fill="${voiler(sombre(T.rocheO,.14), d)}"/>`;
+      for (let q = 0; q < 5; q++)
+        s += `<rect x="${(x-m(.58)+m(q*.24)).toFixed(1)}" y="${(y-m(.5+(q%2)*.02)).toFixed(1)}"
+          width="${m(.21).toFixed(1)}" height="${m(.2).toFixed(1)}" rx="1"
+          fill="${rnd2(k,q) > .5 ? clair(T.rocheO,.16) : sombre(T.rocheO,.18)}" opacity=".6"/>`;
+      /* la bouche du foyer, avec les braises */
+      s += `<path d="M${(x-m(.26)).toFixed(1)} ${y.toFixed(1)} v${(-m(.3)).toFixed(1)}
+        q${m(.26).toFixed(1)} ${(-m(.1)).toFixed(1)} ${m(.52).toFixed(1)} 0
+        v${m(.3).toFixed(1)} z" fill="${sombre('#1a1410',.3)}"/>`;
+      s += `<ellipse class="braise" cx="${x.toFixed(1)}" cy="${(y-m(.1)).toFixed(1)}"
+        rx="${m(.2).toFixed(1)}" ry="${m(.07).toFixed(1)}" fill="#e06a2a" opacity=".7"/>`;
+      /* les bûches qui dépassent */
+      s += `<path d="M${(x-m(.34)).toFixed(1)} ${(y-m(.06)).toFixed(1)} l${(-m(.24)).toFixed(1)} ${(-m(.06)).toFixed(1)}
+        M${(x-m(.3)).toFixed(1)} ${(y-m(.14)).toFixed(1)} l${(-m(.2)).toFixed(1)} ${m(.02).toFixed(1)}"
+        stroke="${voiler(sombre('#6d5238',.2),d)}"
+        stroke-width="${Math.max(.5,m(.07)).toFixed(1)}" stroke-linecap="round"/>`;
+
+      /* le chaudron : un demi-cercle, posé, avec son rebord */
+      s += `<path d="M${(x-m(.56)).toFixed(1)} ${(y-m(.55)).toFixed(1)}
+        a${m(.56).toFixed(1)} ${m(.5).toFixed(1)} 0 0 0 ${m(1.12).toFixed(1)} 0 z"
+        fill="${cuivre}"/>`;
+      /* le côté éclairé */
+      s += `<path d="M${(x-m(.56)).toFixed(1)} ${(y-m(.55)).toFixed(1)}
+        a${m(.56).toFixed(1)} ${m(.5).toFixed(1)} 0 0 0 ${m(.4).toFixed(1)} ${m(.4).toFixed(1)}
+        a${m(.4).toFixed(1)} ${m(.36).toFixed(1)} 0 0 1 ${(-m(.18)).toFixed(1)} ${(-m(.4)).toFixed(1)} z"
+        fill="${clair('#e8b46a',.36)}" opacity=".85"/>`;
+      /* le rebord */
+      s += `<ellipse cx="${x.toFixed(1)}" cy="${(y-m(.55)).toFixed(1)}" rx="${m(.58).toFixed(1)}"
+        ry="${m(.11).toFixed(1)}" fill="${clair(cuivre,.2)}"/>`;
+      s += `<ellipse cx="${x.toFixed(1)}" cy="${(y-m(.56)).toFixed(1)}" rx="${m(.48).toFixed(1)}"
+        ry="${m(.085).toFixed(1)}" fill="${voiler('#d8c68a', d)}"/>`;
+      /* l'anse de fer */
+      s += `<path d="M${(x-m(.5)).toFixed(1)} ${(y-m(.6)).toFixed(1)}
+        q${m(.5).toFixed(1)} ${(-m(.46)).toFixed(1)} ${m(1).toFixed(1)} 0"
+        stroke="${fer}" stroke-width="${Math.max(.5,m(.06)).toFixed(1)}" fill="none"/>`;
+
       /* la vapeur */
-      s += `<g class="vapeur" opacity=".22">`;
-      [0,1,2].forEach(q => s += `<ellipse cx="${(x+m(q*.16)).toFixed(1)}"
-        cy="${(y-m(1.8+q*.55)).toFixed(1)}" rx="${m(.3+q*.16).toFixed(1)}"
-        ry="${m(.18+q*.1).toFixed(1)}" fill="#fff"/>`);
+      s += `<g class="vapeur" opacity=".2">`;
+      [0,1,2].forEach(q => s += `<ellipse cx="${(x+m(.06+q*.14)).toFixed(1)}"
+        cy="${(y-m(.9+q*.5)).toFixed(1)}" rx="${m(.24+q*.14).toFixed(1)}"
+        ry="${m(.15+q*.09).toFixed(1)}" fill="#fff"/>`);
       s += `</g>`;
     }
     /* les blocs de savon qui sèchent, empilés à droite */
@@ -670,7 +715,7 @@ function materiel(metier, niv, sechoir, M){
   if (sechoir > 0){
     const n = [0, 2, 4, 7][sechoir] || 0;
     for (let k = 0; k < n; k++){
-      const d = 8.4 + (k % 3) * .9, X = -2 - Math.floor(k/3) * .8;
+      const d = 8 + (k % 3) * .9, X = -2.35 - Math.floor(k/3) * .75;
       const y = sol(d), m = u => px(u,d), x = pX(X, d);
       s += `<path d="M${(x-m(.7)).toFixed(1)} ${y.toFixed(1)} v${(-m(1.3)).toFixed(1)}
         M${(x+m(.7)).toFixed(1)} ${y.toFixed(1)} v${(-m(1.3)).toFixed(1)}"
