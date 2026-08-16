@@ -25,6 +25,77 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
+/* ---------- le chantier ---------- */
+.ch{position:fixed;z-index:22;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
+  background:rgba(20,34,50,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 12px 40px rgba(6,16,28,.6);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.ch.on{opacity:1;transform:none;pointer-events:auto}
+.ch::-webkit-scrollbar{display:none}
+
+/* Toussaint */
+.ch .tous{display:flex;align-items:center;gap:12px;padding:14px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.ch .tous .por{flex:0 0 46px;height:46px;border-radius:5px;overflow:hidden;
+  border:1.6px solid rgba(255,255,255,.3);background:#c9b89a}
+.ch .tous .por svg{display:block;width:100%;height:100%}
+.ch .tous .id{flex:1;min-width:0}
+.ch .tous .id b{display:block;font-size:15px;color:#fff;font-weight:700}
+.ch .tous .id span{display:block;font-size:8.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:3px}
+.ch .tous .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.5);
+  font-size:22px;line-height:1;padding:3px 2px}
+
+/* ce qu'il te dit */
+.ch .dit{padding:14px 15px;font-size:12.5px;line-height:1.65;
+  color:rgba(255,255,255,.82);border-bottom:1px solid rgba(255,255,255,.14);
+  font-family:system-ui,sans-serif}
+.ch .dit i{color:#f0c46a;font-style:normal}
+
+/* l'ouvrage */
+.ch .ouv{padding:14px 15px}
+.ch .ouv .tt{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.42);margin-bottom:10px}
+.ch .ouv .obj{display:flex;align-items:center;gap:11px;
+  background:rgba(255,255,255,.06);border-radius:6px;padding:12px}
+.ch .ouv .obj .tx{flex:1;min-width:0}
+.ch .ouv .obj .tx b{display:block;font-size:13.5px;color:#fff;font-weight:700}
+.ch .ouv .obj .tx span{display:block;font-size:10.5px;color:rgba(255,255,255,.56);
+  margin-top:3px;line-height:1.45;font-family:system-ui,sans-serif}
+.ch .ouv .obj .px{flex:0 0 auto;text-align:right}
+.ch .ouv .obj .px em{display:block;font-style:normal;font-size:15px;font-weight:700;
+  white-space:nowrap}
+
+/* les gains */
+.ch .gains{display:flex;gap:8px;margin-top:11px}
+.ch .gains > div{flex:1;background:rgba(255,255,255,.05);border-radius:5px;
+  padding:8px 4px;text-align:center}
+.ch .gains .k{font-size:6.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.4)}
+.ch .gains .v{font-size:12px;font-weight:700;color:#fff;margin-top:3px}
+.ch .gains .v em{font-style:normal;color:#8ce0a8;font-size:10px}
+
+/* le bouton */
+.ch .act{padding:0 15px 15px}
+.ch .act button{width:100%;padding:14px;border:0;border-radius:6px;cursor:pointer;
+  font-family:'Courier Prime',monospace;font-size:13px;font-weight:700;
+  letter-spacing:.06em;transition:transform .1s,filter .15s}
+.ch .act button:active{transform:scale(.985)}
+.ch .act button.oui{background:linear-gradient(180deg,#f0c46a,#d8a848);color:#22201c;
+  box-shadow:0 3px 12px rgba(240,196,106,.28)}
+.ch .act button.non{background:rgba(255,255,255,.09);color:rgba(255,255,255,.44);
+  cursor:default}
+.ch .act .man{font-size:10.5px;color:rgba(255,255,255,.48);text-align:center;
+  margin-top:9px}
+.ch .fini{padding:22px 16px;text-align:center;font-size:12.5px;color:#f0c46a;
+  line-height:1.7}
+
 /* ---------- le classement ---------- */
 .cl{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -354,6 +425,17 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 <div class="av" id="av"></div>
 
 <div class="voile" id="voile"></div>
+
+<section class="ch" id="ch">
+  <div class="tous">
+    <span class="por" id="t-por"></span>
+    <span class="id"><b>Toussaint</b><span>Charpentier de marine</span></span>
+    <button class="fer" id="t-fer">×</button>
+  </div>
+  <p class="dit" id="t-dit">—</p>
+  <div class="ouv" id="t-ouv"></div>
+  <div class="act" id="t-act"></div>
+</section>
 
 <section class="cl" id="cl">
   <div class="haut"><b>Le classement</b><button class="fer" id="c-fer">×</button></div>
@@ -1909,6 +1991,126 @@ function matricule(d){
   return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
 }
 
+/* ---------- le chantier ---------- */
+/* le portrait de Toussaint, dessiné à la main */
+function toussaint(){
+  return '<svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">'
+    + '<rect width="16" height="18" fill="#c9b89a"/>'
+    + '<rect y="12" width="16" height="6" fill="#b8a688"/>'
+    /* les épaules, en toile usée */
+    + '<path d="M3 18v-4q0-2 3-3h4q3 1 3 3v4z" fill="#6d7a5c"/>'
+    + '<path d="M3 18v-4q0-2 3-3h1l-1 7z" fill="#7d8a6c"/>'
+    /* le tablier de cuir */
+    + '<path d="M6 18v-6h4v6z" fill="#8a6440"/>'
+    /* le cou et le visage */
+    + '<rect x="7" y="9" width="3" height="2" fill="#c98f5e"/>'
+    + '<rect x="5" y="3" width="7" height="8" rx="2" fill="#dda772"/>'
+    + '<path d="M9 3h3v8H9z" fill="#c98f5e" opacity=".45"/>'
+    /* les rides */
+    + '<rect x="6" y="5.4" width="2" height=".6" fill="#c08a5c" opacity=".6"/>'
+    + '<rect x="9" y="5.4" width="2" height=".6" fill="#c08a5c" opacity=".6"/>'
+    /* les yeux */
+    + '<rect x="6.6" y="6.4" width="1.4" height="1.4" fill="#3f2a18"/>'
+    + '<rect x="9" y="6.4" width="1.4" height="1.4" fill="#3f2a18"/>'
+    /* la moustache blanche */
+    + '<rect x="6.2" y="8.4" width="4.6" height="1.2" rx=".5" fill="#e8e2d4"/>'
+    /* les cheveux gris sous la casquette */
+    + '<rect x="4.6" y="4.4" width="1.2" height="3" fill="#c8c2b4"/>'
+    + '<rect x="11" y="4.4" width="1.2" height="3" fill="#c8c2b4"/>'
+    /* la casquette de marin */
+    + '<path d="M4.4 4.2q0-2.6 4.2-2.6t4.2 2.6z" fill="#3f4a5c"/>'
+    + '<path d="M4.4 4.2q0-2.6 4.2-2.6v2.6z" fill="#4f5c70"/>'
+    + '<rect x="3.6" y="4" width="9.8" height="1.2" rx=".6" fill="#2f3a48"/>'
+    + '</svg>';
+}
+
+function poserChantier(d){
+  const n = Number(d.barque || 0);
+  const eur = Number(d.euros || 0);
+  const ouv = document.getElementById('t-ouv'), act = document.getElementById('t-act');
+  if (!ouv) return;
+  document.getElementById('t-por').innerHTML = toussaint();
+
+  /* on ne travaille que dans ton anse */
+  if (d.port && d.port !== 'anse' && d.port !== 'marseille'){
+    document.getElementById('t-dit').innerHTML =
+      'Toussaint ne travaille pas ici. Son chantier est chez toi, et nulle part ailleurs.';
+    ouv.innerHTML = ''; act.innerHTML = '';
+    return;
+  }
+
+  if (n >= 20){
+    document.getElementById('t-dit').innerHTML =
+      '« Je peux plus rien faire pour toi. Tu as le plus beau bateau du bassin. »';
+    ouv.innerHTML = '<p class="fini">Le chantier est fermé.<br>Va naviguer.</p>';
+    act.innerHTML = '';
+    return;
+  }
+
+  const S = PALIERS_B[n];          /* ce qu'on peut faire ensuite */
+  const A = n ? PALIERS_B[n - 1] : null;
+  const gratuit = S.prix === 0;
+  const peut = gratuit || eur >= S.prix;
+
+  document.getElementById('t-dit').innerHTML = !n
+    ? '« Tu veux un bateau ? Je sors le bois, tu tiens la scie. '
+      + 'La quille je te la fais, le reste tu paieras. »'
+    : peut
+      ? '« Fais voir ta caisse… bon. On peut s\'y mettre. »'
+      : '« Reviens quand tu auras de quoi. Le bois ne se coupe pas tout seul. »';
+
+  ouv.innerHTML = '<p class="tt">' + (n ? 'La prochaine étape' : 'Ce qu\'il peut faire') + '</p>'
+    + '<div class="obj"><span class="tx"><b>' + S.nom + '</b>'
+    + '<span>' + S.d + '</span></span>'
+    + '<span class="px"><em style="color:' + (gratuit ? '#8ce0a8' : peut ? '#ffd894' : 'rgba(255,255,255,.4)')
+    + '">' + (gratuit ? 'gratuite' : S.prix.toLocaleString('fr-FR') + ' €') + '</em></span></div>'
+    + '<div class="gains">'
+    + '<div><p class="k">Cale</p><p class="v">' + S.places
+      + (A && S.places > A.places ? ' <em>+' + (S.places - A.places) + '</em>' : '') + '</p></div>'
+    + '<div><p class="k">Charge</p><p class="v">' + S.kg
+      + (A && S.kg > A.kg ? ' <em>+' + (S.kg - A.kg) + '</em>' : '') + '</p></div>'
+    + '<div><p class="k">Allure</p><p class="v">' + S.vit.toFixed(1)
+      + (A && S.vit > A.vit ? ' <em>+' + (S.vit - A.vit).toFixed(1) + '</em>' : '') + '</p></div>'
+    + '</div>';
+
+  act.innerHTML = peut
+    ? '<button class="oui" id="t-go">' + (n ? 'Améliorer' : 'Construire la coque') + '</button>'
+    : '<button class="non" disabled>Pas assez</button>'
+      + '<p class="man">Il te manque ' + (S.prix - eur).toLocaleString('fr-FR') + ' €</p>';
+
+  const go = document.getElementById('t-go');
+  if (go) go.onclick = () => construire(d, S);
+}
+
+let enTravaux = false;
+async function construire(d, S){
+  if (enTravaux) return;
+  enTravaux = true;
+  const act = document.getElementById('t-act');
+  act.innerHTML = '<button class="non" disabled>Toussaint travaille…</button>';
+  try {
+    const nouveaux = Number(d.euros || 0) - S.prix;
+    await BD.enregistrer({ barque: S.n, euros: nouveaux });
+    d.barque = S.n; d.euros = nouveaux;
+    /* tout se remet à jour */
+    poserBarre(d); poserMenu(d); poserBarque(d); poserChantier(d);
+    NIVEAU_BARQUE = S.n; dessiner();
+    document.getElementById('t-dit').innerHTML =
+      '« Voilà. <i>' + S.nom + '</i>. Fais-en bon usage. »';
+  } catch(e){
+    act.innerHTML = '<button class="non" disabled>Ça n\'a pas marché</button>'
+      + '<p class="man">Réessaie dans un moment.</p>';
+  }
+  enTravaux = false;
+}
+
+let chOuvert = false;
+function basculerChantier(forcer){
+  chOuvert = forcer === undefined ? !chOuvert : forcer;
+  document.getElementById('ch').classList.toggle('on', chOuvert);
+  majVoile();
+}
+
 /* ---------- le classement ---------- */
 const PORTS_N = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
                   alger:'Alger', naples:'Naples' };
@@ -1950,8 +2152,12 @@ let clOuvert = false;
 function basculerClassement(forcer){
   clOuvert = forcer === undefined ? !clOuvert : forcer;
   document.getElementById('cl').classList.toggle('on', clOuvert);
+  majVoile();
+}
+
+function majVoile(){
   document.getElementById('voile').classList.toggle('on',
-    clOuvert || bqOuverte || ficheOuverte || menuOuvert);
+    chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
 }
 
 /* ---------- la barque ---------- */
@@ -2042,8 +2248,7 @@ let bqOuverte = false;
 function basculerBarque(forcer){
   bqOuverte = forcer === undefined ? !bqOuverte : forcer;
   document.getElementById('bq').classList.toggle('on', bqOuverte);
-  document.getElementById('voile').classList.toggle('on',
-    bqOuverte || ficheOuverte || menuOuvert || clOuvert);
+  majVoile();
 }
 
 /* ---------- la fiche ---------- */
@@ -2093,8 +2298,7 @@ let ficheOuverte = false;
 function basculerFiche(forcer){
   ficheOuverte = forcer === undefined ? !ficheOuverte : forcer;
   document.getElementById('fiche').classList.toggle('on', ficheOuverte);
-  document.getElementById('voile').classList.toggle('on',
-    ficheOuverte || menuOuvert || bqOuverte || clOuvert);
+  majVoile();
 }
 
 /* ---------- le menu ---------- */
@@ -2103,6 +2307,7 @@ const ICONES = {
   barque:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>',
   livret:'<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h3"/>',
   gens:'<path d="M8 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2 21c0-4 3-6 6-6s6 2 6 6M17 8a2.6 2.6 0 1 0 0-5M16 15c3 0 6 1.6 6 5.4"/>',
+  chantier:'<path d="M3 20h18M6 20V9l6-4 6 4v11M9 20v-6h6v6"/>',
   reglages:'<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1A1.7 1.7 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1z"/>',
   sortie:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'
 };
@@ -2117,6 +2322,8 @@ function poserMenu(d){
       f:() => { basculerMenu(false); basculerFiche(true); } },
     { k:'barque', n:'Ta barque',    s:d.barque ? p.nom : 'Tu n\'en as pas encore',
       ouvert:true, f:() => { basculerMenu(false); basculerBarque(true); } },
+    { k:'chantier', n:'Le chantier', s:'Toussaint et son bois',    ouvert:true,
+      f:() => { basculerMenu(false); basculerChantier(true); } },
     { k:'livret', n:'Le livret',    s:'Ce que tu as appris',       ouvert:false },
     { k:'gens',   n:'Le classement', s:'Qui mène la danse',        ouvert:true,
       f:() => { basculerMenu(false); basculerClassement(true); } },
@@ -2153,12 +2360,13 @@ function basculerMenu(forcer){
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
 document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
-function toutFermer(){ basculerClassement(false); basculerBarque(false);
-  basculerFiche(false); basculerMenu(false); }
+function toutFermer(){ basculerChantier(false); basculerClassement(false);
+  basculerBarque(false); basculerFiche(false); basculerMenu(false); }
 document.getElementById('voile').onclick = toutFermer;
 document.getElementById('f-fer').onclick = () => basculerFiche(false);
 document.getElementById('q-fer').onclick = () => basculerBarque(false);
 document.getElementById('c-fer').onclick = () => basculerClassement(false);
+document.getElementById('t-fer').onclick = () => basculerChantier(false);
 addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
 
 function poserAvatar(d){
@@ -2184,6 +2392,7 @@ function poserAvatar(d){
     poserMenu(d);
     poserBarque(d);
     poserClassement(d);
+    poserChantier(d);
     /* le décor montre ta vraie barque, ou l'eau nue si tu n'en as pas */
     if (Number(d.barque || 0) !== NIVEAU_BARQUE){
       NIVEAU_BARQUE = Number(d.barque || 0);
