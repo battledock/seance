@@ -25,6 +25,62 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
+/* ---------- changer sa marque ---------- */
+.mq{padding:4px 15px 14px}
+.mq input{width:100%;padding:14px 15px;border:1.5px solid rgba(255,255,255,.22);
+  border-radius:9px;background:rgba(255,255,255,.06);color:#fff;
+  font-family:'Courier Prime',monospace;font-size:16px;font-weight:700;
+  text-align:center;-webkit-user-select:text;user-select:text}
+.mq input:focus{outline:none;border-color:rgba(240,196,106,.7)}
+.mq .lab2{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);margin:14px 2px 9px}
+.mq .gr{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;max-height:150px;
+  overflow-y:auto;padding:2px}
+.mq .gr::-webkit-scrollbar{display:none}
+.mq .gr button{aspect-ratio:1;border:1.5px solid rgba(255,255,255,.16);border-radius:8px;
+  background:rgba(255,255,255,.05);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:all .16s;padding:0}
+.mq .gr button.on{border-color:rgba(240,196,106,.8);background:rgba(52,44,26,.6)}
+.mq .gr button svg{width:20px;height:20px}
+.mq .gr.co button{flex-direction:column;gap:4px;padding:7px 2px;aspect-ratio:auto}
+.mq .gr.co .p{width:20px;height:20px;border-radius:5px}
+.mq .gr.co span{font-size:6.5px;color:rgba(255,255,255,.5);text-align:center;
+  line-height:1.1;padding:0 1px}
+.mq .ap{display:flex;align-items:center;gap:12px;margin-top:14px;padding:13px;
+  border-radius:9px;border:1px solid rgba(255,255,255,.14)}
+.mq .ap .em{flex:0 0 40px;height:40px;display:flex;align-items:center;justify-content:center}
+.mq .ap .em svg{width:24px;height:24px}
+.mq .ap b{font-size:16px;font-weight:700}
+.mq .go{width:100%;margin-top:13px;padding:14px;border:0;border-radius:9px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:13px;font-weight:700;letter-spacing:.06em}
+.mq .go:disabled{background:rgba(255,255,255,.08);color:rgba(255,255,255,.34);cursor:default}
+
+/* ---------- la confirmation de dépense ---------- */
+.cf{position:fixed;z-index:30;left:20px;right:20px;top:50%;max-width:320px;margin:0 auto;
+  transform:translateY(-50%) scale(.94);
+  background:rgba(20,34,50,.97);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:12px;
+  box-shadow:0 16px 50px rgba(6,16,28,.7);
+  opacity:0;pointer-events:none;transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.cf.on{opacity:1;transform:translateY(-50%) scale(1);pointer-events:auto}
+.cf .h{padding:20px 20px 0;text-align:center}
+.cf .h .ic{width:46px;height:46px;border-radius:12px;margin:0 auto 14px;
+  background:rgba(240,196,106,.16);display:flex;align-items:center;justify-content:center}
+.cf .h .ic svg{width:22px;height:22px;stroke:#f0c46a;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.cf .h b{display:block;font-size:16px;color:#fff;font-weight:700}
+.cf .h .px{display:block;font-size:30px;font-weight:700;color:#ffd894;margin-top:12px}
+.cf .h span{display:block;font-size:11.5px;color:rgba(255,255,255,.5);margin-top:10px;
+  font-family:system-ui,sans-serif;line-height:1.55}
+.cf .bt{display:flex;gap:9px;padding:20px}
+.cf .bt button{flex:1;padding:14px 6px;border-radius:9px;cursor:pointer;
+  font-family:'Courier Prime',monospace;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.cf .bt .non{border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.7)}
+.cf .bt .oui{border:0;background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16}
+
 /* ---------- les réglages ---------- */
 .rg{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -592,12 +648,24 @@ html{font-size:calc(16px * var(--txt, 1))}
 
 <div class="voile" id="voile"></div>
 
+<div class="cf" id="cf">
+  <div class="h">
+    <span class="ic"><svg viewBox="0 0 24 24">
+      <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
+    </svg></span>
+    <b id="c-t">—</b><span class="px" id="c-px">—</span><span id="c-d">—</span>
+  </div>
+  <div class="bt"><button class="non" id="c-non">Non</button>
+    <button class="oui" id="c-oui">Oui, dépenser</button></div>
+</div>
+
 <section class="rg" id="rg">
   <div class="haut">
     <span class="ti"><b>Réglages</b><span>Comme tu préfères</span></span>
     <button class="fer" id="g-fer">×</button>
   </div>
   <div id="g-liste"></div>
+  <div class="mq" id="g-mq"></div>
   <p class="pied" id="g-pied"></p>
 </section>
 
@@ -2189,9 +2257,79 @@ function matricule(d){
   return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
 }
 
+/* ---------- les couleurs de ta marque ---------- */
+const COULEURS = [
+  { k:'bleu',    n:'Bleu de mer',    c:'#2f6a92', c2:'#5aa0c8' },
+  { k:'prusse',  n:'Bleu de Prusse', c:'#1e3a5c', c2:'#4a6d94' },
+  { k:'ocre',    n:'Ocre',           c:'#c9843a', c2:'#e8a860' },
+  { k:'safran',  n:'Safran',         c:'#d8a838', c2:'#f0c868' },
+  { k:'garrigue',n:'Vert de garrigue',c:'#5c7a4a', c2:'#82a068' },
+  { k:'olivier', n:'Vert olivier',   c:'#6d7a52', c2:'#94a074' },
+  { k:'tuile',   n:'Rouge de tuile', c:'#b8483a', c2:'#d47a68' },
+  { k:'lie',     n:'Lie-de-vin',     c:'#7a3448', c2:'#a05a70' },
+  { k:'ombre',   n:"Terre d'ombre",  c:'#7a5a3a', c2:'#a07c56' },
+  { k:'chaux',   n:'Blanc de chaux', c:'#d8d0c0', c2:'#f2ece0' },
+  { k:'ardoise', n:'Ardoise',        c:'#4a5460', c2:'#74808e' },
+  { k:'nuit',    n:'Bleu nuit',      c:'#26304a', c2:'#4a5678' },
+  { k:'corail',  n:'Corail',         c:'#c9604a', c2:'#e88a70' },
+  { k:'sable',   n:'Sable',          c:'#c4a878', c2:'#e0caa0' },
+  { k:'pin',     n:'Vert de pin',    c:'#2f5244', c2:'#54786a' },
+  { k:'encre',   n:'Encre',          c:'#1b2432', c2:'#455066' }
+];
+
+/* ---------- la forme de ton écusson ---------- */
+const ECUSSONS = [
+  { k:'carre',   n:'Carré',    r:'3px' },
+  { k:'rond',    n:'Rond',     r:'50%' },
+  { k:'doux',    n:'Adouci',   r:'14px' },
+  { k:'ecu',     n:'Écu',      r:'6px 6px 40% 40%' }
+];
+
+/* ---------- les formes de ton signe ---------- */
+const SIGNES = [
+  { k:'ancre',   n:'Ancre' },    { k:'poisson', n:'Poisson' },
+  { k:'vague',   n:'Vague' },    { k:'olive',   n:'Olivier' },
+  { k:'noeud',   n:'Nœud' },     { k:'etoile',  n:'Étoile' },
+  { k:'soleil',  n:'Soleil' },   { k:'barque',  n:'Barque' },
+  { k:'phare',   n:'Phare' },    { k:'cle',     n:'Clé' },
+  { k:'balance', n:'Balance' },  { k:'compas',  n:'Compas' },
+  { k:'gouvernail', n:'Barre' }, { k:'cigale',  n:'Cigale' },
+  { k:'croix',   n:'Croix' },    { k:'main',    n:'Main' },
+  { k:'roue',    n:'Roue' },     { k:'mistral', n:'Mistral' },
+  { k:'jarre',   n:'Jarre' },    { k:'pin',     n:'Pin' }
+];
+
+/* le dessin d'un signe, dans un carré de 24 */
+function signe(k, c){
+  const S = {
+    ancre:   '<path d="M12 6v13M7 11h10M12 19c-4 0-6-3-6-5M12 19c4 0 6-3 6-5" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="12" cy="5" r="2.4" fill="none" stroke="'+c+'" stroke-width="2"/>',
+    poisson: '<path d="M4 12c3-4 8-5 11-3 2 1 3 2 4 3-1 1-2 2-4 3-3 2-8 1-11-3z" fill="'+c+'"/><path d="M19 12l3-3v6z" fill="'+c+'"/><circle cx="8" cy="11" r="1" fill="#fff"/>',
+    vague:   '<path d="M3 10q3-3 6 0t6 0 6 0M3 15q3-3 6 0t6 0 6 0" stroke="'+c+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+    olive:   '<path d="M12 20V8M12 8c0-3 3-5 6-4 0 3-3 5-6 4zM12 12c0-3-3-5-6-4 0 3 3 5 6 4z" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    noeud:   '<path d="M8 8a4 4 0 1 0 8 8M16 8a4 4 0 1 1-8 8" stroke="'+c+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+    etoile:  '<path d="M12 3l2.6 6.5L21 10l-5 4.2 1.6 6.8L12 17.4 6.4 21 8 14.2 3 10l6.4-.5z" fill="'+c+'"/>',
+    soleil:  '<circle cx="12" cy="12" r="4.6" fill="'+c+'"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    barque:  '<path d="M3 15q3 2 6 0t6 0 6 0M5 12h14l-2-4H7z" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M12 8V3" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    phare:   '<path d="M9 21h6l-1-11h-4zM10 10V6h4v4M12 6V3" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M5 6l3 1M19 6l-3 1" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round"/>',
+    cle:     '<circle cx="8" cy="8" r="4" fill="none" stroke="'+c+'" stroke-width="2"/><path d="M11 11l8 8M16 16l2 2M14 18l2 2" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    balance: '<path d="M12 4v16M6 20h12M4 8h16M4 8l-2 5a3 3 0 0 0 4 0zM20 8l2 5a3 3 0 0 1-4 0z" stroke="'+c+'" stroke-width="1.8" fill="none" stroke-linejoin="round"/>',
+    compas:  '<path d="M12 4v5M9 21l3-12 3 12" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><circle cx="12" cy="4" r="1.8" fill="'+c+'"/>',
+    gouvernail:'<circle cx="12" cy="12" r="6" fill="none" stroke="'+c+'" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="'+c+'"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round"/>',
+    cigale:  '<ellipse cx="12" cy="14" rx="3" ry="6" fill="'+c+'"/><path d="M11 9C7 6 3 8 4 12c1 3 5 3 7 1M13 9c4-3 8-1 7 3-1 3-5 3-7 1" fill="'+c+'" opacity=".55"/><circle cx="12" cy="7" r="2" fill="'+c+'"/>',
+    croix:   '<path d="M12 3v18M3 12h18" stroke="'+c+'" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="'+c+'" stroke-width="1.6"/>',
+    main:    '<path d="M9 20v-7M9 13V6a1.5 1.5 0 0 1 3 0v6M12 12V5a1.5 1.5 0 0 1 3 0v7M15 12V7a1.5 1.5 0 0 1 3 0v8c0 3-2 5-5 5H9l-3-4 2-1" stroke="'+c+'" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+    roue:    '<circle cx="12" cy="12" r="8" fill="none" stroke="'+c+'" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="'+c+'"/><path d="M12 4v4M12 16v4M4 12h4M16 12h4" stroke="'+c+'" stroke-width="1.8"/>',
+    mistral: '<path d="M3 8h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 18h9" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    jarre:   '<path d="M9 4h6M10 4c0 2-4 3-4 8 0 5 2 8 6 8s6-3 6-8c0-5-4-6-4-8" stroke="'+c+'" stroke-width="1.9" fill="none" stroke-linejoin="round"/><path d="M6 13h12" stroke="'+c+'" stroke-width="1.5"/>',
+    pin:     '<path d="M12 21v-4M12 3l5 7h-3l4 6H6l4-6H7z" stroke="'+c+'" stroke-width="1.9" fill="none" stroke-linejoin="round"/>'
+  }[k] || '';
+  return '<svg viewBox="0 0 24 24">' + S + '</svg>';
+}
+
 /* ---------- les réglages ---------- */
 /* On les garde dans le navigateur : ils ne concernent que cet appareil. */
-const REG_DEFAUT = { animations:true, decor:true, secousse:true, texte:'normal' };
+const REG_DEFAUT = { animations:true, decor:true, secousse:true, texte:'normal',
+                     confirmer:true };
 let REG = Object.assign({}, REG_DEFAUT);
 
 function lireReglages(){
@@ -2228,8 +2366,28 @@ const REGLAGES = [
   { k:'texte',      n:'La taille du texte', s:"Pour lire sans forcer.", type:'trio',
     choix:[['petit','Petit'],['normal','Normal'],['grand','Grand']] },
   { g:'Ce que tu sens' },
-  { k:'secousse',   n:'Les vibrations', s:"Quand il se passe quelque chose.", type:'bool' }
+  { k:'secousse',   n:'Les vibrations', s:"Quand il se passe quelque chose.", type:'bool' },
+  { g:'Ton argent' },
+  { k:'confirmer',  n:'Demander avant de dépenser',
+    s:"Au-dessus de 500 €, on te demande si tu es sûr.", type:'bool' }
 ];
+
+/* ---------- la confirmation ---------- */
+let siOui = null;
+function demander(titre, somme, mot, alors){
+  if (!REG.confirmer || somme < 500){ alors(); return; }
+  document.getElementById('c-t').textContent = titre;
+  document.getElementById('c-px').textContent = somme.toLocaleString('fr-FR') + ' €';
+  document.getElementById('c-d').textContent = mot || '';
+  siOui = alors;
+  document.getElementById('cf').classList.add('on');
+  document.getElementById('voile').classList.add('on');
+  secousse('touche');
+}
+function fermerDemande(){
+  document.getElementById('cf').classList.remove('on');
+  siOui = null; majVoile();
+}
 
 function poserReglages(){
   const el = document.getElementById('g-liste');
@@ -2249,11 +2407,76 @@ function poserReglages(){
 
   document.getElementById('g-pied').textContent =
     "Ces réglages restent sur cet appareil. Ils ne changent rien à ta partie.";
+  poserMarque();
 
   el.querySelectorAll('[data-b]').forEach(b =>
     b.onclick = () => { REG[b.dataset.b] = !REG[b.dataset.b]; ecrireReglages(); poserReglages(); });
   el.querySelectorAll('[data-t]').forEach(b =>
     b.onclick = () => { REG[b.dataset.t] = b.dataset.v; ecrireReglages(); poserReglages(); });
+}
+
+/* ---------- changer le nom et les couleurs de ton affaire ---------- */
+let MQ = null;
+function poserMarque(){
+  const el = document.getElementById('g-mq');
+  const A = (MOI && MOI.affaire) || null;
+  if (!el) return;
+  if (!A){ el.innerHTML = ''; return; }
+  if (!MQ) MQ = { nom:A.nom, couleur:A.couleur, signe:A.signe, ecusson:A.ecusson };
+  const c = COULEURS.find(x => x.k === MQ.couleur) || COULEURS[0];
+  const f = (ECUSSONS.find(x => x.k === MQ.ecusson) || ECUSSONS[0]).r;
+  const change = MQ.nom !== A.nom || MQ.couleur !== A.couleur
+    || MQ.signe !== A.signe || MQ.ecusson !== A.ecusson;
+
+  el.innerHTML = '<p class="lab2">Le nom de ton affaire</p>'
+    + '<input id="mq-n" maxlength="22" value="' + (MQ.nom || '') + '">'
+    + '<p class="lab2">Ton signe</p><div class="gr">' + SIGNES.map(S =>
+        '<button data-s="' + S.k + '" class="' + (S.k === MQ.signe ? 'on' : '') + '">'
+        + signe(S.k, S.k === MQ.signe ? c.c2 : 'rgba(255,255,255,.5)') + '</button>').join('')
+    + '</div>'
+    + '<p class="lab2">Ta couleur</p><div class="gr co">' + COULEURS.map(S =>
+        '<button data-c="' + S.k + '" class="' + (S.k === MQ.couleur ? 'on' : '') + '">'
+        + '<span class="p" style="background:' + S.c + '"></span>'
+        + '<span>' + S.n + '</span></button>').join('') + '</div>'
+    + '<p class="lab2">La forme</p><div class="gr">' + ECUSSONS.map(S =>
+        '<button data-e="' + S.k + '" class="' + (S.k === MQ.ecusson ? 'on' : '') + '">'
+        + '<span style="width:22px;height:22px;border-radius:' + S.r + ';background:' + c.c
+        + '"></span></button>').join('') + '</div>'
+    + '<div class="ap" style="background:' + c.c + '1f;border-color:' + c.c + '55">'
+    + '<span class="em" style="background:' + c.c + ';border-radius:' + f + '">'
+    + signe(MQ.signe, '#fff') + '</span>'
+    + '<b style="color:' + c.c2 + '">' + (MQ.nom || 'Sans nom') + '</b></div>'
+    + '<button class="go" id="mq-go"' + (change && (MQ.nom||'').trim().length >= 2 ? '' : ' disabled')
+    + '>' + (change ? 'Enregistrer' : 'Rien à changer') + '</button>';
+
+  const i = document.getElementById('mq-n');
+  i.oninput = () => { MQ.nom = i.value; poserMarqueBouton(); };
+  el.querySelectorAll('[data-s]').forEach(b =>
+    b.onclick = () => { MQ.signe = b.dataset.s; poserMarque(); });
+  el.querySelectorAll('[data-c]').forEach(b =>
+    b.onclick = () => { MQ.couleur = b.dataset.c; poserMarque(); });
+  el.querySelectorAll('[data-e]').forEach(b =>
+    b.onclick = () => { MQ.ecusson = b.dataset.e; poserMarque(); });
+  document.getElementById('mq-go').onclick = async () => {
+    const b = document.getElementById('mq-go');
+    b.disabled = true; b.textContent = 'On écrit…';
+    const r = await BD.agir('renommer', { p_nom:MQ.nom.trim(), p_couleur:MQ.couleur,
+      p_signe:MQ.signe, p_ecusson:MQ.ecusson });
+    if (r.ok){
+      secousse('bien');
+      const f2 = await BD.charger(); Object.assign(MOI, f2);
+      MQ = null; poserMarque();
+    } else { b.textContent = "Ça n'a pas marché"; }
+  };
+}
+function poserMarqueBouton(){
+  const A = (MOI && MOI.affaire) || {};
+  const b = document.getElementById('mq-go');
+  if (!b) return;
+  const change = MQ.nom !== A.nom || MQ.couleur !== A.couleur
+    || MQ.signe !== A.signe || MQ.ecusson !== A.ecusson;
+  b.disabled = !(change && (MQ.nom||'').trim().length >= 2);
+  b.textContent = change ? 'Enregistrer' : 'Rien à changer';
 }
 
 let rgOuvert = false;
@@ -2265,6 +2488,7 @@ function basculerReglages(o){
 }
 
 /* ---------- les contrats ---------- */
+let MOI = null;
 let chargesCt = false;
 
 async function poserContrats(d, forcer){
@@ -2506,7 +2730,10 @@ function poserChantier(d){
       + '<p class="man">Il te manque ' + (S.prix - eur).toLocaleString('fr-FR') + ' €</p>';
 
   const go = document.getElementById('t-go');
-  if (go) go.onclick = () => construire(d, S);
+  if (go) go.onclick = () => demander(
+    'Construire ' + S.nom.toLowerCase() + ' ?', S.prix,
+    "Toussaint s'y met tout de suite. On ne revient pas dessus.",
+    () => construire(d, S));
 }
 
 let enTravaux = false;
@@ -2833,7 +3060,7 @@ function basculerMenu(forcer){
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
 document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
-function toutFermer(){ basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
+function toutFermer(){ fermerDemande(); basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
   basculerBarque(false); basculerFiche(false); basculerMenu(false); }
 document.getElementById('voile').onclick = toutFermer;
 document.getElementById('f-fer').onclick = () => basculerFiche(false);
@@ -2842,6 +3069,8 @@ document.getElementById('c-fer').onclick = () => basculerClassement(false);
 document.getElementById('t-fer').onclick = () => basculerChantier(false);
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
 document.getElementById('g-fer').onclick = () => basculerReglages(false);
+document.getElementById('c-non').onclick = fermerDemande;
+document.getElementById('c-oui').onclick = () => { const f = siOui; fermerDemande(); if (f) f(); };
 addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
 
 /* ---------- la barre du bas ---------- */
@@ -2901,6 +3130,7 @@ function poserAvatar(d){
     poserClassement(d);
     poserChantier(d);
     poserBas(d);
+    MOI = d;
     lireReglages();
     /* le troisième bouton devient ton anse, chez toi */
     const bm = document.getElementById('b-mar');
