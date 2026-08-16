@@ -52,6 +52,12 @@ const BD = (() => {
         .insert({ id: u.id, etape: 'personnage' }).select().single();
       data = neuf;
     }
+    /* on demande au serveur de recalculer l'énergie : elle monte
+       d'un point par minute, même quand le jeu est fermé */
+    try {
+      const { data: fraiche } = await c.rpc('ma_fiche');
+      if (fraiche) data = fraiche;
+    } catch(e){}
     docker = data;
     return docker;
   }
