@@ -138,6 +138,28 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .bq .suite .man{font-size:10px;color:rgba(255,255,255,.5);margin-top:7px;text-align:center}
 .bq .suite .fin{font-size:11.5px;color:#f0c46a;text-align:center;padding:6px 0}
 
+/* quand on n'a pas encore de bateau */
+.bq .vue.vide{background:linear-gradient(180deg,#3d7fa8 0%,#2e6d94 46%,#1f5478 100%)}
+.bq .fantome{opacity:.24;filter:grayscale(.4)}
+.bq .attente{position:absolute;left:0;right:0;bottom:9px;text-align:center;
+  font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.5)}
+.bq .offre{display:flex;align-items:center;gap:11px;
+  background:rgba(140,224,168,.13);border:1px solid rgba(140,224,168,.28);
+  border-radius:6px;padding:12px}
+.bq .offre .tx{flex:1;min-width:0}
+.bq .offre .tx b{display:block;font-size:13px;color:#fff;font-weight:700}
+.bq .offre .tx span{display:block;font-size:10.5px;color:rgba(255,255,255,.58);
+  margin-top:3px;line-height:1.45;font-family:system-ui,sans-serif}
+.bq .offre .px{flex:0 0 auto;text-align:right}
+.bq .offre .px em{display:block;font-style:normal;font-size:14px;font-weight:700;
+  color:#8ce0a8;white-space:nowrap}
+.bq .offre .px i{display:block;font-style:normal;font-size:8.5px;
+  color:rgba(255,255,255,.4);margin-top:2px}
+.bq .ou{font-size:11px;color:rgba(255,255,255,.55);line-height:1.65;
+  margin-top:11px;text-align:center}
+.bq .ou b{color:#f0c46a}
+
 /* ---------- la fiche ---------- */
 .fiche{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -1956,13 +1978,34 @@ function poserBarque(d){
   if (!el) return;
 
   if (!n){
-    document.getElementById('q-vue').querySelector('svg')?.remove();
-    document.getElementById('q-pal').textContent = 'Sans bateau';
-    document.getElementById('q-nom').textContent = 'Tu n\'as pas de barque';
+    const P1 = PALIERS_B[0];
+    const vue = document.getElementById('q-vue');
+    vue.classList.add('vide');
+    vue.querySelector('svg')?.remove();
+    vue.querySelector('.attente')?.remove();
+    /* on montre la coque qu'on pourrait avoir, en fantôme */
+    vue.insertAdjacentHTML('afterbegin',
+      '<svg class="fantome" viewBox="30 44 240 104" xmlns="http://www.w3.org/2000/svg">'
+      + barqueQ(1, false) + '</svg>');
+    vue.insertAdjacentHTML('beforeend',
+      '<span class="attente">Le mouillage est vide</span>');
+
+    document.getElementById('q-pal').textContent = 'Aucun palier';
+    document.getElementById('q-nom').textContent = 'Le mouillage est vide';
     document.getElementById('q-d').textContent =
-      'Toussaint sort le bois quand tu veux. La quille ne coûte rien.';
-    ['q-cale','q-kg','q-vit'].forEach(k => document.getElementById(k).textContent = '—');
-    el.innerHTML = '<p class="fin">Monte au chantier.</p>';
+      'Sans bateau tu ne sors pas du port, et sans sortir du port tu ne gagnes rien. '
+      + 'C\'est par là que tout commence.';
+    /* les chiffres montrent ce qu'on aurait, pas des tirets */
+    document.getElementById('q-cale').innerHTML = P1.places + ' <small>place</small>';
+    document.getElementById('q-kg').innerHTML = P1.kg + ' <small>kg</small>';
+    document.getElementById('q-vit').innerHTML = P1.vit.toFixed(1) + ' <small>nœud</small>';
+
+    el.innerHTML = '<p class="tt">Ce qui t\'attend</p>'
+      + '<div class="offre"><span class="tx"><b>' + P1.nom + '</b>'
+      + '<span>' + P1.d + '</span></span>'
+      + '<span class="px"><em>gratuite</em><i>palier 1</i></span></div>'
+      + '<p class="ou">Toussaint sort le bois quand tu veux.<br>'
+      + 'Va le voir au <b>chantier</b>.</p>';
     return;
   }
 
@@ -1971,6 +2014,8 @@ function poserBarque(d){
 
   /* le portrait de ta barque */
   const vue = document.getElementById('q-vue');
+  vue.classList.remove('vide');
+  vue.querySelector('.attente')?.remove();
   vue.querySelector('svg')?.remove();
   vue.insertAdjacentHTML('afterbegin',
     '<svg viewBox="30 44 240 104" xmlns="http://www.w3.org/2000/svg">'
