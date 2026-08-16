@@ -25,6 +25,55 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
+/* ---------- les réglages ---------- */
+.rg{position:fixed;z-index:22;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
+  background:rgba(20,34,50,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 12px 40px rgba(6,16,28,.6);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.rg.on{opacity:1;transform:none;pointer-events:auto}
+.rg::-webkit-scrollbar{display:none}
+.rg .haut{display:flex;align-items:center;padding:14px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.rg .haut .ti{flex:1}
+.rg .haut b{display:block;font-size:15px;color:#fff;font-weight:700;letter-spacing:.04em}
+.rg .haut span{display:block;font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-top:3px}
+.rg .haut .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.5);
+  font-size:22px;line-height:1;padding:3px 2px}
+.rg .grp{padding:6px 0}
+.rg .lab{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);padding:12px 15px 8px}
+.rg .li{display:flex;align-items:center;gap:12px;padding:13px 15px;
+  border-top:1px solid rgba(255,255,255,.08)}
+.rg .li .tx{flex:1;min-width:0}
+.rg .li .tx b{display:block;font-size:13.5px;color:#fff;font-weight:700}
+.rg .li .tx span{display:block;font-size:10.5px;color:rgba(255,255,255,.46);margin-top:3px;
+  font-family:system-ui,sans-serif;line-height:1.45}
+/* l'interrupteur */
+.bsc{flex:0 0 46px;height:26px;border-radius:14px;border:0;cursor:pointer;
+  background:rgba(255,255,255,.14);position:relative;transition:background .2s}
+.bsc.on{background:#8ce0a8}
+.bsc i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  background:#fff;transition:transform .22s cubic-bezier(.2,.9,.3,1);
+  box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.bsc.on i{transform:translateX(20px)}
+/* le choix multiple */
+.trio{display:flex;gap:5px;flex:0 0 auto}
+.trio button{padding:7px 11px;border:1.5px solid rgba(255,255,255,.18);border-radius:7px;
+  background:rgba(255,255,255,.05);cursor:pointer;font-size:10.5px;
+  color:rgba(255,255,255,.6);font-family:'Courier Prime',monospace}
+.trio button.on{border-color:rgba(240,196,106,.7);background:rgba(52,44,26,.6);
+  color:#f0c46a;font-weight:700}
+.rg .pied{padding:14px 15px;border-top:1px solid rgba(255,255,255,.14);
+  font-size:10px;color:rgba(255,255,255,.36);line-height:1.6;text-align:center;
+  font-family:system-ui,sans-serif}
+
 /* ---------- les contrats ---------- */
 .ct{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -506,6 +555,15 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .bas .trois span{font-size:10px;color:rgba(255,255,255,.66);letter-spacing:.04em;
   text-align:center;line-height:1.2}
 .bas .trois button.vif span{color:#f0c46a;font-weight:700}
+
+/* ================= ce que les réglages changent ================= */
+html.sans-anim *{animation:none !important;transition:none !important}
+html.sans-decor #scene .onde,
+html.sans-decor #scene .paill,
+html.sans-decor #scene .nuages,
+html.sans-decor #scene .etoile{display:none}
+html{font-size:calc(16px * var(--txt, 1))}
+.bulle,.dit p,.ct li .l1 .no,.bat .a{font-size:calc(11.5px * var(--txt, 1))}
 </style>
 </head>
 <body>
@@ -529,6 +587,15 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 </div>
 
 <div class="voile" id="voile"></div>
+
+<section class="rg" id="rg">
+  <div class="haut">
+    <span class="ti"><b>Réglages</b><span>Comme tu préfères</span></span>
+    <button class="fer" id="g-fer">×</button>
+  </div>
+  <div id="g-liste"></div>
+  <p class="pied" id="g-pied"></p>
+</section>
 
 <section class="ct" id="ct">
   <div class="haut">
@@ -2118,6 +2185,73 @@ function matricule(d){
   return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
 }
 
+/* ---------- les réglages ---------- */
+/* On les garde dans le navigateur : ils ne concernent que cet appareil. */
+const REG_DEFAUT = { animations:true, decor:true, secousse:true, texte:'normal' };
+let REG = Object.assign({}, REG_DEFAUT);
+
+function lireReglages(){
+  try {
+    const v = JSON.parse(localStorage.getItem('bd-reglages') || '{}');
+    REG = Object.assign({}, REG_DEFAUT, v);
+  } catch(e){ REG = Object.assign({}, REG_DEFAUT); }
+  appliquerReglages();
+}
+function ecrireReglages(){
+  try { localStorage.setItem('bd-reglages', JSON.stringify(REG)); } catch(e){}
+  appliquerReglages();
+}
+function appliquerReglages(){
+  const r = document.documentElement;
+  r.classList.toggle('sans-anim', !REG.animations);
+  r.classList.toggle('sans-decor', !REG.decor);
+  r.style.setProperty('--txt',
+    REG.texte === 'grand' ? '1.14' : REG.texte === 'petit' ? '.92' : '1');
+}
+
+const REGLAGES = [
+  { g:'Ce que tu vois' },
+  { k:'animations', n:'Les animations', s:"La mer, la fumée, tout ce qui bouge.", type:'bool' },
+  { k:'decor',      n:'Le décor animé', s:"Si ton téléphone chauffe, coupe-le.", type:'bool' },
+  { k:'texte',      n:'La taille du texte', s:"Pour lire sans forcer.", type:'trio',
+    choix:[['petit','Petit'],['normal','Normal'],['grand','Grand']] },
+  { g:'Ce que tu sens' },
+  { k:'secousse',   n:'Les vibrations', s:"Quand il se passe quelque chose.", type:'bool' }
+];
+
+function poserReglages(){
+  const el = document.getElementById('g-liste');
+  if (!el) return;
+  el.innerHTML = REGLAGES.map(R => {
+    if (R.g) return '<p class="lab">' + R.g + '</p>';
+    let cmd;
+    if (R.type === 'bool')
+      cmd = '<button class="bsc ' + (REG[R.k] ? 'on' : '') + '" data-b="' + R.k + '"><i></i></button>';
+    else
+      cmd = '<span class="trio">' + R.choix.map(([v, n]) =>
+        '<button data-t="' + R.k + '" data-v="' + v + '" class="'
+        + (REG[R.k] === v ? 'on' : '') + '">' + n + '</button>').join('') + '</span>';
+    return '<div class="li"><span class="tx"><b>' + R.n + '</b>'
+      + '<span>' + R.s + '</span></span>' + cmd + '</div>';
+  }).join('');
+
+  document.getElementById('g-pied').textContent =
+    "Ces réglages restent sur cet appareil. Ils ne changent rien à ta partie.";
+
+  el.querySelectorAll('[data-b]').forEach(b =>
+    b.onclick = () => { REG[b.dataset.b] = !REG[b.dataset.b]; ecrireReglages(); poserReglages(); });
+  el.querySelectorAll('[data-t]').forEach(b =>
+    b.onclick = () => { REG[b.dataset.t] = b.dataset.v; ecrireReglages(); poserReglages(); });
+}
+
+let rgOuvert = false;
+function basculerReglages(o){
+  rgOuvert = o === undefined ? !rgOuvert : o;
+  document.getElementById('rg').classList.toggle('on', rgOuvert);
+  majVoile();
+  if (rgOuvert) poserReglages();
+}
+
 /* ---------- les contrats ---------- */
 let chargesCt = false;
 
@@ -2440,7 +2574,7 @@ function basculerClassement(forcer){
 
 function majVoile(){
   document.getElementById('voile').classList.toggle('on',
-    ctOuvert || chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
+    rgOuvert || ctOuvert || chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
 }
 
 /* ---------- la barque ---------- */
@@ -2651,7 +2785,8 @@ function poserMenu(d){
     { k:'livret', n:'Le livret',    s:'Ce que tu as appris',       ouvert:false },
     { k:'gens',   n:'Le classement', s:'Qui mène la danse',        ouvert:true,
       f:() => { basculerMenu(false); basculerClassement(true); } },
-    { k:'reglages', n:'Réglages',   s:'Son, animations',           ouvert:false },
+    { k:'reglages', n:'Réglages',   s:'Animations, texte, vibrations', ouvert:true,
+      f:() => { basculerMenu(false); basculerReglages(true); } },
     { k:'sortie', n:'Se déconnecter', s:'',                        ouvert:true, sortie:true,
       f:async () => { try { await BD.deconnexion(); } catch(e){} location.href = 'index.html'; } }
   ];
@@ -2684,7 +2819,7 @@ function basculerMenu(forcer){
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
 document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
-function toutFermer(){ basculerContrats(false); basculerChantier(false); basculerClassement(false);
+function toutFermer(){ basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
   basculerBarque(false); basculerFiche(false); basculerMenu(false); }
 document.getElementById('voile').onclick = toutFermer;
 document.getElementById('f-fer').onclick = () => basculerFiche(false);
@@ -2692,6 +2827,7 @@ document.getElementById('q-fer').onclick = () => basculerBarque(false);
 document.getElementById('c-fer').onclick = () => basculerClassement(false);
 document.getElementById('t-fer').onclick = () => basculerChantier(false);
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
+document.getElementById('g-fer').onclick = () => basculerReglages(false);
 addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
 
 /* ---------- la barre du bas ---------- */
@@ -2751,6 +2887,7 @@ function poserAvatar(d){
     poserClassement(d);
     poserChantier(d);
     poserBas(d);
+    lireReglages();
     /* le troisième bouton devient ton anse, chez toi */
     const bm = document.getElementById('b-mar');
     if (d.port === 'anse' && !d.parti_le){
