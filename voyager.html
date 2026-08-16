@@ -809,7 +809,8 @@ document.getElementById('ret').onclick = () => location.href = 'jeu.html';
   bt.textContent = assez ? 'Larguer les amarres' : 'Tu es trop fatigué';
   document.getElementById('sous').textContent = assez
     ? 'Il te restera ' + Math.round(nrj - CAP.nrj) + " d'énergie en arrivant."
-    : 'Il te manque ' + Math.round(CAP.nrj - nrj) + " d'énergie. Repose-toi d'abord.";
+    : 'Il te manque ' + Math.round(CAP.nrj - nrj) + " d'énergie — "
+      + Math.round(CAP.nrj - nrj) + ' minutes de repos.';
   if (assez) bt.onclick = async () => {
     bt.disabled = true; bt.textContent = 'On largue…';
     const r = await BD.agir('partir_en_mer', { destination: CAP.k });
