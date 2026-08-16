@@ -1364,7 +1364,7 @@ function jouer(cle){
     const p = document.createElement('p');
     if (t.trim().startsWith('«')) p.className = 'parle';
     p.textContent = t;
-    p.style.animationDelay = (i * .62) + 's';
+    p.style.animationDelay = (i * .5) + 's';
     L.appendChild(p);
   });
   let n = E.dit.length;
@@ -1374,16 +1374,14 @@ function jouer(cle){
       const p = document.createElement('p');
       p.className = 'souffle';
       p.innerHTML = '<em>Ton instinct</em>' + E.lire.texte;
-      p.style.animationDelay = (n * .62) + 's';
+      p.style.animationDelay = (n * .5) + 's';
       L.appendChild(p); n++;
     }
   }
-  /* on descend doucement à mesure que les répliques arrivent */
+  /* on remonte en haut : c'est au joueur de descendre quand il a lu */
   const D = document.querySelector('.dit');
   D.scrollTop = 0;
-  const suivre = () => D.scrollTo({ top: D.scrollHeight, behavior: 'smooth' });
-  for (let i = 1; i <= n + 2; i++) setTimeout(suivre, i * 620 + 200);
-  C.style.animationDelay = (n * .62 + .35) + 's';
+  C.style.animationDelay = (n * .5 + .3) + 's';
   E.choix.forEach(c => {
     const ok = assez(c.besoin);
     const b = document.createElement('button');
