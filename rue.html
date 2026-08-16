@@ -1237,6 +1237,26 @@ document.querySelectorAll('[data-k="bateau"]').forEach(b =>
 
 document.getElementById('ret').onclick = () => location.href = 'barcelone.html';
 
+/* on peut toucher le type qui attend */
+document.getElementById('rue').style.cursor = 'default';
+function poserMiquel(vecue){
+  const svg = document.querySelector('#rue svg');
+  const g = svg && svg.querySelector('.pnj');
+  if (!g) return;
+  if (vecue){ g.querySelector('.signe')?.remove(); return; }
+  g.style.cursor = 'pointer';
+  g.onclick = () => location.href = 'miquel.html';
+  /* une zone plus large, pour ne pas avoir à viser */
+  const b = g.getBBox();
+  const z = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  z.setAttribute('x', b.x - 14); z.setAttribute('y', b.y - 6);
+  z.setAttribute('width', b.width + 28); z.setAttribute('height', b.height + 12);
+  z.setAttribute('fill', 'transparent');
+  z.style.cursor = 'pointer';
+  z.onclick = () => location.href = 'miquel.html';
+  svg.appendChild(z);
+}
+
 /* ---------- la fiche du joueur ---------- */
 (async () => {
   let d;
@@ -1268,6 +1288,9 @@ document.getElementById('ret').onclick = () => location.href = 'barcelone.html';
   vue.insertAdjacentHTML('afterbegin',
     '<svg viewBox="30 44 240 104" xmlns="http://www.w3.org/2000/svg">'
     + barqueQ(n, false) + '</svg>');
+
+  /* le signe au-dessus de sa tête disparaît une fois la scène vécue */
+  poserMiquel((d.rencontres || []).includes('miquel'));
 })();
 
 let t = null;
