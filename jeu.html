@@ -416,6 +416,28 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 @keyframes suit{0%,100%{transform:translateY(0)}52%{transform:translateY(.8px)}}
 
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+/* ================= la barre du bas ================= */
+.bas{position:fixed;left:0;right:0;bottom:0;z-index:12;
+  padding:0 14px calc(env(safe-area-inset-bottom) + 14px);
+  opacity:0;transition:opacity .5s;pointer-events:none}
+.bas.pret{opacity:1;pointer-events:auto}
+.bas .trois{display:flex;gap:8px}
+.bas .trois button{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:12px 4px;border:2px solid rgba(255,255,255,.26);border-radius:8px;
+  background:rgba(18,34,52,.5);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 4px 16px rgba(8,20,32,.36);cursor:pointer;
+  font-family:'Courier Prime',monospace;transition:transform .11s}
+.bas .trois button:active{transform:scale(.96)}
+.bas .trois button:disabled{opacity:.4;cursor:default}
+.bas .trois button.vif{border-color:rgba(240,196,106,.7);background:rgba(48,42,26,.56)}
+.bas .trois svg{width:22px;height:22px;stroke:rgba(255,255,255,.66);fill:none;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.bas .trois button.vif svg{stroke:#f0c46a}
+.bas .trois span{font-size:10px;color:rgba(255,255,255,.66);letter-spacing:.04em;
+  text-align:center;line-height:1.2}
+.bas .trois button.vif span{color:#f0c46a;font-weight:700}
 </style>
 </head>
 <body>
@@ -423,6 +445,20 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 <div id="sc"></div>
 
 <div class="av" id="av"></div>
+
+<div class="bas" id="bas">
+  <div class="trois">
+    <button id="b-mer" class="vif">
+      <svg viewBox="0 0 24 24"><path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/></svg>
+      <span id="b-mer-t">Prendre la mer</span></button>
+    <button id="b-tra">
+      <svg viewBox="0 0 24 24"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zM9 5h6v2H9zM3 12h18"/></svg>
+      <span>Travailler</span></button>
+    <button id="b-mar" disabled>
+      <svg viewBox="0 0 24 24"><path d="M4 8h16v13H4zM4 8l2-4h12l2 4M9 21v-7h6v7"/></svg>
+      <span>Le marché</span></button>
+  </div>
+</div>
 
 <div class="voile" id="voile"></div>
 
@@ -2439,6 +2475,30 @@ document.getElementById('c-fer').onclick = () => basculerClassement(false);
 document.getElementById('t-fer').onclick = () => basculerChantier(false);
 addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
 
+/* ---------- la barre du bas ---------- */
+function poserBas(d){
+  const el = document.getElementById('bas');
+  if (!el) return;
+  const aBateau = Number(d.barque || 0) > 0;
+  const mer = document.getElementById('b-mer');
+
+  /* sans bateau, on ne prend pas la mer : le bouton mène au chantier */
+  mer.classList.toggle('vif', aBateau);
+  document.getElementById('b-mer-t').textContent = aBateau ? 'Prendre la mer' : 'Un bateau';
+  mer.onclick = aBateau
+    ? () => location.href = 'voyager.html'
+    : () => basculerChantier(true);
+
+  /* le chantier prend la place de Travailler tant qu'on n'a rien à faire */
+  document.getElementById('b-tra').onclick = () => basculerChantier(true);
+  if (!aBateau){
+    document.getElementById('b-tra').classList.add('vif');
+    document.getElementById('b-tra').querySelector('span').textContent = 'Le chantier';
+  }
+
+  el.classList.add('pret');
+}
+
 function poserAvatar(d){
   const el = document.getElementById('av');
   if (!el) return;
@@ -2463,6 +2523,7 @@ function poserAvatar(d){
     poserBarque(d);
     poserClassement(d);
     poserChantier(d);
+    poserBas(d);
     /* le décor montre ta vraie barque, ou l'eau nue si tu n'en as pas */
     if (Number(d.barque || 0) !== NIVEAU_BARQUE){
       NIVEAU_BARQUE = Number(d.barque || 0);
