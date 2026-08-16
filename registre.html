@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f4f0e6">
+<title>Battle Dock — Le registre</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;
+  background:#f2ede1;color:#23303f;
+  font-family:'Courier Prime',monospace}
+
+/* le papier : un grain très fin, et une ombre douce sur les bords */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%,rgba(255,252,245,.9),transparent 60%),
+    radial-gradient(ellipse 90% 60% at 50% 100%,rgba(196,180,150,.22),transparent 62%);
+}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.4;
+  background-image:radial-gradient(circle at 1px 1px,rgba(120,100,70,.09) 1px,transparent 0);
+  background-size:4px 4px}
+
+/* ---------- l'avancement ---------- */
+.pas{position:fixed;left:0;right:0;top:0;z-index:6;
+  padding:calc(env(safe-area-inset-top) + 18px) 24px 0;
+  display:flex;align-items:center;gap:14px}
+.pas .ret{flex:0 0 36px;height:36px;border-radius:50%;
+  border:1.5px solid rgba(35,48,63,.2);background:rgba(255,253,248,.7);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  opacity:0;transition:opacity .3s}
+.pas .ret.on{opacity:1}
+.pas .ret svg{width:16px;height:16px;stroke:#4a5a6d;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.pas .barres{flex:1;display:flex;gap:5px}
+.pas .barres i{flex:1;height:2.5px;border-radius:2px;background:rgba(35,48,63,.14);
+  transition:background .45s}
+.pas .barres i.on{background:#b8863a}
+.pas .n{flex:0 0 auto;font-size:9px;letter-spacing:.18em;color:rgba(35,48,63,.42)}
+
+/* ---------- l'écran ---------- */
+.ec{position:fixed;inset:0;z-index:4;display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top) + 74px) 24px calc(env(safe-area-inset-bottom) + 22px);
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity .45s,transform .55s cubic-bezier(.2,.85,.3,1)}
+.ec.on{opacity:1;transform:none;pointer-events:auto}
+
+.ec .haut{flex:0 0 auto;margin-bottom:20px}
+.ec .sur{font-size:8.5px;letter-spacing:.34em;text-transform:uppercase;color:#b8863a;
+  font-weight:700}
+.ec h1{font-family:'Fraunces',Georgia,serif;font-size:36px;font-weight:600;
+  line-height:1.06;margin-top:11px;letter-spacing:-.02em;color:#1b2836}
+.ec .dit{font-size:13.5px;line-height:1.72;color:rgba(35,48,63,.62);margin-top:13px;
+  font-family:system-ui,sans-serif;max-width:330px}
+
+.ec .corps{flex:1;overflow-y:auto;min-height:0;margin:0 -24px;padding:2px 24px 8px}
+.ec .corps::-webkit-scrollbar{display:none}
+
+/* ---------- les choix ---------- */
+.opt{width:100%;text-align:left;display:block;padding:18px 20px;margin-bottom:11px;
+  border:1.5px solid rgba(35,48,63,.13);border-radius:3px;
+  background:#fffdf8;cursor:pointer;position:relative;
+  box-shadow:0 1px 2px rgba(80,64,40,.05),0 6px 18px rgba(80,64,40,.045);
+  font-family:'Courier Prime',monospace;transition:all .2s cubic-bezier(.2,.8,.3,1)}
+.opt:active{transform:scale(.99)}
+.opt.on{border-color:#b8863a;background:#fdf6e8;
+  box-shadow:0 1px 2px rgba(184,134,58,.12),0 8px 26px rgba(184,134,58,.15)}
+/* le liseré ambre à gauche, quand c'est choisi */
+.opt::before{content:"";position:absolute;left:-1.5px;top:-1.5px;bottom:-1.5px;width:3px;
+  background:#b8863a;border-radius:3px 0 0 3px;opacity:0;transition:opacity .2s}
+.opt.on::before{opacity:1}
+.opt b{display:block;font-family:'Fraunces',Georgia,serif;font-size:20px;
+  font-weight:600;color:#1b2836;letter-spacing:-.01em}
+.opt .s{display:block;font-size:12.5px;color:rgba(35,48,63,.6);margin-top:8px;
+  font-family:system-ui,sans-serif;line-height:1.62}
+.opt .ef{display:inline-block;font-size:11.5px;margin-top:12px;
+  padding:5px 12px;border-radius:20px;background:rgba(74,122,84,.11);color:#3f6b48;
+  font-family:system-ui,sans-serif;font-weight:600}
+.opt .n{display:block;font-size:12px;color:rgba(35,48,63,.4);margin-top:10px;
+  font-family:system-ui,sans-serif;font-style:italic;line-height:1.55}
+.opt .duo{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}
+.opt .duo span{font-size:11px;padding:5px 12px;border-radius:20px;
+  background:rgba(74,122,84,.11);color:#3f6b48;font-family:system-ui,sans-serif;
+  font-weight:600}
+.opt .duo span.moins{background:rgba(176,86,58,.1);color:#a8543a}
+
+/* ---------- les grilles ---------- */
+.gr{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.gr button{aspect-ratio:1;border:1.5px solid rgba(35,48,63,.13);border-radius:3px;
+  background:#fffdf8;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 2px rgba(80,64,40,.05),0 5px 14px rgba(80,64,40,.04);
+  transition:all .2s cubic-bezier(.2,.8,.3,1)}
+.gr button.on{border-color:#b8863a;background:#fdf6e8;transform:scale(1.05);
+  box-shadow:0 2px 4px rgba(184,134,58,.14),0 8px 22px rgba(184,134,58,.16)}
+.gr button svg{width:34px;height:34px}
+.gr.coul button{flex-direction:column;gap:10px}
+.gr.ecus button{flex-direction:column;gap:10px}
+.gr.ecus .f{width:34px;height:34px;background:#1b2836}
+.gr.ecus span{font-size:8.5px;color:rgba(35,48,63,.52)}
+.gr.coul .p{width:32px;height:32px;border-radius:3px;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.16)}
+.gr.coul span{font-size:8.5px;color:rgba(35,48,63,.52);text-align:center;line-height:1.25;
+  padding:0 3px}
+
+/* ---------- le nom ---------- */
+.champ input{width:100%;padding:22px 20px;border:0;border-bottom:2px solid rgba(35,48,63,.2);
+  background:transparent;color:#1b2836;
+  font-family:'Fraunces',Georgia,serif;font-size:27px;font-weight:600;
+  text-align:center;-webkit-user-select:text;user-select:text;letter-spacing:-.01em}
+.champ input:focus{outline:none;border-bottom-color:#b8863a}
+.champ input::placeholder{color:rgba(35,48,63,.24);font-style:italic}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;justify-content:center}
+.sugg button{padding:9px 15px;border:1px solid rgba(35,48,63,.15);border-radius:20px;
+  background:#fffdf8;cursor:pointer;font-size:11.5px;color:rgba(35,48,63,.62);
+  font-family:'Courier Prime',monospace;transition:all .18s}
+.sugg button:active{background:#fdf6e8;border-color:#b8863a}
+
+/* ---------- la fiche finale ---------- */
+.acte{background:#fffdf8;border:1.5px solid rgba(35,48,63,.14);border-radius:3px;
+  overflow:hidden;box-shadow:0 2px 5px rgba(80,64,40,.06),0 14px 40px rgba(80,64,40,.09)}
+.acte .ban{display:flex;align-items:center;gap:16px;padding:22px}
+.acte .ban .em{flex:0 0 58px;height:58px;border-radius:3px;display:flex;
+  align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.16)}
+.acte .ban .em svg{width:34px;height:34px}
+.acte .ban .tx b{display:block;font-family:'Fraunces',Georgia,serif;font-size:25px;
+  font-weight:700;line-height:1.12;letter-spacing:-.02em}
+.acte .ban .tx span{display:block;font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;margin-top:7px;color:rgba(35,48,63,.5)}
+.acte ul{list-style:none;border-top:1px solid rgba(35,48,63,.1)}
+.acte li{display:flex;align-items:baseline;padding:13px 22px;
+  border-bottom:1px solid rgba(35,48,63,.07)}
+.acte li:last-child{border-bottom:0}
+.acte li span{flex:0 0 44%;font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(35,48,63,.42)}
+.acte li b{flex:1;font-size:13px;font-weight:700;color:#1b2836}
+.acte .pied{padding:16px 22px;background:rgba(184,134,58,.07);
+  border-top:1px solid rgba(184,134,58,.2);
+  font-size:11px;color:rgba(35,48,63,.55);font-family:system-ui,sans-serif;
+  line-height:1.6;text-align:center;font-style:italic}
+
+/* ---------- le bouton ---------- */
+.bas{flex:0 0 auto;padding-top:16px}
+.bas button{width:100%;padding:19px;border:0;border-radius:3px;cursor:pointer;
+  background:#1b2836;color:#f6f2e8;
+  box-shadow:0 3px 10px rgba(27,40,54,.2),0 10px 30px rgba(27,40,54,.14);
+  font-family:'Courier Prime',monospace;font-size:14.5px;font-weight:700;letter-spacing:.1em;
+  transition:transform .12s,opacity .2s}
+.bas button:active{transform:scale(.985)}
+.bas button:disabled{background:rgba(35,48,63,.1);color:rgba(35,48,63,.32);
+  box-shadow:none;cursor:default}
+.bas .mot{font-size:10.5px;color:rgba(35,48,63,.42);text-align:center;margin-top:12px;
+  font-family:system-ui,sans-serif;line-height:1.6}
+
+/* l'anse, en filigrane dans un cadre */
+.vue{height:110px;border-radius:3px;overflow:hidden;margin-bottom:18px;
+  border:1.5px solid rgba(35,48,63,.13);
+  box-shadow:0 2px 6px rgba(80,64,40,.07)}
+.vue svg{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+
+<div class="pas">
+  <button class="ret" id="ret"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="barres" id="barres"></span>
+  <span class="n" id="n">1 / 8</span>
+</div>
+
+<div class="ec" id="ec">
+  <div class="haut">
+    <p class="sur" id="e-sur">—</p>
+    <h1 id="e-t">—</h1>
+    <p class="dit" id="e-d">—</p>
+  </div>
+  <div class="corps" id="e-c"></div>
+  <div class="bas">
+    <button id="e-b">Continuer</button>
+    <p class="mot" id="e-m"></p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+/* ============================================================
+   TON ANSE — une calanque des Goudes, vue depuis l'eau
+   ============================================================ */
+
+const W = 480;
+const FOCALE = 727;
+const OEIL = 1.4;              /* on est dans la barque, assis bas */
+const HORIZON = 236;
+
+const px  = (m, d) => m * FOCALE / d;
+const sol = d => HORIZON + OEIL * FOCALE / d;
+const projX = (X, d) => 240 + X * FOCALE / d;
+const rnd = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+const rnd2 = (a, b) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5; return x - Math.floor(x); };
+
+function hx(c){ return [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)]; }
+function ch(a){ return '#' + a.map(v => Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join(''); }
+function mel(a, b, k){ const A = hx(a), B = hx(b); return ch([0,1,2].map(i => A[i] + (B[i]-A[i]) * k)); }
+
+/* ---------- le temps qu'il fait ---------- */
+const TEMPS = {
+  matin: {
+    nom: 'Au petit matin',
+    ciel: ['#2a5a8c','#4d84b0','#82aecb','#b8cfd8','#e0d0b4','#f4dcb0'],
+    eau:  ['#c4b090','#8fa8ac','#4a8296','#2e6b82','#215a70','#194c60'],
+    roche:'#d8c8a8', rocheO:'#9a8a72', pin:'#4a6b52',
+    soleil:{ x:196, y:150, r:13 }, or:'#ffd8a0', ombre:'#2a3a54', voile:.2 },
+  midi: {
+    nom: 'En plein midi',
+    ciel: ['#1f6ea8','#3d8ec2','#6aa8cf','#9ec6da','#c4dae4','#e2eef0'],
+    eau:  ['#b8dce0','#7fc8d4','#3fa0bc','#2b83a4','#1f6c8e','#175a7c'],
+    roche:'#f0e4c8', rocheO:'#b8a888', pin:'#3f6b48',
+    soleil:{ x:250, y:36, r:15 }, or:'#fff0c8', ombre:'#1c3a56', voile:.08 },
+  mistral: {
+    nom: 'Le mistral se lève',
+    ciel: ['#1a5a92','#3878ac','#6098c0','#8fb8d0','#b4cdd8','#d0dde0'],
+    eau:  ['#a8c8cc','#6faabc','#3a7f9c','#2a6784','#1e5570','#164560'],
+    roche:'#e4d8bc', rocheO:'#a89880', pin:'#44684c',
+    soleil:{ x:300, y:74, r:14 }, or:'#ffe8bc', ombre:'#20364e', voile:.1 },
+  soir: {
+    nom: 'À la tombée du jour',
+    ciel: ['#14284a','#28466c','#4a6484','#7a7a86','#c08a6c','#e8a870'],
+    eau:  ['#c08058','#7a6a62','#3f5468','#2a3f52','#1f3044','#17253a'],
+    roche:'#c4a884', rocheO:'#7a6a58', pin:'#33503c',
+    soleil:{ x:120, y:212, r:16 }, or:'#ffb870', ombre:'#141e30', voile:.24 },
+  nuit: {
+    nom: 'La nuit est tombée',
+    ciel: ['#080f22','#0e1a34','#182a48','#26405e','#3a5470','#4e6480'],
+    eau:  ['#3a4a5e','#2a3a4e','#1e2c40','#182438','#121c2e','#0e1626'],
+    roche:'#6a6270', rocheO:'#3a3848', pin:'#1f3038',
+    soleil:{ x:330, y:60, r:9 }, or:'#a8c0e0', ombre:'#060a14', voile:.34 }
+};
+let T = TEMPS.matin;
+/* on choisit le temps qu'il fait */
+function regler(t){ T = TEMPS[t] || TEMPS.matin; return T; }
+
+const clair  = (c, k) => mel(c, T.or, k === undefined ? .3 : k);
+const sombre = (c, k) => mel(c, T.ombre, k === undefined ? .3 : k);
+const voiler = (c, d) => mel(c, mel(T.ciel[4], T.or, .3), Math.min(.62, Math.pow(d / 260, .8)));
+
+let HAUT = -120, BAS = 900;
+function cadrer(l, h){
+  const total = W * h / l;
+  HAUT = HORIZON - total * .56;
+  BAS  = HAUT + total;
+  return { y: HAUT, h: total };
+}
+
+/* ---------- le ciel et la mer ---------- */
+function ciel(){
+  let s = `<defs>
+    <linearGradient id="a-ciel" x1="0" y1="0" x2="0" y2="1">`
+    + T.ciel.map((c,i) => `<stop offset="${[0,22,44,64,84,100][i]}%" stop-color="${c}"/>`).join('')
+    + `</linearGradient>
+    <linearGradient id="a-eau" x1="0" y1="0" x2="0" y2="1">`
+    + T.eau.map((c,i) => `<stop offset="${[0,6,20,44,72,100][i]}%" stop-color="${c}"/>`).join('')
+    + `</linearGradient>
+    <radialGradient id="a-halo" cx="0.5" cy="0.5">
+      <stop offset="0%" stop-color="${T.or}" stop-opacity=".5"/>
+      <stop offset="45%" stop-color="${T.or}" stop-opacity=".16"/>
+      <stop offset="100%" stop-color="${T.or}" stop-opacity="0"/></radialGradient>
+  </defs>`;
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(sol(600)-HAUT).toFixed(1)}"
+    fill="url(#a-ciel)"/>`;
+  /* le soleil et son halo */
+  s += `<ellipse cx="${T.soleil.x}" cy="${T.soleil.y}" rx="190" ry="140" fill="url(#a-halo)"/>`;
+  s += `<circle cx="${T.soleil.x}" cy="${T.soleil.y}" r="${T.soleil.r}"
+    fill="${mel('#fffdf4', T.or, .3)}" opacity="${T === TEMPS.nuit ? .9 : 1}"/>`;
+  /* les étoiles, la nuit */
+  if (T === TEMPS.nuit)
+    for (let i = 0; i < 34; i++)
+      s += `<circle class="etoile e${i%4}" cx="${(rnd(i*19+2)*W).toFixed(0)}"
+        cy="${(HAUT + rnd(i*13+7) * (HORIZON-HAUT) * .9).toFixed(0)}"
+        r="${(.5+rnd(i*23+2)*.8).toFixed(2)}" fill="#fff" opacity=".6"/>`;
+  return s;
+}
+
+/* ---------- les falaises qui referment l'anse ---------- */
+/* Deux parois de calcaire, l'une à gauche l'autre à droite, qui
+   se rapprochent en s'éloignant : c'est ça, une calanque. */
+function falaise(cote, g){
+  const P = [[92, 11], [72, 12.5], [56, 11], [43, 13.5], [33, 11.5], [25, 15],
+             [18.5, 12.5], [13.6, 17], [10, 14], [7.2, 20], [5, 16], [3.4, 24]];
+  let d = '';
+  /* la ligne de crête, du fond vers nous */
+  P.forEach(([dd, X], i) => {
+    const h = 13 + Math.sin(i * 1.7 + g) * 6 + Math.sin(i * .6) * 4.5;
+    const x = projX(cote * X, dd), y = sol(dd) - px(h, dd);
+    d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+  });
+  /* puis la ligne d'eau, de nous vers le fond */
+  for (let i = P.length - 1; i >= 0; i--){
+    const [dd, X] = P[i];
+    d += 'L' + projX(cote * X, dd).toFixed(1) + ' ' + sol(dd).toFixed(1) + ' ';
+  }
+  d += 'Z';
+
+  let s = `<g>`;
+  s += `<path d="${d}" fill="${cote < 0 ? clair(T.roche, .18) : sombre(T.roche, .3)}"/>`;
+  s += `<defs><clipPath id="a-f${g}"><path d="${d}"/></clipPath></defs>`;
+  s += `<g clip-path="url(#a-f${g})">`;
+  /* les strates du calcaire, presque horizontales */
+  s += `<g stroke="${sombre(T.rocheO, .12)}" stroke-width=".9" fill="none" opacity=".3">`;
+  for (let k = 0; k < 12; k++){
+    let p = '';
+    P.forEach(([dd, X], i) => {
+      const y = sol(dd) - px(1.2 + k * 1.9, dd);
+      p += (i ? 'L' : 'M') + projX(cote * X, dd).toFixed(1) + ' ' + y.toFixed(1) + ' ';
+    });
+    s += `<path d="${p}"/>`;
+  }
+  s += `</g>`;
+  /* les creux et les vires */
+  for (let k = 0; k < 22; k++){
+    const dd = 4 + rnd(g * 7 + k) * 80;
+    const X = cote * (10 + rnd(g * 11 + k) * 10);
+    const h = rnd(g * 3 + k) * 17;
+    s += `<ellipse cx="${projX(X, dd).toFixed(1)}" cy="${(sol(dd) - px(h, dd)).toFixed(1)}"
+      rx="${px(1.6 + rnd(k) * 2.4, dd).toFixed(1)}" ry="${px(.9 + rnd(k+3) * 1.4, dd).toFixed(1)}"
+      fill="${sombre(T.rocheO, .2)}" opacity="${(.1 + rnd(k+5) * .2).toFixed(2)}"/>`;
+  }
+  /* la ligne d'eau, plus sombre : la roche est mouillée */
+  P.forEach(([dd, X], i) => {
+    if (i >= P.length - 1) return;
+    const [d2, X2] = P[i + 1];
+    s += `<path d="M${projX(cote*X, dd).toFixed(1)} ${(sol(dd) - px(.7, dd)).toFixed(1)}
+      L${projX(cote*X2, d2).toFixed(1)} ${(sol(d2) - px(.7, d2)).toFixed(1)}
+      L${projX(cote*X2, d2).toFixed(1)} ${sol(d2).toFixed(1)}
+      L${projX(cote*X, dd).toFixed(1)} ${sol(dd).toFixed(1)} Z"
+      fill="${sombre(T.rocheO, .42)}" opacity=".55"/>`;
+  });
+  s += `</g>`;
+
+  /* les pins d'Alep, accrochés en haut */
+  for (let k = 0; k < 16; k++){
+    const dd = 6 + rnd(g * 5 + k + 40) * 86;
+    const X = cote * (9.6 + rnd(g * 13 + k) * 9);
+    const h = 14 + Math.sin(k * 1.7 + g) * 5 + rnd(k) * 5;
+    const x = projX(X, dd), y = sol(dd) - px(h, dd), t = px(2.6, dd);
+    if (t < .8) continue;
+    s += `<g class="pin">`;
+    s += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} l${(t*.06).toFixed(1)} ${(-t*.5).toFixed(1)}"
+      stroke="${sombre('#5a4a38', .3)}" stroke-width="${Math.max(.4, t*.09).toFixed(2)}"/>`;
+    /* le parasol du pin d'Alep : plat et irrégulier */
+    [[0,-.6,1],[-.5,-.5,.66],[.5,-.52,.7],[-.24,-.72,.5],[.28,-.7,.46]].forEach(([dx,dy,r],q)=>
+      s += `<ellipse cx="${(x + dx*t*.8).toFixed(1)}" cy="${(y + dy*t).toFixed(1)}"
+        rx="${(t*.62*r).toFixed(1)}" ry="${(t*.3*r).toFixed(1)}"
+        fill="${q%2 ? voiler(T.pin, dd) : voiler(clair(T.pin,.24), dd)}"/>`);
+    s += `</g>`;
+  }
+  return s + `</g>`;
+}
+
+/* ---------- le fond de l'anse : la plage de galets ---------- */
+function fond(){
+  const d = 24, y = sol(d);
+  let s = '';
+  /* la bande de galets entre les deux falaises */
+  s += `<path d="M${projX(-11, d).toFixed(1)} ${y.toFixed(1)}
+    Q${projX(-5, d*1.14).toFixed(1)} ${(sol(d*1.14) - px(.6, d)).toFixed(1)}
+     ${projX(0, d*1.2).toFixed(1)} ${(sol(d*1.2) - px(.5, d)).toFixed(1)}
+    Q${projX(5, d*1.14).toFixed(1)} ${(sol(d*1.14) - px(.6, d)).toFixed(1)}
+     ${projX(11, d).toFixed(1)} ${y.toFixed(1)} Z"
+    fill="${voiler(clair(T.roche, .2), d)}"/>`;
+  /* les galets */
+  for (let k = 0; k < 90; k++){
+    const dd = d * (1 + rnd(k*3) * .2);
+    const X = (rnd(k*7+1) - .5) * 21;
+    const x = projX(X, dd), yy = sol(dd) - px(rnd(k*5)*.5, dd);
+    s += `<ellipse cx="${x.toFixed(1)}" cy="${yy.toFixed(1)}" rx="${px(.28,dd).toFixed(2)}"
+      ry="${px(.14,dd).toFixed(2)}" fill="${rnd(k) > .5 ? voiler(T.roche, dd) : voiler(T.rocheO, dd)}"
+      opacity="${(.3+rnd(k+2)*.4).toFixed(2)}"/>`;
+  }
+  /* la garrigue derrière, qui monte */
+  for (let k = 0; k < 40; k++){
+    const dd = d * (1.18 + rnd(k*11) * .3);
+    const X = (rnd(k*13+3) - .5) * 23;
+    const h = 1 + rnd(k*3+7) * 2.2;
+    s += `<ellipse cx="${projX(X, dd).toFixed(1)}" cy="${(sol(dd) - px(h*.5, dd)).toFixed(1)}"
+      rx="${px(.9 + rnd(k)*.8, dd).toFixed(1)}" ry="${px(h*.5, dd).toFixed(1)}"
+      fill="${voiler(rnd(k+1) > .4 ? T.pin : mel(T.pin,'#8a9a5c',.5), dd)}"
+      opacity="${(.5+rnd(k+4)*.4).toFixed(2)}"/>`;
+  }
+  return s;
+}
+
+/* ---------- l'eau ---------- */
+function eau(){
+  const yh = sol(600);
+  let s = `<rect x="0" y="${yh.toFixed(1)}" width="${W}"
+    height="${(BAS - yh + 6).toFixed(1)}" fill="url(#a-eau)"/>`;
+  /* le fond clair de la calanque, ce turquoise qu'on ne voit qu'ici */
+  s += `<path d="M${projX(-11, 24).toFixed(1)} ${sol(24).toFixed(1)}
+    Q${projX(0, 15).toFixed(1)} ${(sol(15)+px(.5,15)).toFixed(1)}
+     ${projX(11, 24).toFixed(1)} ${sol(24).toFixed(1)} Z"
+    fill="${mel(T.eau[1], '#8fe0d8', .34)}" opacity=".4"/>`;
+  /* le chemin du soleil */
+  const bas = 1 - Math.min(1, Math.abs(T.soleil.y - HORIZON) / 190);
+  if (bas > .05){
+    s += `<defs><linearGradient id="a-ch" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${mel('#fff2d0', T.or, .3)}" stop-opacity=".8"/>
+      <stop offset="100%" stop-color="${T.or}" stop-opacity="0"/></linearGradient>
+      <filter id="a-flou"><feGaussianBlur stdDeviation="6"/></filter></defs>`;
+    s += `<path d="M${(T.soleil.x-12)} ${yh.toFixed(1)} L${(T.soleil.x+12)} ${yh.toFixed(1)}
+      L${(T.soleil.x+110)} ${(BAS+16).toFixed(1)} L${(T.soleil.x-110)} ${(BAS+16).toFixed(1)} Z"
+      fill="url(#a-ch)" filter="url(#a-flou)" opacity="${bas.toFixed(2)}"/>`;
+  }
+  /* la houle */
+  for (let n = 0; n < 9; n++){
+    const d = 400 / Math.pow(n + 1, 1.3);
+    const y = sol(d), amp = px(.22, d), esp = px(6, d);
+    if (y > BAS - 2 || y < yh) continue;
+    s += `<g class="onde o${n%4}">`;
+    let p = 'M-140 ' + y.toFixed(1) + ' ';
+    for (let k = 0; k < 22; k++) p += `q${(esp*.5).toFixed(1)} ${(-amp).toFixed(1)} ${esp.toFixed(1)} 0 `;
+    s += `<path d="${p}" stroke="${clair('#ffffff', .2)}" stroke-width="${Math.max(.4, amp*.34).toFixed(2)}"
+      fill="none" opacity="${(.16 - n*.014).toFixed(3)}"/>`;
+    s += `</g>`;
+  }
+  return s;
+}
+
+/* ============================================================
+   CE QUE TU BÂTIS — chaque chose apparaît quand tu l'as construite
+   ============================================================ */
+
+/* le cabanon, contre la falaise de gauche */
+function cabanon(niveau){
+  if (!niveau) return '';
+  const d = 21, X = -6.4;
+  const x = projX(X, d), y = sol(d);
+  const m = u => px(u, d);
+  const mur  = voiler(clair('#e8d8b8', .2), d);
+  const murO = voiler(sombre('#c4b494', .24), d);
+  const toit = voiler(sombre('#a85c3a', .16), d);
+  const toitC= voiler(clair('#c9764a', .26), d);
+  const bois = voiler(sombre('#7a5c3a', .2), d);
+
+  let s = `<g class="cabanon">`;
+  /* le socle de pierre sèche */
+  s += `<path d="M${(x-m(2.4)).toFixed(1)} ${y.toFixed(1)} h${m(4.8).toFixed(1)}
+    v${(-m(.5)).toFixed(1)} h${(-m(4.8)).toFixed(1)} z" fill="${voiler(T.rocheO, d)}"/>`;
+  /* le corps */
+  const h = niveau >= 2 ? 2.6 : 2.1;
+  s += `<path d="M${(x-m(2.2)).toFixed(1)} ${(y-m(.5)).toFixed(1)}
+    h${m(4.4).toFixed(1)} v${(-m(h)).toFixed(1)} h${(-m(4.4)).toFixed(1)} z" fill="${mur}"/>`;
+  s += `<path d="M${(x+m(.9)).toFixed(1)} ${(y-m(.5)).toFixed(1)}
+    h${m(1.3).toFixed(1)} v${(-m(h)).toFixed(1)} h${(-m(1.3)).toFixed(1)} z" fill="${murO}"/>`;
+  /* le toit à une pente, en tuiles */
+  s += `<path d="M${(x-m(2.5)).toFixed(1)} ${(y-m(.5+h)).toFixed(1)}
+    h${m(5).toFixed(1)} l${(-m(.5)).toFixed(1)} ${(-m(.8)).toFixed(1)}
+    h${(-m(4)).toFixed(1)} z" fill="${toit}"/>`;
+  s += `<path d="M${(x-m(2.5)).toFixed(1)} ${(y-m(.5+h)).toFixed(1)}
+    h${m(1.6).toFixed(1)} l${(-m(.2)).toFixed(1)} ${(-m(.8)).toFixed(1)}
+    h${(-m(1.2)).toFixed(1)} z" fill="${toitC}"/>`;
+  /* la porte, toujours bleue */
+  s += `<path d="M${(x-m(.4)).toFixed(1)} ${(y-m(.5)).toFixed(1)}
+    v${(-m(1.3)).toFixed(1)} h${m(.8).toFixed(1)} v${m(1.3).toFixed(1)} z"
+    fill="${voiler(sombre('#2f6a92', .2), d)}"/>`;
+  /* une fenêtre, dès le second niveau */
+  if (niveau >= 2){
+    s += `<rect x="${(x-m(1.7)).toFixed(1)}" y="${(y-m(1.9)).toFixed(1)}"
+      width="${m(.7).toFixed(1)}" height="${m(.6).toFixed(1)}"
+      fill="${T === TEMPS.nuit || T === TEMPS.soir ? '#ffcf82' : voiler(sombre('#2a3a4a',.2), d)}"/>`;
+    s += `<path d="M${(x-m(1.75)).toFixed(1)} ${(y-m(1.95)).toFixed(1)} h${m(.8).toFixed(1)}"
+      stroke="${bois}" stroke-width="${Math.max(.4, m(.08)).toFixed(2)}"/>`;
+  }
+  /* la treille et la terrasse, au troisième */
+  if (niveau >= 3){
+    s += `<g class="treille">`;
+    [0,1,2].forEach(k =>
+      s += `<path d="M${(x+m(2.2+k*1.1)).toFixed(1)} ${y.toFixed(1)} v${(-m(2.2)).toFixed(1)}"
+        stroke="${bois}" stroke-width="${Math.max(.4, m(.1)).toFixed(2)}"/>`);
+    s += `<path d="M${(x+m(2.2)).toFixed(1)} ${(y-m(2.2)).toFixed(1)} h${m(2.2).toFixed(1)}"
+      stroke="${bois}" stroke-width="${Math.max(.4, m(.09)).toFixed(2)}"/>`;
+    for (let k = 0; k < 9; k++)
+      s += `<ellipse cx="${(x+m(2.2+rnd(k)*2.2)).toFixed(1)}"
+        cy="${(y-m(2.1+rnd(k+3)*.3)).toFixed(1)}" rx="${m(.42).toFixed(1)}" ry="${m(.26).toFixed(1)}"
+        fill="${voiler(mel(T.pin,'#8aa858',.5), d)}"/>`;
+    s += `</g>`;
+  }
+  /* la fumée, quand il fait frais */
+  if (niveau >= 2 && (T === TEMPS.nuit || T === TEMPS.soir || T === TEMPS.mistral)){
+    s += `<g class="fumee" opacity=".26">`;
+    [0,1,2,3].forEach(k =>
+      s += `<ellipse cx="${(x-m(1.9-k*.14)).toFixed(1)}" cy="${(y-m(3.6+k*.7)).toFixed(1)}"
+        rx="${m(.3+k*.14).toFixed(1)}" ry="${m(.2+k*.1).toFixed(1)}" fill="#e8e0d4"/>`);
+    s += `</g>`;
+  }
+  return s + `</g>`;
+}
+
+/* le ponton, qui avance dans l'eau */
+function ponton(niveau){
+  if (!niveau) return '';
+  const dA = 18.5, dB = 11.5, X = -3.6;
+  const bois = voiler(sombre('#8a6a44', .2), dB);
+  const boisC= voiler(clair('#c9a374', .3), dB);
+  let s = `<g class="ponton">`;
+  /* les pilotis */
+  const n = niveau >= 2 ? 6 : 4;
+  for (let k = 0; k < n; k++){
+    const d = dA - (dA - dB) * k / (n - 1);
+    const x = projX(X + k * .5, d), y = sol(d);
+    s += `<path d="M${x.toFixed(1)} ${(y+px(.5,d)).toFixed(1)} v${(-px(1.3,d)).toFixed(1)}"
+      stroke="${bois}" stroke-width="${Math.max(.6, px(.18,d)).toFixed(1)}"/>`;
+  }
+  /* le tablier */
+  const xa = projX(X, dA), ya = sol(dA) - px(1.1, dA);
+  const xb = projX(X + (n-1)*.5, dB), yb = sol(dB) - px(1.1, dB);
+  s += `<path d="M${xa.toFixed(1)} ${ya.toFixed(1)} L${xb.toFixed(1)} ${yb.toFixed(1)}
+    L${xb.toFixed(1)} ${(yb+px(.24,dB)).toFixed(1)} L${xa.toFixed(1)} ${(ya+px(.24,dA)).toFixed(1)} Z"
+    fill="${bois}"/>`;
+  s += `<path d="M${xa.toFixed(1)} ${ya.toFixed(1)} L${xb.toFixed(1)} ${yb.toFixed(1)}"
+    stroke="${boisC}" stroke-width="${Math.max(.5, px(.1,dB)).toFixed(1)}"/>`;
+  /* une lanterne au bout, au second niveau — allumée seulement le soir */
+  if (niveau >= 2){
+    const nuit = (T === TEMPS.nuit || T === TEMPS.soir);
+    s += `<path d="M${xb.toFixed(1)} ${yb.toFixed(1)} v${(-px(1.4,dB)).toFixed(1)}"
+      stroke="${bois}" stroke-width="${Math.max(.5, px(.1,dB)).toFixed(1)}"/>`;
+    /* la lanterne elle-même, éteinte ou allumée */
+    s += `<path d="M${(xb-px(.18,dB)).toFixed(1)} ${(yb-px(1.34,dB)).toFixed(1)}
+      h${px(.36,dB).toFixed(1)} v${px(.34,dB).toFixed(1)} h${(-px(.36,dB)).toFixed(1)} z"
+      fill="${voiler(sombre('#3a3f4a',.2), dB)}"/>`;
+    s += `<rect x="${(xb-px(.12,dB)).toFixed(1)}" y="${(yb-px(1.3,dB)).toFixed(1)}"
+      width="${px(.24,dB).toFixed(1)}" height="${px(.26,dB).toFixed(1)}"
+      fill="${nuit ? '#ffe0a8' : voiler('#8a94a0', dB)}"/>`;
+    if (nuit){
+      /* le halo, en pixels : il ne doit pas grossir avec la proximité */
+      s += `<circle class="lampe" cx="${xb.toFixed(1)}" cy="${(yb-px(1.18,dB)).toFixed(1)}"
+        r="9" fill="#ffe4b0" opacity=".3"/>`;
+      s += `<circle class="lampe" cx="${xb.toFixed(1)}" cy="${(yb-px(1.18,dB)).toFixed(1)}"
+        r="20" fill="#ffcf82" opacity=".1"/>`;
+      /* le reflet sur l'eau, juste en dessous */
+      s += `<ellipse class="lampe" cx="${xb.toFixed(1)}" cy="${(sol(dB)+8).toFixed(1)}"
+        rx="4" ry="22" fill="#ffcf82" opacity=".13"/>`;
+    }
+  }
+  return s + `</g>`;
+}
+
+/* le séchoir : des claies où sèche ce que tu produis */
+function sechoir(niveau, produit){
+  if (!niveau) return '';
+  const d = 19, X = 5.2;
+  const x = projX(X, d), y = sol(d), m = u => px(u, d);
+  const bois = voiler(sombre('#8a6a44', .22), d);
+  let s = `<g class="sechoir">`;
+  const n = niveau >= 3 ? 4 : niveau >= 2 ? 3 : 2;
+  for (let k = 0; k < n; k++){
+    const cx = x + m(k * 1.5);
+    /* les montants */
+    s += `<path d="M${(cx-m(.6)).toFixed(1)} ${y.toFixed(1)} v${(-m(1.7)).toFixed(1)}
+      M${(cx+m(.6)).toFixed(1)} ${y.toFixed(1)} v${(-m(1.7)).toFixed(1)}"
+      stroke="${bois}" stroke-width="${Math.max(.4, m(.11)).toFixed(2)}"/>`;
+    /* les claies */
+    [0, .55, 1.1].forEach(u =>
+      s += `<path d="M${(cx-m(.7)).toFixed(1)} ${(y-m(.6+u)).toFixed(1)} h${m(1.4).toFixed(1)}"
+        stroke="${bois}" stroke-width="${Math.max(.4, m(.09)).toFixed(2)}"/>`);
+    /* ce qui sèche dessus, selon ton métier */
+    const C = { poisson:'#c9bda0', savon:'#e8d888', huile:'#a8c46a',
+                cordage:'#b8a078', tuiles:'#c26a44', pastis:'#d8c86a' }[produit] || '#c9bda0';
+    for (let q = 0; q < 5; q++){
+      const u = [0, .55, 1.1][q % 3];
+      s += `<rect x="${(cx - m(.6) + m(q * .26)).toFixed(1)}" y="${(y - m(.62+u)).toFixed(1)}"
+        width="${m(.2).toFixed(2)}" height="${m(.34).toFixed(2)}" rx="${m(.05).toFixed(2)}"
+        fill="${voiler(C, d)}" opacity=".9"/>`;
+    }
+  }
+  return s + `</g>`;
+}
+
+/* ta barque, au mouillage */
+function barqueAuMouillage(){
+  const d = 12, X = -1.4;
+  const x = projX(X, d), y = sol(d), m = u => px(u, d);
+  const coque = voiler(sombre('#a87c4c', .2), d);
+  const coqueC= voiler(clair('#e0b878', .3), d);
+  let s = `<g class="barque">`;
+  s += `<ellipse cx="${x.toFixed(1)}" cy="${(y+m(.1)).toFixed(1)}" rx="${m(1.9).toFixed(1)}"
+    ry="${m(.2).toFixed(1)}" fill="${T.ombre}" opacity=".22"/>`;
+  s += `<path d="M${(x-m(1.8)).toFixed(1)} ${(y-m(.5)).toFixed(1)}
+    q${m(.3).toFixed(1)} ${m(.6).toFixed(1)} ${m(1.5).toFixed(1)} ${m(.6).toFixed(1)}
+    h${m(.6).toFixed(1)} q${m(1.2).toFixed(1)} 0 ${m(1.5).toFixed(1)} ${(-m(.6)).toFixed(1)}
+    q${(-m(1.8)).toFixed(1)} ${(-m(.34)).toFixed(1)} ${(-m(3.6)).toFixed(1)} 0 z"
+    fill="${coque}"/>`;
+  s += `<path d="M${(x-m(1.8)).toFixed(1)} ${(y-m(.5)).toFixed(1)}
+    q${m(1.8).toFixed(1)} ${(-m(.34)).toFixed(1)} ${m(3.6).toFixed(1)} 0"
+    stroke="${coqueC}" stroke-width="${Math.max(.5, m(.14)).toFixed(2)}" fill="none"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- la scène complète ---------- */
+function anse(etat){
+  const E = etat || {};
+  let s = ciel() + eau();
+  s += falaise(-1, 0);
+  s += falaise(1, 7);
+  s += fond();
+  s += cabanon(E.cabanon || 0);
+  s += sechoir(E.sechoir || 0, E.produit);
+  s += ponton(E.ponton || 0);
+  s += barqueAuMouillage();
+  /* le voile de l'heure */
+  s += `<defs><radialGradient id="a-vig" cx="0.5" cy="0.42" r="0.82">
+    <stop offset="48%" stop-color="${T.ombre}" stop-opacity="0"/>
+    <stop offset="100%" stop-color="${T.ombre}" stop-opacity="${T.voile}"/></radialGradient></defs>`;
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(1)}" fill="url(#a-vig)"/>`;
+  return s;
+}
+
+/* ============================================================
+   TON ENTREPRISE — tout ce qu'on peut décider
+   ============================================================ */
+
+/* ---------- ce qu'on peut bâtir ---------- */
+const BATIS = [
+  { k:'atelier', n:"L'atelier", ic:'atelier',
+    s:"C'est là que tu travailles. Sans lui, tu ne produis rien.",
+    N:[{ n:'Trois planches', prix:0,    d:"Un abri, une bassine, et de la bonne volonté.", prod:1 },
+       { n:'Le cabanon',     prix:600,  d:"Un vrai toit, une porte qui ferme.",            prod:3 },
+       { n:"L'atelier",      prix:2400, d:"Un établi, des outils, de la place pour deux.", prod:7 },
+       { n:'La fabrique',    prix:9000, d:"Deux salles, une cheminée, et du bruit dedans.", prod:16 }] },
+
+  { k:'sechoir', n:'Le séchoir', ic:'sechoir',
+    s:"Ce qui sèche pendant que tu navigues. C'est lui qui produit tout seul.",
+    N:[{ n:'Aucun',        prix:0,    d:"Tu sèches à même les rochers, comme tu peux.", prod:0 },
+       { n:'Deux claies',  prix:350,  d:"Du bois, du grillage, quatre piquets.",        prod:2 },
+       { n:'Le séchoir',   prix:1400, d:"Six claies sous une ombrière. Le mistral fait le reste.", prod:5 },
+       { n:'Les grands séchoirs', prix:5200, d:"Toute la restanque en est couverte.",   prod:12 }] },
+
+  { k:'reserve', n:'La réserve', ic:'reserve',
+    s:"Où tu gardes ce qui est prêt. Sans elle, tu perds ce que tu ne charges pas.",
+    N:[{ n:'Un coin sec',  prix:0,    d:"Sous la bâche, en espérant qu'il ne pleuve pas.", stock:8 },
+       { n:'La cabane',    prix:450,  d:"Quatre murs et une serrure.",                    stock:26 },
+       { n:'La réserve',   prix:1900, d:"Des étagères, un plancher surélevé.",            stock:70 },
+       { n:'Le magasin',   prix:6800, d:"On pourrait y loger la production d'un mois.",   stock:180 }] },
+
+  { k:'ponton', n:'Le ponton', ic:'ponton',
+    s:"Pour charger sans se mouiller. Fait gagner du temps à chaque départ.",
+    N:[{ n:'Les galets',   prix:0,    d:"Tu tires la barque au sec et tu portes tout à bras.", bonus:0 },
+       { n:'Un appontement', prix:500, d:"Quatre pilotis et des planches.",                bonus:1 },
+       { n:'Le ponton',    prix:2100, d:"Assez long pour accoster à toute heure.",         bonus:2 },
+       { n:'Le quai',      prix:7400, d:"En pierre, avec un treuil au bout.",              bonus:4 }] },
+
+  { k:'ombriere', n:"L'ombrière", ic:'ombriere',
+    s:"Une treille, des tables. Ça ne rapporte rien. Ça change tout.",
+    N:[{ n:'Rien',         prix:0,    d:"Le soleil tape.", },
+       { n:'Une treille',  prix:300,  d:"De la vigne sur quatre montants." },
+       { n:'La terrasse',  prix:1200, d:"Des tables, des bancs, de l'ombre à midi." }] }
+];
+
+/* ---------- ce qu'on peut produire, selon le métier ---------- */
+const SPECIALITES = {
+  savon: [
+    { k:'menage', n:'Le savon de ménage', s:"Le cube de 600 g. Rien de plus simple.",
+      vol:1.4, prix:.8, note:"On en vend partout, mais pas cher." },
+    { k:'parfume', n:'Le savon parfumé', s:"Lavande, romarin, ce qui pousse derrière.",
+      vol:.8, prix:1.6, note:"Moins de volume, beaucoup plus de marge." },
+    { k:'noir', n:'Le savon noir', s:"À l'olive, mou, dans des jarres.",
+      vol:1.1, prix:1.2, note:"Un bon compromis. Il faut de l'huile." } ],
+  poisson: [
+    { k:'sarde', n:'La sardine', s:"Ce qu'on prend le plus, ce qui vaut le moins.",
+      vol:1.6, prix:.7, note:"Du volume, toujours du volume." },
+    { k:'poutargue', n:'La poutargue', s:"L'œuf de mulet, pressé et séché. Rare.",
+      vol:.5, prix:2.4, note:"Peu, mais chaque pièce vaut de l'or." },
+    { k:'morue', n:'La morue', s:"Salée, empilée, elle voyage bien.",
+      vol:1.1, prix:1.1, note:"Elle se garde des mois." } ],
+  cordage: [
+    { k:'amarre', n:"L'amarre", s:"Du gros, du solide, pour les bittes du port.",
+      vol:1.3, prix:.9, note:"Tous les bateaux en ont besoin." },
+    { k:'fin', n:'Le cordage fin', s:"Pour le gréement. Ça demande la main.",
+      vol:.7, prix:1.8, note:"On paie la précision." },
+    { k:'filet', n:'Le filet', s:"Maillé à la main, nœud par nœud.",
+      vol:.9, prix:1.4, note:"Long à faire, mais recherché." } ],
+  huile: [
+    { k:'commune', n:"L'huile commune", s:"Deuxième pression. Pour la cuisine de tous les jours.",
+      vol:1.5, prix:.75, note:"Le volume fait le revenu." },
+    { k:'vierge', n:"L'huile vierge", s:"Première pression à froid, en jarres scellées.",
+      vol:.7, prix:1.9, note:"C'est ça qu'on vient chercher de loin." },
+    { k:'lampe', n:"L'huile à lampe", s:"Ce qui reste après filtrage. Ça éclaire.",
+      vol:1.2, prix:1.0, note:"On en brûle partout, toute l'année." } ]
+};
+
+/* ---------- comment tu travailles ---------- */
+const MANIERES = [
+  { k:'vite', n:'Vite et beaucoup', s:"On sort ce qu'on peut, on ne compte pas les heures.",
+    vol:1.35, prix:.82, note:"Plus de volume, moins de valeur à l'unité." },
+  { k:'juste', n:'Comme il faut', s:"Ni pressé ni traînard. Le travail bien fait.",
+    vol:1, prix:1, note:"L'équilibre." },
+  { k:'soin', n:'Avec du soin', s:"On prend le temps, on jette ce qui n'est pas bon.",
+    vol:.72, prix:1.42, note:"Moins de volume, mais on te paie pour ça." }
+];
+
+/* ---------- les couleurs de ta marque ---------- */
+const COULEURS = [
+  { k:'bleu',    n:'Bleu de mer',    c:'#2f6a92', c2:'#5aa0c8' },
+  { k:'prusse',  n:'Bleu de Prusse', c:'#1e3a5c', c2:'#4a6d94' },
+  { k:'ocre',    n:'Ocre',           c:'#c9843a', c2:'#e8a860' },
+  { k:'safran',  n:'Safran',         c:'#d8a838', c2:'#f0c868' },
+  { k:'garrigue',n:'Vert de garrigue',c:'#5c7a4a', c2:'#82a068' },
+  { k:'olivier', n:'Vert olivier',   c:'#6d7a52', c2:'#94a074' },
+  { k:'tuile',   n:'Rouge de tuile', c:'#b8483a', c2:'#d47a68' },
+  { k:'lie',     n:'Lie-de-vin',     c:'#7a3448', c2:'#a05a70' },
+  { k:'ombre',   n:"Terre d'ombre",  c:'#7a5a3a', c2:'#a07c56' },
+  { k:'chaux',   n:'Blanc de chaux', c:'#d8d0c0', c2:'#f2ece0' },
+  { k:'ardoise', n:'Ardoise',        c:'#4a5460', c2:'#74808e' },
+  { k:'nuit',    n:'Bleu nuit',      c:'#26304a', c2:'#4a5678' },
+  { k:'corail',  n:'Corail',         c:'#c9604a', c2:'#e88a70' },
+  { k:'sable',   n:'Sable',          c:'#c4a878', c2:'#e0caa0' },
+  { k:'pin',     n:'Vert de pin',    c:'#2f5244', c2:'#54786a' },
+  { k:'encre',   n:'Encre',          c:'#1b2432', c2:'#455066' }
+];
+
+/* ---------- la forme de ton écusson ---------- */
+const ECUSSONS = [
+  { k:'carre',   n:'Carré',    r:'3px' },
+  { k:'rond',    n:'Rond',     r:'50%' },
+  { k:'doux',    n:'Adouci',   r:'14px' },
+  { k:'ecu',     n:'Écu',      r:'6px 6px 40% 40%' }
+];
+
+/* ---------- les formes de ton signe ---------- */
+const SIGNES = [
+  { k:'ancre',   n:'Ancre' },    { k:'poisson', n:'Poisson' },
+  { k:'vague',   n:'Vague' },    { k:'olive',   n:'Olivier' },
+  { k:'noeud',   n:'Nœud' },     { k:'etoile',  n:'Étoile' },
+  { k:'soleil',  n:'Soleil' },   { k:'barque',  n:'Barque' },
+  { k:'phare',   n:'Phare' },    { k:'cle',     n:'Clé' },
+  { k:'balance', n:'Balance' },  { k:'compas',  n:'Compas' },
+  { k:'gouvernail', n:'Barre' }, { k:'cigale',  n:'Cigale' },
+  { k:'croix',   n:'Croix' },    { k:'main',    n:'Main' },
+  { k:'roue',    n:'Roue' },     { k:'mistral', n:'Mistral' },
+  { k:'jarre',   n:'Jarre' },    { k:'pin',     n:'Pin' }
+];
+
+/* le dessin d'un signe, dans un carré de 24 */
+function signe(k, c){
+  const S = {
+    ancre:   '<path d="M12 6v13M7 11h10M12 19c-4 0-6-3-6-5M12 19c4 0 6-3 6-5" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="12" cy="5" r="2.4" fill="none" stroke="'+c+'" stroke-width="2"/>',
+    poisson: '<path d="M4 12c3-4 8-5 11-3 2 1 3 2 4 3-1 1-2 2-4 3-3 2-8 1-11-3z" fill="'+c+'"/><path d="M19 12l3-3v6z" fill="'+c+'"/><circle cx="8" cy="11" r="1" fill="#fff"/>',
+    vague:   '<path d="M3 10q3-3 6 0t6 0 6 0M3 15q3-3 6 0t6 0 6 0" stroke="'+c+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+    olive:   '<path d="M12 20V8M12 8c0-3 3-5 6-4 0 3-3 5-6 4zM12 12c0-3-3-5-6-4 0 3 3 5 6 4z" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    noeud:   '<path d="M8 8a4 4 0 1 0 8 8M16 8a4 4 0 1 1-8 8" stroke="'+c+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+    etoile:  '<path d="M12 3l2.6 6.5L21 10l-5 4.2 1.6 6.8L12 17.4 6.4 21 8 14.2 3 10l6.4-.5z" fill="'+c+'"/>',
+    soleil:  '<circle cx="12" cy="12" r="4.6" fill="'+c+'"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    barque:  '<path d="M3 15q3 2 6 0t6 0 6 0M5 12h14l-2-4H7z" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M12 8V3" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    phare:   '<path d="M9 21h6l-1-11h-4zM10 10V6h4v4M12 6V3" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M5 6l3 1M19 6l-3 1" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round"/>',
+    cle:     '<circle cx="8" cy="8" r="4" fill="none" stroke="'+c+'" stroke-width="2"/><path d="M11 11l8 8M16 16l2 2M14 18l2 2" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    balance: '<path d="M12 4v16M6 20h12M4 8h16M4 8l-2 5a3 3 0 0 0 4 0zM20 8l2 5a3 3 0 0 1-4 0z" stroke="'+c+'" stroke-width="1.8" fill="none" stroke-linejoin="round"/>',
+    compas:  '<path d="M12 4v5M9 21l3-12 3 12" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><circle cx="12" cy="4" r="1.8" fill="'+c+'"/>',
+    gouvernail:'<circle cx="12" cy="12" r="6" fill="none" stroke="'+c+'" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="'+c+'"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round"/>',
+    cigale:  '<ellipse cx="12" cy="14" rx="3" ry="6" fill="'+c+'"/><path d="M11 9C7 6 3 8 4 12c1 3 5 3 7 1M13 9c4-3 8-1 7 3-1 3-5 3-7 1" fill="'+c+'" opacity=".55"/><circle cx="12" cy="7" r="2" fill="'+c+'"/>',
+    croix:   '<path d="M12 3v18M3 12h18" stroke="'+c+'" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="'+c+'" stroke-width="1.6"/>',
+    main:    '<path d="M9 20v-7M9 13V6a1.5 1.5 0 0 1 3 0v6M12 12V5a1.5 1.5 0 0 1 3 0v7M15 12V7a1.5 1.5 0 0 1 3 0v8c0 3-2 5-5 5H9l-3-4 2-1" stroke="'+c+'" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+    roue:    '<circle cx="12" cy="12" r="8" fill="none" stroke="'+c+'" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="'+c+'"/><path d="M12 4v4M12 16v4M4 12h4M16 12h4" stroke="'+c+'" stroke-width="1.8"/>',
+    mistral: '<path d="M3 8h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 18h9" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    jarre:   '<path d="M9 4h6M10 4c0 2-4 3-4 8 0 5 2 8 6 8s6-3 6-8c0-5-4-6-4-8" stroke="'+c+'" stroke-width="1.9" fill="none" stroke-linejoin="round"/><path d="M6 13h12" stroke="'+c+'" stroke-width="1.5"/>',
+    pin:     '<path d="M12 21v-4M12 3l5 7h-3l4 6H6l4-6H7z" stroke="'+c+'" stroke-width="1.9" fill="none" stroke-linejoin="round"/>'
+  }[k] || '';
+  return '<svg viewBox="0 0 24 24">' + S + '</svg>';
+}
+/* ============================================================
+   LE REGISTRE — les choix de fondation
+   ============================================================ */
+
+/* ---------- ce que Félix te laisse en plus ---------- */
+const HERITAGES = [
+  { k:'outils', n:"Ses outils", s:"Une caisse de fer et de bois, usée jusqu'à la corde. "
+      + "Rien de neuf, mais tout marche.",
+    ef:"Ton atelier démarre au deuxième niveau.", note:"« Prends-en soin. »" },
+  { k:'carnet', n:"Son carnet", s:"Quarante ans de noms, d'adresses et de prix, "
+      + "écrits serré dans une écriture qui penche.",
+    ef:"Tu commences avec 40 de réputation en plus.", note:"« Tu verras, il y a du monde dedans. »" },
+  { k:'argent', n:"Ce qu'il a mis de côté", s:"Un rouleau de billets dans une boîte à sel. "
+      + "Il ne dira pas combien de temps il a fallu.",
+    ef:"Tu commences avec 900 € de plus.", note:"« Ne le claque pas d'un coup. »" }
+];
+
+/* ---------- comment tu tiens ton affaire ---------- */
+const DEVISES = [
+  { k:'parole', n:"La parole donnée", s:"Ce qui est dit est dit. On ne revient pas dessus.",
+    ef:"Ta réputation monte plus vite.", note:"Tu perdras de l'argent, parfois." },
+  { k:'compte', n:"Chacun son compte", s:"Le travail est le travail. On paie, on livre, on se salue.",
+    ef:"Tes contrats paient un peu mieux.", note:"Personne ne te fera de cadeau non plus." },
+  { k:'discret', n:"Ne rien demander", s:"Tu portes ce qu'on te donne et tu ne poses pas de questions.",
+    ef:"Certaines affaires ne s'ouvriront qu'à toi.", note:"D'autres se fermeront." }
+];
+
+/* ---------- où tu vends d'abord ---------- */
+const DEBOUCHES = [
+  { k:'port', n:"Sur le port", s:"Aux bateaux qui passent, aux équipages, aux pêcheurs.",
+    ef:"Tu vends tout de suite, à petit prix.", note:"Sûr, régulier, jamais gros." },
+  { k:'ville', n:"En ville", s:"Aux boutiques du Panier et de la Canebière.",
+    ef:"Meilleur prix, mais il faut monter.", note:"Il faut aussi qu'on te connaisse." },
+  { k:'large', n:"Au large", s:"Tu charges tout et tu vas le vendre ailleurs.",
+    ef:"Le plus rentable, de loin.", note:"Et le plus lent, et le plus risqué." }
+];
+
+
+const E = { metier:'savon', heritage:null, specialite:null, maniere:null,
+            devise:null, debouche:null, signe:null, couleur:null,
+            ecusson:'carre', nom:'' };
+const MET = { savon:'Savonnier', poisson:'Sécheur', cordage:'Cordier', huile:'Huilier' };
+const NOMS_SUGG = ['La Bonne Mère','Le Petit Mistral','Chez nous','La Marie-Jeanne',
+                   'Le Cabanon','Sainte-Anne','La Calanque','Le Bout du Monde'];
+
+const PAS = [
+  { cle:'heritage',   sur:"Ce qu'il te laisse", t:"L'héritage",
+    d:"Félix a posé trois choses sur le muret. Tu n'en prends qu'une — "
+      + "le reste, il le garde.", liste:() => HERITAGES },
+  { cle:'specialite', sur:'Ce que tu fabriques', t:'La spécialité',
+    d:"Il y a savon et savon. Celui-là, tu le feras des années.",
+    liste:() => SPECIALITES[E.metier] || [] },
+  { cle:'maniere',    sur:'Comment tu travailles', t:'La façon',
+    d:"Il n'y a pas de bonne réponse. Il y a ce que tu veux être.",
+    liste:() => MANIERES },
+  { cle:'devise',     sur:'Comment tu tiens ta maison', t:'La devise',
+    d:"On finira par savoir quel genre d'homme tu es. Autant le décider toi-même.",
+    liste:() => DEVISES },
+  { cle:'debouche',   sur:'À qui tu vends', t:'Le débouché',
+    d:"Au début, il faut bien commencer quelque part.", liste:() => DEBOUCHES },
+  { cle:'signe',      sur:'Ta marque', t:'Le signe',
+    d:"Il sera sur tes caisses, sur ton pavillon, et à côté de ton nom "
+      + "quand on parlera de toi.", grille:'signe' },
+  { cle:'couleur',    sur:'Ta marque', t:'La couleur',
+    d:"Celle qu'on verra de loin, quand ta barque entre dans le port.", grille:'coul' },
+  { cle:'ecusson',    sur:'Ta marque', t:'La forme',
+    d:"Comment on la taille dans le bois.", grille:'ecus' },
+  { cle:'nom',        sur:"L'enseigne", t:'Le nom',
+    d:"C'est le dernier. Après, c'est écrit.", champ:true },
+  { cle:'fin',        sur:'Fait à Marseille', t:'Ton affaire', d:'' }
+];
+let etape = 0, envoi = false;
+
+const coul = () => COULEURS.find(c => c.k === E.couleur) || COULEURS[0];
+const forme = () => (ECUSSONS.find(x => x.k === E.ecusson) || ECUSSONS[0]).r;
+
+function vueAnse(){
+  const h = new Date().getHours();
+  regler(h < 7 ? 'nuit' : h < 11 ? 'matin' : h < 16 ? 'midi' : h < 20 ? 'soir' : 'nuit');
+  const v = cadrer(340, 110);
+  return '<div class="vue"><svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1)
+    + '" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+    + anse({ cabanon: E.heritage === 'outils' ? 2 : 1, produit:E.metier }) + '</svg></div>';
+}
+
+function carte(o, sel){
+  let s = '<button class="opt ' + (o.k === sel ? 'on' : '') + '" data-v="' + o.k + '">'
+    + '<b>' + o.n + '</b><span class="s">' + o.s + '</span>';
+  if (o.ef) s += '<span class="ef">' + o.ef + '</span>';
+  if (o.vol !== undefined)
+    s += '<div class="duo"><span class="' + (o.vol < 1 ? 'moins' : '') + '">'
+      + (o.vol >= 1 ? '+' : '') + Math.round((o.vol - 1) * 100) + ' % de volume</span>'
+      + '<span class="' + (o.prix < 1 ? 'moins' : '') + '">'
+      + (o.prix >= 1 ? '+' : '') + Math.round((o.prix - 1) * 100) + ' % de prix</span></div>';
+  if (o.note) s += '<span class="n">' + o.note + '</span>';
+  return s + '</button>';
+}
+
+function poser(){
+  const P = PAS[etape], EC = document.getElementById('ec');
+  EC.classList.remove('on');
+  setTimeout(() => {
+    document.getElementById('e-sur').textContent = P.sur;
+    document.getElementById('e-t').textContent = P.t;
+    document.getElementById('e-d').textContent = P.d;
+    document.getElementById('e-d').style.display = P.d ? '' : 'none';
+    document.getElementById('n').textContent = (etape + 1) + ' / ' + PAS.length;
+    document.getElementById('barres').innerHTML = PAS.map((_, i) =>
+      '<i class="' + (i <= etape ? 'on' : '') + '"></i>').join('');
+    document.getElementById('ret').classList.toggle('on', etape > 0);
+
+    const C = document.getElementById('e-c'), B = document.getElementById('e-b');
+    const c = coul();
+
+    if (P.liste) C.innerHTML = P.liste().map(o => carte(o, E[P.cle])).join('');
+    else if (P.grille === 'signe')
+      C.innerHTML = '<div class="gr">' + SIGNES.map(S =>
+        '<button data-v="' + S.k + '" class="' + (S.k === E.signe ? 'on' : '') + '">'
+        + signe(S.k, S.k === E.signe ? (E.couleur ? c.c : '#b8863a') : 'rgba(35,48,63,.4)')
+        + '</button>').join('') + '</div>';
+    else if (P.grille === 'coul')
+      C.innerHTML = '<div class="gr coul">' + COULEURS.map(S =>
+        '<button data-v="' + S.k + '" class="' + (S.k === E.couleur ? 'on' : '') + '">'
+        + '<span class="p" style="background:' + S.c + '"></span>'
+        + '<span>' + S.n + '</span></button>').join('') + '</div>';
+    else if (P.grille === 'ecus')
+      C.innerHTML = '<div class="gr ecus">' + ECUSSONS.map(S =>
+        '<button data-v="' + S.k + '" class="' + (S.k === E.ecusson ? 'on' : '') + '">'
+        + '<span class="f" style="border-radius:' + S.r + ';background:' + c.c
+        + ';display:flex;align-items:center;justify-content:center">'
+        + signe(E.signe || 'ancre', '#fff') + '</span>'
+        + '<span>' + S.n + '</span></button>').join('') + '</div>';
+    else if (P.champ){
+      C.innerHTML = '<div class="champ"><input id="ch" maxlength="22" value="'
+        + (E.nom || '') + '" placeholder="Chez qui ?"></div>'
+        + '<div class="sugg">' + NOMS_SUGG.map(n =>
+            '<button data-n="' + n + '">' + n + '</button>').join('') + '</div>';
+      const i = document.getElementById('ch');
+      i.oninput = () => { E.nom = i.value.trim(); majBouton(); };
+      C.querySelectorAll('[data-n]').forEach(b =>
+        b.onclick = () => { E.nom = b.dataset.n; i.value = b.dataset.n; majBouton(); });
+    }
+    else {
+      const S = (SPECIALITES[E.metier] || []).find(x => x.k === E.specialite) || {};
+      const M2 = MANIERES.find(x => x.k === E.maniere) || {};
+      const H = HERITAGES.find(x => x.k === E.heritage) || {};
+      const D = DEVISES.find(x => x.k === E.devise) || {};
+      const B2 = DEBOUCHES.find(x => x.k === E.debouche) || {};
+      C.innerHTML = vueAnse() + '<div class="acte">'
+        + '<div class="ban"><span class="em" style="background:' + c.c
+        + ';border-radius:' + forme() + '">' + signe(E.signe, '#fff') + '</span>'
+        + '<span class="tx"><b>' + (E.nom || 'Sans nom') + '</b>'
+        + '<span>' + MET[E.metier] + ' — Marseille</span></span></div>'
+        + '<ul>'
+        + '<li><span>Ce que tu fais</span><b>' + (S.n || '—') + '</b></li>'
+        + '<li><span>Ta façon</span><b>' + (M2.n || '—') + '</b></li>'
+        + '<li><span>Ta devise</span><b>' + (D.n || '—') + '</b></li>'
+        + '<li><span>Où tu vends</span><b>' + (B2.n || '—') + '</b></li>'
+        + '<li><span>Son legs</span><b>' + (H.n || '—') + '</b></li>'
+        + '<li><span>Ta couleur</span><b>' + c.n + '</b></li></ul>'
+        + '<p class="pied">« Voilà. C\'est écrit. Maintenant va travailler. »</p></div>';
+    }
+
+    C.querySelectorAll('[data-v]').forEach(b =>
+      b.onclick = () => {
+        E[P.cle] = b.dataset.v;
+        C.querySelectorAll('[data-v]').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        if (P.grille) poser();
+        majBouton();
+      });
+
+    B.textContent = P.cle === 'fin' ? 'Signer' : 'Continuer';
+    majBouton();
+    EC.classList.add('on');
+    C.scrollTop = 0;
+  }, etape === 0 ? 0 : 240);
+}
+
+function majBouton(){
+  const P = PAS[etape], B = document.getElementById('e-b'), M = document.getElementById('e-m');
+  if (P.cle === 'fin'){ B.disabled = envoi;
+    M.textContent = "Le nom et la couleur, tu pourras les changer. Le reste, non."; return; }
+  const ok = P.champ ? (E.nom || '').length >= 2 : !!E[P.cle];
+  B.disabled = !ok;
+  M.textContent = ok ? '' : 'Choisis pour continuer.';
+}
+
+document.getElementById('e-b').onclick = async () => {
+  if (etape < PAS.length - 1){ etape++; poser(); return; }
+  /* on signe : le serveur enregistre et applique l'héritage */
+  if (envoi) return; envoi = true;
+  const B = document.getElementById('e-b');
+  B.disabled = true; B.textContent = 'On écrit…';
+  const r = await BD.agir('fonder', {
+    p_nom:E.nom, p_metier:E.metier, p_specialite:E.specialite, p_maniere:E.maniere,
+    p_devise:E.devise, p_debouche:E.debouche, p_heritage:E.heritage,
+    p_signe:E.signe, p_couleur:E.couleur, p_ecusson:E.ecusson });
+  if (r.ok) location.href = 'jeu.html';
+  else { envoi = false; B.disabled = false; B.textContent = 'Signer';
+    document.getElementById('e-m').textContent =
+      r.pourquoi === 'deja_fondee' ? "Ton affaire est déjà fondée."
+      : "Ça n'a pas marché. Réessaie."; }
+};
+document.getElementById('ret').onclick = () => { if (etape > 0){ etape--; poser(); } };
+
+/* on n'arrive ici qu'une fois */
+(async () => {
+  try {
+    const d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+    if (d.affaire){ location.href = 'jeu.html'; return; }
+    if (d.parti_le || d.port !== 'anse'){ location.href = 'jeu.html'; return; }
+  } catch(e){}
+})();
+poser();
+</script>
+</body>
+</html>
