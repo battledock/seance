@@ -65,54 +65,6 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border-radius:8px;padding:9px 13px;font-size:14px;font-weight:700;color:#ffd894}
 
-/* ================= la ville ================= */
-.ville{position:fixed;inset:0;z-index:5;overflow-y:auto;
-  background:linear-gradient(180deg,rgba(9,20,34,.94),rgba(9,20,34,.99));
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  opacity:0;transform:translateY(26px);pointer-events:none;
-  transition:opacity .42s,transform .5s cubic-bezier(.2,.85,.3,1)}
-.ville.on{opacity:1;transform:none;pointer-events:auto}
-.ville::-webkit-scrollbar{display:none}
-.ville .w{max-width:420px;margin:0 auto;
-  padding:calc(env(safe-area-inset-top) + 16px) 16px
-          calc(env(safe-area-inset-bottom) + 26px)}
-
-.ville .tete{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.ville .tete .ret{flex:0 0 40px;height:40px;border-radius:8px;
-  border:1.5px solid rgba(255,255,255,.24);background:rgba(255,255,255,.06);
-  display:flex;align-items:center;justify-content:center;cursor:pointer}
-.ville .tete .ret svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round}
-.ville .tete .ti b{display:block;font-size:19px;font-weight:700;letter-spacing:.03em}
-.ville .tete .ti span{display:block;font-size:8.5px;letter-spacing:.2em;
-  text-transform:uppercase;color:rgba(255,255,255,.48);margin-top:3px}
-
-.lieux{display:flex;flex-direction:column;gap:10px}
-.lieu{position:relative;width:100%;text-align:left;border:0;padding:0;
-  border-radius:12px;overflow:hidden;cursor:pointer;display:block;background:#122438;
-  box-shadow:0 4px 18px rgba(6,16,28,.42);transition:transform .12s}
-.lieu:active{transform:scale(.987)}
-.lieu:disabled{cursor:default}
-.lieu .vg{display:block;height:88px;overflow:hidden;position:relative}
-.lieu .vg svg{display:block;width:100%;height:100%}
-.lieu .vg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(8,20,32,.06),rgba(8,20,32,.16) 60%,rgba(8,20,32,.66))}
-.lieu .tx{display:block;padding:12px 14px 13px;position:relative}
-.lieu .tx > b{display:block;font-size:15.5px;font-weight:700;letter-spacing:.02em;
-  color:#fff}
-.lieu .tx > .d{display:block;font-size:10.5px;color:rgba(255,255,255,.56);margin-top:4px;
-  font-family:system-ui,sans-serif;line-height:1.45;padding-right:76px}
-.lieu .et{position:absolute;right:12px;bottom:14px;display:inline-block;width:auto;
-  background:rgba(255,255,255,.93);border-radius:11px;padding:5px 10px;
-  font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:#c2711a;
-  font-weight:700;white-space:nowrap}
-.lieu.ferme .vg svg{filter:grayscale(.8) brightness(.62)}
-.lieu.ferme .et{background:rgba(255,255,255,.14);color:rgba(255,255,255,.5)}
-.lieu .cad{position:absolute;top:10px;right:12px;z-index:3;width:14px;height:14px}
-
-.mot{font-size:10.5px;color:rgba(255,255,255,.42);line-height:1.6;text-align:center;
-  margin-top:20px;font-family:system-ui,sans-serif}
-
 .fondu{opacity:0;transform:translateY(16px);
   transition:opacity .9s cubic-bezier(.2,.8,.3,1),transform 1s cubic-bezier(.2,.8,.3,1)}
 .fondu.on{opacity:1;transform:none}
@@ -161,17 +113,6 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
   </div>
   <p class="sous fondu d4" id="sous"></p>
 </div>
-
-<section class="ville" id="ville-m">
-  <div class="w">
-    <div class="tete">
-      <button class="ret" id="v-ret"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-      <span class="ti"><b>Barcelone</b><span>Où tu peux aller</span></span>
-    </div>
-    <div class="lieux" id="lieux"></div>
-    <p class="mot" id="mot"></p>
-  </div>
-</section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js"></script>
@@ -1252,118 +1193,8 @@ function dessinerVille(){
   el.innerHTML = sv + '</svg>';
 }
 
-/* ================= les lieux de la ville ================= */
-const LIEUX = [
-  { k:'marche',  n:'Le marché',      e:'Ouvert',
-    s:"Le savon, l'huile, le vin. Ce qu'on achète ici se revend ailleurs.",
-    ouvert:false },
-  { k:'taverne', n:'La taverne',     e:'Bientôt',
-    s:"On y boit mal et on y apprend tout. C'est là qu'on te proposera du travail.",
-    ouvert:false },
-  { k:'docks',   n:'Les docks',      e:'Bientôt',
-    s:"Décharger un cargo à la journée. Ça ne paie pas bien mais ça paie.",
-    ouvert:false },
-  { k:'entrepot',n:"L'entrepôt",     e:'Bientôt',
-    s:"Quatre étages, une porte, et des gens qui n'aiment pas les visites.",
-    ouvert:false },
-  { k:'quartier',n:'La Barceloneta', e:'Bientôt',
-    s:"Des ruelles, du linge aux fenêtres, et personne qui te demande rien.",
-    ouvert:false }
-];
-
-/* une vignette dessinée pour chaque lieu */
-function vignette(k){
-  const C = {
-    marche:  ['#c9843a','#e0a860','#8a5a2c'],
-    taverne: ['#6d4a34','#8a6244','#3f2c1e'],
-    docks:   ['#3f6b8a','#5a8aa8','#22415c'],
-    entrepot:['#4a4a52','#66666e','#2a2a30'],
-    quartier:['#b87a5c','#d09a74','#7a4c38']
-  }[k];
-  let s = '<svg viewBox="0 0 240 96" preserveAspectRatio="xMidYMid slice" '
-    + 'xmlns="http://www.w3.org/2000/svg">';
-  s += '<defs><linearGradient id="v' + k + '" x1="0" y1="0" x2="0" y2="1">'
-    + '<stop offset="0%" stop-color="' + C[1] + '"/>'
-    + '<stop offset="100%" stop-color="' + C[2] + '"/></linearGradient></defs>';
-  s += '<rect width="240" height="96" fill="url(#v' + k + ')"/>';
-
-  if (k === 'marche'){
-    /* des étals sous leurs bâches */
-    [24, 92, 160].forEach((x, i) => {
-      s += '<path d="M' + x + ' 52 q26-14 52 0z" fill="' + ['#c2603a','#e8c078','#3f7a6a'][i] + '"/>';
-      s += '<rect x="' + (x+8) + '" y="52" width="36" height="4" fill="#b8ac90"/>';
-      s += '<path d="M' + (x+12) + ' 56 v18 M' + (x+40) + ' 56 v18" stroke="#8a7a5c" stroke-width="2.4"/>';
-      for (let q = 0; q < 4; q++)
-        s += '<circle cx="' + (x+14+q*9) + '" cy="50" r="3" fill="' + C[0] + '"/>';
-    });
-  } else if (k === 'taverne'){
-    /* une façade basse, une porte, une lanterne */
-    s += '<rect x="0" y="30" width="240" height="66" fill="' + C[2] + '" opacity=".5"/>';
-    s += '<rect x="86" y="44" width="42" height="52" rx="3" fill="#2a1c12"/>';
-    s += '<rect x="86" y="44" width="12" height="52" fill="#3f2c1e"/>';
-    [34, 156, 196].forEach(x =>
-      s += '<rect x="' + x + '" y="48" width="26" height="20" rx="2" fill="#e8b860" opacity=".7"/>');
-    s += '<circle cx="140" cy="40" r="6" fill="#f4d98a" opacity=".85"/>';
-    s += '<rect x="139" y="30" width="2" height="8" fill="#2a1c12"/>';
-  } else if (k === 'docks'){
-    /* des grues et des conteneurs */
-    [40, 130].forEach(x => {
-      s += '<path d="M' + x + ' 70 v-38 h34 M' + (x+34) + ' 32 l10 12" stroke="' + C[0]
-        + '" stroke-width="4" fill="none"/>';
-    });
-    ['#c2603a','#3f6b9a','#5c8f6a','#b8863a'].forEach((c, i) =>
-      s += '<rect x="' + (14+i*54) + '" y="72" width="48" height="18" rx="1.5" fill="' + c + '"/>');
-  } else if (k === 'entrepot'){
-    /* un gros bloc à quatre rangées de fenêtres */
-    s += '<rect x="18" y="16" width="204" height="80" fill="' + C[2] + '"/>';
-    s += '<rect x="18" y="16" width="46" height="80" fill="' + C[1] + '" opacity=".5"/>';
-    for (let r = 0; r < 4; r++)
-      for (let c = 0; c < 8; c++)
-        s += '<rect x="' + (30+c*24) + '" y="' + (26+r*18) + '" width="12" height="10" '
-          + 'fill="' + (Math.sin(r*7+c*3) > .4 ? '#e8b860' : '#1a1a20') + '" opacity=".8"/>';
-    s += '<rect x="98" y="70" width="44" height="26" fill="#1a1a20"/>';
-  } else {
-    /* des ruelles et du linge */
-    [0, 74, 148].forEach((x, i) => {
-      s += '<rect x="' + x + '" y="' + (10+i*4) + '" width="66" height="86" fill="'
-        + ['#c08a68','#a8724e','#b8805c'][i] + '"/>';
-      for (let r = 0; r < 4; r++)
-        s += '<rect x="' + (x+12) + '" y="' + (22+i*4+r*18) + '" width="14" height="12" '
-          + 'fill="#4a3a30" opacity=".7"/>';
-    });
-    s += '<path d="M20 36 q40 8 80 0" stroke="#e8dcc4" stroke-width="1.2" fill="none"/>';
-    ['#e8dcc4','#c9a8a0','#a8c0d0'].forEach((c, i) =>
-      s += '<rect x="' + (34+i*22) + '" y="37" width="12" height="16" fill="' + c + '" opacity=".85"/>');
-  }
-  s += '<rect x="0" y="88" width="240" height="8" fill="#0e1a28" opacity=".4"/>';
-  return s + '</svg>';
-}
-
-function poserLieux(){
-  document.getElementById('lieux').innerHTML = LIEUX.map(L =>
-    '<button class="lieu' + (L.ouvert ? '' : ' ferme') + '"'
-    + (L.ouvert ? ' data-k="' + L.k + '"' : ' disabled') + '>'
-    + '<span class="vg">' + vignette(L.k) + '</span>'
-    + (L.ouvert ? '' : '<svg class="cad" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2">'
-        + '<rect x="4" y="10" width="16" height="11" rx="2"/>'
-        + '<path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>')
-    + '<span class="tx"><b>' + L.n + '</b><span class="d">' + L.s + '</span>'
-    + '<span class="et">' + L.e + '</span></span></button>').join('');
-  document.getElementById('mot').textContent =
-    'La ville s\'ouvrira petit à petit. Pour l\'instant, tu regardes.';
-}
-
-let enVille = false;
-function ouvrirVille(o){
-  enVille = o;
-  document.getElementById('ville-m').classList.toggle('on', o);
-}
-document.getElementById('v-ret').onclick = () => ouvrirVille(false);
-addEventListener('keydown', e => { if (e.key === 'Escape') ouvrirVille(false); });
-
 (async () => {
   dessinerVille();
-  poserLieux();
   let d;
   try {
     d = await BD.charger();
@@ -1389,7 +1220,7 @@ addEventListener('keydown', e => { if (e.key === 'Escape') ouvrirVille(false); }
   document.getElementById('sous').textContent =
     'Ta barque reste à quai. Elle ne bougera pas sans toi.';
 
-  document.getElementById('debarquer').onclick = () => ouvrirVille(true);
+  document.getElementById('debarquer').onclick = () => location.href = 'rue.html';
   /* des points en attente : on le dit au lieu de laisser filer */
   if (Number(d.points || 0) > 0){
     document.getElementById('sous').innerHTML =
