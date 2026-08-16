@@ -523,7 +523,7 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
       <svg viewBox="0 0 24 24"><path d="M8 3h8l2 4v14H6V7zM9 11h6M9 15h6M10 3v4h4V3"/></svg>
       <span id="b-tra-t">Contrats</span></button>
     <button id="b-mar" disabled>
-      <svg viewBox="0 0 24 24"><path d="M4 8h16v13H4zM4 8l2-4h12l2 4M9 21v-7h6v7"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M3 21V10l9-6 9 6v11M3 21h18M9 21v-6h6v6"/></svg>
       <span>Le marché</span></button>
   </div>
 </div>
@@ -2751,13 +2751,25 @@ function poserAvatar(d){
     poserClassement(d);
     poserChantier(d);
     poserBas(d);
-    /* l'affaire n'est pas encore fondée : Félix attend */
-    if (!d.affaire && d.port === 'anse' && !d.parti_le){
-      const el = document.getElementById('b-mar');
-      el.disabled = false;
-      el.classList.add('vif');
-      el.querySelector('span').textContent = 'Ton anse';
-      el.onclick = () => location.href = 'registre.html';
+    /* le troisième bouton devient ton anse, chez toi */
+    const bm = document.getElementById('b-mar');
+    if (d.port === 'anse' && !d.parti_le){
+      bm.disabled = false;
+      bm.querySelector('span').textContent = 'Ton anse';
+      if (!d.affaire){
+        /* Félix attend : c'est le premier geste à faire */
+        bm.classList.add('vif');
+        bm.onclick = () => location.href = 'registre.html';
+      } else {
+        bm.classList.remove('vif');
+        bm.onclick = () => location.href = 'anse.html';
+        /* si quelque chose a séché, on le signale */
+        const st = (d.affaire.prod || {}).stock || 0;
+        if (st >= 1){
+          bm.classList.add('vif');
+          bm.querySelector('span').textContent = 'Ton anse ·';
+        }
+      }
     }
     /* le décor montre ta vraie barque, ou l'eau nue si tu n'en as pas */
     if (Number(d.barque || 0) !== NIVEAU_BARQUE){
