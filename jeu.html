@@ -2194,18 +2194,21 @@ async function construire(d, S){
   enTravaux = true;
   const act = document.getElementById('t-act');
   act.innerHTML = '<button class="non" disabled>Toussaint travaille…</button>';
-  try {
-    const nouveaux = Number(d.euros || 0) - S.prix;
-    await BD.enregistrer({ barque: S.n, euros: nouveaux });
-    d.barque = S.n; d.euros = nouveaux;
-    /* tout se remet à jour */
+  const r = await BD.agir('construire_barque');
+  if (r.ok){
+    /* on relit la fiche : c'est le serveur qui fait foi */
+    const f = await BD.charger();
+    Object.assign(d, f);
     poserBarre(d); poserMenu(d); poserBarque(d); poserChantier(d);
-    NIVEAU_BARQUE = S.n; dessiner();
+    NIVEAU_BARQUE = Number(d.barque || 0); dessiner();
     document.getElementById('t-dit').innerHTML =
-      '« Voilà. <i>' + S.nom + '</i>. Fais-en bon usage. »';
-  } catch(e){
-    act.innerHTML = '<button class="non" disabled>Ça n\'a pas marché</button>'
-      + '<p class="man">Réessaie dans un moment.</p>';
+      '« Voilà. <i>' + r.nom + '</i>. Fais-en bon usage. »';
+  } else {
+    const M = { pas_ici:"Toussaint n'est pas ici.",
+                deja_au_bout:"Il n'y a rien au-dessus.",
+                trop_cher:'Il te manque ' + (r.manque || 0).toLocaleString('fr-FR') + ' €.' };
+    act.innerHTML = '<button class="non" disabled>Pas possible</button>'
+      + '<p class="man">' + (M[r.pourquoi] || 'Réessaie dans un moment.') + '</p>';
   }
   enTravaux = false;
 }
