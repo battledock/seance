@@ -712,14 +712,16 @@ function journal(txt, fort){
   } catch(e){ return; }
 
   NIVEAU = Number(d.barque || 1);
-  const nrj = Number(d.energie ?? 100);
-  if (!d.barque || nrj < 30){ location.href = 'jeu.html'; return; }
+  /* on n'est en mer que si le serveur l'a noté */
+  if (!d.parti_le){ location.href = 'jeu.html'; return; }
+  /* le temps déjà écoulé compte : on reprend la traversée où elle en est */
+  const ecoule = (Date.now() - new Date(d.parti_le).getTime()) / 1000;
   dessiner();
 
   const P = PALIERS_B[NIVEAU - 1];
-  /* une barque rapide traverse plus vite */
-  const duree = 26000 / (.7 + P.vit * .3);
-  const debut = Date.now();
+  /* le serveur exige 20 secondes : on en montre 24 pour être sûr */
+  const duree = 24000;
+  const debut = Date.now() - Math.min(duree, ecoule * 1000);
 
   const boucle = setInterval(() => {
     avance = Math.min(100, (Date.now() - debut) / duree * 100);
@@ -737,19 +739,26 @@ function journal(txt, fort){
 
     if (avance >= 100){
       clearInterval(boucle);
-      arriver(d, nrj);
+      arriver();
     }
   }, 900);
 })();
 
-async function arriver(d, nrj){
+async function arriver(){
   document.getElementById('cap').textContent = 'Barcelone';
   const bt = document.getElementById('arriver');
-  try {
-    await BD.enregistrer({ port: 'barcelone', energie: Math.max(0, nrj - 30) });
-  } catch(e){}
-  bt.classList.add('on');
-  bt.onclick = () => location.href = 'barcelone.html';
+  const r = await BD.agir('accoster');
+  if (r.ok){
+    bt.classList.add('on');
+    bt.onclick = () => location.href = 'barcelone.html';
+  } else if (r.pourquoi === 'trop_tot'){
+    /* le serveur trouve que c'est trop tôt : on attend le temps qu'il dit */
+    setTimeout(arriver, ((r.reste || 2) + 1) * 1000);
+  } else {
+    bt.textContent = 'Retour au port';
+    bt.classList.add('on');
+    bt.onclick = () => location.href = 'jeu.html';
+  }
 }
 </script>
 </body>
