@@ -79,28 +79,55 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e;
 .prod button:disabled{background:rgba(255,255,255,.08);color:rgba(255,255,255,.36);
   cursor:default}
 
-/* les constructions */
-.bat{background:rgba(18,32,50,.72);border:1.5px solid rgba(255,255,255,.13);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border-radius:11px;padding:15px;margin-bottom:9px}
-.bat .l1{display:flex;align-items:center;gap:10px}
-.bat .l1 b{flex:1;font-size:15px;color:#fff;font-weight:700}
-.bat .l1 .px{flex:0 0 auto;font-size:13.5px;font-weight:700;color:#ffd894}
-.bat .l1 .px.fait{color:#8ce0a8;font-size:11px}
-.bat .a{display:block;font-size:11.5px;color:rgba(255,255,255,.56);margin-top:6px;
-  font-family:system-ui,sans-serif;line-height:1.5}
-.bat .niv{display:flex;gap:4px;margin-top:11px}
-.bat .niv i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.12)}
-.bat .niv i.on{background:#f0c46a}
-.bat .n{display:block;font-size:11px;color:rgba(255,255,255,.42);margin-top:10px;
-  font-family:system-ui,sans-serif;font-style:italic;line-height:1.5}
-.bat .ef{display:inline-block;font-size:10px;margin-top:9px;padding:4px 10px;
-  border-radius:12px;background:rgba(140,224,168,.14);color:#8ce0a8}
-.bat button{width:100%;margin-top:12px;padding:12px;border:1.5px solid rgba(240,196,106,.5);
-  border-radius:8px;cursor:pointer;background:rgba(52,44,26,.5);color:#f0c46a;
-  font-family:'Courier Prime',monospace;font-size:12.5px;font-weight:700;letter-spacing:.05em}
-.bat button:disabled{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.05);
-  color:rgba(255,255,255,.36);cursor:default}
+/* les constructions : une rangée d'onglets, puis le détail */
+.ongB{display:flex;gap:6px;margin-bottom:11px}
+.ongB button{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:11px 3px 9px;border:1.5px solid rgba(255,255,255,.14);border-radius:10px;
+  background:rgba(18,32,50,.62);cursor:pointer;font-family:'Courier Prime',monospace;
+  transition:all .18s}
+.ongB button.on{border-color:rgba(240,196,106,.7);background:rgba(52,44,26,.6)}
+.ongB svg{width:19px;height:19px;stroke:rgba(255,255,255,.56);fill:none;stroke-width:1.7;
+  stroke-linejoin:round;stroke-linecap:round}
+.ongB button.on svg{stroke:#f0c46a}
+.ongB .pts{display:flex;gap:2.5px}
+.ongB .pts i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.16)}
+.ongB .pts i.on{background:#f0c46a}
+.ongB button.on .pts i{background:rgba(240,196,106,.24)}
+.ongB button.on .pts i.on{background:#f0c46a}
+
+.det{background:rgba(18,32,50,.78);border:1.5px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:12px;overflow:hidden}
+.det .h{padding:16px 17px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
+.det .h b{display:block;font-size:17px;color:#fff;font-weight:700;letter-spacing:.02em}
+.det .h span{display:block;font-size:11.5px;color:rgba(255,255,255,.5);margin-top:6px;
+  font-family:system-ui,sans-serif;line-height:1.55}
+.det .etat{display:flex;align-items:center;gap:11px;padding:14px 17px;
+  border-bottom:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03)}
+.det .etat .n{flex:0 0 auto;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.42)}
+.det .etat b{flex:1;font-size:13.5px;color:#fff;font-weight:700}
+.det .suite{padding:16px 17px}
+.det .suite .fl{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.det .suite .fl svg{width:15px;height:15px;stroke:#f0c46a;fill:none;stroke-width:2}
+.det .suite .fl b{flex:1;font-size:14.5px;color:#f0c46a;font-weight:700}
+.det .suite .fl .px{font-size:15px;font-weight:700;color:#ffd894}
+.det .suite .d{font-size:12px;color:rgba(255,255,255,.52);line-height:1.6;
+  font-family:system-ui,sans-serif}
+.det .gains{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.det .gains span{font-size:10.5px;padding:5px 11px;border-radius:14px;
+  background:rgba(140,224,168,.14);color:#8ce0a8}
+.det button.go{width:100%;margin-top:15px;padding:15px;border:0;border-radius:9px;
+  cursor:pointer;background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  box-shadow:0 4px 18px rgba(240,196,106,.26);
+  font-family:'Courier Prime',monospace;font-size:13.5px;font-weight:700;letter-spacing:.06em;
+  transition:transform .12s}
+.det button.go:active{transform:scale(.986)}
+.det button.go:disabled{background:rgba(255,255,255,.08);color:rgba(255,255,255,.36);
+  box-shadow:none;cursor:default}
+.det .fini{padding:22px 17px;text-align:center;font-size:12.5px;color:#8ce0a8;
+  font-family:system-ui,sans-serif}
+
 .mot{font-size:10.5px;color:rgba(255,255,255,.38);line-height:1.65;text-align:center;
   margin:16px 6px 4px;font-family:system-ui,sans-serif}
 
@@ -142,8 +169,9 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e;
 <div class="w">
   <p class="tt">Ce qui a séché</p>
   <div class="prod" id="prod"></div>
-  <p class="tt">Ce que tu peux bâtir</p>
-  <div id="batis"></div>
+  <p class="tt">Ce que tu bâtis</p>
+  <div class="ongB" id="ongB"></div>
+  <div class="det" id="det"></div>
   <p class="mot">Ton anse produit même quand tu es en mer.</p>
 </div>
 
@@ -171,26 +199,27 @@ function ch(a){ return '#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toSt
 function mel(a,b,k){ const A=hx(a),B=hx(b); return ch([0,1,2].map(i=>A[i]+(B[i]-A[i])*k)); }
 
 const TEMPS = {
-  matin:  { nom:'Au petit matin', ciel:['#2f5f92','#5b8fb8','#93b8cf','#c4d4d4','#e8d4b0','#f6e0b8'],
-            or:'#ffd8a0', ombre:'#2a3a54', roche:'#d8c8a8', pin:'#4a6b52',
-            eau:['#b8a888','#7d9aa4','#4a8296'], voile:.16, sol:{x:190,y:158,r:13} },
-  midi:   { nom:'En plein midi', ciel:['#2472a8','#4494c4','#78b0d0','#a8cade','#cfe0e8','#e8f0f0'],
-            or:'#fff0c8', ombre:'#1c3a56', roche:'#f0e4c8', pin:'#3f6b48',
-            eau:['#a8d4d8','#74c0cc','#3fa0bc'], voile:.06, sol:{x:250,y:42,r:15} },
-  soir:   { nom:'À la tombée du jour', ciel:['#1a2c4e','#33507a','#5a6c8c','#8a7c88','#c48a68','#e8a870'],
-            or:'#ffb870', ombre:'#141e30', roche:'#c4a884', pin:'#33503c',
-            eau:['#b87c58','#74665e','#3f5468'], voile:.24, sol:{x:112,y:216,r:16} },
-  nuit:   { nom:'La nuit est tombée', ciel:['#080f22','#101c36','#1b2d4c','#2a4460','#3c5674','#506684'],
-            or:'#a8c0e0', ombre:'#060a14', roche:'#6a6270', pin:'#1f3038',
-            eau:['#36465a','#26364a','#1a2838'], voile:.34, sol:{x:334,y:56,r:9} }
+  aube: {
+    nom: "À l'aube",
+    /* le ciel de l'aube : bleu profond en haut, or à l'horizon */
+    ciel:['#1c3a68','#2f5f92','#5b8fb8','#93b8cf','#d8cdb4','#f4dcae','#ffe8c0'],
+    or:'#ffd8a0', ombre:'#2a3450',
+    roche:'#d4c4a4', rocheO:'#a8967a',
+    pin:'#4a6b52',
+    eau:['#e0c49c','#b8a888','#7d9aa4','#4a8296'],
+    mur:'#e8d8bc', murO:'#c0ad8c', murC:'#f8eed6',
+    toit:'#b05a3a', toitC:'#d4794c',
+    voile:.14, sol:{x:214,y:196,r:14}
+  }
 };
-let T = TEMPS.matin;
-function regler(t){ T = TEMPS[t] || TEMPS.matin; return T; }
+let T = TEMPS.aube;
+function regler(){ T = TEMPS.aube; return T; }
 
 const clair  = (c,k) => mel(c, T.or, k===undefined?.28:k);
 const sombre = (c,k) => mel(c, T.ombre, k===undefined?.3:k);
 const voiler = (c,d) => mel(c, mel(T.ciel[4], T.or,.3), Math.min(.5, Math.pow(d/170,.85)));
-const nuit = () => (T === TEMPS.nuit || T === TEMPS.soir);
+const nuit = () => false;   /* c'est toujours l'aube ici */
+const tot = () => true;
 
 let HAUT=-120, BAS=900;
 function cadrer(l,h){
@@ -203,9 +232,9 @@ function cadrer(l,h){
 /* ---------- le fond : ciel, mer, falaises ---------- */
 function fond(){
   let s = `<defs><linearGradient id="f-ciel" x1="0" y1="0" x2="0" y2="1">`
-    + T.ciel.map((c,i)=>`<stop offset="${[0,20,42,62,84,100][i]}%" stop-color="${c}"/>`).join('')
+    + T.ciel.map((c,i)=>`<stop offset="${[0,16,34,52,70,86,100][i]}%" stop-color="${c}"/>`).join('')
     + `</linearGradient><linearGradient id="f-eau" x1="0" y1="0" x2="0" y2="1">`
-    + T.eau.map((c,i)=>`<stop offset="${[0,44,100][i]}%" stop-color="${c}"/>`).join('')
+    + T.eau.map((c,i)=>`<stop offset="${[0,22,58,100][i]}%" stop-color="${c}"/>`).join('')
     + `</linearGradient>
     <radialGradient id="f-halo" cx="0.5" cy="0.5">
       <stop offset="0%" stop-color="${T.or}" stop-opacity=".46"/>
@@ -213,11 +242,12 @@ function fond(){
   s += `<rect x="0" y="${HAUT}" width="${W}" height="${(sol(300)-HAUT).toFixed(1)}" fill="url(#f-ciel)"/>`;
   s += `<ellipse cx="${T.sol.x}" cy="${T.sol.y}" rx="180" ry="130" fill="url(#f-halo)"/>`;
   s += `<circle cx="${T.sol.x}" cy="${T.sol.y}" r="${T.sol.r}" fill="${mel('#fffdf4',T.or,.3)}"/>`;
-  if (nuit())
-    for (let i=0;i<26;i++)
+  /* les dernières étoiles, en haut du ciel */
+  for (let i=0;i<18;i++)
       s += `<circle class="etoile e${i%4}" cx="${(rnd(i*19+2)*W).toFixed(0)}"
         cy="${(HAUT+rnd(i*13+7)*(HORIZON-HAUT)*.85).toFixed(0)}"
-        r="${(.5+rnd(i*23)*.7).toFixed(2)}" fill="#fff" opacity=".55"/>`;
+        r="${(.4+rnd(i*23)*.6).toFixed(2)}" fill="#fff"
+        opacity="${(.32*(1-rnd(i*13+7))).toFixed(2)}"/>`;
 
   /* la mer, au fond à gauche : on est au bord de l'eau */
   const ym = sol(300);
@@ -293,139 +323,216 @@ function terrasse(){
    ============================================================ */
 function batiment(niv, M){
   const d = 20, y = sol(d), m = u => px(u, d);
-  const X = -.4;
-  const cx = pX(X, d);
-  const mur   = voiler(clair('#e4d4b4', .16), d);
-  const murO  = voiler(sombre('#c0ad8c', .2), d);
-  const murC  = voiler(clair('#f4e8cc', .26), d);
-  const toit  = voiler(sombre('#a8543a', .14), d);
-  const toitC = voiler(clair('#c9714a', .24), d);
+  const cx = pX(-.4, d);
+  const mur   = voiler(clair(T.mur, .14), d);
+  const murO  = voiler(sombre(T.murO, .18), d);
+  const murC  = voiler(clair(T.murC, .26), d);
+  const toit  = voiler(sombre(T.toit, .12), d);
+  const toitC = voiler(clair(T.toitC, .22), d);
   const bois  = voiler(sombre('#6d5238', .2), d);
-  const vitre = nuit() ? '#ffcf82' : voiler(sombre('#2f4050', .18), d);
+  const pierre= voiler(sombre(T.rocheO, .16), d);
+  const vitre = voiler(sombre('#2a3a4c', .2), d);
 
-  /* les proportions grandissent avec le niveau */
-  const L = [3.4, 5.4, 7.6, 10.5][niv] || 3.4;      /* largeur en mètres */
-  const H = [2.4, 3.2, 4, 5][niv] || 2.4;     /* hauteur des murs */
+  const L = [3.4, 5.4, 7.6, 10.5][niv] || 3.4;
+  const H = [2.4, 3.2, 4, 5][niv] || 2.4;
   const g = cx - m(L/2), dr = cx + m(L/2);
 
   let s = `<g class="fab">`;
 
-  /* --- l'ombre portée au sol --- */
-  s += `<ellipse cx="${cx.toFixed(1)}" cy="${y.toFixed(1)}" rx="${m(L*.62).toFixed(1)}"
-    ry="${m(.5).toFixed(1)}" fill="${T.ombre}" opacity=".2"/>`;
+  /* ---------- l'ombre longue, vers la gauche (le jour se lève à droite) ---------- */
+  s += `<path d="M${g.toFixed(1)} ${y.toFixed(1)} h${m(L).toFixed(1)}
+    l${(-m(L*.5)).toFixed(1)} ${m(.9).toFixed(1)} h${(-m(L)).toFixed(1)} z"
+    fill="${T.ombre}" opacity=".16"/>`;
 
   if (niv === 0){
-    /* --- trois planches : un abri bancal --- */
-    s += `<path d="M${g.toFixed(1)} ${y.toFixed(1)} L${(g+m(.2)).toFixed(1)} ${(y-m(1.9)).toFixed(1)}
-      L${(dr-m(.1)).toFixed(1)} ${(y-m(1.6)).toFixed(1)} L${dr.toFixed(1)} ${y.toFixed(1)} Z"
-      fill="${murO}" opacity=".9"/>`;
-    /* les planches disjointes */
-    for (let k = 0; k < 5; k++)
-      s += `<path d="M${(g+m(.1+k*L*.19)).toFixed(1)} ${y.toFixed(1)}
-        v${(-m(1.55+rnd(k)*.35)).toFixed(1)}"
-        stroke="${bois}" stroke-width="${Math.max(.6, m(.1)).toFixed(1)}"/>`;
+    /* --- trois planches et une bâche --- */
+    for (let k = 0; k < 6; k++){
+      const px2 = g + m(.15 + k * L * .16);
+      const hh = 1.4 + rnd(k*3) * .7;
+      s += `<path d="M${px2.toFixed(1)} ${y.toFixed(1)} v${(-m(hh)).toFixed(1)}"
+        stroke="${k < 3 ? clair(bois,.2) : bois}"
+        stroke-width="${Math.max(.8, m(.13)).toFixed(1)}" stroke-linecap="round"/>`;
+    }
     /* la bâche, tendue de travers */
-    s += `<path d="M${(g-m(.3)).toFixed(1)} ${(y-m(1.95)).toFixed(1)}
+    s += `<path d="M${(g-m(.4)).toFixed(1)} ${(y-m(2.05)).toFixed(1)}
+      Q${cx.toFixed(1)} ${(y-m(1.55)).toFixed(1)} ${(dr+m(.4)).toFixed(1)} ${(y-m(1.75)).toFixed(1)}
       L${(dr+m(.3)).toFixed(1)} ${(y-m(1.5)).toFixed(1)}
-      L${(dr+m(.2)).toFixed(1)} ${(y-m(1.3)).toFixed(1)}
-      L${(g-m(.2)).toFixed(1)} ${(y-m(1.75)).toFixed(1)} Z"
-      fill="${voiler(sombre('#7a8a6a', .2), d)}"/>`;
+      Q${cx.toFixed(1)} ${(y-m(1.32)).toFixed(1)} ${(g-m(.3)).toFixed(1)} ${(y-m(1.82)).toFixed(1)} Z"
+      fill="${voiler(sombre('#8a9070', .18), d)}"/>`;
+    s += `<path d="M${(g-m(.4)).toFixed(1)} ${(y-m(2.05)).toFixed(1)}
+      Q${cx.toFixed(1)} ${(y-m(1.55)).toFixed(1)} ${(dr+m(.4)).toFixed(1)} ${(y-m(1.75)).toFixed(1)}"
+      stroke="${clair('#b8bc98',.3)}" stroke-width="${Math.max(.5,m(.07)).toFixed(1)}" fill="none"/>`;
+    /* la bassine, posée par terre */
+    s += `<ellipse cx="${(cx+m(.9)).toFixed(1)}" cy="${(y-m(.18)).toFixed(1)}"
+      rx="${m(.5).toFixed(1)}" ry="${m(.18).toFixed(1)}" fill="${voiler('#8a7c68',d)}"/>`;
+    s += `<ellipse cx="${(cx+m(.9)).toFixed(1)}" cy="${(y-m(.24)).toFixed(1)}"
+      rx="${m(.42).toFixed(1)}" ry="${m(.14).toFixed(1)}" fill="${clair('#c4b49c',.2)}"/>`;
     return s + `</g>`;
   }
 
-  /* --- le corps du bâtiment --- */
-  s += `<path d="M${g.toFixed(1)} ${y.toFixed(1)} v${(-m(H)).toFixed(1)}
-    h${m(L).toFixed(1)} v${m(H).toFixed(1)} z" fill="${mur}"/>`;
-  /* le pan de droite, à l'ombre */
-  s += `<path d="M${(dr-m(L*.3)).toFixed(1)} ${y.toFixed(1)} v${(-m(H)).toFixed(1)}
-    h${m(L*.3).toFixed(1)} v${m(H).toFixed(1)} z" fill="${murO}" opacity=".55"/>`;
-  /* le soubassement de pierre */
-  s += `<path d="M${g.toFixed(1)} ${y.toFixed(1)} v${(-m(.4)).toFixed(1)}
-    h${m(L).toFixed(1)} v${m(.4).toFixed(1)} z" fill="${voiler(sombre(T.roche,.2), d)}"/>`;
-
-  /* --- le toit --- */
-  const th = niv >= 2 ? .9 : .6;
-  s += `<path d="M${(g-m(.35)).toFixed(1)} ${(y-m(H)).toFixed(1)}
-    h${m(L+.7).toFixed(1)} l${(-m(.5)).toFixed(1)} ${(-m(th)).toFixed(1)}
-    h${(-m(L-.3)).toFixed(1)} z" fill="${toit}"/>`;
-  s += `<path d="M${(g-m(.35)).toFixed(1)} ${(y-m(H)).toFixed(1)}
-    h${m(L*.4).toFixed(1)} l${(-m(.2)).toFixed(1)} ${(-m(th)).toFixed(1)}
-    h${(-m(L*.4-.15)).toFixed(1)} z" fill="${toitC}"/>`;
-  /* les tuiles */
-  for (let k = 0; k < Math.round(L*3.4); k++)
-    s += `<path d="M${(g-m(.3)+m(k*.3)).toFixed(1)} ${(y-m(H)).toFixed(1)}
-      l${(m(.14)).toFixed(1)} ${(-m(th)).toFixed(1)}"
-      stroke="${sombre(toit,.2)}" stroke-width=".5" opacity=".4"/>`;
-
-  /* --- la porte --- */
-  const pw = niv >= 2 ? 1.1 : .8;
-  s += `<path d="M${(cx-m(pw/2)).toFixed(1)} ${y.toFixed(1)} v${(-m(H*.62)).toFixed(1)}
-    h${m(pw).toFixed(1)} v${m(H*.62).toFixed(1)} z" fill="${sombre(M.c, .34)}"/>`;
-  s += `<path d="M${(cx-m(pw/2)).toFixed(1)} ${y.toFixed(1)} v${(-m(H*.62)).toFixed(1)}
-    h${m(pw*.32).toFixed(1)} v${m(H*.62).toFixed(1)} z" fill="${clair(M.c, .2)}" opacity=".7"/>`;
-
-  /* --- les fenêtres, de plus en plus nombreuses --- */
-  const nf = [0, 1, 3, 5][niv] || 0;
-  for (let k = 0; k < nf; k++){
-    const t = (k + .5) / nf;
-    const fx = g + m(L * t) + (t > .45 && t < .55 ? m(pw) : 0);
-    if (Math.abs(fx - cx) < m(pw * .8)) continue;
-    s += `<rect x="${(fx-m(.32)).toFixed(1)}" y="${(y-m(H*.82)).toFixed(1)}"
-      width="${m(.64).toFixed(1)}" height="${m(.62).toFixed(1)}" fill="${vitre}"/>`;
-    /* les volets, de ta couleur */
-    s += `<path d="M${(fx-m(.34)).toFixed(1)} ${(y-m(H*.82)).toFixed(1)}
-      h${m(.16).toFixed(1)} v${m(.62).toFixed(1)} h${(-m(.16)).toFixed(1)} z
-      M${(fx+m(.18)).toFixed(1)} ${(y-m(H*.82)).toFixed(1)}
-      h${m(.16).toFixed(1)} v${m(.62).toFixed(1)} h${(-m(.16)).toFixed(1)} z"
-      fill="${voiler(M.c, d)}"/>`;
-    if (nuit())
-      s += `<rect class="lueur" x="${(fx-m(.6)).toFixed(1)}" y="${(y-m(H*.82+.3)).toFixed(1)}"
-        width="${m(1.2).toFixed(1)}" height="${m(1.2).toFixed(1)}"
-        fill="#ffcf82" opacity=".08"/>`;
+  /* ---------- le soubassement de pierre ---------- */
+  s += `<path d="M${(g-m(.08)).toFixed(1)} ${y.toFixed(1)} v${(-m(.55)).toFixed(1)}
+    h${m(L+.16).toFixed(1)} v${m(.55).toFixed(1)} z" fill="${pierre}"/>`;
+  /* les pierres, une à une */
+  for (let k = 0; k < Math.round(L*2.2); k++){
+    const px2 = g + m(k * .46), t = rnd2(k, 3);
+    s += `<rect x="${px2.toFixed(1)}" y="${(y-m(.5+ (k%2)*.02)).toFixed(1)}"
+      width="${m(.42).toFixed(1)}" height="${m(.22).toFixed(1)}" rx="1"
+      fill="${t>.5 ? clair(pierre,.14) : sombre(pierre,.1)}" opacity=".7"/>`;
   }
 
-  /* --- la cheminée, dès le second niveau --- */
+  /* ---------- le corps ---------- */
+  s += `<path d="M${g.toFixed(1)} ${(y-m(.5)).toFixed(1)} v${(-m(H-.5)).toFixed(1)}
+    h${m(L).toFixed(1)} v${m(H-.5).toFixed(1)} z" fill="${mur}"/>`;
+  /* le crépi : des plaques irrégulières, comme un mur usé */
+  for (let k = 0; k < Math.round(L*4); k++){
+    const t = rnd2(k, 11);
+    const px2 = g + m(rnd(k*5)*L), py = y - m(.6 + rnd(k*7)*(H-.9));
+    s += `<ellipse cx="${px2.toFixed(1)}" cy="${py.toFixed(1)}"
+      rx="${m(.3+t*.5).toFixed(1)}" ry="${m(.18+t*.26).toFixed(1)}"
+      fill="${t>.5 ? murC : murO}" opacity="${(.1+t*.14).toFixed(2)}"/>`;
+  }
+  /* le pan de droite, dans l'ombre du matin */
+  s += `<path d="M${(dr-m(L*.26)).toFixed(1)} ${(y-m(.5)).toFixed(1)} v${(-m(H-.5)).toFixed(1)}
+    h${m(L*.26).toFixed(1)} v${m(H-.5).toFixed(1)} z" fill="${murO}" opacity=".34"/>`;
+  /* et le bord gauche prend le premier soleil */
+  s += `<path d="M${g.toFixed(1)} ${(y-m(.5)).toFixed(1)} v${(-m(H-.5)).toFixed(1)}
+    h${m(.28).toFixed(1)} v${m(H-.5).toFixed(1)} z" fill="${clair(T.or,.5)}" opacity=".26"/>`;
+
+  /* ---------- le toit ---------- */
+  const th = niv >= 2 ? 1 : .7, deb = .42;
+  s += `<path d="M${(g-m(deb)).toFixed(1)} ${(y-m(H)).toFixed(1)}
+    h${m(L+deb*2).toFixed(1)} l${(-m(.6)).toFixed(1)} ${(-m(th)).toFixed(1)}
+    h${(-m(L+deb*2-1.2)).toFixed(1)} z" fill="${toit}"/>`;
+  /* la partie éclairée */
+  s += `<path d="M${(g-m(deb)).toFixed(1)} ${(y-m(H)).toFixed(1)}
+    h${m(L*.42).toFixed(1)} l${(-m(.25)).toFixed(1)} ${(-m(th)).toFixed(1)}
+    h${(-m(L*.42-.35)).toFixed(1)} z" fill="${toitC}"/>`;
+  /* les tuiles rondes */
+  const nt = Math.round(L * 4.4);
+  for (let k = 0; k < nt; k++){
+    const x1 = g - m(deb) + m((L+deb*2) * k/nt);
+    const x2 = g - m(deb) + m(.6) + m((L+deb*2-1.2) * k/nt);
+    s += `<path d="M${x1.toFixed(1)} ${(y-m(H)).toFixed(1)} L${x2.toFixed(1)} ${(y-m(H+th)).toFixed(1)}"
+      stroke="${sombre(toit,.24)}" stroke-width="${Math.max(.4,m(.05)).toFixed(2)}" opacity=".34"/>`;
+  }
+  /* le faîtage */
+  s += `<path d="M${(g-m(deb)+m(.6)).toFixed(1)} ${(y-m(H+th)).toFixed(1)}
+    h${m(L+deb*2-1.2).toFixed(1)}" stroke="${clair(toit,.24)}"
+    stroke-width="${Math.max(.8,m(.11)).toFixed(1)}" stroke-linecap="round"/>`;
+  /* la génoise sous le toit, ce double rang de tuiles typique */
+  s += `<path d="M${(g-m(.14)).toFixed(1)} ${(y-m(H)).toFixed(1)}
+    h${m(L+.28).toFixed(1)} v${(-m(.13)).toFixed(1)} h${(-m(L+.28)).toFixed(1)} z"
+    fill="${sombre(toit,.3)}"/>`;
+
+  /* ---------- la porte, avec son encadrement ---------- */
+  const pw = niv >= 2 ? 1.15 : .85, ph = H * .58;
+  s += `<path d="M${(cx-m(pw/2+.12)).toFixed(1)} ${y.toFixed(1)} v${(-m(ph+.12)).toFixed(1)}
+    h${m(pw+.24).toFixed(1)} v${m(ph+.12).toFixed(1)} z" fill="${pierre}"/>`;
+  s += `<path d="M${(cx-m(pw/2)).toFixed(1)} ${y.toFixed(1)} v${(-m(ph)).toFixed(1)}
+    h${m(pw).toFixed(1)} v${m(ph).toFixed(1)} z" fill="${sombre(M.c, .38)}"/>`;
+  /* les planches de la porte */
+  for (let k = 1; k < 4; k++)
+    s += `<path d="M${(cx-m(pw/2)+m(pw*k/4)).toFixed(1)} ${y.toFixed(1)} v${(-m(ph)).toFixed(1)}"
+      stroke="${sombre(M.c,.52)}" stroke-width="${Math.max(.4,m(.04)).toFixed(2)}" opacity=".6"/>`;
+  /* le battant gauche, éclairé */
+  s += `<path d="M${(cx-m(pw/2)).toFixed(1)} ${y.toFixed(1)} v${(-m(ph)).toFixed(1)}
+    h${m(pw*.16).toFixed(1)} v${m(ph).toFixed(1)} z" fill="${clair(M.c, .28)}" opacity=".7"/>`;
+  /* le seuil */
+  s += `<path d="M${(cx-m(pw/2+.2)).toFixed(1)} ${y.toFixed(1)}
+    h${m(pw+.4).toFixed(1)} v${m(.1).toFixed(1)} h${(-m(pw+.4)).toFixed(1)} z"
+    fill="${clair(pierre,.2)}"/>`;
+
+  /* ---------- les fenêtres ---------- */
+  const nf = [0, 2, 4, 6][niv] || 0;
+  for (let k = 0; k < nf; k++){
+    const cote = k % 2 ? 1 : -1;
+    const rang = Math.floor(k / 2);
+    const fx = cx + cote * m(pw/2 + .75 + rang * 1.5);
+    if (fx < g + m(.3) || fx > dr - m(.3)) continue;
+    const fy = y - m(H * .78);
+    /* l'encadrement */
+    s += `<path d="M${(fx-m(.42)).toFixed(1)} ${(fy-m(.06)).toFixed(1)}
+      h${m(.84).toFixed(1)} v${m(.78).toFixed(1)} h${(-m(.84)).toFixed(1)} z"
+      fill="${pierre}"/>`;
+    /* la vitre */
+    s += `<rect x="${(fx-m(.33)).toFixed(1)}" y="${fy.toFixed(1)}"
+      width="${m(.66).toFixed(1)}" height="${m(.6).toFixed(1)}" fill="${vitre}"/>`;
+    /* le reflet du ciel dedans */
+    s += `<path d="M${(fx-m(.33)).toFixed(1)} ${(fy+m(.6)).toFixed(1)}
+      L${(fx-m(.33)).toFixed(1)} ${(fy+m(.22)).toFixed(1)}
+      L${(fx+m(.06)).toFixed(1)} ${fy.toFixed(1)} L${(fx+m(.33)).toFixed(1)} ${fy.toFixed(1)}
+      L${(fx+m(.33)).toFixed(1)} ${(fy+m(.14)).toFixed(1)} Z"
+      fill="${clair(T.ciel[4],.3)}" opacity=".34"/>`;
+    /* la croisée */
+    s += `<path d="M${fx.toFixed(1)} ${fy.toFixed(1)} v${m(.6).toFixed(1)}
+      M${(fx-m(.33)).toFixed(1)} ${(fy+m(.3)).toFixed(1)} h${m(.66).toFixed(1)}"
+      stroke="${bois}" stroke-width="${Math.max(.4,m(.05)).toFixed(2)}"/>`;
+    /* les volets, de ta couleur, rabattus contre le mur */
+    [-1, 1].forEach(sg =>
+      s += `<path d="M${(fx + sg*m(.42)).toFixed(1)} ${(fy-m(.04)).toFixed(1)}
+        h${(sg*m(.2)).toFixed(1)} v${m(.7).toFixed(1)} h${(-sg*m(.2)).toFixed(1)} z"
+        fill="${sg < 0 ? clair(M.c,.22) : sombre(M.c,.2)}"/>`);
+    /* l'appui */
+    s += `<path d="M${(fx-m(.5)).toFixed(1)} ${(fy+m(.72)).toFixed(1)}
+      h${m(1).toFixed(1)} v${m(.09).toFixed(1)} h${(-m(1)).toFixed(1)} z"
+      fill="${clair(pierre,.24)}"/>`;
+  }
+
+  /* ---------- la cheminée ---------- */
   if (niv >= 1){
-    const chx = g + m(L * .78);
-    const chh = niv >= 3 ? 2.6 : niv >= 2 ? 1.5 : .8;
-    s += `<path d="M${(chx-m(.28)).toFixed(1)} ${(y-m(H+th*.6)).toFixed(1)}
-      v${(-m(chh)).toFixed(1)} h${m(.56).toFixed(1)} v${m(chh).toFixed(1)} z"
-      fill="${niv>=3 ? voiler(sombre('#8a4a38',.2),d) : murO}"/>`;
-    s += `<path d="M${(chx-m(.36)).toFixed(1)} ${(y-m(H+th*.6+chh)).toFixed(1)}
-      h${m(.72).toFixed(1)} v${m(.16).toFixed(1)} h${(-m(.72)).toFixed(1)} z"
-      fill="${sombre(murO,.24)}"/>`;
+    const chx = g + m(L * .8);
+    const chh = [0, .9, 1.7, 2.8][niv];
+    const brique = niv >= 3 ? voiler(sombre('#9a4a34',.16), d) : murO;
+    s += `<path d="M${(chx-m(.3)).toFixed(1)} ${(y-m(H+th*.5)).toFixed(1)}
+      v${(-m(chh)).toFixed(1)} h${m(.6).toFixed(1)} v${m(chh).toFixed(1)} z" fill="${brique}"/>`;
+    s += `<path d="M${(chx-m(.3)).toFixed(1)} ${(y-m(H+th*.5)).toFixed(1)}
+      v${(-m(chh)).toFixed(1)} h${m(.16).toFixed(1)} v${m(chh).toFixed(1)} z"
+      fill="${clair(brique,.24)}"/>`;
+    if (niv >= 3)
+      for (let k = 0; k < 8; k++)
+        s += `<path d="M${(chx-m(.3)).toFixed(1)} ${(y-m(H+th*.5+k*chh/8)).toFixed(1)}
+          h${m(.6).toFixed(1)}" stroke="${sombre(brique,.2)}" stroke-width=".4" opacity=".4"/>`;
+    /* le chapeau */
+    s += `<path d="M${(chx-m(.4)).toFixed(1)} ${(y-m(H+th*.5+chh)).toFixed(1)}
+      h${m(.8).toFixed(1)} v${m(.16).toFixed(1)} h${(-m(.8)).toFixed(1)} z"
+      fill="${sombre(brique,.26)}"/>`;
     /* la fumée */
-    s += `<g class="fumee" opacity=".3">`;
+    s += `<g class="fumee" opacity=".26">`;
     for (let k = 0; k < 5; k++)
-      s += `<ellipse cx="${(chx+m(k*.12)).toFixed(1)}"
-        cy="${(y-m(H+th*.6+chh+.4+k*.6)).toFixed(1)}"
-        rx="${m(.22+k*.14).toFixed(1)}" ry="${m(.15+k*.1).toFixed(1)}" fill="#e0dcd0"/>`;
+      s += `<ellipse cx="${(chx+m(k*.14)).toFixed(1)}"
+        cy="${(y-m(H+th*.5+chh+.45+k*.7)).toFixed(1)}"
+        rx="${m(.24+k*.16).toFixed(1)}" ry="${m(.16+k*.11).toFixed(1)}" fill="#f0ece0"/>`;
     s += `</g>`;
   }
 
-  /* --- l'enseigne, avec ton nom et ton signe --- */
+  /* ---------- l'enseigne ---------- */
   if (niv >= 1){
-    const ey = y - m(H * .92);
-    const ew = Math.min(m(L * .82), m(4.6));
+    const ey = y - m(H * .9);
+    const ew = Math.min(m(L * .76), m(5));
     s += `<g class="enseigne">`;
+    /* l'ombre portée sur le mur */
+    s += `<path d="M${(cx-ew/2+m(.06)).toFixed(1)} ${(ey-m(.6)).toFixed(1)}
+      h${ew.toFixed(1)} v${m(.66).toFixed(1)} h${(-ew).toFixed(1)} z"
+      fill="${T.ombre}" opacity=".2"/>`;
     /* la planche */
-    s += `<path d="M${(cx-ew/2).toFixed(1)} ${(ey-m(.62)).toFixed(1)}
-      h${ew.toFixed(1)} v${m(.62).toFixed(1)} h${(-ew).toFixed(1)} z"
-      fill="${voiler(sombre('#3a2e22',.2), d)}"/>`;
-    s += `<path d="M${(cx-ew/2).toFixed(1)} ${(ey-m(.62)).toFixed(1)}
-      h${ew.toFixed(1)} v${m(.09).toFixed(1)} h${(-ew).toFixed(1)} z"
-      fill="${clair('#6d5238',.3)}" opacity=".7"/>`;
-    /* l'écusson peint dessus */
-    const ex = cx - ew/2 + m(.42), es = m(.4);
-    s += `<rect x="${(ex-es/2).toFixed(1)}" y="${(ey-m(.44)).toFixed(1)}"
+    s += `<path d="M${(cx-ew/2).toFixed(1)} ${(ey-m(.66)).toFixed(1)}
+      h${ew.toFixed(1)} v${m(.66).toFixed(1)} h${(-ew).toFixed(1)} z"
+      fill="${voiler(sombre('#4a3826',.16), d)}"/>`;
+    s += `<path d="M${(cx-ew/2).toFixed(1)} ${(ey-m(.66)).toFixed(1)}
+      h${ew.toFixed(1)} v${m(.08).toFixed(1)} h${(-ew).toFixed(1)} z"
+      fill="${clair('#8a6a48',.32)}"/>`;
+    /* l'écusson peint */
+    const ex = cx - ew/2 + m(.42), es = m(.42);
+    s += `<rect x="${(ex-es/2).toFixed(1)}" y="${(ey-m(.54)).toFixed(1)}"
       width="${es.toFixed(1)}" height="${es.toFixed(1)}"
-      rx="${(M.ecusson==='rond'?es/2:M.ecusson==='doux'?es*.28:1.5).toFixed(1)}"
+      rx="${(M.ecusson==='rond'?es/2:M.ecusson==='doux'?es*.3:1.5).toFixed(1)}"
       fill="${voiler(M.c, d)}"/>`;
-    /* le nom, écrit dessus */
-    s += `<text x="${(ex+es*.9).toFixed(1)}" y="${(ey-m(.17)).toFixed(1)}"
-      font-family="Courier Prime, monospace" font-size="${m(.34).toFixed(1)}"
-      font-weight="700" fill="${clair(M.c2, .3)}"
-      letter-spacing=".4">${(M.nom||'').slice(0,16).toUpperCase()}</text>`;
+    /* le nom */
+    s += `<text x="${(ex+es*.85).toFixed(1)}" y="${(ey-m(.19)).toFixed(1)}"
+      font-family="Courier Prime, monospace" font-size="${m(.36).toFixed(1)}"
+      font-weight="700" fill="${clair(M.c2, .34)}"
+      letter-spacing=".5">${(M.nom||'').slice(0,16).toUpperCase()}</text>`;
     s += `</g>`;
   }
   return s + `</g>`;
@@ -611,11 +718,7 @@ function fabrique(A){
   s += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(1)}" fill="url(#f-vig)"/>`;
   return s;
 }
-/* ============================================================
-   TON ENTREPRISE — tout ce qu'on peut décider
-   ============================================================ */
 
-/* ---------- ce qu'on peut bâtir ---------- */
 const BATIS = [
   { k:'atelier', n:"L'atelier", ic:'atelier',
     s:"C'est là que tu travailles. Sans lui, tu ne produis rien.",
@@ -652,47 +755,6 @@ const BATIS = [
        { n:'La terrasse',  prix:1200, d:"Des tables, des bancs, de l'ombre à midi." }] }
 ];
 
-/* ---------- ce qu'on peut produire, selon le métier ---------- */
-const SPECIALITES = {
-  savon: [
-    { k:'menage', n:'Le savon de ménage', s:"Le cube de 600 g. Rien de plus simple.",
-      vol:1.4, prix:.8, note:"On en vend partout, mais pas cher." },
-    { k:'parfume', n:'Le savon parfumé', s:"Lavande, romarin, ce qui pousse derrière.",
-      vol:.8, prix:1.6, note:"Moins de volume, beaucoup plus de marge." },
-    { k:'noir', n:'Le savon noir', s:"À l'olive, mou, dans des jarres.",
-      vol:1.1, prix:1.2, note:"Un bon compromis. Il faut de l'huile." } ],
-  poisson: [
-    { k:'sarde', n:'La sardine', s:"Ce qu'on prend le plus, ce qui vaut le moins.",
-      vol:1.6, prix:.7, note:"Du volume, toujours du volume." },
-    { k:'poutargue', n:'La poutargue', s:"L'œuf de mulet, pressé et séché. Rare.",
-      vol:.5, prix:2.4, note:"Peu, mais chaque pièce vaut de l'or." },
-    { k:'morue', n:'La morue', s:"Salée, empilée, elle voyage bien.",
-      vol:1.1, prix:1.1, note:"Elle se garde des mois." } ],
-  cordage: [
-    { k:'amarre', n:"L'amarre", s:"Du gros, du solide, pour les bittes du port.",
-      vol:1.3, prix:.9, note:"Tous les bateaux en ont besoin." },
-    { k:'fin', n:'Le cordage fin', s:"Pour le gréement. Ça demande la main.",
-      vol:.7, prix:1.8, note:"On paie la précision." },
-    { k:'filet', n:'Le filet', s:"Maillé à la main, nœud par nœud.",
-      vol:.9, prix:1.4, note:"Long à faire, mais recherché." } ],
-  huile: [
-    { k:'commune', n:"L'huile commune", s:"Deuxième pression. Pour la cuisine de tous les jours.",
-      vol:1.5, prix:.75, note:"Le volume fait le revenu." },
-    { k:'vierge', n:"L'huile vierge", s:"Première pression à froid, en jarres scellées.",
-      vol:.7, prix:1.9, note:"C'est ça qu'on vient chercher de loin." },
-    { k:'lampe', n:"L'huile à lampe", s:"Ce qui reste après filtrage. Ça éclaire.",
-      vol:1.2, prix:1.0, note:"On en brûle partout, toute l'année." } ]
-};
-
-/* ---------- comment tu travailles ---------- */
-const MANIERES = [
-  { k:'vite', n:'Vite et beaucoup', s:"On sort ce qu'on peut, on ne compte pas les heures.",
-    vol:1.35, prix:.82, note:"Plus de volume, moins de valeur à l'unité." },
-  { k:'juste', n:'Comme il faut', s:"Ni pressé ni traînard. Le travail bien fait.",
-    vol:1, prix:1, note:"L'équilibre." },
-  { k:'soin', n:'Avec du soin', s:"On prend le temps, on jette ce qui n'est pas bon.",
-    vol:.72, prix:1.42, note:"Moins de volume, mais on te paie pour ça." }
-];
 
 /* ---------- les couleurs de ta marque ---------- */
 const COULEURS = [
@@ -821,43 +883,66 @@ function poserProd(){
   };
 }
 
+const ICOB = {
+  atelier:'<path d="M3 21V9l9-6 9 6v12M3 21h18M9 21v-7h6v7"/>',
+  sechoir:'<path d="M4 20V8M20 20V8M2 8h20M4 13h16M8 8v5M12 8v5M16 8v5"/>',
+  reserve:'<path d="M4 9h16v12H4zM4 9l2-5h12l2 5M9 14h6"/>',
+  ponton:'<path d="M3 12h18M6 12v8M12 12v8M18 12v8M3 8h18"/>',
+  ombriere:'<path d="M3 10h18l-3-5H6zM7 10v10M17 10v10M12 10v10"/>'
+};
+let ongB = 'atelier';
+
 function poserBatis(){
   const A = D.affaire || {};
-  document.getElementById('batis').innerHTML = BATIS.map(B => {
+  document.getElementById('ongB').innerHTML = BATIS.map(B => {
     const n = +A[B.k] || 0;
-    const act = B.N[n], suiv = B.N[n + 1];
-    const peut = suiv && Number(D.euros || 0) >= suiv.prix;
-    let s = '<div class="bat"><div class="l1"><b>' + B.n + '</b>'
-      + (suiv ? '<span class="px">' + suiv.prix.toLocaleString('fr-FR') + ' €</span>'
-              : '<span class="px fait">Au bout ✓</span>') + '</div>'
-      + '<span class="a">' + act.n + ' — ' + act.d + '</span>'
-      + '<div class="niv">' + B.N.map((_, i) =>
-          '<i class="' + (i <= n ? 'on' : '') + '"></i>').join('') + '</div>';
-    if (suiv){
-      s += '<span class="n">Ensuite : ' + suiv.n + ' — ' + suiv.d + '</span>';
-      const g = [];
-      ['prod','stock','bonus'].forEach(k => {
-        if (suiv[k] === undefined) return;
-        const dd = (suiv[k] || 0) - (act[k] || 0);
-        if (dd) g.push('+' + dd + ' ' +
-          { prod:'de production', stock:'de réserve', bonus:'au chargement' }[k]);
-      });
-      if (g.length) s += '<span class="ef">' + g.join(' · ') + '</span>';
-      s += '<button data-b="' + B.k + '"' + (peut ? '' : ' disabled') + '>'
-        + (peut ? 'Bâtir' : 'Il te manque '
-            + (suiv.prix - Number(D.euros || 0)).toLocaleString('fr-FR') + ' €')
-        + '</button>';
-    }
-    return s + '</div>';
+    return '<button data-o="' + B.k + '" class="' + (B.k === ongB ? 'on' : '') + '">'
+      + '<svg viewBox="0 0 24 24">' + ICOB[B.k] + '</svg>'
+      + '<span class="pts">' + B.N.map((_, i) =>
+          '<i class="' + (i <= n ? 'on' : '') + '"></i>').join('') + '</span></button>';
   }).join('');
+  document.querySelectorAll('[data-o]').forEach(b =>
+    b.onclick = () => { ongB = b.dataset.o; poserBatis(); });
 
-  document.querySelectorAll('[data-b]').forEach(b =>
-    b.onclick = async () => {
-      b.disabled = true; b.textContent = 'On monte…';
-      const r = await BD.agir('batir', { p_quoi: b.dataset.b });
-      if (r.ok){ D = await BD.charger(); decor(); entete(); poserProd(); poserBatis(); }
-      else b.textContent = r.pourquoi === 'trop_cher' ? 'Pas assez' : "Ça n'a pas marché";
+  const B = BATIS.find(x => x.k === ongB);
+  const n = +A[B.k] || 0, act = B.N[n], suiv = B.N[n + 1];
+  const sous = Number(D.euros || 0);
+  const peut = suiv && sous >= suiv.prix;
+
+  let s = '<div class="h"><b>' + B.n + '</b><span>' + B.s + '</span></div>'
+    + '<div class="etat"><span class="n">Aujourd\'hui</span><b>' + act.n + '</b></div>';
+
+  if (!suiv){
+    s += '<p class="fini">Tu es allé au bout. Il n\'y a rien de plus grand.</p>';
+  } else {
+    s += '<div class="suite">'
+      + '<div class="fl"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'
+      + '<b>' + suiv.n + '</b><span class="px">'
+      + suiv.prix.toLocaleString('fr-FR') + ' €</span></div>'
+      + '<p class="d">' + suiv.d + '</p>';
+    const g = [];
+    ['prod','stock','bonus'].forEach(k => {
+      if (suiv[k] === undefined) return;
+      const dd = (suiv[k] || 0) - (act[k] || 0);
+      if (dd) g.push('+' + dd + ' ' +
+        { prod:'de production par jour', stock:'de réserve', bonus:'au chargement' }[k]);
     });
+    if (g.length) s += '<div class="gains">'
+      + g.map(t => '<span>' + t + '</span>').join('') + '</div>';
+    s += '<button class="go" data-b="' + B.k + '"' + (peut ? '' : ' disabled') + '>'
+      + (peut ? 'Bâtir — ' + suiv.prix.toLocaleString('fr-FR') + ' €'
+         : 'Il te manque ' + (suiv.prix - sous).toLocaleString('fr-FR') + ' €')
+      + '</button></div>';
+  }
+  document.getElementById('det').innerHTML = s;
+
+  const bt = document.querySelector('[data-b]');
+  if (bt) bt.onclick = async () => {
+    bt.disabled = true; bt.textContent = 'On monte…';
+    const r = await BD.agir('batir', { p_quoi: bt.dataset.b });
+    if (r.ok){ D = await BD.charger(); decor(); entete(); poserProd(); poserBatis(); }
+    else bt.textContent = r.pourquoi === 'trop_cher' ? 'Pas assez' : "Ça n'a pas marché";
+  };
 }
 
 document.getElementById('ret').onclick = () => location.href = 'jeu.html';
