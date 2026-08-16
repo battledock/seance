@@ -2538,6 +2538,9 @@ function poserAvatar(d){
       location.href = BD.PAGES[d.etape];
       return;
     }
+    /* cet écran est celui de chez toi. Ailleurs, on va sur la page du port. */
+    if (d.parti_le){ location.href = 'mer.html'; return; }
+    if (d.port === 'barcelone'){ location.href = 'barcelone.html'; return; }
     poserAvatar(d);
     poserBarre(d);
     poserMenu(d);
