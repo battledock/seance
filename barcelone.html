@@ -1411,6 +1411,12 @@ addEventListener('keydown', e => { if (e.key === 'Escape') ouvrirVille(false); }
     'Ta barque reste à quai. Elle ne bougera pas sans toi.';
 
   document.getElementById('debarquer').onclick = () => ouvrirVille(true);
+  /* des points en attente : on le dit au lieu de laisser filer */
+  if (Number(d.points || 0) > 0){
+    document.getElementById('sous').innerHTML =
+      '<span style="color:#f0c46a">Tu as ' + d.points
+      + (d.points > 1 ? ' points' : ' point') + ' à placer.</span>';
+  }
   document.getElementById('rentrer').onclick = () => location.href = 'voyager.html';
 
   /* le rideau se lève, puis tout apparaît */
