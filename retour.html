@@ -55,19 +55,13 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
   color:rgba(255,255,255,.56);margin-top:4px}
 
 /* ================= la lecture ================= */
-.dit{position:fixed;left:0;right:0;bottom:0;top:36%;z-index:4;
-  display:flex;flex-direction:column;
-  padding:0 22px calc(env(safe-area-inset-bottom) + 20px);
-  background:linear-gradient(180deg,rgba(10,16,28,0) 0,rgba(10,16,28,.92) 26px,
-    rgba(10,16,28,.97) 100%)}
-.lignes{flex:1;overflow-y:auto;display:flex;flex-direction:column;
-  gap:16px;padding:16px 0 22px;min-height:0;
-  /* le fond du texte, pour qu'il ne se lise jamais par-dessus le décor */
-  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 22px);
-  mask-image:linear-gradient(180deg,transparent 0,#000 22px)}
-/* ce vide pousse les premières lignes vers le bas sans bloquer le défilement */
-.lignes::before{content:"";margin-top:auto}
-.lignes::-webkit-scrollbar{display:none}
+.dit{position:fixed;left:0;right:0;bottom:0;top:34%;z-index:4;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:0 22px calc(env(safe-area-inset-bottom) + 24px);
+  background:linear-gradient(180deg,rgba(10,16,28,0) 0,rgba(10,16,28,.94) 30px,
+    rgba(10,16,28,.98) 100%)}
+.dit::-webkit-scrollbar{display:none}
+.lignes{display:flex;flex-direction:column;gap:16px;padding:26px 0 24px}
 
 /* le corps du texte : grand, aéré, contrasté */
 .lignes p{font-size:16.5px;line-height:1.78;color:rgba(255,255,255,.82);
@@ -87,7 +81,7 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 @keyframes venir{to{opacity:1;transform:none}}
 
 /* ================= tes réponses ================= */
-.choix{flex:0 0 auto;display:flex;flex-direction:column;gap:10px;
+.choix{display:flex;flex-direction:column;gap:10px;padding-bottom:8px;
   opacity:0;animation:venir .6s forwards}
 .choix button{width:100%;text-align:left;
   padding:16px 17px;border:1.5px solid rgba(255,255,255,.22);border-radius:11px;
@@ -1384,10 +1378,11 @@ function jouer(cle){
       L.appendChild(p); n++;
     }
   }
-  /* on suit le texte à mesure qu'il apparaît */
-  const suivre = () => L.scrollTop = L.scrollHeight;
-  suivre();
-  for (let i = 1; i <= n + 1; i++) setTimeout(suivre, i * 620 + 80);
+  /* on descend doucement à mesure que les répliques arrivent */
+  const D = document.querySelector('.dit');
+  D.scrollTop = 0;
+  const suivre = () => D.scrollTo({ top: D.scrollHeight, behavior: 'smooth' });
+  for (let i = 1; i <= n + 2; i++) setTimeout(suivre, i * 620 + 200);
   C.style.animationDelay = (n * .62 + .35) + 's';
   E.choix.forEach(c => {
     const ok = assez(c.besoin);
