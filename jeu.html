@@ -558,10 +558,14 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 
 /* ================= ce que les réglages changent ================= */
 html.sans-anim *{animation:none !important;transition:none !important}
-html.sans-decor #scene .onde,
-html.sans-decor #scene .paill,
-html.sans-decor #scene .nuages,
-html.sans-decor #scene .etoile{display:none}
+/* le décor animé : on garde la scène, on enlève ce qui bouge et ce qui coûte cher */
+html.sans-decor .paill,
+html.sans-decor .nuages,
+html.sans-decor .etoile,
+html.sans-decor .ride,
+html.sans-decor .clapot{display:none}
+html.sans-decor .onde{animation:none !important}
+html.sans-decor .barque{animation:none !important}
 html{font-size:calc(16px * var(--txt, 1))}
 .bulle,.dit p,.ct li .l1 .no,.bat .a{font-size:calc(11.5px * var(--txt, 1))}
 </style>
@@ -2201,6 +2205,14 @@ function ecrireReglages(){
   try { localStorage.setItem('bd-reglages', JSON.stringify(REG)); } catch(e){}
   appliquerReglages();
 }
+/* une petite secousse, quand il se passe quelque chose */
+function secousse(quoi){
+  if (!REG.secousse) return;
+  if (!navigator.vibrate) return;
+  const M = { touche:12, bien:[18, 40, 30], gros:[24, 50, 24, 50, 60], raté:[40, 60, 40] };
+  try { navigator.vibrate(M[quoi] || 12); } catch(e){}
+}
+
 function appliquerReglages(){
   const r = document.documentElement;
   r.classList.toggle('sans-anim', !REG.animations);
@@ -2317,6 +2329,7 @@ async function poserContrats(d, forcer){
       b.disabled = true; b.textContent = '…';
       const p = await BD.agir('prendre_contrat', { p_id: b.dataset.c });
       if (p.ok){
+        secousse('bien');
         const f = await BD.charger();
         Object.assign(d, f);
         poserBarre(d); poserMenu(d); poserBarque(d); poserBas(d);
@@ -2504,6 +2517,7 @@ async function construire(d, S){
   act.innerHTML = '<button class="non" disabled>Toussaint travaille…</button>';
   const r = await BD.agir('construire_barque');
   if (r.ok){
+    secousse('gros');
     /* on relit la fiche : c'est le serveur qui fait foi */
     const f = await BD.charger();
     Object.assign(d, f);
@@ -2841,7 +2855,7 @@ function poserBas(d){
   mer.classList.toggle('vif', aBateau);
   document.getElementById('b-mer-t').textContent = aBateau ? 'Prendre la mer' : 'Un bateau';
   mer.onclick = aBateau
-    ? () => location.href = 'voyager.html'
+    ? () => { secousse('touche'); location.href = 'voyager.html'; }
     : () => basculerChantier(true);
 
   /* sans bateau, on ne prend pas de contrat : le chantier passe devant */
