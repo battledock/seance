@@ -122,18 +122,16 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 /* ---------- la ville qui vit ---------- */
 .navette{animation:traverse 190s linear infinite}
 @keyframes traverse{0%{transform:translateX(-40px)}100%{transform:translateX(300px)}}
-.palmier{animation:brise 11s ease-in-out infinite;transform-box:fill-box}
-.palmier:nth-of-type(2n){animation-duration:13.6s;animation-delay:-4s}
-@keyframes brise{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg)}}
+.palmier{animation:brise 13s ease-in-out infinite}
+.palmier:nth-of-type(2n){animation-duration:16s;animation-delay:-5s}
+.palmier:nth-of-type(3n){animation-duration:11s;animation-delay:-8s}
+@keyframes brise{0%,100%{transform:rotate(-.35deg)}50%{transform:rotate(.35deg)}}
 .lampe{animation:veilleuse 5.4s ease-in-out infinite}
 .lampe:nth-of-type(2n){animation-delay:-2.2s;animation-duration:6.8s}
 @keyframes veilleuse{0%,100%{opacity:.55}48%{opacity:1}}
 .gens{animation:vivre 10s ease-in-out infinite}
 .gens:nth-of-type(2n){animation-duration:12.4s;animation-delay:-3.5s}
 @keyframes vivre{0%,100%{transform:translateY(0)}50%{transform:translateY(-.8px)}}
-.mouettePosee{animation:sautille 13s ease-in-out infinite}
-@keyframes sautille{0%,88%,100%{transform:translate(0,0)}
-  92%{transform:translate(2.6px,-2.4px)}96%{transform:translate(5px,0)}}
 .maison{animation:fenetre 9s ease-in-out infinite}
 .maison:nth-of-type(3n){animation-duration:14s;animation-delay:-5s}
 @keyframes fenetre{0%,100%{opacity:.72}50%{opacity:1}}
@@ -764,18 +762,6 @@ function darse_BC(){
     s += `</g>`;
   });
 
-  /* les mouettes en vol, à trois distances */
-  [[110, 344, 74], [190, 158, 58], [300, 412, 46], [150, 62, 68]].forEach(([dm, x, y0], i) => {
-    const e = px(1.2, dm);
-    s += `<g class="volee v${i % 3}" opacity="${(.62 - i*.1).toFixed(2)}">`;
-    for (let k = 0; k < 3; k++)
-      s += `<path d="M${(x+k*e*2.4).toFixed(1)} ${(y0+k*e*.8).toFixed(1)}
-        q${(e*.5).toFixed(1)} ${(-e*.42).toFixed(1)} ${e.toFixed(1)} 0
-        q${(e*.5).toFixed(1)} ${(-e*.42).toFixed(1)} ${e.toFixed(1)} 0"
-        stroke="${voiler_BC('#f2efe6', dm)}" stroke-width="${(e*.16).toFixed(2)}"
-        fill="none" stroke-linecap="round"/>`;
-    s += `</g>`;
-  });
   return s;
 }
 
@@ -878,13 +864,6 @@ function mole_BC(){
     s += `</g>`;
   });
 
-  /* une mouette posée sur la bitte du fond */
-  const ym = sol_BC(38) - px(.6, 38);
-  s += `<g class="mouettePosee">
-    <ellipse cx="200" cy="${ym.toFixed(1)}" rx="4" ry="2.4" fill="#f2efe6"/>
-    <circle cx="202.6" cy="${(ym-2.2).toFixed(1)}" r="1.6" fill="#f6f3ea"/>
-    <path d="M204 ${(ym-2.2).toFixed(1)} l2.2 .5 l-2.2 .7 z" fill="#e0a13a"/>
-    <circle cx="203.2" cy="${(ym-2.5).toFixed(1)}" r=".45" fill="#3a3630"/></g>`;
   return s;
 }
 
