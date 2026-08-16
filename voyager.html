@@ -739,11 +739,16 @@ function barqueQ(n, route){
 
 
 /* ================= la destination ================= */
-const CAP = {
-  k:'barcelone', n:'Barcelone', lieu:'Un jour de mer, plein ouest',
-  s:"Tu n'y es jamais allé. On dit que là-bas tout se vend, tout se rachète, et que tout se sait.",
-  jours:1, nrj:30
+/* deux caps, selon la rive où l'on se trouve */
+const CAPS = {
+  barcelone: { k:'barcelone', n:'Barcelone', lieu:'Un jour de mer, plein ouest',
+    s:"Tu n'y es jamais allé. On dit que là-bas tout se vend, tout se rachète, "
+      + "et que tout se sait.", jours:1, nrj:30 },
+  anse:      { k:'anse', n:'Chez toi', lieu:'Un jour de mer, plein est',
+    s:"Le retour. Ton mouillage, ta cabane, et Toussaint qui te demandera "
+      + "ce que tu as rapporté.", jours:1, nrj:30 }
 };
+let CAP = CAPS.barcelone;
 
 /* ================= le large, rien d'autre ================= */
 /* On ne montre pas Barcelone : le joueur la découvrira en arrivant. */
@@ -775,7 +780,8 @@ function dessinerMer(){
     + largeVide() + '</svg>';
 }
 
-document.getElementById('ret').onclick = () => location.href = 'jeu.html';
+let retour = 'jeu.html';
+document.getElementById('ret').onclick = () => location.href = retour;
 
 (async () => {
   dessinerMer();
@@ -787,6 +793,10 @@ document.getElementById('ret').onclick = () => location.href = 'jeu.html';
 
   const n = Number(d.barque || 0);
   if (!n){ location.href = 'jeu.html'; return; }
+  if (d.parti_le){ location.href = 'mer.html'; return; }
+  /* on ne propose que la rive d'en face */
+  CAP = d.port === 'barcelone' ? CAPS.anse : CAPS.barcelone;
+  retour = d.port === 'barcelone' ? 'barcelone.html' : 'jeu.html';
   const P = PALIERS_B[n - 1];
   const nrj = Number(d.energie ?? 100);
 
