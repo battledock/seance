@@ -25,37 +25,6 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
-/* ---------- changer sa marque ---------- */
-.mq{padding:4px 15px 14px}
-.mq input{width:100%;padding:14px 15px;border:1.5px solid rgba(255,255,255,.22);
-  border-radius:9px;background:rgba(255,255,255,.06);color:#fff;
-  font-family:'Courier Prime',monospace;font-size:16px;font-weight:700;
-  text-align:center;-webkit-user-select:text;user-select:text}
-.mq input:focus{outline:none;border-color:rgba(240,196,106,.7)}
-.mq .lab2{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(255,255,255,.4);margin:14px 2px 9px}
-.mq .gr{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;max-height:150px;
-  overflow-y:auto;padding:2px}
-.mq .gr::-webkit-scrollbar{display:none}
-.mq .gr button{aspect-ratio:1;border:1.5px solid rgba(255,255,255,.16);border-radius:8px;
-  background:rgba(255,255,255,.05);cursor:pointer;display:flex;align-items:center;
-  justify-content:center;transition:all .16s;padding:0}
-.mq .gr button.on{border-color:rgba(240,196,106,.8);background:rgba(52,44,26,.6)}
-.mq .gr button svg{width:20px;height:20px}
-.mq .gr.co button{flex-direction:column;gap:4px;padding:7px 2px;aspect-ratio:auto}
-.mq .gr.co .p{width:20px;height:20px;border-radius:5px}
-.mq .gr.co span{font-size:6.5px;color:rgba(255,255,255,.5);text-align:center;
-  line-height:1.1;padding:0 1px}
-.mq .ap{display:flex;align-items:center;gap:12px;margin-top:14px;padding:13px;
-  border-radius:9px;border:1px solid rgba(255,255,255,.14)}
-.mq .ap .em{flex:0 0 40px;height:40px;display:flex;align-items:center;justify-content:center}
-.mq .ap .em svg{width:24px;height:24px}
-.mq .ap b{font-size:16px;font-weight:700}
-.mq .go{width:100%;margin-top:13px;padding:14px;border:0;border-radius:9px;cursor:pointer;
-  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
-  font-family:'Courier Prime',monospace;font-size:13px;font-weight:700;letter-spacing:.06em}
-.mq .go:disabled{background:rgba(255,255,255,.08);color:rgba(255,255,255,.34);cursor:default}
-
 /* ---------- la confirmation de dépense ---------- */
 .cf{position:fixed;z-index:30;left:20px;right:20px;top:50%;max-width:320px;margin:0 auto;
   transform:translateY(-50%) scale(.94);
@@ -665,7 +634,6 @@ html{font-size:calc(16px * var(--txt, 1))}
     <button class="fer" id="g-fer">×</button>
   </div>
   <div id="g-liste"></div>
-  <div class="mq" id="g-mq"></div>
   <p class="pied" id="g-pied"></p>
 </section>
 
@@ -2407,76 +2375,11 @@ function poserReglages(){
 
   document.getElementById('g-pied').textContent =
     "Ces réglages restent sur cet appareil. Ils ne changent rien à ta partie.";
-  poserMarque();
 
   el.querySelectorAll('[data-b]').forEach(b =>
     b.onclick = () => { REG[b.dataset.b] = !REG[b.dataset.b]; ecrireReglages(); poserReglages(); });
   el.querySelectorAll('[data-t]').forEach(b =>
     b.onclick = () => { REG[b.dataset.t] = b.dataset.v; ecrireReglages(); poserReglages(); });
-}
-
-/* ---------- changer le nom et les couleurs de ton affaire ---------- */
-let MQ = null;
-function poserMarque(){
-  const el = document.getElementById('g-mq');
-  const A = (MOI && MOI.affaire) || null;
-  if (!el) return;
-  if (!A){ el.innerHTML = ''; return; }
-  if (!MQ) MQ = { nom:A.nom, couleur:A.couleur, signe:A.signe, ecusson:A.ecusson };
-  const c = COULEURS.find(x => x.k === MQ.couleur) || COULEURS[0];
-  const f = (ECUSSONS.find(x => x.k === MQ.ecusson) || ECUSSONS[0]).r;
-  const change = MQ.nom !== A.nom || MQ.couleur !== A.couleur
-    || MQ.signe !== A.signe || MQ.ecusson !== A.ecusson;
-
-  el.innerHTML = '<p class="lab2">Le nom de ton affaire</p>'
-    + '<input id="mq-n" maxlength="22" value="' + (MQ.nom || '') + '">'
-    + '<p class="lab2">Ton signe</p><div class="gr">' + SIGNES.map(S =>
-        '<button data-s="' + S.k + '" class="' + (S.k === MQ.signe ? 'on' : '') + '">'
-        + signe(S.k, S.k === MQ.signe ? c.c2 : 'rgba(255,255,255,.5)') + '</button>').join('')
-    + '</div>'
-    + '<p class="lab2">Ta couleur</p><div class="gr co">' + COULEURS.map(S =>
-        '<button data-c="' + S.k + '" class="' + (S.k === MQ.couleur ? 'on' : '') + '">'
-        + '<span class="p" style="background:' + S.c + '"></span>'
-        + '<span>' + S.n + '</span></button>').join('') + '</div>'
-    + '<p class="lab2">La forme</p><div class="gr">' + ECUSSONS.map(S =>
-        '<button data-e="' + S.k + '" class="' + (S.k === MQ.ecusson ? 'on' : '') + '">'
-        + '<span style="width:22px;height:22px;border-radius:' + S.r + ';background:' + c.c
-        + '"></span></button>').join('') + '</div>'
-    + '<div class="ap" style="background:' + c.c + '1f;border-color:' + c.c + '55">'
-    + '<span class="em" style="background:' + c.c + ';border-radius:' + f + '">'
-    + signe(MQ.signe, '#fff') + '</span>'
-    + '<b style="color:' + c.c2 + '">' + (MQ.nom || 'Sans nom') + '</b></div>'
-    + '<button class="go" id="mq-go"' + (change && (MQ.nom||'').trim().length >= 2 ? '' : ' disabled')
-    + '>' + (change ? 'Enregistrer' : 'Rien à changer') + '</button>';
-
-  const i = document.getElementById('mq-n');
-  i.oninput = () => { MQ.nom = i.value; poserMarqueBouton(); };
-  el.querySelectorAll('[data-s]').forEach(b =>
-    b.onclick = () => { MQ.signe = b.dataset.s; poserMarque(); });
-  el.querySelectorAll('[data-c]').forEach(b =>
-    b.onclick = () => { MQ.couleur = b.dataset.c; poserMarque(); });
-  el.querySelectorAll('[data-e]').forEach(b =>
-    b.onclick = () => { MQ.ecusson = b.dataset.e; poserMarque(); });
-  document.getElementById('mq-go').onclick = async () => {
-    const b = document.getElementById('mq-go');
-    b.disabled = true; b.textContent = 'On écrit…';
-    const r = await BD.agir('renommer', { p_nom:MQ.nom.trim(), p_couleur:MQ.couleur,
-      p_signe:MQ.signe, p_ecusson:MQ.ecusson });
-    if (r.ok){
-      secousse('bien');
-      const f2 = await BD.charger(); Object.assign(MOI, f2);
-      MQ = null; poserMarque();
-    } else { b.textContent = "Ça n'a pas marché"; }
-  };
-}
-function poserMarqueBouton(){
-  const A = (MOI && MOI.affaire) || {};
-  const b = document.getElementById('mq-go');
-  if (!b) return;
-  const change = MQ.nom !== A.nom || MQ.couleur !== A.couleur
-    || MQ.signe !== A.signe || MQ.ecusson !== A.ecusson;
-  b.disabled = !(change && (MQ.nom||'').trim().length >= 2);
-  b.textContent = change ? 'Enregistrer' : 'Rien à changer';
 }
 
 let rgOuvert = false;
