@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b1a2a">
+<title>Battle Dock — Barcelone</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#0b1a2a;
+  font-family:'Courier Prime',monospace;color:#fff}
+
+#ville{position:fixed;inset:0}
+#ville svg{display:block;width:100%;height:100%}
+#ville::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(11,26,42,.26) 0%,rgba(11,26,42,0) 20%,
+    rgba(11,26,42,0) 46%,rgba(11,26,42,.34) 60%,rgba(11,26,42,.82) 76%,
+    rgba(11,26,42,.98) 90%)}
+
+/* ---------- l'arrivée : le rideau qui se lève ---------- */
+#rideau{position:fixed;inset:0;z-index:9;background:#0b1a2a;
+  transition:opacity 2.4s ease-out;pointer-events:none}
+#rideau.parti{opacity:0}
+
+/* ---------- le texte ---------- */
+.bas{position:fixed;left:0;right:0;bottom:0;z-index:3;
+  padding:0 22px calc(env(safe-area-inset-bottom) + 26px)}
+.sur{font-size:9px;letter-spacing:.34em;text-transform:uppercase;
+  color:#f0c46a;margin-bottom:9px;padding-left:2px}
+.nom{font-size:44px;font-weight:700;letter-spacing:-.01em;line-height:.92;
+  text-shadow:0 3px 24px rgba(4,12,22,.7)}
+.dit{font-size:12.5px;line-height:1.72;color:rgba(255,255,255,.72);
+  margin-top:14px;font-family:system-ui,sans-serif;max-width:340px}
+
+.act{display:flex;flex-direction:column;gap:9px;margin-top:24px}
+.act button{width:100%;padding:16px;border:0;border-radius:9px;cursor:pointer;
+  font-family:'Courier Prime',monospace;font-size:14px;font-weight:700;letter-spacing:.06em;
+  transition:transform .12s}
+.act button:active{transform:scale(.985)}
+.act .or{background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  box-shadow:0 6px 26px rgba(240,196,106,.32)}
+.act .creux{background:rgba(255,255,255,.09);color:rgba(255,255,255,.86);
+  border:1.5px solid rgba(255,255,255,.2)}
+.act button:disabled{opacity:.4;cursor:default}
+.sous{font-size:10.5px;color:rgba(255,255,255,.44);text-align:center;margin-top:10px;
+  font-family:system-ui,sans-serif}
+
+/* ---------- l'entête ---------- */
+.tete{position:fixed;left:0;right:0;top:0;z-index:4;
+  padding:calc(env(safe-area-inset-top) + 14px) 16px 0;
+  display:flex;align-items:center;gap:12px}
+.mien{margin-left:auto;display:flex;align-items:center;gap:10px;
+  background:rgba(10,22,36,.42);border:1.5px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:8px;padding:7px 12px 7px 8px}
+.mien .vg{flex:0 0 44px;height:28px;border-radius:4px;overflow:hidden;
+  background:linear-gradient(180deg,#3d7fa8,#245a80)}
+.mien .vg svg{display:block;width:100%;height:100%}
+.mien .tx b{display:block;font-size:10.5px;font-weight:700;white-space:nowrap}
+.mien .tx span{display:block;font-size:8px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.44);margin-top:2px}
+.euro{background:rgba(10,22,36,.42);border:1.5px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-radius:8px;padding:9px 13px;font-size:14px;font-weight:700;color:#ffd894}
+
+.fondu{opacity:0;transform:translateY(16px);
+  transition:opacity .9s cubic-bezier(.2,.8,.3,1),transform 1s cubic-bezier(.2,.8,.3,1)}
+.fondu.on{opacity:1;transform:none}
+.d1{transition-delay:1.5s}.d2{transition-delay:1.8s}.d3{transition-delay:2.1s}
+.d4{transition-delay:2.5s}
+
+/* ---------- la ville qui vit ---------- */
+.navette{animation:traverse 190s linear infinite}
+@keyframes traverse{0%{transform:translateX(-40px)}100%{transform:translateX(300px)}}
+.palmier{animation:brise 11s ease-in-out infinite;transform-box:fill-box}
+.palmier:nth-of-type(2n){animation-duration:13.6s;animation-delay:-4s}
+@keyframes brise{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg)}}
+.lampe{animation:veilleuse 5.4s ease-in-out infinite}
+.lampe:nth-of-type(2n){animation-delay:-2.2s;animation-duration:6.8s}
+@keyframes veilleuse{0%,100%{opacity:.55}48%{opacity:1}}
+.gens{animation:vivre 10s ease-in-out infinite}
+.gens:nth-of-type(2n){animation-duration:12.4s;animation-delay:-3.5s}
+@keyframes vivre{0%,100%{transform:translateY(0)}50%{transform:translateY(-.8px)}}
+.mouettePosee{animation:sautille 13s ease-in-out infinite}
+@keyframes sautille{0%,88%,100%{transform:translate(0,0)}
+  92%{transform:translate(2.6px,-2.4px)}96%{transform:translate(5px,0)}}
+.maison{animation:fenetre 9s ease-in-out infinite}
+.maison:nth-of-type(3n){animation-duration:14s;animation-delay:-5s}
+@keyframes fenetre{0%,100%{opacity:.72}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+
+<div id="ville"></div>
+<div id="rideau"></div>
+
+<div class="tete">
+  <span class="euro fondu d1" id="euro">—</span>
+  <span class="mien fondu d1">
+    <span class="vg" id="m-vg"></span>
+    <span class="tx"><b id="m-nom">—</b><span id="m-cale">—</span></span>
+  </span>
+</div>
+
+<div class="bas">
+  <p class="sur fondu d1">Tu y es</p>
+  <h1 class="nom fondu d2">Barcelone</h1>
+  <p class="dit fondu d2" id="dit">—</p>
+  <div class="act fondu d3">
+    <button class="or" id="marche" disabled>Le marché</button>
+    <button class="creux" id="rentrer">Reprendre la mer</button>
+  </div>
+  <p class="sous fondu d4" id="sous"></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+/* ============================================================
+   CHARTE DE SCÈNE — Battle Dock
+   Tout se calcule, rien ne se place au jugé.
+   ============================================================ */
+
+const W_BC = 480, H = 240;
+
+/* ---------- la focale ---------- */
+/* Réglée pour qu'un immeuble de 22 m à 400 m fasse 40 px de haut.
+   Toute hauteur à l'écran = hauteur réelle × FOCALE_BC / distance.  */
+const FOCALE_BC = 727;
+
+/* ---------- l'horizon ---------- */
+/* L'œil est à 4 m au-dessus de l'eau_BC : debout sur le môle. */
+const OEIL_BC = 4;
+const HORIZON_BC = 128;
+
+/* ---------- la règle unique ---------- */
+/* hauteur apparente, en pixels */
+const px = (metres, distance) => metres * FOCALE_BC / distance;
+/* où se pose le pied d'un objet posé au niveau de l'eau_BC, à cette distance */
+const sol_BC = distance => HORIZON_BC + OEIL_BC * FOCALE_BC / distance;
+/* le sommet d'un objet posé au sol_BC */
+const cime = (metres, distance) => sol_BC(distance) - px(metres, distance);
+
+/* ---------- l'atmosphère ---------- */
+/* fraction de couleur du ciel_BC à mélanger, selon la distance */
+const brume_BC = distance => Math.min(.72, 1 - Math.exp(-distance / 3400));
+
+/* ---------- la distance minimale visible ---------- */
+/* en deçà, le pied de l'objet tombe sous le cadre */
+const D_MIN = OEIL_BC * FOCALE_BC / (H - HORIZON_BC);
+
+/* ============================================================
+   Le décor de Barcelone, vu du môle du Port Vell
+   Distances réelles, mesurées sur une carte.
+   ============================================================ */
+const BARCELONE = [
+  /* --- le lointain_BC --- */
+  { k:'collserola', n:"La serra de Collserola", h:512, d:9000,
+    note:"La crête qui ferme la ville_BC au nord-ouest." },
+  { k:'tibidabo',   n:"Le Tibidabo et son temple", h:560, d:9400,
+    note:"Le point le plus haut, avec sa flèche." },
+
+  /* --- Montjuïc, à gauche --- */
+  { k:'montjuic_BC',   n:"La colline de Montjuïc", h:173, d:1900,
+    note:"Elle ferme le port à l'ouest. Bien plus proche que Collserola." },
+  { k:'chateau',    n:"Le château, au sommet", h:18, d:1900,
+    note:"Posé sur les 173 m de la colline : il culmine à 191 m." },
+
+  /* --- la ville_BC --- */
+  { k:'sagrada',    n:"La Sagrada Família", h:172, d:4200,
+    note:"Loin dans les terres. Elle dépasse à peine les toits du port." },
+  { k:'agbar',      n:"La tour Agbar", h:145, d:4600, note:"L'autre repère de la skyline_BC." },
+  { k:'colomb',     n:"Le monument à Colomb", h:60, d:520,
+    note:"Au bout de la Rambla, juste en face du port." },
+  { k:'barceloneta',n:"Les immeubles de la Barceloneta", h:22, d:400,
+    note:"Six étages. C'est eux qui donnent l'échelle de la ville_BC." },
+  { k:'horloge',    n:"La tour de l'horloge", h:35, d:340,
+    note:"Sur le quai, à l'entrée du port de pêche." },
+
+  /* --- le port --- */
+  { k:'grue',       n:"Les grues du quai", h:38, d:620, note:"Sur la jetée de chargement." },
+  { k:'voilier',    n:"Les mâts du port de plaisance", h:14, d:230, note:"Alignés dans la darse_BC." },
+  { k:'palmier',    n:"Les palmiers du front de mer", h:9, d:110, note:"Alignés le long du quai." },
+  { k:'lampadaire', n:"Les lampadaires du môle", h:4.5, d:64, note:"Fonte noire, du Port Vell." },
+
+  /* --- le môle, à tes pieds --- */
+  /* rien de plus près que 30 m : en deçà, le pied de l'objet sort du cadre */
+  { k:'homme',      n:"Un homme sur le môle", h:1.75, d:38, note:"La mesure de tout le reste." },
+  { k:'barque',     n:"Ta barque, à quai", h:1.4, d:34, note:"Hauteur de bordé." },
+  { k:'caisse',     n:"Une caisse", h:.8, d:36, note:"" },
+  { k:'tonneau',    n:"Un tonneau", h:.9, d:33, note:"" },
+  { k:'bitte',      n:"Une bitte d'amarrage", h:.6, d:31, note:"" }
+];
+
+/* ---------- calcule tout ---------- */
+function mesurer(){
+  return BARCELONE.map(o => ({
+    ...o,
+    px: px(o.h, o.d),
+    sol_BC: sol_BC(o.d),
+    cime: cime(o.h, o.d),
+    brume_BC: brume_BC(o.d)
+  })).sort((a, b) => b.d - a.d);   /* du plus loin au plus près */
+}
+
+/* ============================================================
+   BARCELONE — dessinée selon la charte
+   Rien n'est placé à la main : tout se calcule.
+   ============================================================ */
+const rnd_BC = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+
+/* ---------- la brume_BC : on mélange vers la couleur du ciel_BC ---------- */
+const CIEL_H_BC = [168, 200, 222];          /* le ciel_BC près de l'horizon */
+function voiler_BC(hex, d){
+  const b = brume_BC(d);
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), bl = parseInt(hex.slice(5,7),16);
+  const f = v => Math.round(v).toString(16).padStart(2,'0');
+  return '#' + f(r + (CIEL_H_BC[0]-r)*b) + f(g + (CIEL_H_BC[1]-g)*b) + f(bl + (CIEL_H_BC[2]-bl)*b);
+}
+
+/* ---------- le ciel_BC ---------- */
+function ciel_BC(){
+  let s = `<defs>
+    <linearGradient id="b-ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#3d86bd"/>
+      <stop offset="30%"  stop-color="#79b7d8"/>
+      <stop offset="60%"  stop-color="#a5cadf"/>
+      <stop offset="78%"  stop-color="#cfd8d8"/>
+      <stop offset="92%"  stop-color="#e8dcc4"/>
+      <stop offset="100%" stop-color="#f2dcb4"/></linearGradient>
+    <radialGradient id="b-soleil" cx="0.5" cy="0.5">
+      <stop offset="0%"   stop-color="#fffdf4" stop-opacity=".95"/>
+      <stop offset="30%"  stop-color="#fff0cc" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#ffdca6" stop-opacity="0"/></radialGradient>
+    <linearGradient id="b-eau" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#b4d4dc"/>
+      <stop offset="6%"   stop-color="#7cc0d0"/>
+      <stop offset="26%"  stop-color="#4ba0bf"/>
+      <stop offset="58%"  stop-color="#25789f"/>
+      <stop offset="100%" stop-color="#124e74"/></linearGradient>
+  </defs>`;
+  s += `<rect width="480" height="240" fill="url(#b-ciel)"/>`;
+  s += `<ellipse cx="88" cy="40" rx="112" ry="58" fill="url(#b-soleil)" opacity=".8"/>`;
+  s += `<circle cx="88" cy="38" r="12" fill="#fffdf8"/>`;
+  s += `<g class="nuages-loin">`;
+  for (let i = 0; i < 5; i++){
+    const cx = -70 + rnd_BC(i+3)*620, cy = 14 + rnd_BC(i+11)*26, w = 30 + rnd_BC(i)*44;
+    s += `<g opacity="${(.1 + rnd_BC(i+5)*.1).toFixed(2)}" fill="#fff">
+      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="4"/>
+      <ellipse cx="${(cx+w*.32).toFixed(0)}" cy="${(cy-3).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="3.2"/></g>`;
+  }
+  s += `</g><g class="nuages-pres">`;
+  for (let i = 0; i < 4; i++){
+    const cx = -90 + rnd_BC(i+21)*640, cy = 26 + rnd_BC(i+31)*30, w = 34 + rnd_BC(i+7)*48;
+    s += `<g opacity="${(.14 + rnd_BC(i+9)*.14).toFixed(2)}" fill="#fff">
+      <ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${w.toFixed(0)}" ry="5.4"/>
+      <ellipse cx="${(cx+w*.34).toFixed(0)}" cy="${(cy-4.4).toFixed(0)}" rx="${(w*.5).toFixed(0)}" ry="4.2"/></g>`;
+  }
+  s += `</g>`;
+  return s;
+}
+
+/* ============================================================
+   1. LE LOINTAIN — Collserola et le Tibidabo, 9 km
+   ============================================================ */
+function lointain_BC(){
+  const d = 9000, y = sol_BC(d), c = voiler_BC('#6d8a9c', d);
+  const h = px(512, d), ht = px(560, 9400);
+  let s = `<path d="M0 ${y} `;
+  /* une crête découpée, jamais deux fois pareille */
+  const P = [[0,.28],[38,.52],[76,.34],[118,.62],[158,.46],[198,.72],[236,.5],
+             [274,.66],[312,.44],[348,.78],[386,.92],[418,.7],[452,.86],[480,.62]];
+  P.forEach(([x, k], i) => {
+    s += (i ? `Q${(x-14).toFixed(0)} ${(y - h*k*1.14).toFixed(1)} ` : '')
+       + `${x} ${(y - h*k).toFixed(1)} `;
+  });
+  s += `L480 ${y} Z" fill="${c}" opacity=".82"/>`;
+  /* le Tibidabo : le sommet, avec sa flèche */
+  const xt = 386, yt = y - ht;
+  s += `<path d="M${xt-26} ${y} q13 ${(-ht*1.1).toFixed(1)} 26 ${(-ht).toFixed(1)}
+    q13 ${(ht*.08).toFixed(1)} 26 ${ht.toFixed(1)} z" fill="${voiler_BC('#63808f', 9400)}" opacity=".84"/>`;
+  s += `<path d="M${xt} ${yt.toFixed(1)} v-7" stroke="${voiler_BC('#5c7480', 9400)}"
+    stroke-width="1.4" opacity=".7"/>`;
+  s += `<path d="M${xt-2.4} ${(yt-7).toFixed(1)} h4.8 l-2.4 -3.4 z"
+    fill="${voiler_BC('#5c7480', 9400)}" opacity=".7"/>`;
+  return s;
+}
+
+/* ============================================================
+   2. MONTJUÏC — 1,9 km, l'élément dominant
+   ============================================================ */
+function montjuic_BC(){
+  const d = 1900, y = sol_BC(d), h = px(173, d);
+  const c = voiler_BC('#9a9madd'.slice(0,7), d);
+  const base = voiler_BC('#8f8c6e', d), clair_BC = voiler_BC('#b8b394', d), sombre_BC = voiler_BC('#6d6b52', d);
+  /* le profil réel : montée douce à l'ouest, plateau, puis la falaise sur le port */
+  const D = `M-10 ${y} L-10 ${(y-h*.14).toFixed(1)}
+    Q22 ${(y-h*.34).toFixed(1)} 48 ${(y-h*.56).toFixed(1)}
+    Q68 ${(y-h*.72).toFixed(1)} 84 ${(y-h*.86).toFixed(1)}
+    Q98 ${(y-h*.98).toFixed(1)} 112 ${(y-h).toFixed(1)}
+    L134 ${(y-h*.97).toFixed(1)}
+    Q148 ${(y-h*.95).toFixed(1)} 156 ${(y-h*.82).toFixed(1)}
+    Q166 ${(y-h*.62).toFixed(1)} 172 ${(y-h*.34).toFixed(1)}
+    Q176 ${(y-h*.14).toFixed(1)} 179 ${y} Z`;
+  let s = `<path d="${D}" fill="${base}"/>`;
+  s += `<defs><clipPath id="b-mj"><path d="${D}"/></clipPath></defs>`;
+  s += `<g clip-path="url(#b-mj)">`;
+  /* la face au soleil, à gauche */
+  s += `<path d="M-10 ${(y-h*.12).toFixed(1)} Q30 ${(y-h*.44).toFixed(1)} 86 ${(y-h*.88).toFixed(1)}
+    L82 ${y} L-10 ${y} Z" fill="${clair_BC}" opacity=".5"/>`;
+  /* l'ombre du versant est */
+  s += `<path d="M136 ${(y-h*.97).toFixed(1)} Q164 ${(y-h*.56).toFixed(1)} 179 ${y} L128 ${y} Z"
+    fill="${sombre_BC}" opacity=".26"/>`;
+  /* les strates */
+  s += `<g stroke="${clair_BC}" stroke-width=".8" fill="none" opacity=".3">`;
+  for (let i = 0; i < 4; i++)
+    s += `<path d="M-10 ${(y - h*.18 - i*h*.16).toFixed(1)} q52 ${(-h*.1).toFixed(1)} 104 ${(-h*.02).toFixed(1)}
+      q40 ${(h*.04).toFixed(1)} 72 ${(h*.14).toFixed(1)}"/>`;
+  s += `</g>`;
+  /* les pins : 12 m à 1,9 km = 4,6 px. Des touffes, pas des arbres. */
+  const hp = px(12, d);
+  for (let i = 0; i < 34; i++){
+    const t = rnd_BC(i+2), x = -6 + t * 190;
+    /* on suit le profil : plus on est au centre, plus c'est haut */
+    const k = x < 118 ? .22 + (x + 10) / 128 * .78 : Math.max(0, 1 - (x - 118) / 70);
+    const ys = y - h * k * (.5 + rnd_BC(i+30) * .42);
+    if (ys > y - 3) continue;
+    s += `<ellipse cx="${x.toFixed(1)}" cy="${ys.toFixed(1)}" rx="${(hp*.5).toFixed(1)}"
+      ry="${(hp*.3).toFixed(1)}" fill="${voiler_BC('#4a6b46', d)}" opacity="${(.3+rnd_BC(i+7)*.3).toFixed(2)}"/>`;
+  }
+  s += `</g>`;
+  /* le château : 18 m à 1,9 km = 6,9 px. Trois traits, pas plus. */
+  const hc = px(18, d), xc = 122, yc = y - h * .985;
+  s += `<rect x="${(xc-hc*1.1).toFixed(1)}" y="${(yc-hc*.62).toFixed(1)}"
+    width="${(hc*2.2).toFixed(1)}" height="${(hc*.62).toFixed(1)}" fill="${voiler_BC('#a8a488', d)}"/>`;
+  s += `<rect x="${(xc-hc*.32).toFixed(1)}" y="${(yc-hc).toFixed(1)}"
+    width="${(hc*.64).toFixed(1)}" height="${(hc*.44).toFixed(1)}" fill="${voiler_BC('#bab694', d)}"/>`;
+  /* les créneaux : deux dents, pas plus, à 7 px */
+  s += `<rect x="${(xc-hc*1.1).toFixed(1)}" y="${(yc-hc*.78).toFixed(1)}"
+    width="${(hc*.42).toFixed(1)}" height="${(hc*.18).toFixed(1)}" fill="${voiler_BC('#b0ac90', d)}"/>`;
+  s += `<rect x="${(xc+hc*.68).toFixed(1)}" y="${(yc-hc*.78).toFixed(1)}"
+    width="${(hc*.42).toFixed(1)}" height="${(hc*.18).toFixed(1)}" fill="${voiler_BC('#b0ac90', d)}"/>`;
+  return s;
+}
+
+/* ============================================================
+   3. LA SKYLINE — Sagrada et Agbar, 4 km, vues par la trouée
+   ============================================================ */
+function skyline_BC(){
+  let s = '';
+  /* la Sagrada : 172 m à 4,2 km = 30 px */
+  const d = 4200, y = sol_BC(d), h = px(172, d), x = 268;
+  const c = voiler_BC('#7d8894', d), cl = voiler_BC('#8f9aa6', d);
+  /* la nef */
+  s += `<rect x="${(x-h*.34).toFixed(1)}" y="${(y-h*.36).toFixed(1)}"
+    width="${(h*.68).toFixed(1)}" height="${(h*.36).toFixed(1)}" fill="${c}"/>`;
+  /* les tours : quatre, de hauteurs différentes, très effilées */
+  [[-.26,.82],[-.09,1],[.09,.96],[.26,.78]].forEach(([dx, k]) => {
+    const tx = x + h*dx, th = h*k;
+    s += `<path d="M${(tx-h*.045).toFixed(1)} ${(y-h*.32).toFixed(1)}
+      L${tx.toFixed(1)} ${(y-th).toFixed(1)} L${(tx+h*.045).toFixed(1)} ${(y-h*.32).toFixed(1)} z"
+      fill="${c}"/>`;
+    s += `<path d="M${(tx-h*.045).toFixed(1)} ${(y-h*.32).toFixed(1)}
+      L${tx.toFixed(1)} ${(y-th).toFixed(1)} L${(tx+h*.008).toFixed(1)} ${(y-h*.32).toFixed(1)} z"
+      fill="${cl}"/>`;
+  });
+  /* une grue : à cette taille, un trait */
+  s += `<path d="M${(x+h*.4).toFixed(1)} ${(y-h*.3).toFixed(1)} v${(-h*.86).toFixed(1)}
+    M${(x+h*.16).toFixed(1)} ${(y-h*1.16).toFixed(1)} h${(h*.42).toFixed(1)}"
+    stroke="${voiler_BC('#8a9299', d)}" stroke-width=".9" fill="none" opacity=".75"/>`;
+
+  /* la tour Agbar : 145 m à 4,6 km = 23 px, un obus */
+  const d2 = 4600, y2 = sol_BC(d2), h2 = px(145, d2), x2 = 318;
+  s += `<path d="M${(x2-h2*.16).toFixed(1)} ${y2.toFixed(1)} v${(-h2*.76).toFixed(1)}
+    q0 ${(-h2*.24).toFixed(1)} ${(h2*.16).toFixed(1)} ${(-h2*.24).toFixed(1)}
+    q${(h2*.16).toFixed(1)} 0 ${(h2*.16).toFixed(1)} ${(h2*.24).toFixed(1)}
+    v${(h2*.76).toFixed(1)} z" fill="${voiler_BC('#8fa0ac', d2)}"/>`;
+  return s;
+}
+
+/* ============================================================
+   4. LA VILLE — la Barceloneta, 400 m, avec sa trouée
+   ============================================================ */
+function unImmeuble_BC(x, larg, etages, d, g, type){
+  const y = sol_BC(d), he = px(3.2, d), h = he * etages;
+  const MURS = ['#e8dcbc','#dcc9a4','#f0e6c8','#d4c09c','#e4d4b4','#ecdcc0','#d8cca8'];
+  const mur = voiler_BC(MURS[g % 7], d);
+  const cor = voiler_BC('#c4b190', d);
+  let s = `<g class="maison">`;
+  s += `<rect x="${x.toFixed(1)}" y="${(y-h).toFixed(1)}" width="${larg.toFixed(1)}"
+    height="${h.toFixed(1)}" fill="${mur}"/>`;
+  /* la lumière vient de la gauche : une joue claire, une joue à l'ombre */
+  s += `<rect x="${x.toFixed(1)}" y="${(y-h).toFixed(1)}" width="${(larg*.22).toFixed(1)}"
+    height="${h.toFixed(1)}" fill="#fff6d8" opacity=".18"/>`;
+  s += `<rect x="${(x+larg*.76).toFixed(1)}" y="${(y-h).toFixed(1)}"
+    width="${(larg*.24).toFixed(1)}" height="${h.toFixed(1)}" fill="#3f3520" opacity=".1"/>`;
+  s += `<rect x="${(x-larg*.05).toFixed(1)}" y="${(y-h).toFixed(1)}"
+    width="${(larg*1.1).toFixed(1)}" height="${(he*.22).toFixed(1)}" fill="${cor}"/>`;
+
+  /* les ouvertures */
+  const cols = Math.max(2, Math.round(larg / (he * .6)));
+  for (let e = 0; e < etages - 1; e++){
+    const ey = y - h + he * (e + .48);
+    for (let c = 0; c < cols; c++){
+      const fx = x + larg * .09 + c * (larg * .82 / cols);
+      /* une fenêtre sur six est éclairée */
+      const chaud = rnd_BC(g * 40 + e * 7 + c) > .88;
+      s += `<rect x="${fx.toFixed(1)}" y="${ey.toFixed(1)}" width="${(he*.24).toFixed(1)}"
+        height="${(he*.46).toFixed(1)}" rx="${(he*.1).toFixed(1)}"
+        fill="${chaud ? voiler_BC('#e8b45c', d) : voiler_BC('#68798a', d)}"/>`;
+      s += `<rect x="${(fx-he*.07).toFixed(1)}" y="${(ey+he*.42).toFixed(1)}"
+        width="${(he*.38).toFixed(1)}" height="${(he*.09).toFixed(1)}"
+        fill="${voiler_BC('#5c5548', d)}" opacity=".45"/>`;
+    }
+  }
+  s += `<rect x="${x.toFixed(1)}" y="${(y-he*.9).toFixed(1)}" width="${larg.toFixed(1)}"
+    height="${(he*.9).toFixed(1)}" fill="${voiler_BC('#b2a68a', d)}"/>`;
+  /* les stores et auvents du rez-de-chaussée */
+  if (rnd_BC(g + 11) > .5)
+    s += `<rect x="${(x+larg*.14).toFixed(1)}" y="${(y-he*.62).toFixed(1)}"
+      width="${(larg*.62).toFixed(1)}" height="${(he*.2).toFixed(1)}"
+      fill="${voiler_BC(['#c2603a','#3f7a6a','#b8863a'][g % 3], d)}"/>`;
+
+  /* le couronnement : c'est lui qui donne la silhouette */
+  if (type === 'dome'){
+    const r = larg * .3;
+    s += `<path d="M${(x+larg*.5-r).toFixed(1)} ${(y-h).toFixed(1)}
+      a${r.toFixed(1)} ${(r*1.05).toFixed(1)} 0 0 1 ${(r*2).toFixed(1)} 0 z"
+      fill="${voiler_BC('#a8b4a0', d)}"/>`;
+    s += `<path d="M${(x+larg*.5).toFixed(1)} ${(y-h-r*1.05).toFixed(1)} v${(-he*.5).toFixed(1)}"
+      stroke="${voiler_BC('#8a9284', d)}" stroke-width=".9"/>`;
+  }
+  else if (type === 'tour'){
+    const tw = larg * .3, th = he * 1.9;
+    s += `<rect x="${(x+larg*.35).toFixed(1)}" y="${(y-h-th).toFixed(1)}"
+      width="${tw.toFixed(1)}" height="${th.toFixed(1)}" fill="${mur}"/>`;
+    s += `<rect x="${(x+larg*.35).toFixed(1)}" y="${(y-h-th).toFixed(1)}"
+      width="${(tw*.3).toFixed(1)}" height="${th.toFixed(1)}" fill="#fff6d8" opacity=".2"/>`;
+    s += `<path d="M${(x+larg*.31).toFixed(1)} ${(y-h-th).toFixed(1)}
+      l${(tw*.7).toFixed(1)} ${(-he*.7).toFixed(1)} l${(tw*.7).toFixed(1)} ${(he*.7).toFixed(1)} z"
+      fill="${voiler_BC('#9a7a5c', d)}"/>`;
+  }
+  else if (type === 'terrasse'){
+    for (let k = 0; k * he * .5 < larg; k++)
+      s += `<rect x="${(x + k*he*.5).toFixed(1)}" y="${(y-h-he*.16).toFixed(1)}"
+        width="${(he*.22).toFixed(1)}" height="${(he*.16).toFixed(1)}" fill="${cor}"/>`;
+    /* le linge et les antennes */
+    if (rnd_BC(g + 5) > .45){
+      s += `<path d="M${(x+larg*.18).toFixed(1)} ${(y-h-he*.44).toFixed(1)} v${(he*.44).toFixed(1)}"
+        stroke="${voiler_BC('#8a8578', d)}" stroke-width=".7"/>`;
+      s += `<path d="M${(x+larg*.1).toFixed(1)} ${(y-h-he*.4).toFixed(1)} h${(larg*.2).toFixed(1)}"
+        stroke="${voiler_BC('#8a8578', d)}" stroke-width=".7"/>`;
+    }
+  }
+  return s + `</g>`;
+}
+
+function ville_BC(){
+  const d = 400, y = sol_BC(d), he = px(3.2, d), hq = px(3, d);
+  let s = '';
+  /* le quai */
+  s += `<rect x="0" y="${(y-hq).toFixed(1)}" width="480" height="${(hq+2).toFixed(1)}"
+    fill="${voiler_BC('#cfc4a8', d)}"/>`;
+  s += `<rect x="0" y="${(y-hq).toFixed(1)}" width="480" height="1" fill="${voiler_BC('#e6dcc0', d)}"/>`;
+
+  /* la rangée, avec du rythme : des blocs de hauteurs franches et des accidents */
+  const TROU = [248, 292];
+  const TYPES = [null, null, 'terrasse', null, 'terrasse', null, 'dome', null,
+                 'terrasse', null, null, 'tour', null, 'terrasse', null, null, 'dome'];
+  let x = -8, g = 0;
+  while (x < 488){
+    const larg = he * (1.3 + rnd_BC(g) * 1.7);
+    /* trois familles de hauteur, pour éviter la ligne plate */
+    const fam = rnd_BC(g + 60);
+    const et = fam > .82 ? 8 + Math.round(rnd_BC(g+3)*2)
+             : fam > .34 ? 5 + Math.round(rnd_BC(g+9)*2)
+             : 4 + Math.round(rnd_BC(g+13));
+    if (x + larg > TROU[0] && x < TROU[1]){
+      if (x < TROU[0] - 2) s += unImmeuble_BC(x, TROU[0] - x, et, d, g, 'terrasse');
+      x = TROU[1]; g++; continue;
+    }
+    s += unImmeuble_BC(x, larg, et, d, g, TYPES[g % TYPES.length]);
+    x += larg + he * .05;
+    g++;
+  }
+
+  /* la rue de la trouée, en enfilade */
+  s += `<rect x="${TROU[0]}" y="${(y-he*3.4).toFixed(1)}" width="${(TROU[1]-TROU[0]).toFixed(0)}"
+    height="${(he*3.4).toFixed(1)}" fill="${voiler_BC('#bfb59a', d)}" opacity=".45"/>`;
+
+  /* les palmiers du front de mer : 9 m à 400 m = 16 px */
+  const hp = px(9, d);
+  for (let i = 0; i < 18; i++){
+    const xp = 10 + i * 27 + rnd_BC(i) * 7;
+    if (xp > TROU[0] - 6 && xp < TROU[1] + 6) continue;
+    s += `<g class="palmier" style="transform-origin:${xp.toFixed(0)}px ${y.toFixed(1)}px">`;
+    s += `<path d="M${(xp-hp*.045).toFixed(1)} ${y.toFixed(1)} q${(-hp*.03).toFixed(1)} ${(-hp*.5).toFixed(1)}
+      ${(hp*.05).toFixed(1)} ${(-hp).toFixed(1)} l${(hp*.06).toFixed(1)} .4
+      q${(-hp*.07).toFixed(1)} ${(hp*.5).toFixed(1)} ${(-hp*.02).toFixed(1)} ${hp.toFixed(1)} z"
+      fill="${voiler_BC('#8a7048', d)}"/>`;
+    for (let k = 0; k < 5; k++){
+      const a = -hp*.32 + k*hp*.15;
+      s += `<path d="M${(xp+hp*.02).toFixed(1)} ${(y-hp).toFixed(1)}
+        q${a.toFixed(1)} ${(-hp*.13).toFixed(1)} ${(a*1.4).toFixed(1)} ${(hp*.1).toFixed(1)}
+        q${(-a*.5).toFixed(1)} ${(-hp*.05).toFixed(1)} ${(-a*1.4).toFixed(1)} ${(-hp*.06).toFixed(1)} z"
+        fill="${voiler_BC(k % 2 ? '#4f8250' : '#417049', d)}"/>`;
+    }
+    s += `</g>`;
+  }
+
+  /* des gens sur le quai : 1,75 m à 400 m = 3,2 px. Des traits. */
+  const hh = px(1.75, d);
+  for (let i = 0; i < 26; i++){
+    const xg = 8 + rnd_BC(i + 71) * 464;
+    if (xg > TROU[0] - 4 && xg < TROU[1] + 4) continue;
+    s += `<rect x="${xg.toFixed(1)}" y="${(y-hh).toFixed(1)}" width="${(hh*.34).toFixed(1)}"
+      height="${hh.toFixed(1)}" rx="${(hh*.17).toFixed(1)}"
+      fill="${voiler_BC(['#4a5560','#6d5c4a','#3f4a52','#7a4a44'][i % 4], d)}" opacity=".8"/>`;
+  }
+  return s;
+}
+
+/* ============================================================
+   5. LES REPÈRES DU PORT — Colomb 520 m, l'horloge 340 m
+   ============================================================ */
+function reperes_BC(){
+  let s = '';
+  /* le monument à Colomb : 60 m à 520 m = 84 px. Le plus imposant. */
+  const d = 520, y = sol_BC(d), h = px(60, d), x = 196;
+  const c = voiler_BC('#b8ac90', d), cl = voiler_BC('#d0c4a8', d), br = voiler_BC('#8a7f66', d);
+  /* le socle */
+  s += `<rect x="${(x-h*.13).toFixed(1)}" y="${(y-h*.19).toFixed(1)}"
+    width="${(h*.26).toFixed(1)}" height="${(h*.19).toFixed(1)}" fill="${c}"/>`;
+  s += `<rect x="${(x-h*.16).toFixed(1)}" y="${(y-h*.22).toFixed(1)}"
+    width="${(h*.32).toFixed(1)}" height="${(h*.04).toFixed(1)}" fill="${cl}"/>`;
+  /* le tambour */
+  s += `<rect x="${(x-h*.09).toFixed(1)}" y="${(y-h*.32).toFixed(1)}"
+    width="${(h*.18).toFixed(1)}" height="${(h*.1).toFixed(1)}" fill="${br}"/>`;
+  /* la colonne */
+  s += `<rect x="${(x-h*.035).toFixed(1)}" y="${(y-h*.9).toFixed(1)}"
+    width="${(h*.07).toFixed(1)}" height="${(h*.58).toFixed(1)}" fill="${c}"/>`;
+  s += `<rect x="${(x-h*.035).toFixed(1)}" y="${(y-h*.9).toFixed(1)}"
+    width="${(h*.024).toFixed(1)}" height="${(h*.58).toFixed(1)}" fill="${cl}"/>`;
+  /* le chapiteau */
+  s += `<rect x="${(x-h*.07).toFixed(1)}" y="${(y-h*.94).toFixed(1)}"
+    width="${(h*.14).toFixed(1)}" height="${(h*.04).toFixed(1)}" fill="${cl}"/>`;
+  /* la statue */
+  s += `<path d="M${x.toFixed(1)} ${(y-h).toFixed(1)} q${(h*.024).toFixed(1)} ${(h*.02).toFixed(1)}
+    ${(h*.018).toFixed(1)} ${(h*.06).toFixed(1)} l${(-h*.036).toFixed(1)} 0
+    q${(-h*.006).toFixed(1)} ${(-h*.04).toFixed(1)} ${(h*.018).toFixed(1)} ${(-h*.06).toFixed(1)} z"
+    fill="${voiler_BC('#6d6552', d)}"/>`;
+  s += `<path d="M${(x+h*.01).toFixed(1)} ${(y-h*.97).toFixed(1)} l${(h*.05).toFixed(1)} ${(-h*.014).toFixed(1)}"
+    stroke="${voiler_BC('#6d6552', d)}" stroke-width="${(h*.008).toFixed(1)}"/>`;
+
+  /* la tour de l'horloge : 35 m à 340 m = 75 px */
+  const d2 = 340, y2 = sol_BC(d2), h2 = px(35, d2), x2 = 96;
+  const c2 = voiler_BC('#ded2b6', d2), cl2 = voiler_BC('#efe5c9', d2);
+  s += `<rect x="${(x2-h2*.07).toFixed(1)}" y="${(y2-h2*.82).toFixed(1)}"
+    width="${(h2*.14).toFixed(1)}" height="${(h2*.82).toFixed(1)}" fill="${c2}"/>`;
+  s += `<rect x="${(x2-h2*.07).toFixed(1)}" y="${(y2-h2*.82).toFixed(1)}"
+    width="${(h2*.05).toFixed(1)}" height="${(h2*.82).toFixed(1)}" fill="${cl2}"/>`;
+  s += `<rect x="${(x2-h2*.09).toFixed(1)}" y="${(y2-h2*.86).toFixed(1)}"
+    width="${(h2*.18).toFixed(1)}" height="${(h2*.05).toFixed(1)}" fill="${cl2}"/>`;
+  s += `<circle cx="${x2.toFixed(1)}" cy="${(y2-h2*.72).toFixed(1)}" r="${(h2*.045).toFixed(1)}"
+    fill="${voiler_BC('#f6f0dc', d2)}" stroke="${voiler_BC('#a89a7c', d2)}" stroke-width=".7"/>`;
+  s += `<path d="M${(x2-h2*.09).toFixed(1)} ${(y2-h2*.86).toFixed(1)}
+    l${(h2*.09).toFixed(1)} ${(-h2*.11).toFixed(1)} l${(h2*.09).toFixed(1)} ${(h2*.11).toFixed(1)} z"
+    fill="${voiler_BC('#c4b598', d2)}"/>`;
+
+  /* les grues du quai : 38 m à 620 m = 45 px */
+  const d3 = 620, y3 = sol_BC(d3), h3 = px(38, d3);
+  [408, 448].forEach((xg, i) => {
+    const hh = h3 * (1 - i * .16);
+    const cg = voiler_BC('#8a9299', d3);
+    s += `<rect x="${(xg-hh*.035).toFixed(1)}" y="${(y3-hh).toFixed(1)}"
+      width="${(hh*.07).toFixed(1)}" height="${hh.toFixed(1)}" fill="${cg}"/>`;
+    s += `<path d="M${xg} ${(y3-hh*.92).toFixed(1)} l${(-hh*.52).toFixed(1)} ${(-hh*.2).toFixed(1)}"
+      stroke="${cg}" stroke-width="${(hh*.05).toFixed(1)}" stroke-linecap="round"/>`;
+    s += `<path d="M${(xg-hh*.52).toFixed(1)} ${(y3-hh*1.12).toFixed(1)} v${(hh*.2).toFixed(1)}"
+      stroke="${voiler_BC('#6d757c', d3)}" stroke-width="${(hh*.02).toFixed(1)}"/>`;
+    s += `<rect x="${(xg-hh*.62).toFixed(1)}" y="${(y3-hh*1.1).toFixed(1)}"
+      width="${(hh*.16).toFixed(1)}" height="${(hh*.12).toFixed(1)}" rx="1" fill="${voiler_BC('#c9843a', d3)}"/>`;
+    s += `<rect x="${(xg-hh*.1).toFixed(1)}" y="${(y3-hh*.86).toFixed(1)}"
+      width="${(hh*.2).toFixed(1)}" height="${(hh*.14).toFixed(1)}" rx="1.4" fill="${voiler_BC('#5c6a74', d3)}"/>`;
+  });
+  return s;
+}
+
+/* ============================================================
+   6. L'EAU — la darse_BC
+   ============================================================ */
+function eau_BC(){
+  const yh = sol_BC(3000);
+  let s = `<rect x="0" y="${yh.toFixed(1)}" width="480" height="${(240-yh).toFixed(1)}" fill="url(#b-eau)"/>`;
+  /* les reflets de la ville_BC, juste sous le quai */
+  s += `<rect x="0" y="${sol_BC(400).toFixed(1)}" width="480" height="${px(14,400).toFixed(1)}"
+    fill="#b8ac90" opacity=".1"/>`;
+  /* la houle : plus les vagues sont proches, plus elles sont grandes */
+  for (let n = 0; n < 5; n++){
+    const d = 900 / (n + 1);
+    const y = sol_BC(d), amp = px(.35, d), esp = px(9, d);
+    if (y > 244) continue;
+    s += `<g class="onde o${n % 4}">`;
+    for (let i = 0; i < 5; i++){
+      const yy = y + i * esp * .5;
+      if (yy > 242) break;
+      s += `<path d="M-80 ${yy.toFixed(1)} q${(esp*.5).toFixed(1)} ${(-amp).toFixed(1)} ${esp.toFixed(1)} 0
+        t${esp.toFixed(1)} 0 t${esp.toFixed(1)} 0 t${esp.toFixed(1)} 0 t${esp.toFixed(1)} 0
+        t${esp.toFixed(1)} 0 t${esp.toFixed(1)} 0 t${esp.toFixed(1)} 0 t${esp.toFixed(1)} 0
+        t${esp.toFixed(1)} 0 t${esp.toFixed(1)} 0"
+        stroke="#fff" stroke-width="${Math.max(.5, amp*.3).toFixed(2)}" fill="none"
+        opacity="${(.22 - n*.03).toFixed(2)}"/>`;
+    }
+    s += `</g>`;
+  }
+  return s;
+}
+
+/* ---------- ce qui flotte dans la darse_BC ---------- */
+function darse_BC(){
+  let s = '';
+
+  /* les reflets de la ville_BC, étirés vers le bas */
+  const yv = sol_BC(400);
+  s += `<g opacity=".2">`;
+  for (let i = 0; i < 22; i++){
+    const x = 6 + i * 22 + rnd_BC(i) * 8;
+    const h = px(3.2, 400) * (4 + rnd_BC(i + 30) * 4);
+    s += `<rect x="${x.toFixed(1)}" y="${yv.toFixed(1)}" width="${(6 + rnd_BC(i)*8).toFixed(1)}"
+      height="${(h * .5).toFixed(1)}" fill="${voiler_BC('#e0d4b4', 400)}"/>`;
+  }
+  s += `</g>`;
+
+  /* le ponton du port de plaisance, 230 m */
+  const dp = 230, yp = sol_BC(dp);
+  s += `<rect x="196" y="${(yp-px(.8,dp)).toFixed(1)}" width="180" height="${px(.8,dp).toFixed(1)}"
+    fill="${voiler_BC('#a89a7c', dp)}"/>`;
+
+  /* les voiliers alignés : mâts de 14 m */
+  const hm = px(14, dp), hc = px(1.8, dp);
+  for (let i = 0; i < 17; i++){
+    const x = 202 + i * 10.4 + rnd_BC(i) * 3;
+    const k = .74 + rnd_BC(i + 9) * .38;
+    s += `<path d="M${x.toFixed(1)} ${yp.toFixed(1)} v${(-hm*k).toFixed(1)}"
+      stroke="${voiler_BC('#e0dac8', dp)}" stroke-width="${(hm*.02).toFixed(2)}"/>`;
+    s += `<path d="M${(x-hc*1.7).toFixed(1)} ${(yp-hc*.4).toFixed(1)}
+      q${(hc*.4).toFixed(1)} ${(hc*.9).toFixed(1)} ${(hc*1.7).toFixed(1)} ${hc.toFixed(1)}
+      h${hc.toFixed(1)} q${(hc*1.3).toFixed(1)} ${(-hc*.2).toFixed(1)} ${(hc*1.6).toFixed(1)} ${(-hc).toFixed(1)} z"
+      fill="${voiler_BC('#f4efe2', dp)}"/>`;
+  }
+
+  /* la golondrina : la navette du port, 12 m, à 150 m */
+  const dg = 150, yg = sol_BC(dg), hg = px(3.4, dg), lg = px(12, dg);
+  s += `<g class="navette">`;
+  s += `<ellipse cx="${(120+lg*.5).toFixed(1)}" cy="${(yg+1).toFixed(1)}" rx="${(lg*.5).toFixed(1)}"
+    ry="${(hg*.14).toFixed(1)}" fill="#0e4a68" opacity=".24"/>`;
+  s += `<path d="M120 ${(yg-hg*.34).toFixed(1)} q${(lg*.06).toFixed(1)} ${(hg*.36).toFixed(1)}
+    ${(lg*.16).toFixed(1)} ${(hg*.4).toFixed(1)} h${(lg*.68).toFixed(1)}
+    q${(lg*.12).toFixed(1)} ${(-hg*.06).toFixed(1)} ${(lg*.16).toFixed(1)} ${(-hg*.4).toFixed(1)} z"
+    fill="${voiler_BC('#2f4a5c', dg)}"/>`;
+  s += `<path d="M120 ${(yg-hg*.34).toFixed(1)} h${lg.toFixed(1)} v${(-hg*.1).toFixed(1)} h${(-lg).toFixed(1)} z"
+    fill="${voiler_BC('#f0ece0', dg)}"/>`;
+  s += `<path d="M${(120+lg*.18).toFixed(1)} ${(yg-hg*.44).toFixed(1)} h${(lg*.6).toFixed(1)}
+    v${(-hg*.34).toFixed(1)} h${(-lg*.6).toFixed(1)} z" fill="${voiler_BC('#e8e2d4', dg)}"/>`;
+  for (let k = 0; k < 6; k++)
+    s += `<rect x="${(120+lg*.22+k*lg*.09).toFixed(1)}" y="${(yg-hg*.7).toFixed(1)}"
+      width="${(lg*.05).toFixed(1)}" height="${(hg*.16).toFixed(1)}"
+      fill="${voiler_BC('#5c7a8c', dg)}"/>`;
+  s += `<path d="M${(120+lg*.5).toFixed(1)} ${(yg-hg*.78).toFixed(1)} v${(-hg*.3).toFixed(1)}"
+    stroke="${voiler_BC('#8a8578', dg)}" stroke-width="1"/>`;
+  s += `<path d="M${(120+lg*.5).toFixed(1)} ${(yg-hg*1.08).toFixed(1)} l${(lg*.12).toFixed(1)} ${(hg*.08).toFixed(1)}
+    l${(-lg*.12).toFixed(1)} ${(hg*.08).toFixed(1)} z" fill="${voiler_BC('#c2603a', dg)}"/>`;
+  /* son sillage */
+  s += `<path d="M118 ${(yg+1).toFixed(1)} q-22 2 -44 0" stroke="#fff" stroke-width="1.2"
+    fill="none" opacity=".34"/>`;
+  s += `</g>`;
+
+  /* trois barques de pêche amarrées, entre 90 et 170 m */
+  [[96, 372], [130, 424], [168, 300]].forEach(([db, x], i) => {
+    const yb = sol_BC(db), hb = px(1.3, db), lb = px(6, db), hm = px(7, db);
+    s += `<g>`;
+    s += `<ellipse cx="${(x+lb*.5).toFixed(1)}" cy="${(yb+hb*.2).toFixed(1)}" rx="${(lb*.52).toFixed(1)}"
+      ry="${(hb*.22).toFixed(1)}" fill="#0e4a68" opacity=".22"/>`;
+    /* la coque, avec une étrave relevée */
+    s += `<path d="M${x} ${(yb-hb*.9).toFixed(1)}
+      C${(x+lb*.06).toFixed(1)} ${(yb-hb*.2).toFixed(1)} ${(x+lb*.18).toFixed(1)} ${yb.toFixed(1)} ${(x+lb*.34).toFixed(1)} ${yb.toFixed(1)}
+      H${(x+lb*.78).toFixed(1)}
+      C${(x+lb*.9).toFixed(1)} ${yb.toFixed(1)} ${(x+lb).toFixed(1)} ${(yb-hb*.3).toFixed(1)} ${(x+lb).toFixed(1)} ${(yb-hb*.8).toFixed(1)} Z"
+      fill="${voiler_BC(['#9a7a4e','#8a6a44','#a5825c'][i], db)}"/>`;
+    /* le liston clair_BC */
+    s += `<path d="M${x} ${(yb-hb*.9).toFixed(1)} q${(lb*.5).toFixed(1)} ${(hb*.42).toFixed(1)}
+      ${lb.toFixed(1)} ${(hb*.1).toFixed(1)}" stroke="${voiler_BC('#dfc094', db)}"
+      stroke-width="${(hb*.24).toFixed(2)}" fill="none"/>`;
+    /* le mât et sa bôme */
+    s += `<path d="M${(x+lb*.42).toFixed(1)} ${(yb-hb*.8).toFixed(1)} v${(-hm).toFixed(1)}"
+      stroke="${voiler_BC('#8a6a42', db)}" stroke-width="${(hm*.05).toFixed(2)}"/>`;
+    s += `<path d="M${(x+lb*.42).toFixed(1)} ${(yb-hb*.8-hm*.28).toFixed(1)} l${(lb*.4).toFixed(1)} ${(hm*.14).toFixed(1)}"
+      stroke="${voiler_BC('#8a6a42', db)}" stroke-width="${(hm*.035).toFixed(2)}"/>`;
+    /* la cabine */
+    s += `<rect x="${(x+lb*.5).toFixed(1)}" y="${(yb-hb*1.5).toFixed(1)}" width="${(lb*.24).toFixed(1)}"
+      height="${(hb*.66).toFixed(1)}" rx="${(hb*.14).toFixed(1)}" fill="${voiler_BC('#e0dcd0', db)}"/>`;
+    s += `</g>`;
+  });
+
+  /* les mouettes en vol, à trois distances */
+  [[110, 344, 74], [190, 158, 58], [300, 412, 46], [150, 62, 68]].forEach(([dm, x, y0], i) => {
+    const e = px(1.2, dm);
+    s += `<g class="volee v${i % 3}" opacity="${(.62 - i*.1).toFixed(2)}">`;
+    for (let k = 0; k < 3; k++)
+      s += `<path d="M${(x+k*e*2.4).toFixed(1)} ${(y0+k*e*.8).toFixed(1)}
+        q${(e*.5).toFixed(1)} ${(-e*.42).toFixed(1)} ${e.toFixed(1)} 0
+        q${(e*.5).toFixed(1)} ${(-e*.42).toFixed(1)} ${e.toFixed(1)} 0"
+        stroke="${voiler_BC('#f2efe6', dm)}" stroke-width="${(e*.16).toFixed(2)}"
+        fill="none" stroke-linecap="round"/>`;
+    s += `</g>`;
+  });
+  return s;
+}
+
+/* ============================================================
+   7. LE MÔLE — 30 à 40 m, à tes pieds
+   ============================================================ */
+function mole_BC(){
+  let s = '';
+  const dF = 42, dP = 26;          /* bord lointain_BC, bord proche */
+  const yF = sol_BC(dF), yP = 244;
+  /* la largeur du môle à l'écran : il occupe la gauche */
+  const xF = 232, xP = 292;
+  /* l'ombre du môle sur l'eau_BC */
+  s += `<path d="M${xF} ${yF.toFixed(1)} L${(xP+30)} 244 H${(xP+70)} L${(xF+22)} ${yF.toFixed(1)} Z"
+    fill="#0e3a58" opacity=".18"/>`;
+  s += `<path d="M0 ${yF.toFixed(1)} H${xF} L${xP} 244 H0 Z" fill="#c9bea2"/>`;
+  /* la lumière rasante sur le pavage */
+  s += `<path d="M0 ${yF.toFixed(1)} H${xF} L${(xF-40)} 244 H0 Z" fill="#fff2cc" opacity=".2"/>`;
+  s += `<path d="M0 ${yF.toFixed(1)} H${xF} l6 6 H0 Z" fill="#e8dfc8"/>`;
+  /* le pavage : les dalles rétrécissent avec la distance */
+  for (let i = 0; i < 7; i++){
+    const d1 = dF - i * 2.2, d2 = d1 - 2.2;
+    if (d2 < dP) break;
+    const y1 = sol_BC(d1), y2 = sol_BC(d2);
+    const l1 = 232 + (dF - d1) * 6, l2 = 232 + (dF - d2) * 6;
+    for (let c = 0; c < 9; c++){
+      const larg1 = l1 / 9, larg2 = l2 / 9;
+      s += `<path d="M${(c*larg1).toFixed(1)} ${y1.toFixed(1)} L${((c+1)*larg1).toFixed(1)} ${y1.toFixed(1)}
+        L${((c+1)*larg2).toFixed(1)} ${y2.toFixed(1)} L${(c*larg2).toFixed(1)} ${y2.toFixed(1)} Z"
+        fill="${rnd_BC(i*12+c) > .5 ? '#d2c7ab' : '#c0b599'}" opacity=".55"/>`;
+    }
+  }
+  /* la face du môle, côté eau_BC */
+  s += `<path d="M${xF} ${yF.toFixed(1)} L${xP} 244 L${(xP+16)} 244 L${(xF+8)} ${yF.toFixed(1)} Z"
+    fill="#a99e82"/>`;
+
+  /* les bittes : 0,6 m, à 31, 34 et 38 m */
+  [[31, 52], [34, 128], [38, 196]].forEach(([d, x], i) => {
+    const y = sol_BC(d), h = px(.6, d), l = px(.45, d);
+    s += `<ellipse cx="${x}" cy="${y.toFixed(1)}" rx="${(l*.8).toFixed(1)}" ry="${(l*.28).toFixed(1)}"
+      fill="#3f3a30" opacity=".26"/>`;
+    s += `<path d="M${(x-l*.5).toFixed(1)} ${y.toFixed(1)} q0 ${(-h).toFixed(1)} ${(l*.5).toFixed(1)} ${(-h).toFixed(1)}
+      q${(l*.5).toFixed(1)} 0 ${(l*.5).toFixed(1)} ${h.toFixed(1)} z" fill="#4a4438"/>`;
+    s += `<ellipse cx="${x}" cy="${(y-h).toFixed(1)}" rx="${(l*.62).toFixed(1)}"
+      ry="${(l*.22).toFixed(1)}" fill="#6d6558"/>`;
+  });
+  /* un cordage entre deux bittes */
+  s += `<path d="M58 ${(sol_BC(31)-px(.5,31)).toFixed(1)} Q92 ${(sol_BC(31)+4).toFixed(1)}
+    124 ${(sol_BC(34)-px(.5,34)).toFixed(1)}" stroke="#c9b58c" stroke-width="1.6" fill="none" opacity=".85"/>`;
+
+  /* le tonneau : 0,9 m à 33 m, et les caisses : 0,8 m à 36 m */
+  const yt = sol_BC(33), ht = px(.9, 33), lt = px(.75, 33);
+  s += `<g><ellipse cx="90" cy="${yt.toFixed(1)}" rx="${(lt*.55).toFixed(1)}" ry="${(lt*.2).toFixed(1)}" fill="#3f2c1e" opacity=".28"/>
+    <path d="M${(90-lt*.42).toFixed(1)} ${yt.toFixed(1)} q${(-lt*.08).toFixed(1)} ${(-ht*.5).toFixed(1)} 0 ${(-ht).toFixed(1)}
+      h${(lt*.84).toFixed(1)} q${(lt*.08).toFixed(1)} ${(ht*.5).toFixed(1)} 0 ${ht.toFixed(1)} z" fill="#9a7448"/>
+    <path d="M${(90-lt*.46).toFixed(1)} ${(yt-ht*.34).toFixed(1)} h${(lt*.92).toFixed(1)}
+      M${(90-lt*.46).toFixed(1)} ${(yt-ht*.66).toFixed(1)} h${(lt*.92).toFixed(1)}"
+      stroke="#6d5334" stroke-width="1.2"/>
+    <ellipse cx="90" cy="${(yt-ht).toFixed(1)}" rx="${(lt*.42).toFixed(1)}" ry="${(lt*.15).toFixed(1)}" fill="#b08a5c"/></g>`;
+
+  const yc = sol_BC(36), hcx = px(.8, 36), lc = px(1, 36);
+  [[158, 0], [158 + lc * 1.08, 0], [158 + lc * .54, -hcx]].forEach(([x, dy]) => {
+    s += `<rect x="${x.toFixed(1)}" y="${(yc - hcx + dy).toFixed(1)}" width="${lc.toFixed(1)}"
+      height="${hcx.toFixed(1)}" rx="1" fill="#a5825c"/>`;
+    s += `<rect x="${x.toFixed(1)}" y="${(yc - hcx + dy).toFixed(1)}" width="${lc.toFixed(1)}"
+      height="${(hcx*.14).toFixed(1)}" fill="#c9a374"/>`;
+    s += `<path d="M${x.toFixed(1)} ${(yc - hcx*.5 + dy).toFixed(1)} h${lc.toFixed(1)}"
+      stroke="#8a6a42" stroke-width="1"/>`;
+  });
+
+  /* les lampadaires : 4,5 m à 64 m = 51 px */
+  [[38, 104], [43, 198]].forEach(([d, x]) => {
+    const y = sol_BC(d), h = px(4.5, d);
+    s += `<path d="M${x} ${y.toFixed(1)} v${(-h).toFixed(1)}" stroke="#3f3a30"
+      stroke-width="${(h*.045).toFixed(1)}"/>`;
+    s += `<path d="M${(x-h*.05).toFixed(1)} ${y.toFixed(1)} h${(h*.1).toFixed(1)}"
+      stroke="#3f3a30" stroke-width="${(h*.05).toFixed(1)}"/>`;
+    s += `<path d="M${(x-h*.09).toFixed(1)} ${(y-h*.9).toFixed(1)} h${(h*.18).toFixed(1)}
+      l${(-h*.03).toFixed(1)} ${(-h*.1).toFixed(1)} h${(-h*.12).toFixed(1)} z" fill="#3f3a30"/>`;
+    s += `<ellipse class="lampe" cx="${x}" cy="${(y-h*.86).toFixed(1)}" rx="${(h*.06).toFixed(1)}"
+      ry="${(h*.05).toFixed(1)}" fill="#f4e2b0"/>`;
+  });
+
+  /* deux silhouettes sur le môle */
+  [[39, 52, '#4a5560', '#3f3a30'], [35, 214, '#7a4a44', '#4a4438']].forEach(([dh, x, hab, tete]) => {
+    const yh = sol_BC(dh), hh = px(1.75, dh);
+    s += `<g class="gens">`;
+    s += `<ellipse cx="${x}" cy="${yh.toFixed(1)}" rx="${(hh*.2).toFixed(1)}"
+      ry="${(hh*.05).toFixed(1)}" fill="#3f3a30" opacity=".26"/>`;
+    /* jambes */
+    s += `<path d="M${(x-hh*.06).toFixed(1)} ${yh.toFixed(1)} v${(-hh*.44).toFixed(1)}
+      M${(x+hh*.06).toFixed(1)} ${yh.toFixed(1)} v${(-hh*.44).toFixed(1)}"
+      stroke="${tete}" stroke-width="${(hh*.075).toFixed(1)}" stroke-linecap="round"/>`;
+    /* corps */
+    s += `<path d="M${(x-hh*.11).toFixed(1)} ${(yh-hh*.42).toFixed(1)}
+      q0 ${(-hh*.34).toFixed(1)} ${(hh*.11).toFixed(1)} ${(-hh*.34).toFixed(1)}
+      q${(hh*.11).toFixed(1)} 0 ${(hh*.11).toFixed(1)} ${(hh*.34).toFixed(1)} z" fill="${hab}"/>`;
+    /* tête */
+    s += `<circle cx="${x}" cy="${(yh-hh*.86).toFixed(1)}" r="${(hh*.088).toFixed(1)}" fill="#c98f5e"/>`;
+    s += `</g>`;
+  });
+
+  /* une mouette posée sur la bitte du fond */
+  const ym = sol_BC(38) - px(.6, 38);
+  s += `<g class="mouettePosee">
+    <ellipse cx="200" cy="${ym.toFixed(1)}" rx="4" ry="2.4" fill="#f2efe6"/>
+    <circle cx="202.6" cy="${(ym-2.2).toFixed(1)}" r="1.6" fill="#f6f3ea"/>
+    <path d="M204 ${(ym-2.2).toFixed(1)} l2.2 .5 l-2.2 .7 z" fill="#e0a13a"/>
+    <circle cx="203.2" cy="${(ym-2.5).toFixed(1)}" r=".45" fill="#3a3630"/></g>`;
+  return s;
+}
+
+/* ============================================================
+   La scène, dans l'ordre : du plus loin au plus près
+   ============================================================ */
+function barcelone_BC(){
+  return ciel_BC() + lointain_BC() + montjuic_BC() + skyline_BC() + eau_BC() + ville_BC()
+       + reperes_BC() + darse_BC() + mole_BC();
+}
+
+/* ============================================================
+   La barque — 20 niveaux d'amélioration
+   ============================================================ */
+const rndB = s => { const x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); };
+
+/* ---- ce que chaque niveau ajoute ---- */
+const PALIERS_B = [
+  { n:1,  nom:"La coque nue",        prix:0,      places:1, kg:40,  vit:1.0,
+    d:"Trois bordages et rien d'autre. Elle flotte, c'est déjà ça." },
+  { n:2,  nom:"Le calfatage",        prix:900,    places:1, kg:45,  vit:1.0,
+    d:"Étoupe et goudron dans les coutures. Elle ne prend plus l'eau." },
+  { n:3,  nom:"Le banc de nage",     prix:1400,   places:1, kg:50,  vit:1.1,
+    d:"On peut ramer assis. Ça change tout." },
+  { n:4,  nom:"Les avirons",         prix:2200,   places:2, kg:60,  vit:1.3,
+    d:"Deux avirons de frêne et leurs tolets." },
+  { n:5,  nom:"Le plat-bord",        prix:3400,   places:2, kg:70,  vit:1.3,
+    d:"Un liston tout autour. La coque ne travaille plus." },
+  { n:6,  nom:"Le pontage avant",    prix:5000,   places:3, kg:85,  vit:1.4,
+    d:"Un demi-pont à l'avant. Les caisses restent au sec." },
+  { n:7,  nom:"Le mât de fortune",   prix:7200,   places:3, kg:95,  vit:1.7,
+    d:"Une perche et un bout de toile. Ça tire quand le vent veut bien." },
+  { n:8,  nom:"La voile latine",     prix:10000,  places:4, kg:110, vit:2.2,
+    d:"Antenne et voile triangulaire. La vraie voile d'ici." },
+  { n:9,  nom:"Le safran",           prix:13500,  places:4, kg:120, vit:2.3,
+    d:"Un gouvernail et sa barre. Tu choisis où tu vas." },
+  { n:10, nom:"La quille lestée",    prix:18000,  places:5, kg:140, vit:2.5,
+    d:"Du plomb sous la quille. Elle ne se couche plus." },
+  { n:11, nom:"Le tillac",           prix:23000,  places:6, kg:170, vit:2.6,
+    d:"Un pont continu. On marche dessus sans regarder ses pieds." },
+  { n:12, nom:"La cale fermée",      prix:29000,  places:8, kg:220, vit:2.6,
+    d:"Un panneau, une cale étanche. Le double de marchandise." },
+  { n:13, nom:"Le foc",              prix:36000,  places:8, kg:240, vit:3.1,
+    d:"Un beaupré et un foc. Elle remonte enfin au vent." },
+  { n:14, nom:"Le rouf",             prix:44000,  places:9, kg:270, vit:3.1,
+    d:"Un abri sur le pont. On peut dormir à bord." },
+  { n:15, nom:"Le second mât",       prix:54000,  places:10, kg:310, vit:3.6,
+    d:"Un tapecul à l'arrière. Deux voiles valent mieux qu'une." },
+  { n:16, nom:"Le bordé doublé",     prix:66000,  places:12, kg:380, vit:3.6,
+    d:"Une seconde peau de bois. Elle encaisse le mauvais temps." },
+  { n:17, nom:"Le treuil",           prix:80000,  places:14, kg:450, vit:3.7,
+    d:"Un cabestan pour hisser seul. Plus besoin d'être trois." },
+  { n:18, nom:"La chaloupe",         prix:96000,  places:15, kg:500, vit:3.7,
+    d:"Une annexe sur le pont. On accoste où il n'y a pas de quai." },
+  { n:19, nom:"Le pavillon",         prix:115000, places:16, kg:560, vit:3.8,
+    d:"Tes couleurs en tête de mât. On te reconnaît de loin." },
+  { n:20, nom:"Le grand caboteur",   prix:140000, places:20, kg:700, vit:4.2,
+    d:"Coque doublée, trois voiles, un nom peint sur l'étrave. Ce n'est plus une barque." }
+];
+
+/* ---- palettes ---- */
+const BOIS  = ['#b58f60','#c9a374','#a5825c','#96754a','#8a6a42'];
+const CLAIR = '#e4c79c', SOMBRE = '#7a5c38', FOND = '#5c4930';
+
+/* ============================================================
+   Le dessin. Tout est paramétré par le niveau.
+   Repère : la barque est dessinée dans un cadre 300 x 170,
+   la ligne de flottaison est à y = 118.
+   ============================================================ */
+let uidB = 0;
+
+function barqueQ(n, route){
+  const P = PALIERS_B[n-1];
+  const L = 76 + n * 5.6;            /* longueur */
+  const H = 15 + n * 0.62;           /* creux du bordé au-dessus de l'eau */
+  const T = 6 + n * 0.34;            /* tirant d'eau */
+  const cx = 150, flot = 122;
+  const x0 = cx - L / 2;
+  const g = v => (x0 + v).toFixed(1);
+  const u = 'b' + (++uidB);
+  let s = '';
+
+  /* ---------- la ligne de sheer : le haut du bordé ---------- */
+  /* étrave relevée à gauche, creux au milieu, poupe relevée à droite */
+  const yEtrave = flot - H * 1.28;
+  const yCreux  = flot - H * 0.92;
+  const yPoupe  = flot - H * 1.12;
+  const sheer = `M${g(0)} ${yEtrave.toFixed(1)}
+    C${g(L*.2)} ${(yEtrave + (yCreux-yEtrave)*.9).toFixed(1)} ${g(L*.36)} ${yCreux.toFixed(1)} ${g(L*.54)} ${yCreux.toFixed(1)}
+    C${g(L*.74)} ${yCreux.toFixed(1)} ${g(L*.9)} ${(yCreux + (yPoupe-yCreux)*.5).toFixed(1)} ${g(L)} ${yPoupe.toFixed(1)}`;
+
+  /* ---------- la coque complète ---------- */
+  const coque = sheer
+    + ` L${g(L*.965)} ${(flot + T*.42).toFixed(1)}`
+    + ` C${g(L*.78)} ${(flot + T).toFixed(1)} ${g(L*.24)} ${(flot + T).toFixed(1)} ${g(L*.055)} ${(flot + T*.3).toFixed(1)}`
+    + ` Z`;
+
+  s += `<defs><clipPath id="${u}"><path d="${coque}"/></clipPath></defs>`;
+
+  /* reflet dans l'eau */
+  s += `<ellipse cx="${cx}" cy="${(flot + T*.7).toFixed(1)}" rx="${(L*.5).toFixed(0)}" ry="4"
+    fill="#0e4a68" opacity=".2"/>`;
+
+  /* la chaloupe (18+), posée en travers du pont */
+  if (n >= 18){
+    s += `<g transform="translate(${g(L*.58)},${(yCreux - 3).toFixed(1)})">
+      <path d="M0 0 q3 8 10 9 h20 q7 -1 10 -9 q-6 3 -13 3 H13 q-7 0 -13 -3 z" fill="#96754a"/>
+      <path d="M-1 -2 q5 4 12 4 h18 q7 0 12 -4 v3 q-5 3 -12 3 H11 q-7 0 -12 -3 z" fill="#c9a374"/></g>`;
+  }
+
+  /* ---------- le corps de la coque ---------- */
+  s += `<path d="${coque}" fill="${BOIS[2]}"/>`;
+
+  /* les bordages : des courbes parallèles au sheer, découpées par la coque */
+  const nb = Math.min(7, 3 + Math.floor(n / 3.4));
+  s += `<g clip-path="url(#${u})">`;
+  for (let i = 0; i < nb; i++){
+    const dy = (H + T) * (i / nb);
+    const c = BOIS[i % BOIS.length];
+    s += `<path d="${sheer}" transform="translate(0,${dy.toFixed(1)})" fill="none"
+      stroke="${c}" stroke-width="${((H + T) / nb * 1.5).toFixed(1)}"/>`;
+  }
+  /* les coutures calfatées (2+) */
+  if (n >= 2){
+    for (let i = 1; i < nb; i++){
+      const dy = (H + T) * (i / nb);
+      s += `<path d="${sheer}" transform="translate(0,${dy.toFixed(1)})" fill="none"
+        stroke="#3a2c1e" stroke-width=".9" opacity=".45"/>`;
+    }
+  }
+  /* les œuvres vives, sous la flottaison */
+  s += `<rect x="0" y="${flot}" width="300" height="60"
+    fill="${n >= 10 ? '#33454f' : '#6d5334'}" opacity="${n >= 10 ? '.9' : '.55'}"/>`;
+  /* le bordé doublé (16+) */
+  if (n >= 16)
+    s += `<path d="${sheer}" transform="translate(0,${(H*.9).toFixed(1)})" fill="none"
+      stroke="#6d5334" stroke-width="2.4" opacity=".7"/>`;
+  s += `</g>`;
+
+  /* ---------- le liston (5+) ---------- */
+  if (n >= 5){
+    s += `<path d="${sheer}" fill="none" stroke="${CLAIR}" stroke-width="${(2.4 + n*.06).toFixed(1)}"
+      stroke-linecap="round"/>`;
+  } else {
+    s += `<path d="${sheer}" fill="none" stroke="${BOIS[0]}" stroke-width="2" stroke-linecap="round"/>`;
+  }
+  /* l'ourlet clair du dessus */
+  s += `<path d="${sheer}" transform="translate(0,-1)" fill="none" stroke="#f0dcb4"
+    stroke-width="1" opacity=".6"/>`;
+
+  /* ---------- l'étrave et l'étambot ---------- */
+  s += `<path d="M${g(0)} ${yEtrave.toFixed(1)} C${g(-2)} ${(yEtrave + H*.7).toFixed(1)}
+    ${g(1)} ${(flot).toFixed(1)} ${g(L*.055)} ${(flot + T*.3).toFixed(1)}"
+    fill="none" stroke="${SOMBRE}" stroke-width="2.6" stroke-linecap="round"/>`;
+  s += `<path d="M${g(L)} ${yPoupe.toFixed(1)} L${g(L*.965)} ${(flot + T*.42).toFixed(1)}"
+    stroke="${SOMBRE}" stroke-width="2.6" stroke-linecap="round" fill="none"/>`;
+
+  /* ---------- l'intérieur, vu par-dessus le bordé ---------- */
+  s += `<path d="${sheer}" transform="translate(0,2.2)" fill="none" stroke="${FOND}"
+    stroke-width="${Math.max(2.2, H*.22).toFixed(1)}"/>`;
+
+  /* ---------- le pont ---------- */
+  const pont = (a, b, coul, clair) => {
+    s += `<path d="${sheer}" transform="translate(0,2)" fill="none" stroke="${coul}"
+      stroke-width="${Math.max(2.4, H*.2).toFixed(1)}"
+      stroke-dasharray="${(L*(b-a)).toFixed(0)} ${L.toFixed(0)}"
+      stroke-dashoffset="${(-L*a).toFixed(0)}"/>`;
+    s += `<path d="${sheer}" transform="translate(0,.6)" fill="none" stroke="${clair}"
+      stroke-width="1.2" stroke-dasharray="${(L*(b-a)).toFixed(0)} ${L.toFixed(0)}"
+      stroke-dashoffset="${(-L*a).toFixed(0)}"/>`;
+  };
+  if (n >= 11)      pont(.03, .95, '#b8946a', '#dfc094');   /* tillac : pont continu */
+  else if (n >= 6)  pont(.04, .34, '#b8946a', '#dfc094');   /* demi-pont avant */
+
+  /* ---------- le banc de nage (3+) ---------- */
+  if (n >= 3 && n < 11)
+    s += `<rect x="${g(L*.4)}" y="${(yCreux + 1.6).toFixed(1)}" width="${(L*.22).toFixed(0)}"
+      height="${Math.max(2, H*.14).toFixed(1)}" rx="1" fill="#8a6a42"/>`;
+
+  /* ---------- les avirons (4+ jusqu'au pont) ---------- */
+  if (n >= 4 && n < 11){
+    [[L*.34, 'av-1'], [L*.62, 'av-2']].forEach(([dx, cl]) => {
+      const ax = +g(dx), ay = yCreux + 1;
+      const dep = (flot + 7) - ay;      /* la pelle plonge sous la flottaison */
+      /* le tolet, point de pivot */
+      s += `<rect x="${(ax-1.4).toFixed(1)}" y="${(ay-3.6).toFixed(1)}" width="2.8" height="4.4"
+        rx="1" fill="#6d5334"/>`;
+      s += `<g class="aviron ${cl}" style="transform-origin:${ax}px ${ay.toFixed(1)}px">`;
+      /* le manche, vers l'intérieur et vers le haut */
+      s += `<path d="M${ax} ${ay.toFixed(1)} l-13 -6" stroke="#96754a"
+        stroke-width="2.2" stroke-linecap="round"/>`;
+      s += `<circle cx="${(ax-13).toFixed(1)}" cy="${(ay-6).toFixed(1)}" r="1.6" fill="#8a6a42"/>`;
+      /* le fût, vers l'extérieur et vers l'eau */
+      s += `<path d="M${ax} ${ay.toFixed(1)} l21 ${dep.toFixed(1)}" stroke="#a5825c"
+        stroke-width="2.4" stroke-linecap="round"/>`;
+      /* la pelle */
+      s += `<path d="M${(ax+19).toFixed(1)} ${(ay+dep-2).toFixed(1)}
+        q5.4 1 7 6 q1.6 5.4 -2 7.4 q-3.8 2 -6.8 -1.6 q-3 -3.6 -1.6 -8.6 z" fill="#c9a374"/>`;
+      s += `<path d="M${(ax+19.6).toFixed(1)} ${(ay+dep-1).toFixed(1)}
+        q4.4 1.4 5.6 5.4" stroke="#dfc094" stroke-width="1.2" fill="none"/>`;
+      s += `</g>`;
+    });
+  }
+
+  /* ---------- le panneau de cale (12+) ---------- */
+  if (n >= 12){
+    s += `<rect x="${g(L*.46)}" y="${(yCreux - 1.4).toFixed(1)}" width="${(L*.15).toFixed(0)}"
+      height="${Math.max(2.6, H*.12).toFixed(1)}" rx="1" fill="#8a6a42" stroke="#6d5334" stroke-width=".8"/>`;
+  }
+
+  /* ---------- le rouf (14+) ---------- */
+  if (n >= 14){
+    const rx = +g(L*.62), ry = yCreux - 1, rh = H*.5, rw = L*.2;
+    s += `<path d="M${rx} ${ry.toFixed(1)} h${rw.toFixed(0)} v-${rh.toFixed(1)} h-${rw.toFixed(0)} z" fill="#c9a374"/>`;
+    s += `<path d="M${(rx-2).toFixed(1)} ${(ry-rh).toFixed(1)} h${(rw+4).toFixed(0)} l-2.4 -3.4 h-${(rw-.8).toFixed(0)} z" fill="#8a4a3a"/>`;
+    s += `<rect x="${(rx+2.6).toFixed(1)}" y="${(ry-rh+2.4).toFixed(1)}" width="${(rw*.26).toFixed(1)}"
+      height="${(rh*.42).toFixed(1)}" fill="#6d8fa4" opacity=".85"/>`;
+    s += `<rect x="${(rx+rw*.56).toFixed(1)}" y="${(ry-rh+2.4).toFixed(1)}" width="${(rw*.26).toFixed(1)}"
+      height="${(rh*.42).toFixed(1)}" fill="#6d8fa4" opacity=".85"/>`;
+  }
+
+  /* ---------- le grand mât (7+) ---------- */
+  const mxP = n >= 13 ? .34 : .46;
+  if (n >= 7){
+    const mx = +g(L * mxP);
+    const pied = yCreux + 1;
+    const mh = n >= 8 ? 46 + n * 2.3 : 32;
+    s += `<path d="M${mx} ${pied.toFixed(1)} v-${mh.toFixed(0)}" stroke="#8a6a42"
+      stroke-width="${(2 + n*.07).toFixed(1)}" stroke-linecap="round"/>`;
+    s += `<path d="M${(mx-.7).toFixed(1)} ${pied.toFixed(1)} v-${mh.toFixed(0)}" stroke="#c9a374"
+      stroke-width=".9" opacity=".7"/>`;
+    const ay = pied - mh;
+
+    if (n === 7){
+      s += `<path class="voile" d="M${mx} ${(ay+5).toFixed(1)} q15 7 20 21 q-13 5 -20 4 z" fill="#ddd2b6"/>`;
+      s += `<path d="M${mx} ${(ay+5).toFixed(1)} q15 7 20 21 q-8 3 -12 3 z" fill="#f0e8d2"/>`;
+    } else {
+      /* la voile latine : antenne inclinée sur toute la hauteur */
+      s += `<path d="M${(mx-20).toFixed(1)} ${(ay + mh*.5).toFixed(1)} L${(mx+34).toFixed(1)} ${(ay-4).toFixed(1)}"
+        stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
+      s += `<path class="voile" d="M${(mx-18).toFixed(1)} ${(ay + mh*.48).toFixed(1)}
+        L${(mx+32).toFixed(1)} ${(ay-3).toFixed(1)}
+        Q${(mx+14).toFixed(1)} ${(ay + mh*.56).toFixed(1)} ${(mx+2).toFixed(1)} ${pied.toFixed(1)} Z" fill="#e4dbc0"/>`;
+      s += `<path d="M${(mx-18).toFixed(1)} ${(ay + mh*.48).toFixed(1)}
+        L${(mx+32).toFixed(1)} ${(ay-3).toFixed(1)}
+        Q${(mx+20).toFixed(1)} ${(ay + mh*.38).toFixed(1)} ${(mx+8).toFixed(1)} ${(ay + mh*.62).toFixed(1)} Z" fill="#f6f0dc"/>`;
+      s += `<g stroke="#c9bfa2" stroke-width=".7" opacity=".65">
+        <path d="M${(mx-6).toFixed(1)} ${(ay+mh*.5).toFixed(1)} L${(mx+9).toFixed(1)} ${(pied-5).toFixed(1)}"/>
+        <path d="M${(mx+9).toFixed(1)} ${(ay+mh*.26).toFixed(1)} L${(mx+15).toFixed(1)} ${(pied-11).toFixed(1)}"/></g>`;
+      s += `<g stroke="#c9b58c" stroke-width=".8" opacity=".75">
+        <path d="M${mx} ${(ay+5).toFixed(1)} L${g(L*.1)} ${(yCreux-1).toFixed(1)}"/>
+        <path d="M${mx} ${(ay+5).toFixed(1)} L${g(L*.86)} ${(yCreux-1).toFixed(1)}"/></g>`;
+    }
+  }
+
+  /* ---------- le foc et son beaupré (13+) ---------- */
+  if (n >= 13){
+    const bx = +g(-8), by = yEtrave - 3;
+    const mx = +g(L*mxP), mh = 46 + n*2.3, ay = yCreux + 1 - mh;
+    s += `<path d="M${g(L*.02)} ${(yEtrave+2).toFixed(1)} L${bx} ${by.toFixed(1)}"
+      stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
+    s += `<path class="voile" d="M${bx} ${by.toFixed(1)} L${mx} ${(ay + mh*.2).toFixed(1)}
+      Q${(bx+17).toFixed(1)} ${(ay + mh*.66).toFixed(1)} ${(bx+12).toFixed(1)} ${(yEtrave+4).toFixed(1)} Z"
+      fill="#eee6cc"/>`;
+    s += `<path d="M${bx} ${by.toFixed(1)} L${mx} ${(ay + mh*.2).toFixed(1)}
+      Q${(bx+24).toFixed(1)} ${(ay + mh*.5).toFixed(1)} ${(bx+20).toFixed(1)} ${(ay + mh*.8).toFixed(1)} Z"
+      fill="#f8f2de"/>`;
+  }
+
+  /* ---------- le tapecul (15+) ---------- */
+  if (n >= 15){
+    const mx2 = +g(L*.86), mh2 = 30 + n, pied2 = yCreux + 1;
+    s += `<path d="M${mx2} ${pied2.toFixed(1)} v-${mh2.toFixed(0)}" stroke="#8a6a42"
+      stroke-width="2.2" stroke-linecap="round"/>`;
+    s += `<path d="M${(mx2-12).toFixed(1)} ${(pied2 - mh2*.44).toFixed(1)} L${(mx2+18).toFixed(1)} ${(pied2 - mh2 + 2).toFixed(1)}"
+      stroke="#a5825c" stroke-width="1.9" stroke-linecap="round"/>`;
+    s += `<path class="voile" d="M${(mx2-10).toFixed(1)} ${(pied2 - mh2*.42).toFixed(1)}
+      L${(mx2+16).toFixed(1)} ${(pied2 - mh2 + 3).toFixed(1)}
+      Q${(mx2+5).toFixed(1)} ${(pied2 - mh2*.4).toFixed(1)} ${(mx2+2).toFixed(1)} ${pied2.toFixed(1)} Z"
+      fill="#e4dbc0"/>`;
+  }
+
+  /* ---------- le safran (9+) ---------- */
+  if (n >= 9){
+    s += `<path d="M${g(L*.97)} ${(flot - H*.5).toFixed(1)} q6 4 6 ${(T*1.1).toFixed(1)}
+      q0 ${(T*.5).toFixed(1)} -6 ${(T*.5).toFixed(1)} z" fill="#7a5c38"/>`;
+    s += `<path d="M${g(L*.94)} ${(yPoupe + 2).toFixed(1)} l13 -6" stroke="#a5825c"
+      stroke-width="2" stroke-linecap="round"/>`;
+  }
+
+  /* ---------- le treuil (17+) ---------- */
+  if (n >= 17){
+    const tx = +g(L*.44);
+    s += `<rect x="${(tx-4.4).toFixed(1)}" y="${(yCreux - 6).toFixed(1)}" width="9" height="6" rx="2" fill="#5c6a74"/>`;
+    s += `<circle cx="${tx}" cy="${(yCreux - 3).toFixed(1)}" r="2.2" fill="#8a9299"/>`;
+  }
+
+  /* ---------- le pavillon (19+) ---------- */
+  if (n >= 19){
+    const mx = +g(L * mxP), mh = 46 + n * 2.3, tete = yCreux + 1 - mh;
+    /* la drisse et le petit mât de pavillon */
+    s += `<path d="M${mx} ${tete.toFixed(1)} v-9" stroke="#8a6a42" stroke-width="1.6" stroke-linecap="round"/>`;
+    /* le pavillon, qui claque */
+    s += `<g class="pavillon" style="transform-origin:${mx}px ${(tete-8).toFixed(1)}px">`;
+    s += `<path d="M${mx} ${(tete-9).toFixed(1)} q9 1.6 17 -1.4 q-2 4 0 7.4 q-8 3 -17 1.4 z" fill="#c74a33"/>`;
+    s += `<path d="M${mx} ${(tete-9).toFixed(1)} q9 1.6 17 -1.4 q-1 2 -.6 3.6 q-8 2.4 -16.4 1 z" fill="#e0684a"/>`;
+    s += `</g>`;
+  }
+
+  /* ---------- le nom peint (20) ---------- */
+  if (n >= 20)
+    s += `<text x="${g(L*.1)}" y="${(flot - H*.34).toFixed(1)}" font-family="Bebas Neue,sans-serif"
+      font-size="8.4" letter-spacing="1.2" fill="#f2e6c8" opacity=".85">LA ZIZOUIN</text>`;
+
+  /* ---------- l'eau, selon l'allure ---------- */
+  /* la proue est à gauche : le sillage traîne derrière, donc à droite */
+  if (route){
+    const nv = Math.max(2, Math.round(P.vit * 1.6));
+    for (let i = 0; i < nv; i++)
+      s += `<path class="sillage sl${i % 3}" d="M${g(L + 4 + i*4)} ${(flot + 1 + i*2.6).toFixed(1)}
+        q${(16+i*7).toFixed(0)} 2 ${(30+i*13).toFixed(0)} 0"
+        stroke="#fff" stroke-width="${(1.6 - i*.16).toFixed(2)}" fill="none"
+        opacity="${(.44 - i*.05).toFixed(2)}"/>`;
+    /* la moustache d'étrave, elle, est bien à l'avant */
+    s += `<path class="etrave" d="M${g(-3)} ${(flot - 1).toFixed(1)} q-9 4 -19 3"
+      stroke="#fff" stroke-width="2" fill="none" opacity=".55"/>`;
+    s += `<path class="etrave e2" d="M${g(1)} ${(flot + 2.4).toFixed(1)} q-8 4 -17 3"
+      stroke="#fff" stroke-width="1.4" fill="none" opacity=".36"/>`;
+    /* le remous sous la poupe */
+    s += `<ellipse class="remous" cx="${g(L + 2)}" cy="${(flot + 3).toFixed(1)}" rx="9" ry="2.4"
+      fill="#fff" opacity=".24"/>`;
+  } else {
+    /* au mouillage : la chaîne d'ancre à l'étrave */
+    s += `<path d="M${g(L*.03)} ${(yEtrave + 4).toFixed(1)} q-4 8 -3 16"
+      stroke="#6d6a62" stroke-width="1.4" fill="none" stroke-dasharray="2 1.6"/>`;
+    s += `<path d="M${g(-4)} ${(flot + 2).toFixed(1)} q22 3 40 0"
+      stroke="#fff" stroke-width="1.2" fill="none" opacity=".26"/>`;
+  }
+
+  return s;
+}
+
+
+
+/* la ville, étirée pour tenir dans le cadre debout */
+function dessinerVille(){
+  const el = document.getElementById('ville');
+  const l = el.clientWidth || innerWidth, h = el.clientHeight || innerHeight;
+  const voulue = Math.max(240, 480 * h / l);
+  const rab = voulue - 240;
+  const haut = -rab * .5, bas = 240 + rab * .5;
+
+  let sv = '<svg viewBox="0 ' + haut.toFixed(1) + ' 480 ' + voulue.toFixed(1) + '" '
+    + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">';
+  sv += '<defs><linearGradient id="bx-haut" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="#164a78"/>'
+    + '<stop offset="46%" stop-color="#2a6ea0"/>'
+    + '<stop offset="100%" stop-color="#3d86bd"/></linearGradient>'
+    + '<linearGradient id="bx-quai" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="#cabd9c"/>'
+    + '<stop offset="36%" stop-color="#c0b391"/>'
+    + '<stop offset="100%" stop-color="#a89b7c"/></linearGradient></defs>';
+  sv += '<rect x="0" y="' + haut.toFixed(1) + '" width="480" height="'
+    + (-haut + 2).toFixed(1) + '" fill="url(#bx-haut)"/>';
+  sv += '<rect x="0" y="238" width="480" height="' + (bas - 236).toFixed(1)
+    + '" fill="url(#bx-quai)"/>';
+  sv += barcelone_BC();
+
+  /* le pavage du quai, en perspective */
+  const yq = 240, prof = bas - yq;
+  let yy = yq, pas = prof * .04;
+  for (let i = 0; yy < bas && i < 22; i++){
+    const h2 = pas * (1 + i * .3);
+    const n = Math.max(3, Math.round(11 - i * .42));
+    for (let c = 0; c <= n; c++){
+      const k = (c / n - .5) * (1 + i * .07);
+      const x = 240 + k * 480, l2 = 480 / n * (1 + i * .07);
+      const t = Math.sin(i * 12.9 + c * 78.2) * .5 + .5;
+      sv += '<rect x="' + (x - l2 / 2).toFixed(1) + '" y="' + yy.toFixed(1) + '" width="'
+        + (l2 - 1.6).toFixed(1) + '" height="' + (h2 * .92).toFixed(1) + '" rx="1" fill="'
+        + (t > .66 ? '#d4c7a6' : t > .33 ? '#c5b896' : '#b8ab8a') + '" opacity="'
+        + (.4 + t * .28).toFixed(2) + '"/>';
+    }
+    yy += h2; pas = h2;
+  }
+  el.innerHTML = sv + '</svg>';
+}
+
+(async () => {
+  dessinerVille();
+  let d;
+  try {
+    d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+  } catch(e){ return; }
+
+  /* on n'est ici que si on y est vraiment */
+  if (d.port !== 'barcelone'){ location.href = 'jeu.html'; return; }
+
+  const n = Number(d.barque || 1);
+  const P = PALIERS_B[n - 1];
+  document.getElementById('m-vg').innerHTML =
+    '<svg viewBox="40 62 220 80" xmlns="http://www.w3.org/2000/svg">' + barqueQ(n, false) + '</svg>';
+  document.getElementById('m-nom').textContent = P.nom;
+  document.getElementById('m-cale').textContent = P.places + (P.places > 1 ? ' places' : ' place');
+  document.getElementById('euro').textContent =
+    Number(d.euros || 0).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
+
+  document.getElementById('dit').textContent =
+    "Le quai sent le poisson et le goudron chaud. Personne ne te connaît ici, "
+    + "et c'est peut-être ce qu'il y a de mieux.";
+  document.getElementById('sous').textContent =
+    'Le marché ouvre bientôt. Reviens quand il y aura de quoi vendre.';
+
+  document.getElementById('rentrer').onclick = () => location.href = 'jeu.html';
+
+  /* le rideau se lève, puis tout apparaît */
+  requestAnimationFrame(() => {
+    document.getElementById('rideau').classList.add('parti');
+    document.querySelectorAll('.fondu').forEach(e => e.classList.add('on'));
+  });
+})();
+
+let t = null;
+addEventListener('resize', () => { clearTimeout(t); t = setTimeout(dessinerVille, 200); });
+</script>
+</body>
+</html>
