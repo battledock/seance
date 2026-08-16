@@ -1526,12 +1526,18 @@ function barqueQ(n, route){
    Coque à deux pointes, capian relevé, voile latine
    ============================================================ */
 
+/* le palier du joueur : 0 tant qu'on ne sait pas, et tant qu'il n'a rien */
+let NIVEAU_BARQUE = 0;
+
 function barque(){
+  /* pas de bateau : le mouillage reste vide */
+  if (!NIVEAU_BARQUE) return '';
   /* le moteur dessine dans un cadre 300 x 170, flottaison à y=122.
      On le pose à sa distance et on l'échelonne selon la charte.
      Deux groupes : l'extérieur porte la position, l'intérieur le tangage. */
-  const d = 52, y = sol(d), niveau = 1;
-  const longVoulue = px(5.2, d);
+  const d = 52, y = sol(d), niveau = NIVEAU_BARQUE;
+  /* un caboteur est bien plus long qu'une coque nue */
+  const longVoulue = px(4.4 + niveau * .18, d);
   const longDessin = 76 + niveau * 5.6;
   const k = longVoulue / longDessin;
   const x = 202;
@@ -1543,6 +1549,7 @@ function barque(){
 
 /* ---------- l'eau que la barque déplace ---------- */
 function clapot(){
+  if (!NIVEAU_BARQUE) return '';
   const d = 52, y = sol(d), L = px(5.2, d);
   const x = 202;
   let s = `<g class="clapot">`;
@@ -2177,6 +2184,11 @@ function poserAvatar(d){
     poserMenu(d);
     poserBarque(d);
     poserClassement(d);
+    /* le décor montre ta vraie barque, ou l'eau nue si tu n'en as pas */
+    if (Number(d.barque || 0) !== NIVEAU_BARQUE){
+      NIVEAU_BARQUE = Number(d.barque || 0);
+      dessiner();
+    }
     /* les compétences vivent dans leur propre table */
     try {
       const c = await BD.client();
