@@ -2751,6 +2751,14 @@ function poserAvatar(d){
     poserClassement(d);
     poserChantier(d);
     poserBas(d);
+    /* l'affaire n'est pas encore fondée : Félix attend */
+    if (!d.affaire && d.port === 'anse' && !d.parti_le){
+      const el = document.getElementById('b-mar');
+      el.disabled = false;
+      el.classList.add('vif');
+      el.querySelector('span').textContent = 'Ton anse';
+      el.onclick = () => location.href = 'registre.html';
+    }
     /* le décor montre ta vraie barque, ou l'eau nue si tu n'en as pas */
     if (Number(d.barque || 0) !== NIVEAU_BARQUE){
       NIVEAU_BARQUE = Number(d.barque || 0);
