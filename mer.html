@@ -787,13 +787,22 @@ async function arriver(){
   const bt = document.getElementById('arriver');
   const r = await BD.agir('accoster');
   if (r.ok){
-    /* si on a monté de niveau, l'écran passe avant le débarquement */
     const monte = r.niveau && r.niveau.monte;
-    bt.textContent = monte ? 'Tu as changé de niveau'
-      : r.port === 'barcelone' ? 'Débarquer à Barcelone' : 'Rentrer chez toi';
+    /* on relit la fiche : y a-t-il quelque chose à raconter en arrivant ? */
+    let suite = r.port === 'barcelone' ? 'barcelone.html' : 'jeu.html';
+    let mot = r.port === 'barcelone' ? 'Débarquer à Barcelone' : 'Rentrer chez toi';
+    if (monte){ suite = 'niveau.html'; mot = 'Tu as changé de niveau'; }
+    else if (r.port !== 'barcelone'){
+      try {
+        const f = await BD.charger();
+        const aCaisse = (f.cale || []).some(o => o && o.quoi === 'caisse');
+        const vecue = (f.rencontres || []).includes('caisse_toussaint');
+        if (aCaisse && !vecue){ suite = 'retour.html'; mot = 'Débarquer'; }
+      } catch(e){}
+    }
+    bt.textContent = mot;
     bt.classList.add('on');
-    bt.onclick = () => location.href = monte ? 'niveau.html'
-      : r.port === 'barcelone' ? 'barcelone.html' : 'jeu.html';
+    bt.onclick = () => location.href = suite;
   } else if (r.pourquoi === 'trop_tot'){
     /* le serveur trouve que c'est trop tôt : on attend le temps qu'il dit */
     setTimeout(arriver, ((r.reste || 2) + 1) * 1000);
