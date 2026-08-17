@@ -145,6 +145,11 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 .fumee{animation:monte 7s ease-in-out infinite}
 @keyframes monte{0%{opacity:.22;transform:translate(0,0) scale(1)}
   100%{opacity:0;transform:translate(3px,-9px) scale(1.7)}}
+.flam{animation:vacille 3.4s ease-in-out infinite}
+@keyframes vacille{0%,100%{opacity:.86;transform:scaleY(1)}
+  38%{opacity:1;transform:scaleY(1.14)}62%{opacity:.8;transform:scaleY(.94)}}
+.ardit{animation:souffle 6.4s ease-in-out infinite}
+@keyframes souffle{0%,100%{transform:translateY(0)}50%{transform:translateY(-.6px)}}
 .signe{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
 </style></style>
@@ -451,17 +456,198 @@ const FINS_A = {
 };
 
 
+/* ============================================================
+   LA CHAMBRE — la pièce du fond, un lit contre le mur
+   ============================================================ */
+function chambre(){
+  const F2 = 727, OEIL2 = 1.5, HZ2 = 240;
+  const px2 = (m,d) => m*F2/d, sol2 = d => HZ2 + OEIL2*F2/d, pX2 = (X,d) => 240 + X*F2/d;
+  const CH = '#2a1e18';
+  const jour = (c,k) => mel(c, '#e8d4a8', k===undefined?.3:k);
+  const nuit2 = (c,k) => mel(c, CH, k===undefined?.3:k);
+
+  let s = `<defs>
+    <linearGradient id="c-mur" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#2e2620"/>
+      <stop offset="46%"  stop-color="#4a3e33"/>
+      <stop offset="100%" stop-color="#3a2f26"/></linearGradient>
+    <linearGradient id="c-sol" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#544434"/><stop offset="100%" stop-color="#2a201a"/></linearGradient>
+    <linearGradient id="c-jour" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#fff0c8" stop-opacity=".5"/>
+      <stop offset="60%"  stop-color="#e8c890" stop-opacity=".14"/>
+      <stop offset="100%" stop-color="#c9a870" stop-opacity="0"/></linearGradient>
+  </defs>`;
+
+  const yf = sol2(26);
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(yf-HAUT).toFixed(1)}" fill="url(#c-mur)"/>`;
+  s += `<rect x="0" y="${yf.toFixed(1)}" width="${W}" height="${(BAS-yf+8).toFixed(1)}"
+    fill="url(#c-sol)"/>`;
+
+  /* le carrelage */
+  let d = 26, i = 0;
+  while (d > 2.2 && i < 60){
+    const d2 = d/1.08, y1 = sol2(d), y2 = sol2(d2);
+    if (y1 > BAS) break;
+    if (y2-y1 > .7)
+      for (let c = -10; c <= 10; c++){
+        const t = rnd2(i, c+25);
+        const xa = pX2(c*.62, d), xb = pX2((c+1)*.62, d);
+        const xa2 = pX2(c*.62, d2), xb2 = pX2((c+1)*.62, d2);
+        if (xb < -30 && xb2 < -30) continue;
+        if (xa > W+30 && xa2 > W+30) continue;
+        s += `<path d="M${xa.toFixed(1)} ${y1.toFixed(1)} L${xb.toFixed(1)} ${y1.toFixed(1)}
+          L${xb2.toFixed(1)} ${y2.toFixed(1)} L${xa2.toFixed(1)} ${y2.toFixed(1)} Z"
+          fill="${nuit2(t>.5?'#7a6046':'#6a5038', .18)}" opacity="${(.4+t*.4).toFixed(2)}"/>`;
+      }
+    d = d2; i++;
+  }
+
+  /* la fenêtre à gauche : la seule lumière */
+  const dv = 15, mv = u => px2(u,dv);
+  const xv = pX2(-5.4, dv), yv = sol2(dv) - mv(4.6);
+  s += `<path d="M${(xv-mv(1.4)).toFixed(1)} ${yv.toFixed(1)} h${mv(2.8).toFixed(1)}
+    v${mv(3.4).toFixed(1)} h${(-mv(2.8)).toFixed(1)} z" fill="#f4e4bc"/>`;
+  s += `<path d="M${xv.toFixed(1)} ${yv.toFixed(1)} v${mv(3.4).toFixed(1)}
+    M${(xv-mv(1.4)).toFixed(1)} ${(yv+mv(1.7)).toFixed(1)} h${mv(2.8).toFixed(1)}"
+    stroke="${nuit2('#5a4a38',.2)}" stroke-width="${Math.max(.8,mv(.12)).toFixed(1)}"/>`;
+  /* l'embrasure */
+  s += `<path d="M${(xv-mv(1.7)).toFixed(1)} ${(yv-mv(.3)).toFixed(1)}
+    h${mv(3.4).toFixed(1)} v${mv(4).toFixed(1)} h${(-mv(3.4)).toFixed(1)} z
+    M${(xv-mv(1.4)).toFixed(1)} ${yv.toFixed(1)} h${mv(2.8).toFixed(1)}
+    v${mv(3.4).toFixed(1)} h${(-mv(2.8)).toFixed(1)} z"
+    fill="${jour('#8a7458',.2)}" fill-rule="evenodd"/>`;
+  /* le rai de lumière qui tombe en biais sur le sol */
+  s += `<path d="M${(xv-mv(1.4)).toFixed(1)} ${(yv+mv(3.4)).toFixed(1)}
+    L${(xv+mv(1.4)).toFixed(1)} ${(yv+mv(3.4)).toFixed(1)}
+    L${pX2(2.6, 8).toFixed(1)} ${sol2(8).toFixed(1)}
+    L${pX2(-1.4, 8).toFixed(1)} ${sol2(8).toFixed(1)} Z"
+    fill="url(#c-jour)"/>`;
+
+  /* le mur du fond : une croix, une chaise */
+  s += `<path d="M${pX2(3.4,20).toFixed(1)} ${(sol2(20)-px2(5.6,20)).toFixed(1)}
+    v${px2(1.9,20).toFixed(1)} M${pX2(3.4,20).toFixed(1)} ${(sol2(20)-px2(5.1,20)).toFixed(1)}
+    h${px2(.9,20).toFixed(1)} m${(-px2(.9,20)).toFixed(1)} 0 h${(-px2(.45,20)).toFixed(1)}"
+    stroke="${nuit2('#6a5240',.14)}" stroke-width="${Math.max(1,px2(.12,20)).toFixed(1)}"/>`;
+
+  /* ---------- le lit, contre le mur de droite ---------- */
+  const dl = 11, yl = sol2(dl), ml = u => px2(u,dl), xl = pX2(.4, dl);
+  /* l'ombre au sol */
+  s += `<ellipse cx="${xl.toFixed(1)}" cy="${yl.toFixed(1)}" rx="${ml(2.4).toFixed(1)}"
+    ry="${ml(.4).toFixed(1)}" fill="${CH}" opacity=".4"/>`;
+  /* le bois du lit */
+  s += `<path d="M${(xl-ml(1.9)).toFixed(1)} ${yl.toFixed(1)} v${(-ml(.9)).toFixed(1)}
+    h${ml(3.8).toFixed(1)} v${ml(.9).toFixed(1)} z" fill="${nuit2('#6d4a30',.2)}"/>`;
+  /* la tête de lit */
+  s += `<path d="M${(xl+ml(1.6)).toFixed(1)} ${(yl-ml(.9)).toFixed(1)} v${(-ml(1.9)).toFixed(1)}
+    h${ml(.4).toFixed(1)} v${ml(1.9).toFixed(1)} z" fill="${nuit2('#7a5636',.2)}"/>`;
+  /* le matelas et la couverture */
+  s += `<path d="M${(xl-ml(1.9)).toFixed(1)} ${(yl-ml(.9)).toFixed(1)}
+    h${ml(3.8).toFixed(1)} v${(-ml(.5)).toFixed(1)} h${(-ml(3.8)).toFixed(1)} z"
+    fill="${jour('#d8ccb0',.14)}"/>`;
+  s += `<path d="M${(xl-ml(1.9)).toFixed(1)} ${(yl-ml(1.4)).toFixed(1)}
+    q${ml(.9).toFixed(1)} ${(-ml(.34)).toFixed(1)} ${ml(1.9).toFixed(1)} ${(-ml(.28)).toFixed(1)}
+    q${ml(1).toFixed(1)} ${ml(.06).toFixed(1)} ${ml(1.9).toFixed(1)} ${ml(.22).toFixed(1)}
+    v${ml(.4).toFixed(1)} h${(-ml(3.8)).toFixed(1)} z" fill="${nuit2('#6a5a4a',.14)}"/>`;
+  /* les plis de la couverture */
+  for (let k = 0; k < 5; k++)
+    s += `<path d="M${(xl-ml(1.7)+ml(k*.8)).toFixed(1)} ${(yl-ml(1.62)).toFixed(1)}
+      v${ml(.36).toFixed(1)}" stroke="${nuit2('#4a3e32',.2)}" stroke-width="1" opacity=".5"/>`;
+
+  /* ---------- Ardit, dans le lit ---------- */
+  s += `<g class="ardit">`;
+  /* le corps sous la couverture : très mince */
+  s += `<path d="M${(xl-ml(1.7)).toFixed(1)} ${(yl-ml(1.5)).toFixed(1)}
+    q${ml(.8).toFixed(1)} ${(-ml(.22)).toFixed(1)} ${ml(1.7).toFixed(1)} ${(-ml(.18)).toFixed(1)}
+    v${ml(.3).toFixed(1)} h${(-ml(1.7)).toFixed(1)} z" fill="${nuit2('#7a6a58',.14)}"/>`;
+  /* l'oreiller */
+  s += `<path d="M${(xl+ml(.6)).toFixed(1)} ${(yl-ml(1.6)).toFixed(1)}
+    q${ml(.5).toFixed(1)} ${(-ml(.5)).toFixed(1)} ${ml(1).toFixed(1)} ${(-ml(.1)).toFixed(1)}
+    q${ml(.1).toFixed(1)} ${ml(.4).toFixed(1)} ${(-ml(.3)).toFixed(1)} ${ml(.5).toFixed(1)} z"
+    fill="${jour('#e8dcc4',.16)}"/>`;
+  /* sa tête, tournée vers nous */
+  const tx = xl + ml(1.02), ty = yl - ml(1.86);
+  s += `<path d="M${(tx-ml(.26)).toFixed(1)} ${ty.toFixed(1)}
+    C${(tx-ml(.26)).toFixed(1)} ${(ty-ml(.4)).toFixed(1)}
+     ${(tx+ml(.26)).toFixed(1)} ${(ty-ml(.4)).toFixed(1)}
+     ${(tx+ml(.26)).toFixed(1)} ${ty.toFixed(1)}
+    C${(tx+ml(.26)).toFixed(1)} ${(ty+ml(.3)).toFixed(1)}
+     ${(tx-ml(.26)).toFixed(1)} ${(ty+ml(.3)).toFixed(1)}
+     ${(tx-ml(.26)).toFixed(1)} ${ty.toFixed(1)} Z" fill="${jour('#c9a078',.14)}"/>`;
+  /* les joues creuses */
+  s += `<path d="M${(tx-ml(.2)).toFixed(1)} ${(ty+ml(.02)).toFixed(1)}
+    q${ml(.08).toFixed(2)} ${ml(.14).toFixed(2)} ${ml(.02).toFixed(2)} ${ml(.22).toFixed(2)}
+    M${(tx+ml(.2)).toFixed(1)} ${(ty+ml(.02)).toFixed(1)}
+    q${(-ml(.08)).toFixed(2)} ${ml(.14).toFixed(2)} ${(-ml(.02)).toFixed(2)} ${ml(.22).toFixed(2)}"
+    stroke="${nuit2('#8a6448',.2)}" stroke-width="${Math.max(.5,ml(.05)).toFixed(2)}" fill="none"/>`;
+  /* la barbe de plusieurs jours */
+  s += `<path d="M${(tx-ml(.24)).toFixed(1)} ${(ty+ml(.06)).toFixed(1)}
+    q${ml(.24).toFixed(2)} ${ml(.26).toFixed(2)} ${ml(.48).toFixed(2)} 0
+    q${(-ml(.24)).toFixed(2)} ${ml(.24).toFixed(2)} ${(-ml(.48)).toFixed(2)} 0 z"
+    fill="${nuit2('#3a2e26',.2)}" opacity=".5"/>`;
+  /* les yeux, ouverts, tournés vers nous */
+  s += `<path d="M${(tx-ml(.14)).toFixed(1)} ${(ty-ml(.06)).toFixed(1)} h${ml(.1).toFixed(2)}
+    M${(tx+ml(.04)).toFixed(1)} ${(ty-ml(.06)).toFixed(1)} h${ml(.1).toFixed(2)}"
+    stroke="#1a1008" stroke-width="${Math.max(.6,ml(.05)).toFixed(2)}" stroke-linecap="round"/>`;
+  /* les cheveux collés */
+  s += `<path d="M${(tx-ml(.26)).toFixed(1)} ${(ty-ml(.1)).toFixed(1)}
+    a${ml(.26).toFixed(2)} ${ml(.26).toFixed(2)} 0 0 1 ${ml(.52).toFixed(2)} 0
+    q${(-ml(.14)).toFixed(2)} ${(-ml(.1)).toFixed(2)} ${(-ml(.26)).toFixed(2)} ${(-ml(.09)).toFixed(2)}
+    q${(-ml(.12)).toFixed(2)} ${(-ml(.01)).toFixed(2)} ${(-ml(.26)).toFixed(2)} ${ml(.09).toFixed(2)} z"
+    fill="${nuit2('#4a3a2e',.2)}"/>`;
+  /* sa main sur la couverture */
+  s += `<ellipse cx="${(xl-ml(.2)).toFixed(1)}" cy="${(yl-ml(1.6)).toFixed(1)}"
+    rx="${ml(.2).toFixed(2)}" ry="${ml(.11).toFixed(2)}" fill="${jour('#c9a078',.12)}"/>`;
+  s += `</g>`;
+
+  /* la table de chevet, un verre, une bougie */
+  const dt = 12.5, yt = sol2(dt), mt = u => px2(u,dt), xt = pX2(-2.2, dt);
+  s += `<path d="M${(xt-mt(.6)).toFixed(1)} ${yt.toFixed(1)} v${(-mt(1.2)).toFixed(1)}
+    h${mt(1.2).toFixed(1)} v${mt(1.2).toFixed(1)} z" fill="${nuit2('#5a4230',.2)}"/>`;
+  s += `<path d="M${(xt-mt(.7)).toFixed(1)} ${(yt-mt(1.2)).toFixed(1)}
+    h${mt(1.4).toFixed(1)} v${mt(.1).toFixed(1)} h${(-mt(1.4)).toFixed(1)} z"
+    fill="${jour('#8a6a4a',.14)}"/>`;
+  s += `<path d="M${(xt-mt(.3)).toFixed(1)} ${(yt-mt(1.3)).toFixed(1)}
+    l${mt(.06).toFixed(2)} ${(-mt(.34)).toFixed(2)} h${mt(.2).toFixed(2)}
+    l${mt(.06).toFixed(2)} ${mt(.34).toFixed(2)} z" fill="${jour('#c4bca4',.2)}" opacity=".7"/>`;
+  s += `<path d="M${(xt+mt(.28)).toFixed(1)} ${(yt-mt(1.3)).toFixed(1)} v${(-mt(.4)).toFixed(1)}
+    h${mt(.12).toFixed(2)} v${mt(.4).toFixed(1)} z" fill="${jour('#e8dcc0',.2)}"/>`;
+  s += `<ellipse class="flam" cx="${(xt+mt(.34)).toFixed(1)}" cy="${(yt-mt(1.78)).toFixed(1)}"
+    rx="${mt(.06).toFixed(2)}" ry="${mt(.11).toFixed(2)}" fill="#ffd87a"/>`;
+  s += `<ellipse class="flam" cx="${(xt+mt(.34)).toFixed(1)}" cy="${(yt-mt(1.76)).toFixed(1)}"
+    rx="14" ry="16" fill="#ffb85a" opacity=".14"/>`;
+
+  /* le frère, debout dans l'ombre à gauche */
+  const df = 8.4, yfr = sol2(df), mf = u => px2(u,df), xf = pX2(-3.2, df);
+  s += `<g class="frere">`;
+  s += `<path d="M${(xf-mf(.4)).toFixed(1)} ${yfr.toFixed(1)} v${(-mf(1.5)).toFixed(1)}
+    q${mf(.4).toFixed(1)} ${(-mf(.34)).toFixed(1)} ${mf(.8).toFixed(1)} 0
+    v${mf(1.5).toFixed(1)} z" fill="${nuit2('#4a4038',.24)}"/>`;
+  s += `<circle cx="${xf.toFixed(1)}" cy="${(yfr-mf(1.94)).toFixed(1)}" r="${mf(.26).toFixed(2)}"
+    fill="${nuit2('#8a6a4c',.24)}"/>`;
+  s += `</g>`;
+
+  /* la pénombre qui mange les bords */
+  s += `<defs><radialGradient id="c-vig" cx="0.5" cy="0.5" r="0.76">
+    <stop offset="36%" stop-color="${CH}" stop-opacity="0"/>
+    <stop offset="100%" stop-color="${CH}" stop-opacity=".68"/></radialGradient></defs>`;
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(1)}"
+    fill="url(#c-vig)"/>`;
+  return s;
+}
+
 const NOMS = { instinct:'Instinct', sang_froid:'Sang-froid', discussion:'Discussion',
                negociation:'Négociation', chance:'Chance' };
 let MOI = { instinct:0, sang_froid:0, discussion:0, negociation:0, chance:0 };
 let issue = null, fini = false, monteNiveau = false;
 
+let DEDANS = false;
 function dessiner(){
   const v = cadrer(innerWidth, innerHeight);
   document.getElementById('rue').innerHTML =
     '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + ruelle() + '</svg>';
+    + (DEDANS ? chambre() : ruelle()) + '</svg>';
 }
 dessiner();
 
@@ -473,9 +659,15 @@ function jouer(cle){
   const L = document.getElementById('lignes'), C = document.getElementById('choix');
   L.innerHTML = ''; C.innerHTML = '';
   /* on est dedans à partir de là */
-  if (cle === 'dedans'){
+  if (cle === 'dedans' && !DEDANS){
+    DEDANS = true;
     document.getElementById('q-n').textContent = 'Ardit';
     document.getElementById('q-q').textContent = 'Marchand de tissu';
+    /* la porte s'ouvre : le décor change en fondu */
+    const R = document.getElementById('rue');
+    R.style.transition = 'opacity .5s';
+    R.style.opacity = '0';
+    setTimeout(() => { dessiner(); R.style.opacity = '1'; }, 420);
   }
   E.dit.forEach((t, i) => {
     const p = document.createElement('p');
