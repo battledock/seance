@@ -819,6 +819,11 @@ async function arriver(){
   if (r.ok){
     const monte = r.niveau && r.niveau.monte;
     /* on relit la fiche : y a-t-il quelque chose à raconter en arrivant ? */
+    /* le premier drap à Barcelone : la planche se joue avant tout le reste */
+    if (r.livraison && r.livraison.enchere){
+      location.href = 'drap.html';
+      return;
+    }
     const PAGE = { barcelone:'barcelone.html', palma:'palma.html', anse:'jeu.html' };
     const MOT  = { barcelone:'Débarquer à Barcelone', palma:'Débarquer à Palma',
                    anse:'Rentrer chez toi' };
