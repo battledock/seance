@@ -455,33 +455,363 @@ function collines(){
   return s;
 }
 
-/* ---------- ta barque, amarrée au quai : tu viens d'en descendre ---------- */
-function barque(){
+const PALIERS_B = [
+  { n:1,  nom:"La coque nue",        prix:0,      places:1, kg:40,  vit:1.0,
+    d:"Trois bordages et rien d'autre. Elle flotte, c'est déjà ça." },
+  { n:2,  nom:"Le calfatage",        prix:900,    places:1, kg:45,  vit:1.0,
+    d:"Étoupe et goudron dans les coutures. Elle ne prend plus l'eau." },
+  { n:3,  nom:"Le banc de nage",     prix:1400,   places:1, kg:50,  vit:1.1,
+    d:"On peut ramer assis. Ça change tout." },
+  { n:4,  nom:"Les avirons",         prix:2200,   places:2, kg:60,  vit:1.3,
+    d:"Deux avirons de frêne et leurs tolets." },
+  { n:5,  nom:"Le plat-bord",        prix:3400,   places:2, kg:70,  vit:1.3,
+    d:"Un liston tout autour. La coque ne travaille plus." },
+  { n:6,  nom:"Le pontage avant",    prix:5000,   places:3, kg:85,  vit:1.4,
+    d:"Un demi-pont à l'avant. Les caisses restent au sec." },
+  { n:7,  nom:"Le mât de fortune",   prix:7200,   places:3, kg:95,  vit:1.7,
+    d:"Une perche et un bout de toile. Ça tire quand le vent veut bien." },
+  { n:8,  nom:"La voile latine",     prix:10000,  places:4, kg:110, vit:2.2,
+    d:"Antenne et voile triangulaire. La vraie voile d'ici." },
+  { n:9,  nom:"Le safran",           prix:13500,  places:4, kg:120, vit:2.3,
+    d:"Un gouvernail et sa barre. Tu choisis où tu vas." },
+  { n:10, nom:"La quille lestée",    prix:18000,  places:5, kg:140, vit:2.5,
+    d:"Du plomb sous la quille. Elle ne se couche plus." },
+  { n:11, nom:"Le tillac",           prix:23000,  places:6, kg:170, vit:2.6,
+    d:"Un pont continu. On marche dessus sans regarder ses pieds." },
+  { n:12, nom:"La cale fermée",      prix:29000,  places:8, kg:220, vit:2.6,
+    d:"Un panneau, une cale étanche. Le double de marchandise." },
+  { n:13, nom:"Le foc",              prix:36000,  places:8, kg:240, vit:3.1,
+    d:"Un beaupré et un foc. Elle remonte enfin au vent." },
+  { n:14, nom:"Le rouf",             prix:44000,  places:9, kg:270, vit:3.1,
+    d:"Un abri sur le pont. On peut dormir à bord." },
+  { n:15, nom:"Le second mât",       prix:54000,  places:10, kg:310, vit:3.6,
+    d:"Un tapecul à l'arrière. Deux voiles valent mieux qu'une." },
+  { n:16, nom:"Le bordé doublé",     prix:66000,  places:12, kg:380, vit:3.6,
+    d:"Une seconde peau de bois. Elle encaisse le mauvais temps." },
+  { n:17, nom:"Le treuil",           prix:80000,  places:14, kg:450, vit:3.7,
+    d:"Un cabestan pour hisser seul. Plus besoin d'être trois." },
+  { n:18, nom:"La chaloupe",         prix:96000,  places:15, kg:500, vit:3.7,
+    d:"Une annexe sur le pont. On accoste où il n'y a pas de quai." },
+  { n:19, nom:"Le pavillon",         prix:115000, places:16, kg:560, vit:3.8,
+    d:"Tes couleurs en tête de mât. On te reconnaît de loin." },
+  { n:20, nom:"Le grand caboteur",   prix:140000, places:20, kg:700, vit:4.2,
+    d:"Coque doublée, trois voiles, un nom peint sur l'étrave. Ce n'est plus une barque." }
+];
+
+/* ---- palettes ---- */
+const BOIS  = ['#b58f60','#c9a374','#a5825c','#96754a','#8a6a42'];
+const CLAIR = '#e4c79c', SOMBRE = '#7a5c38', FOND = '#5c4930';
+
+/* ============================================================
+   Le dessin. Tout est paramétré par le niveau.
+   Repère : la barque est dessinée dans un cadre 300 x 170,
+   la ligne de flottaison est à y = 118.
+   ============================================================ */
+let uidB = 0;
+
+function barqueQ(n, route){
+  const P = PALIERS_B[n-1];
+  const L = 76 + n * 5.6;            /* longueur */
+  const H = 15 + n * 0.62;           /* creux du bordé au-dessus de l'eau */
+  const T = 6 + n * 0.34;            /* tirant d'eau */
+  const cx = 150, flot = 122;
+  const x0 = cx - L / 2;
+  const g = v => (x0 + v).toFixed(1);
+  const u = 'b' + (++uidB);
+  let s = '';
+
+  /* ---------- la ligne de sheer : le haut du bordé ---------- */
+  /* étrave relevée à gauche, creux au milieu, poupe relevée à droite */
+  const yEtrave = flot - H * 1.28;
+  const yCreux  = flot - H * 0.92;
+  const yPoupe  = flot - H * 1.12;
+  const sheer = `M${g(0)} ${yEtrave.toFixed(1)}
+    C${g(L*.2)} ${(yEtrave + (yCreux-yEtrave)*.9).toFixed(1)} ${g(L*.36)} ${yCreux.toFixed(1)} ${g(L*.54)} ${yCreux.toFixed(1)}
+    C${g(L*.74)} ${yCreux.toFixed(1)} ${g(L*.9)} ${(yCreux + (yPoupe-yCreux)*.5).toFixed(1)} ${g(L)} ${yPoupe.toFixed(1)}`;
+
+  /* ---------- la coque complète ---------- */
+  const coque = sheer
+    + ` L${g(L*.965)} ${(flot + T*.42).toFixed(1)}`
+    + ` C${g(L*.78)} ${(flot + T).toFixed(1)} ${g(L*.24)} ${(flot + T).toFixed(1)} ${g(L*.055)} ${(flot + T*.3).toFixed(1)}`
+    + ` Z`;
+
+  s += `<defs><clipPath id="${u}"><path d="${coque}"/></clipPath></defs>`;
+
+  /* reflet dans l'eau */
+  s += `<ellipse cx="${cx}" cy="${(flot + T*.7).toFixed(1)}" rx="${(L*.5).toFixed(0)}" ry="4"
+    fill="#0e4a68" opacity=".2"/>`;
+
+  /* la chaloupe (18+), posée en travers du pont */
+  if (n >= 18){
+    s += `<g transform="translate(${g(L*.58)},${(yCreux - 3).toFixed(1)})">
+      <path d="M0 0 q3 8 10 9 h20 q7 -1 10 -9 q-6 3 -13 3 H13 q-7 0 -13 -3 z" fill="#96754a"/>
+      <path d="M-1 -2 q5 4 12 4 h18 q7 0 12 -4 v3 q-5 3 -12 3 H11 q-7 0 -12 -3 z" fill="#c9a374"/></g>`;
+  }
+
+  /* ---------- le corps de la coque ---------- */
+  s += `<path d="${coque}" fill="${BOIS[2]}"/>`;
+
+  /* les bordages : des courbes parallèles au sheer, découpées par la coque */
+  const nb = Math.min(7, 3 + Math.floor(n / 3.4));
+  s += `<g clip-path="url(#${u})">`;
+  for (let i = 0; i < nb; i++){
+    const dy = (H + T) * (i / nb);
+    const c = BOIS[i % BOIS.length];
+    s += `<path d="${sheer}" transform="translate(0,${dy.toFixed(1)})" fill="none"
+      stroke="${c}" stroke-width="${((H + T) / nb * 1.5).toFixed(1)}"/>`;
+  }
+  /* les coutures calfatées (2+) */
+  if (n >= 2){
+    for (let i = 1; i < nb; i++){
+      const dy = (H + T) * (i / nb);
+      s += `<path d="${sheer}" transform="translate(0,${dy.toFixed(1)})" fill="none"
+        stroke="#3a2c1e" stroke-width=".9" opacity=".45"/>`;
+    }
+  }
+  /* les œuvres vives, sous la flottaison */
+  s += `<rect x="0" y="${flot}" width="300" height="60"
+    fill="${n >= 10 ? '#33454f' : '#6d5334'}" opacity="${n >= 10 ? '.9' : '.55'}"/>`;
+  /* le bordé doublé (16+) */
+  if (n >= 16)
+    s += `<path d="${sheer}" transform="translate(0,${(H*.9).toFixed(1)})" fill="none"
+      stroke="#6d5334" stroke-width="2.4" opacity=".7"/>`;
+  s += `</g>`;
+
+  /* ---------- le liston (5+) ---------- */
+  if (n >= 5){
+    s += `<path d="${sheer}" fill="none" stroke="${CLAIR}" stroke-width="${(2.4 + n*.06).toFixed(1)}"
+      stroke-linecap="round"/>`;
+  } else {
+    s += `<path d="${sheer}" fill="none" stroke="${BOIS[0]}" stroke-width="2" stroke-linecap="round"/>`;
+  }
+  /* l'ourlet clair du dessus */
+  s += `<path d="${sheer}" transform="translate(0,-1)" fill="none" stroke="#f0dcb4"
+    stroke-width="1" opacity=".6"/>`;
+
+  /* ---------- l'étrave et l'étambot ---------- */
+  s += `<path d="M${g(0)} ${yEtrave.toFixed(1)} C${g(-2)} ${(yEtrave + H*.7).toFixed(1)}
+    ${g(1)} ${(flot).toFixed(1)} ${g(L*.055)} ${(flot + T*.3).toFixed(1)}"
+    fill="none" stroke="${SOMBRE}" stroke-width="2.6" stroke-linecap="round"/>`;
+  s += `<path d="M${g(L)} ${yPoupe.toFixed(1)} L${g(L*.965)} ${(flot + T*.42).toFixed(1)}"
+    stroke="${SOMBRE}" stroke-width="2.6" stroke-linecap="round" fill="none"/>`;
+
+  /* ---------- l'intérieur, vu par-dessus le bordé ---------- */
+  s += `<path d="${sheer}" transform="translate(0,2.2)" fill="none" stroke="${FOND}"
+    stroke-width="${Math.max(2.2, H*.22).toFixed(1)}"/>`;
+
+  /* ---------- le pont ---------- */
+  const pont = (a, b, coul, clair) => {
+    s += `<path d="${sheer}" transform="translate(0,2)" fill="none" stroke="${coul}"
+      stroke-width="${Math.max(2.4, H*.2).toFixed(1)}"
+      stroke-dasharray="${(L*(b-a)).toFixed(0)} ${L.toFixed(0)}"
+      stroke-dashoffset="${(-L*a).toFixed(0)}"/>`;
+    s += `<path d="${sheer}" transform="translate(0,.6)" fill="none" stroke="${clair}"
+      stroke-width="1.2" stroke-dasharray="${(L*(b-a)).toFixed(0)} ${L.toFixed(0)}"
+      stroke-dashoffset="${(-L*a).toFixed(0)}"/>`;
+  };
+  if (n >= 11)      pont(.03, .95, '#b8946a', '#dfc094');   /* tillac : pont continu */
+  else if (n >= 6)  pont(.04, .34, '#b8946a', '#dfc094');   /* demi-pont avant */
+
+  /* ---------- le banc de nage (3+) ---------- */
+  if (n >= 3 && n < 11)
+    s += `<rect x="${g(L*.4)}" y="${(yCreux + 1.6).toFixed(1)}" width="${(L*.22).toFixed(0)}"
+      height="${Math.max(2, H*.14).toFixed(1)}" rx="1" fill="#8a6a42"/>`;
+
+  /* ---------- les avirons (4+ jusqu'au pont) ---------- */
+  if (n >= 4 && n < 11){
+    [[L*.34, 'av-1'], [L*.62, 'av-2']].forEach(([dx, cl]) => {
+      const ax = +g(dx), ay = yCreux + 1;
+      const dep = (flot + 7) - ay;      /* la pelle plonge sous la flottaison */
+      /* le tolet, point de pivot */
+      s += `<rect x="${(ax-1.4).toFixed(1)}" y="${(ay-3.6).toFixed(1)}" width="2.8" height="4.4"
+        rx="1" fill="#6d5334"/>`;
+      s += `<g class="aviron ${cl}" style="transform-origin:${ax}px ${ay.toFixed(1)}px">`;
+      /* le manche, vers l'intérieur et vers le haut */
+      s += `<path d="M${ax} ${ay.toFixed(1)} l-13 -6" stroke="#96754a"
+        stroke-width="2.2" stroke-linecap="round"/>`;
+      s += `<circle cx="${(ax-13).toFixed(1)}" cy="${(ay-6).toFixed(1)}" r="1.6" fill="#8a6a42"/>`;
+      /* le fût, vers l'extérieur et vers l'eau */
+      s += `<path d="M${ax} ${ay.toFixed(1)} l21 ${dep.toFixed(1)}" stroke="#a5825c"
+        stroke-width="2.4" stroke-linecap="round"/>`;
+      /* la pelle */
+      s += `<path d="M${(ax+19).toFixed(1)} ${(ay+dep-2).toFixed(1)}
+        q5.4 1 7 6 q1.6 5.4 -2 7.4 q-3.8 2 -6.8 -1.6 q-3 -3.6 -1.6 -8.6 z" fill="#c9a374"/>`;
+      s += `<path d="M${(ax+19.6).toFixed(1)} ${(ay+dep-1).toFixed(1)}
+        q4.4 1.4 5.6 5.4" stroke="#dfc094" stroke-width="1.2" fill="none"/>`;
+      s += `</g>`;
+    });
+  }
+
+  /* ---------- le panneau de cale (12+) ---------- */
+  if (n >= 12){
+    s += `<rect x="${g(L*.46)}" y="${(yCreux - 1.4).toFixed(1)}" width="${(L*.15).toFixed(0)}"
+      height="${Math.max(2.6, H*.12).toFixed(1)}" rx="1" fill="#8a6a42" stroke="#6d5334" stroke-width=".8"/>`;
+  }
+
+  /* ---------- le rouf (14+) ---------- */
+  if (n >= 14){
+    const rx = +g(L*.62), ry = yCreux - 1, rh = H*.5, rw = L*.2;
+    s += `<path d="M${rx} ${ry.toFixed(1)} h${rw.toFixed(0)} v-${rh.toFixed(1)} h-${rw.toFixed(0)} z" fill="#c9a374"/>`;
+    s += `<path d="M${(rx-2).toFixed(1)} ${(ry-rh).toFixed(1)} h${(rw+4).toFixed(0)} l-2.4 -3.4 h-${(rw-.8).toFixed(0)} z" fill="#8a4a3a"/>`;
+    s += `<rect x="${(rx+2.6).toFixed(1)}" y="${(ry-rh+2.4).toFixed(1)}" width="${(rw*.26).toFixed(1)}"
+      height="${(rh*.42).toFixed(1)}" fill="#6d8fa4" opacity=".85"/>`;
+    s += `<rect x="${(rx+rw*.56).toFixed(1)}" y="${(ry-rh+2.4).toFixed(1)}" width="${(rw*.26).toFixed(1)}"
+      height="${(rh*.42).toFixed(1)}" fill="#6d8fa4" opacity=".85"/>`;
+  }
+
+  /* ---------- le grand mât (7+) ---------- */
+  const mxP = n >= 13 ? .34 : .46;
+  if (n >= 7){
+    const mx = +g(L * mxP);
+    const pied = yCreux + 1;
+    const mh = n >= 8 ? 46 + n * 2.3 : 32;
+    s += `<path d="M${mx} ${pied.toFixed(1)} v-${mh.toFixed(0)}" stroke="#8a6a42"
+      stroke-width="${(2 + n*.07).toFixed(1)}" stroke-linecap="round"/>`;
+    s += `<path d="M${(mx-.7).toFixed(1)} ${pied.toFixed(1)} v-${mh.toFixed(0)}" stroke="#c9a374"
+      stroke-width=".9" opacity=".7"/>`;
+    const ay = pied - mh;
+
+    if (n === 7){
+      s += `<path class="voile" d="M${mx} ${(ay+5).toFixed(1)} q15 7 20 21 q-13 5 -20 4 z" fill="#ddd2b6"/>`;
+      s += `<path d="M${mx} ${(ay+5).toFixed(1)} q15 7 20 21 q-8 3 -12 3 z" fill="#f0e8d2"/>`;
+    } else {
+      /* la voile latine : antenne inclinée sur toute la hauteur */
+      s += `<path d="M${(mx-20).toFixed(1)} ${(ay + mh*.5).toFixed(1)} L${(mx+34).toFixed(1)} ${(ay-4).toFixed(1)}"
+        stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
+      s += `<path class="voile" d="M${(mx-18).toFixed(1)} ${(ay + mh*.48).toFixed(1)}
+        L${(mx+32).toFixed(1)} ${(ay-3).toFixed(1)}
+        Q${(mx+14).toFixed(1)} ${(ay + mh*.56).toFixed(1)} ${(mx+2).toFixed(1)} ${pied.toFixed(1)} Z" fill="#e4dbc0"/>`;
+      s += `<path d="M${(mx-18).toFixed(1)} ${(ay + mh*.48).toFixed(1)}
+        L${(mx+32).toFixed(1)} ${(ay-3).toFixed(1)}
+        Q${(mx+20).toFixed(1)} ${(ay + mh*.38).toFixed(1)} ${(mx+8).toFixed(1)} ${(ay + mh*.62).toFixed(1)} Z" fill="#f6f0dc"/>`;
+      s += `<g stroke="#c9bfa2" stroke-width=".7" opacity=".65">
+        <path d="M${(mx-6).toFixed(1)} ${(ay+mh*.5).toFixed(1)} L${(mx+9).toFixed(1)} ${(pied-5).toFixed(1)}"/>
+        <path d="M${(mx+9).toFixed(1)} ${(ay+mh*.26).toFixed(1)} L${(mx+15).toFixed(1)} ${(pied-11).toFixed(1)}"/></g>`;
+      s += `<g stroke="#c9b58c" stroke-width=".8" opacity=".75">
+        <path d="M${mx} ${(ay+5).toFixed(1)} L${g(L*.1)} ${(yCreux-1).toFixed(1)}"/>
+        <path d="M${mx} ${(ay+5).toFixed(1)} L${g(L*.86)} ${(yCreux-1).toFixed(1)}"/></g>`;
+    }
+  }
+
+  /* ---------- le foc et son beaupré (13+) ---------- */
+  if (n >= 13){
+    const bx = +g(-8), by = yEtrave - 3;
+    const mx = +g(L*mxP), mh = 46 + n*2.3, ay = yCreux + 1 - mh;
+    s += `<path d="M${g(L*.02)} ${(yEtrave+2).toFixed(1)} L${bx} ${by.toFixed(1)}"
+      stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
+    s += `<path class="voile" d="M${bx} ${by.toFixed(1)} L${mx} ${(ay + mh*.2).toFixed(1)}
+      Q${(bx+17).toFixed(1)} ${(ay + mh*.66).toFixed(1)} ${(bx+12).toFixed(1)} ${(yEtrave+4).toFixed(1)} Z"
+      fill="#eee6cc"/>`;
+    s += `<path d="M${bx} ${by.toFixed(1)} L${mx} ${(ay + mh*.2).toFixed(1)}
+      Q${(bx+24).toFixed(1)} ${(ay + mh*.5).toFixed(1)} ${(bx+20).toFixed(1)} ${(ay + mh*.8).toFixed(1)} Z"
+      fill="#f8f2de"/>`;
+  }
+
+  /* ---------- le tapecul (15+) ---------- */
+  if (n >= 15){
+    const mx2 = +g(L*.86), mh2 = 30 + n, pied2 = yCreux + 1;
+    s += `<path d="M${mx2} ${pied2.toFixed(1)} v-${mh2.toFixed(0)}" stroke="#8a6a42"
+      stroke-width="2.2" stroke-linecap="round"/>`;
+    s += `<path d="M${(mx2-12).toFixed(1)} ${(pied2 - mh2*.44).toFixed(1)} L${(mx2+18).toFixed(1)} ${(pied2 - mh2 + 2).toFixed(1)}"
+      stroke="#a5825c" stroke-width="1.9" stroke-linecap="round"/>`;
+    s += `<path class="voile" d="M${(mx2-10).toFixed(1)} ${(pied2 - mh2*.42).toFixed(1)}
+      L${(mx2+16).toFixed(1)} ${(pied2 - mh2 + 3).toFixed(1)}
+      Q${(mx2+5).toFixed(1)} ${(pied2 - mh2*.4).toFixed(1)} ${(mx2+2).toFixed(1)} ${pied2.toFixed(1)} Z"
+      fill="#e4dbc0"/>`;
+  }
+
+  /* ---------- le safran (9+) ---------- */
+  if (n >= 9){
+    s += `<path d="M${g(L*.97)} ${(flot - H*.5).toFixed(1)} q6 4 6 ${(T*1.1).toFixed(1)}
+      q0 ${(T*.5).toFixed(1)} -6 ${(T*.5).toFixed(1)} z" fill="#7a5c38"/>`;
+    s += `<path d="M${g(L*.94)} ${(yPoupe + 2).toFixed(1)} l13 -6" stroke="#a5825c"
+      stroke-width="2" stroke-linecap="round"/>`;
+  }
+
+  /* ---------- le treuil (17+) ---------- */
+  if (n >= 17){
+    const tx = +g(L*.44);
+    s += `<rect x="${(tx-4.4).toFixed(1)}" y="${(yCreux - 6).toFixed(1)}" width="9" height="6" rx="2" fill="#5c6a74"/>`;
+    s += `<circle cx="${tx}" cy="${(yCreux - 3).toFixed(1)}" r="2.2" fill="#8a9299"/>`;
+  }
+
+  /* ---------- le pavillon (19+) ---------- */
+  if (n >= 19){
+    const mx = +g(L * mxP), mh = 46 + n * 2.3, tete = yCreux + 1 - mh;
+    /* la drisse et le petit mât de pavillon */
+    s += `<path d="M${mx} ${tete.toFixed(1)} v-9" stroke="#8a6a42" stroke-width="1.6" stroke-linecap="round"/>`;
+    /* le pavillon, qui claque */
+    s += `<g class="pavillon" style="transform-origin:${mx}px ${(tete-8).toFixed(1)}px">`;
+    s += `<path d="M${mx} ${(tete-9).toFixed(1)} q9 1.6 17 -1.4 q-2 4 0 7.4 q-8 3 -17 1.4 z" fill="#c74a33"/>`;
+    s += `<path d="M${mx} ${(tete-9).toFixed(1)} q9 1.6 17 -1.4 q-1 2 -.6 3.6 q-8 2.4 -16.4 1 z" fill="#e0684a"/>`;
+    s += `</g>`;
+  }
+
+  /* ---------- le nom peint (20) ---------- */
+  if (n >= 20)
+    s += `<text x="${g(L*.1)}" y="${(flot - H*.34).toFixed(1)}" font-family="Bebas Neue,sans-serif"
+      font-size="8.4" letter-spacing="1.2" fill="#f2e6c8" opacity=".85">LA ZIZOUIN</text>`;
+
+  /* ---------- l'eau, selon l'allure ---------- */
+  /* la proue est à gauche : le sillage traîne derrière, donc à droite */
+  if (route){
+    const nv = Math.max(2, Math.round(P.vit * 1.6));
+    for (let i = 0; i < nv; i++)
+      s += `<path class="sillage sl${i % 3}" d="M${g(L + 4 + i*4)} ${(flot + 1 + i*2.6).toFixed(1)}
+        q${(16+i*7).toFixed(0)} 2 ${(30+i*13).toFixed(0)} 0"
+        stroke="#fff" stroke-width="${(1.6 - i*.16).toFixed(2)}" fill="none"
+        opacity="${(.44 - i*.05).toFixed(2)}"/>`;
+    /* la moustache d'étrave, elle, est bien à l'avant */
+    s += `<path class="etrave" d="M${g(-3)} ${(flot - 1).toFixed(1)} q-9 4 -19 3"
+      stroke="#fff" stroke-width="2" fill="none" opacity=".55"/>`;
+    s += `<path class="etrave e2" d="M${g(1)} ${(flot + 2.4).toFixed(1)} q-8 4 -17 3"
+      stroke="#fff" stroke-width="1.4" fill="none" opacity=".36"/>`;
+    /* le remous sous la poupe */
+    s += `<ellipse class="remous" cx="${g(L + 2)}" cy="${(flot + 3).toFixed(1)}" rx="9" ry="2.4"
+      fill="#fff" opacity=".24"/>`;
+  } else {
+    /* au mouillage : la chaîne d'ancre à l'étrave */
+    s += `<path d="M${g(L*.03)} ${(yEtrave + 4).toFixed(1)} q-4 8 -3 16"
+      stroke="#6d6a62" stroke-width="1.4" fill="none" stroke-dasharray="2 1.6"/>`;
+    s += `<path d="M${g(-4)} ${(flot + 2).toFixed(1)} q22 3 40 0"
+      stroke="#fff" stroke-width="1.2" fill="none" opacity=".26"/>`;
+  }
+
+  return s;
+}
+
+/* ---------- ta barque, amarrée au quai ---------- */
+function barque(niveau, marque){
   const d = 56, y = sol(d), m = u => px(u,d), x = pX(-11, d);
-  const co = sombre('#a87c4c',.16), coC = clair('#e0b878',.34);
+  /* barqueQ dessine dans un carré de 300, la flottaison à 122 */
+  const k = m(2.4 + niveau * .1) / (76 + niveau * 5.6);
   let s = `<g class="amarre">`;
-  s += `<ellipse cx="${x.toFixed(1)}" cy="${(y+m(.14)).toFixed(1)}" rx="${m(2.4).toFixed(1)}"
-    ry="${m(.3).toFixed(1)}" fill="#12324a" opacity=".26"/>`;
-  s += `<path d="M${(x-m(2.1)).toFixed(1)} ${(y-m(.56)).toFixed(1)}
-    q${m(.34).toFixed(1)} ${m(.7).toFixed(1)} ${m(1.76).toFixed(1)} ${m(.7).toFixed(1)}
-    h${m(.7).toFixed(1)} q${m(1.42).toFixed(1)} 0 ${m(1.76).toFixed(1)} ${(-m(.7)).toFixed(1)}
-    q${(-m(2.1)).toFixed(1)} ${(-m(.4)).toFixed(1)} ${(-m(4.2)).toFixed(1)} 0 z" fill="${co}"/>`;
-  s += `<path d="M${(x-m(2.1)).toFixed(1)} ${(y-m(.56)).toFixed(1)}
-    q${m(2.1).toFixed(1)} ${(-m(.4)).toFixed(1)} ${m(4.2).toFixed(1)} 0"
-    stroke="${coC}" stroke-width="${Math.max(.6,m(.16)).toFixed(1)}" fill="none"/>`;
+  s += `<ellipse cx="${x.toFixed(1)}" cy="${(y+m(.12)).toFixed(1)}"
+    rx="${m(2.6).toFixed(1)}" ry="${m(.3).toFixed(1)}" fill="#12324a" opacity=".28"/>`;
+  s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${k.toFixed(4)})">`
+    + `<g transform="translate(-150,-122)">` + barqueQ(niveau, false) + `</g></g>`;
   /* l'amarre qui monte au quai */
-  s += `<path d="M${(x+m(2)).toFixed(1)} ${(y-m(.6)).toFixed(1)}
+  s += `<path d="M${(x+m(2.1)).toFixed(1)} ${(y-m(.6)).toFixed(1)}
     q${m(1.2).toFixed(1)} ${(-m(.6)).toFixed(1)} ${m(2.2).toFixed(1)} ${(-m(1.4)).toFixed(1)}"
     stroke="${sombre('#8a7a5c',.2)}" stroke-width="${Math.max(.5,m(.1)).toFixed(1)}" fill="none"/>`;
+  /* ton pavillon, planté sur le quai à côté de ta barque */
+  if (marque){
+    const px2 = x + m(2.6);
+    s += `<path d="M${px2.toFixed(1)} ${y.toFixed(1)} v${(-m(1.9)).toFixed(1)}"
+      stroke="${sombre('#6d5a44',.2)}" stroke-width="${Math.max(.6,m(.1)).toFixed(1)}"/>`;
+    s += `<path d="M${px2.toFixed(1)} ${(y-m(1.9)).toFixed(1)}
+      l${m(.8).toFixed(1)} ${m(.24).toFixed(1)} l${(-m(.8)).toFixed(1)} ${m(.24).toFixed(1)} z"
+      fill="${marque}"/>`;
+  }
   return s + `</g>`;
 }
 
-function palma(){
+function palma(MOI2){
   let s = ciel();
   s += collines();
   s += ville();
   s += cathedrale();
-  s += barque();
+  s += barque((MOI2 && MOI2.barque) || 1, MOI2 && MOI2.couleur);
   s += `<defs><radialGradient id="p-vig" cx="0.5" cy="0.46" r="0.8">
     <stop offset="50%" stop-color="#1b3550" stop-opacity="0"/>
     <stop offset="100%" stop-color="#1b3550" stop-opacity=".2"/></radialGradient></defs>`;
@@ -495,9 +825,37 @@ function decor(){
   document.getElementById('sc').innerHTML =
     '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + palma() + '</svg>';
+    + palma(MOI) + '</svg>';
 }
-decor();
+
+/* ---------- les couleurs de ta marque ---------- */
+const COULEURS = [
+  { k:'bleu',    n:'Bleu de mer',    c:'#2f6a92', c2:'#5aa0c8' },
+  { k:'prusse',  n:'Bleu de Prusse', c:'#1e3a5c', c2:'#4a6d94' },
+  { k:'ocre',    n:'Ocre',           c:'#c9843a', c2:'#e8a860' },
+  { k:'safran',  n:'Safran',         c:'#d8a838', c2:'#f0c868' },
+  { k:'garrigue',n:'Vert de garrigue',c:'#5c7a4a', c2:'#82a068' },
+  { k:'olivier', n:'Vert olivier',   c:'#6d7a52', c2:'#94a074' },
+  { k:'tuile',   n:'Rouge de tuile', c:'#b8483a', c2:'#d47a68' },
+  { k:'lie',     n:'Lie-de-vin',     c:'#7a3448', c2:'#a05a70' },
+  { k:'ombre',   n:"Terre d'ombre",  c:'#7a5a3a', c2:'#a07c56' },
+  { k:'chaux',   n:'Blanc de chaux', c:'#d8d0c0', c2:'#f2ece0' },
+  { k:'ardoise', n:'Ardoise',        c:'#4a5460', c2:'#74808e' },
+  { k:'nuit',    n:'Bleu nuit',      c:'#26304a', c2:'#4a5678' },
+  { k:'corail',  n:'Corail',         c:'#c9604a', c2:'#e88a70' },
+  { k:'sable',   n:'Sable',          c:'#c4a878', c2:'#e0caa0' },
+  { k:'pin',     n:'Vert de pin',    c:'#2f5244', c2:'#54786a' },
+  { k:'encre',   n:'Encre',          c:'#1b2432', c2:'#455066' }
+];
+
+/* ---------- la forme de ton écusson ---------- */
+const ECUSSONS = [
+  { k:'carre',   n:'Carré',    r:'3px' },
+  { k:'rond',    n:'Rond',     r:'50%' },
+  { k:'doux',    n:'Adouci',   r:'14px' },
+  { k:'ecu',     n:'Écu',      r:'6px 6px 40% 40%' }
+];
+
 
 let MOI = null;
 let chargesCt = false;
@@ -619,7 +977,9 @@ const LIEUX = [
   document.getElementById('eu').textContent =
     Number(d.euros || 0).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
 
-  MOI = d;
+  MOI = { barque: d.barque || 1,
+    couleur: ((COULEURS.find(c => c.k === ((d.affaire||{}).couleur)) || {}).c) };
+  decor();
   /* où en es-tu avec cette maison ? */
   const aLettre = (d.sacoche || []).some(o => o.k === 'lettre');
   const Q = d.quetes || [];
