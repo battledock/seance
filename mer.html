@@ -775,18 +775,42 @@ function peindre(){
       : Math.max(1, Math.round((100 - avance) / 100 * 24)) + ' h de mer';
     if (r !== dernierReste){ reste.textContent = r; dernierReste = r; }
 
-    if (avance >= 100){
-      if (!fait){ fait = true; arriver(); }
-      return;
-    }
-    requestAnimationFrame(image);
+    if (avance >= 100 && !fait){ fait = true; arriver(); }
   }
   const jg = document.getElementById('jg');
   const heure = document.getElementById('heure');
   const moment = document.getElementById('moment');
   const reste = document.getElementById('reste');
   jg.style.transition = 'none';
-  requestAnimationFrame(image);
+
+  /* requestAnimationFrame s'arrête quand l'écran s'éteint ou qu'on change
+     d'onglet, et ne repart pas toujours. On le relance dès qu'on revient,
+     et un minuteur de secours veille au cas où. */
+  let enCours = false;
+  function relancer(){
+    if (fait || enCours) return;
+    enCours = true;
+    requestAnimationFrame(function boucle(){
+      enCours = true;
+      image();
+      if (!fait) requestAnimationFrame(boucle); else enCours = false;
+    });
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden){ enCours = false; image(); relancer(); }
+  });
+  addEventListener('pageshow', () => { enCours = false; image(); relancer(); });
+  addEventListener('focus', () => { enCours = false; relancer(); });
+  /* le filet : même si tout le reste lâche, ça continue d'avancer */
+  const secours = setInterval(() => {
+    if (fait){ clearInterval(secours); return; }
+    if (document.hidden) return;
+    image();
+    if (!enCours) relancer();
+  }, 900);
+
+  image();
+  relancer();
 })();
 
 async function arriver(){
