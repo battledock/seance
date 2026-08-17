@@ -99,7 +99,6 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
 </div>
 
 <div class="tete" id="tete">
-  <button class="ret" id="ret"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
   <span class="ou"><b>Palma</b><span>Majorque</span></span>
   <span class="eu" id="eu">—</span>
 </div>
@@ -441,7 +440,7 @@ const LIEUX = [
   { k:'barque', n:'Reprendre la mer', ouvert:true }
 ];
 
-document.getElementById('ret').onclick = () => location.href = 'jeu.html';
+
 
 (async () => {
   let d;
@@ -471,6 +470,8 @@ document.getElementById('ret').onclick = () => location.href = 'jeu.html';
 
   document.querySelectorAll('[data-k="barque"]').forEach(b =>
     b.onclick = () => location.href = 'voyager.html');
+  document.querySelectorAll('[data-k="frere"]').forEach(b =>
+    b.onclick = () => location.href = 'ardit.html');
 
   /* le rideau se lève */
   setTimeout(() => {
