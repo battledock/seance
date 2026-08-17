@@ -1421,6 +1421,11 @@ function dessinerVille(){
   if (d.parti_le){ location.href = 'mer.html'; return; }
   if (d.port === 'palma'){ location.href = 'palma.html'; return; }
   if (d.port !== 'barcelone'){ location.href = 'jeu.html'; return; }
+  /* une enchère laissée en plan ? on la reprend */
+  try {
+    const e0 = await BD.agir('mon_enchere');
+    if (e0 && e0.base){ location.href = 'drap.html'; return; }
+  } catch(err){}
 
   const n = Number(d.barque || 1);
   const P = PALIERS_B[n - 1];
