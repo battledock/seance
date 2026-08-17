@@ -222,17 +222,10 @@ function objetSVG(k){
 }
 
 /* ce que chaque niveau apporte */
+/* seul le cinquième palier sort du lot */
 const CADEAUX = {
-  2:{ points:2, energie:1, mot:"Tu tiens debout sur le pont. C'est un début." },
-  3:{ points:2, energie:2, euros:60,
-      mot:"On commence à te servir sans que tu demandes." },
-  4:{ points:3, energie:2, euros:120, objet:'carte',
-      mot:"Quelqu'un a glissé ça dans ta poche pendant la traversée." },
   5:{ points:4, energie:4, euros:400, objet:'boussole', cale:1, titre:'Patron',
-      mot:"Ce n'est plus toi qui cherches du travail." },
-  6:{ points:3, energie:2, euros:180, mot:"Ton nom circule dans trois ports." },
-  7:{ points:3, energie:3, euros:240, cale:1,
-      mot:"Tu connais les courants mieux que la plupart." }
+      mot:"Ce n'est plus toi qui cherches du travail." }
 };
 const OBJETS = {
   carte:    { nom:'Une carte déchirée', svg:objetSVG('carte'),
