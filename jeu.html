@@ -50,6 +50,70 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
   color:rgba(255,255,255,.7)}
 .cf .bt .oui{border:0;background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16}
 
+/* ---------- les gens ---------- */
+.gn{position:fixed;z-index:22;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
+  background:rgba(20,34,50,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 12px 40px rgba(6,16,28,.6);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.gn.on{opacity:1;transform:none;pointer-events:auto}
+.gn::-webkit-scrollbar{display:none}
+.gn .haut{display:flex;align-items:center;padding:14px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.gn .haut .ti{flex:1}
+.gn .haut b{display:block;font-size:15px;color:#fff;font-weight:700;letter-spacing:.04em}
+.gn .haut span{display:block;font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-top:3px}
+.gn .haut .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.5);
+  font-size:22px;line-height:1;padding:3px 2px}
+
+.gn .qui{padding:15px 15px 16px;border-top:1px solid rgba(255,255,255,.08);
+  cursor:pointer}
+.gn .qui .l1{display:flex;align-items:baseline;gap:10px}
+.gn .qui .l1 b{flex:1;font-size:15.5px;color:#fff;font-weight:700}
+.gn .qui .l1 .ou{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.36)}
+.gn .qui .q{display:block;font-size:11px;color:rgba(255,255,255,.46);margin-top:4px;
+  font-family:system-ui,sans-serif}
+
+/* la jauge du lien, avec ses paliers marqués */
+.gn .jau{position:relative;height:8px;border-radius:5px;margin-top:13px;
+  background:rgba(255,255,255,.1);overflow:visible}
+.gn .jau i{display:block;height:100%;border-radius:5px;transition:width .8s
+  cubic-bezier(.2,.9,.3,1)}
+.gn .jau .pa{position:absolute;top:-3px;width:1.5px;height:14px;
+  background:rgba(255,255,255,.24);border-radius:1px}
+.gn .jau .pa.passe{background:rgba(240,196,106,.7)}
+.gn .chif{display:flex;justify-content:space-between;margin-top:9px;align-items:baseline}
+.gn .chif .et{font-size:12.5px;font-weight:700}
+.gn .chif .v{font-size:11px;color:rgba(255,255,255,.42)}
+.gn .dit{display:block;font-size:11.5px;color:rgba(255,255,255,.5);margin-top:9px;
+  font-family:system-ui,sans-serif;line-height:1.55}
+
+/* ce qui vient ensuite */
+.gn .suite{display:none;margin-top:13px;padding:12px 13px;border-radius:9px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.gn .qui.ouvert .suite{display:block}
+.gn .suite .l{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:11.5px;
+  font-family:system-ui,sans-serif}
+.gn .suite .l .n{flex:0 0 26px;font-size:10px;color:rgba(255,255,255,.34);
+  font-family:'Courier Prime',monospace}
+.gn .suite .l .t{flex:1;color:rgba(255,255,255,.44)}
+.gn .suite .l.ok .t{color:#8ce0a8}
+.gn .suite .l.ok .n{color:#8ce0a8}
+.gn .note{display:none;font-size:11.5px;color:rgba(255,255,255,.44);margin-top:11px;
+  font-family:system-ui,sans-serif;font-style:italic;line-height:1.55}
+.gn .qui.ouvert .note{display:block}
+.gn .inconnu{opacity:.4}
+.gn .pied{padding:13px 15px;border-top:1px solid rgba(255,255,255,.14);
+  font-size:10px;color:rgba(255,255,255,.34);line-height:1.6;text-align:center;
+  font-family:system-ui,sans-serif}
+
 /* ---------- la sacoche ---------- */
 .sa{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -676,6 +740,15 @@ html{font-size:calc(16px * var(--txt, 1))}
   <div class="bt"><button class="non" id="c-non">Non</button>
     <button class="oui" id="c-oui">Oui, dépenser</button></div>
 </div>
+
+<section class="gn" id="gn">
+  <div class="haut">
+    <span class="ti"><b>Les gens</b><span>Ce qu'ils pensent de toi</span></span>
+    <button class="fer" id="n-fer">×</button>
+  </div>
+  <div id="n-liste"></div>
+  <p class="pied" id="n-pied"></p>
+</section>
 
 <section class="sa" id="sa">
   <div class="haut">
@@ -2427,6 +2500,70 @@ function objetSVG(k){
   return '<svg viewBox="0 0 48 40" xmlns="http://www.w3.org/2000/svg">' + O + '</svg>';
 }
 
+/* ---------- les gens ---------- */
+const PALIERS_L = [
+  [20,  'Il te reconnaît',   'Il te parle plus longuement'],
+  [50,  'On se connaît',     'Il te propose du travail à part'],
+  [80,  'Il compte sur toi', 'Il te demande quelque chose de personnel'],
+  [100, 'Comme un frère',    'Il ferait beaucoup pour toi']
+];
+let LIENS = null;
+
+async function poserGens(){
+  const el = document.getElementById('n-liste');
+  if (!el) return;
+  if (!LIENS){
+    el.innerHTML = '<p class="pied">On regarde…</p>';
+    LIENS = await BD.agir('mes_liens');
+    if (!Array.isArray(LIENS)) LIENS = [];
+  }
+  if (!LIENS.length){
+    el.innerHTML = '<p class="pied">Tu n\'as encore croisé personne.</p>';
+    return;
+  }
+
+  el.innerHTML = LIENS.map(g => {
+    const v = +g.valeur || 0, P = g.palier || {};
+    const pc = Math.max(0, Math.min(100, v));
+    const coul = g.trahi ? '#b8483a'
+      : v >= 80 ? 'linear-gradient(90deg,#c98a3a,#f0c46a)'
+      : v >= 50 ? 'linear-gradient(90deg,#5aa878,#8ce0a8)'
+      : v >= 20 ? 'linear-gradient(90deg,#4a7a9a,#7fb4d4)'
+      : v >= 0  ? 'rgba(255,255,255,.28)'
+      : 'linear-gradient(90deg,#8a4a3a,#c9705a)';
+    return '<div class="qui' + (g.connu ? '' : ' inconnu') + '" data-g="' + g.k + '">'
+      + '<div class="l1"><b>' + g.nom + '</b><span class="ou">' + g.ou + '</span></div>'
+      + '<span class="q">' + g.quoi + '</span>'
+      + '<div class="jau"><i style="width:' + pc + '%;background:' + coul + '"></i>'
+      + PALIERS_L.map(([s2]) => '<span class="pa' + (v >= s2 ? ' passe' : '')
+          + '" style="left:' + s2 + '%"></span>').join('') + '</div>'
+      + '<div class="chif"><span class="et" style="color:' + (g.trahi ? '#e08a6a'
+          : v >= 80 ? '#f0c46a' : v >= 50 ? '#8ce0a8' : v >= 20 ? '#8ab8e0'
+          : 'rgba(255,255,255,.6)') + '">' + (P.nom || '—') + '</span>'
+      + '<span class="v">' + v + ' / 100</span></div>'
+      + '<span class="dit">' + (P.dit || '') + '</span>'
+      + '<div class="suite">' + PALIERS_L.map(([s2, nom, quoi]) =>
+          '<div class="l' + (v >= s2 ? ' ok' : '') + '">'
+          + '<span class="n">' + s2 + '</span><span class="t">' + quoi + '</span></div>').join('')
+      + '</div>'
+      + '<span class="note">' + g.note + '</span>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('n-pied').textContent =
+    'Ce que tu fais change ce qu\'ils pensent. Et ce qu\'ils te proposent.';
+  el.querySelectorAll('[data-g]').forEach(b =>
+    b.onclick = () => { b.classList.toggle('ouvert'); secousse('touche'); });
+}
+
+let gnOuvert = false;
+function basculerGens(o){
+  gnOuvert = o === undefined ? !gnOuvert : o;
+  document.getElementById('gn').classList.toggle('on', gnOuvert);
+  majVoile();
+  if (gnOuvert) poserGens();
+}
+
 /* ---------- la sacoche ---------- */
 const GENRES = [
   ['quete',    'Ce qui sert à quelque chose'],
@@ -2899,7 +3036,7 @@ function basculerClassement(forcer){
 
 function majVoile(){
   document.getElementById('voile').classList.toggle('on',
-    saOuvert || rgOuvert || ctOuvert || chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
+    gnOuvert || saOuvert || rgOuvert || ctOuvert || chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
 }
 
 /* ---------- la barque ---------- */
@@ -3107,6 +3244,8 @@ function poserMenu(d){
       ouvert:true, f:() => { basculerMenu(false); basculerBarque(true); } },
     { k:'chantier', n:'Le chantier', s:'Toussaint et son bois',    ouvert:true,
       f:() => { basculerMenu(false); basculerChantier(true); } },
+    { k:'gens', n:'Les gens', s:'Ce qu\'ils pensent de toi', ouvert:true,
+      f:() => { basculerMenu(false); basculerGens(true); } },
     { k:'sacoche', n:'Ta sacoche',
       s: (d.sacoche && d.sacoche.length)
          ? d.sacoche.length + (d.sacoche.length > 1 ? ' objets' : ' objet')
@@ -3148,7 +3287,7 @@ function basculerMenu(forcer){
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
 document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
-function toutFermer(){ fermerDemande(); basculerSacoche(false); basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
+function toutFermer(){ fermerDemande(); basculerGens(false); basculerSacoche(false); basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
   basculerBarque(false); basculerFiche(false); basculerMenu(false); }
 document.getElementById('voile').onclick = toutFermer;
 document.getElementById('f-fer').onclick = () => basculerFiche(false);
@@ -3158,6 +3297,7 @@ document.getElementById('t-fer').onclick = () => basculerChantier(false);
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
 document.getElementById('g-fer').onclick = () => basculerReglages(false);
 document.getElementById('s-fer').onclick = () => basculerSacoche(false);
+document.getElementById('n-fer').onclick = () => basculerGens(false);
 document.getElementById('c-non').onclick = fermerDemande;
 document.getElementById('c-oui').onclick = () => { const f = siOui; fermerDemande(); if (f) f(); };
 addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
