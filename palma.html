@@ -146,6 +146,51 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
   font-size:10px;color:rgba(255,255,255,.36);line-height:1.6;text-align:center;
   font-family:system-ui,sans-serif}
 
+
+/* ---------- les autres joueurs ---------- */
+#eti{position:fixed;inset:0;z-index:5;pointer-events:none}
+.eti{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;
+  display:flex;align-items:center;gap:6px;padding:4px 9px 4px 4px;border-radius:20px;
+  background:rgba(12,26,42,.74);border:1.5px solid rgba(255,255,255,.24);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  white-space:nowrap;transition:transform .16s;font-family:'Courier Prime',monospace;
+  color:#fff;box-shadow:0 3px 12px rgba(6,16,28,.4)}
+.eti:active{transform:translate(-50%,-100%) scale(.94)}
+.eti .em{width:18px;height:18px;flex:0 0 18px;display:flex;align-items:center;
+  justify-content:center}
+.eti .em svg{width:11px;height:11px}
+.eti b{font-size:10px;font-weight:700}
+.eti i{width:5px;height:5px;border-radius:50%;background:#8ce0a8;font-style:normal;
+  flex:0 0 5px}
+.eti.charge i{background:#f0c46a}
+
+.fi{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 92px);
+  z-index:24;max-width:340px;margin:0 auto;
+  background:rgba(16,32,50,.96);border:2px solid rgba(255,255,255,.26);
+  border-radius:12px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 14px 44px rgba(6,16,28,.6);color:#fff;
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.fi.on{opacity:1;transform:none;pointer-events:auto}
+.fi .h{display:flex;align-items:center;gap:12px;padding:15px}
+.fi .h .em{flex:0 0 40px;height:40px;display:flex;align-items:center;justify-content:center}
+.fi .h .em svg{width:23px;height:23px}
+.fi .h .tx{flex:1;min-width:0}
+.fi .h b{display:block;font-size:16px;font-weight:700;font-family:'Courier Prime',monospace}
+.fi .h span{display:block;font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;
+  font-family:system-ui,sans-serif}
+.fi .h .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.44);
+  font-size:20px;padding:2px}
+.fi ul{list-style:none;border-top:1px solid rgba(255,255,255,.12)}
+.fi li{display:flex;justify-content:space-between;padding:11px 15px;font-size:12px;
+  border-bottom:1px solid rgba(255,255,255,.07);font-family:system-ui,sans-serif}
+.fi li:last-child{border-bottom:0}
+.fi li span{color:rgba(255,255,255,.46)}
+.fi li b{font-family:'Courier Prime',monospace}
+.amarre.a1{animation-duration:7.8s;animation-delay:-2s}
+.amarre.a2{animation-duration:5.6s;animation-delay:-3.4s}
+.amarre.a3{animation-duration:8.6s;animation-delay:-1.2s}
+
 </style>
 </head>
 <body>
@@ -176,6 +221,9 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
   <ul id="k-liste"><li class="rien">On regarde ce qu'il y a…</li></ul>
   <p class="mot" id="k-mot"></p>
 </section>
+
+<div id="eti"></div>
+<div class="fi" id="fi"></div>
 
 <div class="bas" id="bas"></div>
 
@@ -825,7 +873,8 @@ function decor(){
   document.getElementById('sc').innerHTML =
     '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + palma(MOI) + '</svg>';
+    + palma(MOI) + barquesDesAutres(40, 11) + '</svg>';
+  etiquettes(v);
 }
 
 /* ---------- les couleurs de ta marque ---------- */
@@ -856,6 +905,153 @@ const ECUSSONS = [
   { k:'ecu',     n:'Écu',      r:'6px 6px 40% 40%' }
 ];
 
+
+
+/* ============================================================
+   QUI EST AU PORT — les barques des autres joueurs
+   ============================================================ */
+/* ---------- les formes de ton signe ---------- */
+const SIGNES = [
+  { k:'ancre',   n:'Ancre' },    { k:'poisson', n:'Poisson' },
+  { k:'vague',   n:'Vague' },    { k:'olive',   n:'Olivier' },
+  { k:'noeud',   n:'Nœud' },     { k:'etoile',  n:'Étoile' },
+  { k:'soleil',  n:'Soleil' },   { k:'barque',  n:'Barque' },
+  { k:'phare',   n:'Phare' },    { k:'cle',     n:'Clé' },
+  { k:'balance', n:'Balance' },  { k:'compas',  n:'Compas' },
+  { k:'gouvernail', n:'Barre' }, { k:'cigale',  n:'Cigale' },
+  { k:'croix',   n:'Croix' },    { k:'main',    n:'Main' },
+  { k:'roue',    n:'Roue' },     { k:'mistral', n:'Mistral' },
+  { k:'jarre',   n:'Jarre' },    { k:'pin',     n:'Pin' }
+];
+
+/* le dessin d'un signe, dans un carré de 24 */
+function signe(k, c){
+  const S = {
+    ancre:   '<path d="M12 6v13M7 11h10M12 19c-4 0-6-3-6-5M12 19c4 0 6-3 6-5" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="12" cy="5" r="2.4" fill="none" stroke="'+c+'" stroke-width="2"/>',
+    poisson: '<path d="M4 12c3-4 8-5 11-3 2 1 3 2 4 3-1 1-2 2-4 3-3 2-8 1-11-3z" fill="'+c+'"/><path d="M19 12l3-3v6z" fill="'+c+'"/><circle cx="8" cy="11" r="1" fill="#fff"/>',
+    vague:   '<path d="M3 10q3-3 6 0t6 0 6 0M3 15q3-3 6 0t6 0 6 0" stroke="'+c+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+    olive:   '<path d="M12 20V8M12 8c0-3 3-5 6-4 0 3-3 5-6 4zM12 12c0-3-3-5-6-4 0 3 3 5 6 4z" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    noeud:   '<path d="M8 8a4 4 0 1 0 8 8M16 8a4 4 0 1 1-8 8" stroke="'+c+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+    etoile:  '<path d="M12 3l2.6 6.5L21 10l-5 4.2 1.6 6.8L12 17.4 6.4 21 8 14.2 3 10l6.4-.5z" fill="'+c+'"/>',
+    soleil:  '<circle cx="12" cy="12" r="4.6" fill="'+c+'"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    barque:  '<path d="M3 15q3 2 6 0t6 0 6 0M5 12h14l-2-4H7z" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M12 8V3" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    phare:   '<path d="M9 21h6l-1-11h-4zM10 10V6h4v4M12 6V3" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M5 6l3 1M19 6l-3 1" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round"/>',
+    cle:     '<circle cx="8" cy="8" r="4" fill="none" stroke="'+c+'" stroke-width="2"/><path d="M11 11l8 8M16 16l2 2M14 18l2 2" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>',
+    balance: '<path d="M12 4v16M6 20h12M4 8h16M4 8l-2 5a3 3 0 0 0 4 0zM20 8l2 5a3 3 0 0 1-4 0z" stroke="'+c+'" stroke-width="1.8" fill="none" stroke-linejoin="round"/>',
+    compas:  '<path d="M12 4v5M9 21l3-12 3 12" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/><circle cx="12" cy="4" r="1.8" fill="'+c+'"/>',
+    gouvernail:'<circle cx="12" cy="12" r="6" fill="none" stroke="'+c+'" stroke-width="2"/><circle cx="12" cy="12" r="2" fill="'+c+'"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round"/>',
+    cigale:  '<ellipse cx="12" cy="14" rx="3" ry="6" fill="'+c+'"/><path d="M11 9C7 6 3 8 4 12c1 3 5 3 7 1M13 9c4-3 8-1 7 3-1 3-5 3-7 1" fill="'+c+'" opacity=".55"/><circle cx="12" cy="7" r="2" fill="'+c+'"/>',
+    croix:   '<path d="M12 3v18M3 12h18" stroke="'+c+'" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="'+c+'" stroke-width="1.6"/>',
+    main:    '<path d="M9 20v-7M9 13V6a1.5 1.5 0 0 1 3 0v6M12 12V5a1.5 1.5 0 0 1 3 0v7M15 12V7a1.5 1.5 0 0 1 3 0v8c0 3-2 5-5 5H9l-3-4 2-1" stroke="'+c+'" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+    roue:    '<circle cx="12" cy="12" r="8" fill="none" stroke="'+c+'" stroke-width="2"/><circle cx="12" cy="12" r="2.4" fill="'+c+'"/><path d="M12 4v4M12 16v4M4 12h4M16 12h4" stroke="'+c+'" stroke-width="1.8"/>',
+    mistral: '<path d="M3 8h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 18h9" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    jarre:   '<path d="M9 4h6M10 4c0 2-4 3-4 8 0 5 2 8 6 8s6-3 6-8c0-5-4-6-4-8" stroke="'+c+'" stroke-width="1.9" fill="none" stroke-linejoin="round"/><path d="M6 13h12" stroke="'+c+'" stroke-width="1.5"/>',
+    pin:     '<path d="M12 21v-4M12 3l5 7h-3l4 6H6l4-6H7z" stroke="'+c+'" stroke-width="1.9" fill="none" stroke-linejoin="round"/>'
+  }[k] || '';
+  return '<svg viewBox="0 0 24 24">' + S + '</svg>';
+}
+
+const MET_A = { savon:'Savonnier', poisson:'Sécheur', cordage:'Cordier', huile:'Huilier' };
+const BARQ_A = ['—','La coque nue','Le pontet','La barquette','Le canot','La chaloupe',
+  'Le pointu','Le bateau-bœuf','Le mourre de pouar','La tartane','Le gourse',
+  'La barquette longue','Le lligot','Le llaüt','La bombarde','Le tartanon',
+  'La bette','Le bisquine','La galiote','Le brigantin','Le trois-mâts'];
+let AUTRES = [], POS_A = [];
+
+/* leurs barques, dessinées dans la scène */
+function barquesDesAutres(depart, ecart){
+  let s = '';
+  POS_A = [];
+  AUTRES.slice(0, 5).forEach((j, i) => {
+    const c = COULEURS.find(x => x.k === j.couleur) || COULEURS[0];
+    const d = depart + i * ecart;
+    /* elles s'écartent de plus en plus à mesure qu'elles s'éloignent */
+    const X = (i % 2 ? 1 : -1) * (4.2 + Math.floor(i / 2) * 3.4) * (d / depart);
+    const y = sol(d), m = u => px(u, d), x = pX(X, d);
+    const n = Math.max(1, Math.min(20, j.barque || 1));
+    const k = m(2.3 + n * .09) / (76 + n * 5.6);
+    s += `<g class="amarre a${i % 4}">`;
+    s += `<ellipse cx="${x.toFixed(1)}" cy="${(y + m(.1)).toFixed(1)}"
+      rx="${m(2).toFixed(1)}" ry="${m(.2).toFixed(1)}" fill="#12324a" opacity=".22"/>`;
+    s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${k.toFixed(4)})">`
+      + `<g transform="translate(-150,-122)">` + barqueQ(n, false) + `</g></g>`;
+    /* son pavillon */
+    s += `<path d="M${(x + m(1.9)).toFixed(1)} ${y.toFixed(1)} v${(-m(1.6)).toFixed(1)}"
+      stroke="#5a4a38" stroke-width="${Math.max(.5, m(.08)).toFixed(1)}"/>`;
+    s += `<path d="M${(x + m(1.9)).toFixed(1)} ${(y - m(1.6)).toFixed(1)}
+      l${m(.66).toFixed(1)} ${m(.2).toFixed(1)} l${(-m(.66)).toFixed(1)} ${m(.2).toFixed(1)} z"
+      fill="${c.c}"/>`;
+    s += `</g>`;
+    POS_A.push({ j, x, y: y - m(2.4) });
+  });
+  return s;
+}
+
+/* les étiquettes, posées au-dessus */
+function etiquettes(v){
+  const el = document.getElementById('sc');
+  if (!el || !POS_A.length){
+    const e2 = document.getElementById('eti');
+    if (e2) e2.innerHTML = '';
+    return;
+  }
+  const L = el.clientWidth, H = el.clientHeight;
+  const ech = Math.max(L / W, H / v.h);
+  const dx = (L - W * ech) / 2, dy = (H - v.h * ech) / 2;
+  /* on écarte celles qui se marchent dessus */
+  const prises = [];
+  document.getElementById('eti').innerHTML = POS_A.map((p, i) => {
+    const c = COULEURS.find(x => x.k === p.j.couleur) || COULEURS[0];
+    const f = (ECUSSONS.find(x => x.k === p.j.ecusson) || ECUSSONS[0]).r;
+    const X = dx + p.x * ech;
+    let Y = dy + (p.y - v.y) * ech;
+    if (X < 20 || X > L - 20 || Y < 96 || Y > H - 110) return '';
+    /* si une étiquette est déjà là, on monte au-dessus */
+    let n2 = 0;
+    while (prises.some(q => Math.abs(q.X - X) < 96 && Math.abs(q.Y - Y) < 30) && n2 < 4){
+      Y -= 32; n2++;
+    }
+    prises.push({ X, Y });
+    return '<button class="eti' + (p.j.charge ? ' charge' : '') + '" data-a="' + i + '"'
+      + ' style="left:' + X.toFixed(0) + 'px;top:' + Y.toFixed(0) + 'px">'
+      + '<span class="em" style="background:' + c.c + ';border-radius:' + f + '">'
+      + (p.j.signe ? signe(p.j.signe, '#fff') : '') + '</span>'
+      + '<b>' + p.j.pseudo + '</b><i></i></button>';
+  }).join('');
+  document.querySelectorAll('[data-a]').forEach(b =>
+    b.onclick = () => ficheAutre(+b.dataset.a));
+}
+
+function ficheAutre(i){
+  const j = POS_A[i].j;
+  const c = COULEURS.find(x => x.k === j.couleur) || COULEURS[0];
+  const f = (ECUSSONS.find(x => x.k === j.ecusson) || ECUSSONS[0]).r;
+  const h = +j.depuis_h || 0;
+  document.getElementById('fi').innerHTML =
+    '<div class="h"><span class="em" style="background:' + c.c
+    + ';border-radius:' + f + '">' + (j.signe ? signe(j.signe, '#fff') : '') + '</span>'
+    + '<span class="tx"><b>' + j.pseudo + '</b>'
+    + '<span>' + (j.nom ? j.nom + ' — ' + (MET_A[j.metier] || '') : 'Sans affaire')
+    + '</span></span><button class="fer" id="fi-x">×</button></div>'
+    + '<ul>'
+    + '<li><span>Niveau</span><b>' + (j.niveau || 1) + '</b></li>'
+    + '<li><span>Sa barque</span><b>' + (BARQ_A[j.barque] || '—') + '</b></li>'
+    + '<li><span>Au port depuis</span><b>'
+    + (h < 1 ? "moins d'une heure" : h + ' h') + '</b></li>'
+    + '<li><span>Sa cale</span><b style="color:' + (j.charge ? '#f0c46a' : '#8ce0a8')
+    + '">' + (j.charge ? 'chargée' : 'vide') + '</b></li></ul>';
+  document.getElementById('fi').classList.add('on');
+  document.getElementById('fi-x').onclick = () =>
+    document.getElementById('fi').classList.remove('on');
+}
+
+async function chercherLesAutres(){
+  try {
+    const r = await BD.agir('qui_est_la');
+    AUTRES = Array.isArray(r) ? r : [];
+  } catch(e){ AUTRES = []; }
+  return AUTRES.length;
+}
 
 let MOI = null;
 let chargesCt = false;
@@ -980,6 +1176,8 @@ const LIEUX = [
   MOI = { barque: d.barque || 1,
     couleur: ((COULEURS.find(c => c.k === ((d.affaire||{}).couleur)) || {}).c) };
   decor();
+  /* qui d'autre est au port en ce moment ? */
+  chercherLesAutres().then(n => { if (n) decor(); });
   /* où en es-tu avec cette maison ? */
   const aLettre = (d.sacoche || []).some(o => o.k === 'lettre');
   const Q = d.quetes || [];
