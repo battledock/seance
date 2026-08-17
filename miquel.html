@@ -163,7 +163,7 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
   <span class="ic"><svg viewBox="0 0 24 24">
     <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
   </svg></span>
-  <h1>Un instant</h1>
+  <h1 id="a-t">Un instant</h1>
   <p>Ce que tu vas dire <b>compte vraiment</b>. Il n'y a pas de bonne réponse,
      mais chacune mène ailleurs — et ce que tu gagnes en dépend.</p>
   <p class="petit">Tes compétences ouvrent des réponses que les autres n'ont pas.
@@ -1143,6 +1143,75 @@ const SCENE = {
 };
 
 
+/* ============================================================
+   LES RETROUVAILLES — il se souvient de comment tu t'y es pris
+   ============================================================ */
+const REVOIR = {
+  /* tu as pris les cinquante sans discuter */
+  cinquante: {
+    dit: ["Il est au même endroit, adossé au même mur.",
+        "Il te voit arriver de loin et il ne bouge pas.",
+        "« Tiens. »",
+        "Un temps.",
+        "« Je me disais bien que tu reviendrais. Ceux qui prennent ce qu'on leur "
+        + "donne, ils reviennent toujours. »",
+        "Ce n'est pas un compliment. Ce n'est pas une insulte non plus."] },
+  /* tu lui as vendu ton silence */
+  septante: {
+    dit: ["Il te voit et il se redresse. C'est déjà quelque chose.",
+        "« Ah. »",
+        "« Tu n'as jamais vu ma tête, c'est ça ? »",
+        "Il rit tout seul de sa blague.",
+        "« Moi non plus je n'ai jamais vu la tienne. Ça nous fait un point commun. »"] },
+  /* tu l'as pressé jusqu'à quatre-vingts */
+  quatre_vingts: {
+    dit: ["Il te voit. Son visage se ferme d'un cran.",
+        "« Le type à cent. »",
+        "Il écrase sa cigarette contre le mur, un peu trop fort.",
+        "« Quatre-vingts. Tu m'as pris quatre-vingts pour porter une caisse "
+        + "sur trois cents mètres. »",
+        "Un temps.",
+        "« Remarque, j'aurais fait pareil. »"] }
+};
+
+/* ce qu'il propose ensuite, quel que soit le passé */
+const OFFRE = {
+  dit: ["Il regarde la rue dans les deux sens avant de continuer.",
+      "« J'ai du travail régulier. Pas des caisses sans marque — du vrai. "
+      + "Du vin, de la laine, du safran si tu as la cale pour. »",
+      "« Tu charges ici, tu vends à Marseille. Tu reviens, tu recharges. »",
+      "Il te regarde enfin.",
+      "« Mais il y a une chose. »",
+      "« Si un type te demande si tu t'appelles Ramírez, tu dis non. "
+      + "Tu dis non et tu viens me voir. »"],
+  lire: { instinct: 2,
+    texte: "Il n'a pas dit « si quelqu'un demande ». Il a dit « un type ». "
+         + "Il sait de qui il parle." },
+  choix: [
+    { k:'accepte', t:"« Ça marche. »",
+      s:"Prendre le travail et ne pas creuser." },
+    { k:'prix', t:"« Et le Ramírez, il vaut combien pour toi ? »",
+      s:"Il y a de l'inquiétude là-dedans. Ça se monnaie.",
+      besoin:{negociation:2} },
+    { k:'nom', t:"Lui dire ton vrai nom.",
+      s:"Depuis le début il ne le connaît pas.",
+      besoin:{discussion:2} } ]
+};
+
+const APRES_OFFRE = {
+  accepte: ["Il hoche la tête.",
+    "« Bien. Reviens demain matin, il y aura de quoi charger. »"],
+  prix: ["Il te regarde longuement.",
+    "« Quarante. Et tu oublies que je t'ai demandé ça. »",
+    "Il te met les pièces dans la main sans les compter.",
+    "« Enfin, tu n'oublies pas. Mais tu fais comme si. »"],
+  nom: ["Tu lui dis ton nom.",
+    "Il le répète une fois, à voix basse, comme on range quelque chose.",
+    "« Bon. »",
+    "Il te tend la main. C'est la première fois.",
+    "« Moi c'est Miquel. Mais ça, tu le savais. »"]
+};
+
 const NOMS = { instinct:'Instinct', sang_froid:'Sang-froid', discussion:'Discussion',
                negociation:'Négociation', chance:'Chance' };
 let MOI = { instinct:0, sang_froid:0, discussion:0, negociation:0, chance:0 };
@@ -1239,11 +1308,115 @@ async function terminer(){
   setTimeout(() => F.classList.add('on'), 500);
 }
 
+/* ---------- les retrouvailles ---------- */
+let PREM = null;
+
+function jouerRevoir(){
+  const R = REVOIR[PREM] || REVOIR.cinquante;
+  const L = document.getElementById('lignes'), C = document.getElementById('choix');
+  L.innerHTML = ''; C.innerHTML = '';
+  R.dit.forEach((t, i) => {
+    const p = document.createElement('p');
+    if (t.trim().startsWith('«')) p.className = 'parle';
+    p.textContent = t;
+    p.style.animationDelay = (i * .5) + 's';
+    L.appendChild(p);
+  });
+  document.querySelector('.dit').scrollTop = 0;
+  C.style.animationDelay = (R.dit.length * .5 + .3) + 's';
+  C.innerHTML = '<button id="suite2"><b>Écouter la suite</b></button>';
+  document.getElementById('suite2').onclick = jouerOffre;
+}
+
+function jouerOffre(){
+  const E = OFFRE;
+  const L = document.getElementById('lignes'), C = document.getElementById('choix');
+  L.innerHTML = ''; C.innerHTML = '';
+  E.dit.forEach((t, i) => {
+    const p = document.createElement('p');
+    if (t.trim().startsWith('«')) p.className = 'parle';
+    p.textContent = t;
+    p.style.animationDelay = (i * .5) + 's';
+    L.appendChild(p);
+  });
+  let n = E.dit.length;
+  const [q, v] = Object.entries(E.lire)[0];
+  if (q !== 'texte' && assez({ [q]: v })){
+    const p = document.createElement('p');
+    p.className = 'souffle';
+    p.innerHTML = '<em>Ton instinct</em>' + E.lire.texte;
+    p.style.animationDelay = (n * .5) + 's';
+    L.appendChild(p); n++;
+  }
+  document.querySelector('.dit').scrollTop = 0;
+  C.style.animationDelay = (n * .5 + .3) + 's';
+  C.innerHTML = E.choix.map(c => {
+    const ok = assez(c.besoin);
+    let h = '<button data-v="' + c.k + '" class="' + (ok ? '' : 'ferme') + '">'
+      + '<b>' + c.t + '</b><span class="s">' + c.s + '</span>';
+    if (c.besoin){
+      const [k2, v2] = Object.entries(c.besoin)[0];
+      h += '<span class="cle">' + NOMS[k2] + ' ' + v2
+        + (ok ? '' : ' — tu as ' + (MOI[k2] || 0)) + '</span>';
+    }
+    return h + '</button>';
+  }).join('');
+  C.querySelectorAll('[data-v]').forEach(b => {
+    if (b.classList.contains('ferme')) return;
+    b.onclick = () => conclureRevoir(b.dataset.v);
+  });
+}
+
+async function conclureRevoir(quoi){
+  const C = document.getElementById('choix');
+  C.innerHTML = '<button disabled style="opacity:.5">…</button>';
+  const r = await BD.agir('revoir_miquel', { p_issue: quoi });
+  const L = APRES_OFFRE[quoi] || [];
+  const Li = document.getElementById('lignes');
+  Li.innerHTML = '';
+  L.forEach((t, i) => {
+    const p = document.createElement('p');
+    if (t.trim().startsWith('«')) p.className = 'parle';
+    p.textContent = t;
+    p.style.animationDelay = (i * .5) + 's';
+    Li.appendChild(p);
+  });
+  document.querySelector('.dit').scrollTop = 0;
+  C.style.animationDelay = (L.length * .5 + .4) + 's';
+  C.innerHTML = '<button id="fin2"><b>Continuer</b></button>';
+  document.getElementById('fin2').onclick = () => {
+    monteNiveau = !!(r.niveau && r.niveau.monte);
+    document.getElementById('f-t').textContent = 'Tu charges ici, maintenant';
+    document.getElementById('f-g').textContent = 'Les contrats de Barcelone';
+    document.getElementById('f-g').style.fontSize = '24px';
+    document.getElementById('f-p').textContent =
+      "Du vin, de la laine, du safran. Tu ne rentreras plus à vide.";
+    const P = [];
+    if (r.ok && r.euros) P.push('+' + r.euros + ' €');
+    if (r.ok && r.xp) P.push('+' + r.xp + " points d'expérience");
+    if (monteNiveau) P.push('Tu changes de niveau');
+    document.getElementById('f-plus').innerHTML =
+      P.map(t => '<span>' + t + '</span>').join('');
+    document.getElementById('f-b').textContent =
+      monteNiveau ? 'Voir ton niveau' : 'Retourner dans la rue';
+    document.getElementById('fin').classList.add('on');
+  };
+}
+
 document.getElementById('a-ok').onclick = () => {
   document.getElementById('avert').classList.add('parti');
   document.getElementById('qui').classList.add('on');
-  setTimeout(() => jouer('debut'), 300);
+  setTimeout(() => (PREM ? jouerRevoir() : jouer('debut')), 300);
 };
+function majAvertissement(){
+  if (!PREM) return;
+  document.getElementById('a-t').textContent = 'Il te reconnaît';
+  const p = document.querySelectorAll('.avert p');
+  if (p[0]) p[0].innerHTML = "Il se souvient de toi, et de <b>comment tu t'y es pris</b> "
+    + "la première fois.";
+  if (p[1]) p[1].textContent = "Ce que tu diras aujourd'hui pèsera autant.";
+  document.getElementById('quoi').textContent = 'Il te connaît, maintenant';
+}
 document.getElementById('f-b').onclick = () => location.href =
   (monteNiveau ? 'niveau.html' : 'rue.html');
 
@@ -1255,8 +1428,11 @@ document.getElementById('f-b').onclick = () => location.href =
     if (!d){ location.href = 'index.html'; return; }
   } catch(e){ return; }
   if (d.port !== 'barcelone' || d.parti_le){ location.href = 'jeu.html'; return; }
-  /* déjà vécue : on ne la rejoue pas */
-  if ((d.rencontres || []).includes('miquel')){ location.href = 'rue.html'; return; }
+  /* si on l'a déjà vu, ce sont les retrouvailles */
+  const dejaVu = (d.rencontres || []).includes('miquel');
+  const dejaOffre = (d.quetes || []).some(q => q.k === 'miquel_2');
+  if (dejaVu && dejaOffre){ location.href = 'rue.html'; return; }
+  if (dejaVu){ PREM = d.miquel_issue || 'cinquante'; majAvertissement(); }
 
   const c = d.competences || {};
   MOI = { instinct: +d.instinct || 0, sang_froid: +d.sang_froid || 0,
