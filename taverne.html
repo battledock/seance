@@ -62,6 +62,38 @@ html,body{height:100%;overflow:hidden;background:#150e09;
 .ard .li .mo em{display:block;font-style:normal;font-size:9.5px;
   color:rgba(246,228,200,.34);margin-top:3px}
 
+.choix{display:flex;flex-direction:column;gap:10px;margin-top:22px;
+  opacity:0;animation:venir .6s forwards}
+.choix button{width:100%;text-align:left;padding:16px 17px;
+  border:1.5px solid rgba(246,228,200,.2);border-radius:11px;
+  background:rgba(38,26,17,.72);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;
+  font-family:'Courier Prime',monospace;transition:all .16s}
+.choix button:active{transform:scale(.987)}
+.choix button b{display:block;font-size:15.5px;color:#f6e8d0;font-weight:700;line-height:1.4}
+.choix button .s{display:block;font-size:12px;color:rgba(246,228,200,.5);margin-top:6px;
+  font-family:system-ui,sans-serif;line-height:1.5}
+.choix button .cle{display:inline-block;margin-top:9px;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;padding:4px 10px;border-radius:12px;
+  background:rgba(140,224,168,.16);color:#8ce0a8}
+.choix button.ferme{opacity:.44;cursor:default;border-style:dashed}
+.choix button.ferme .cle{background:rgba(224,138,106,.16);color:#e0a878}
+
+/* le port qui s'ouvre */
+.port{margin-top:22px;padding:20px;border-radius:12px;
+  border:1.5px solid rgba(240,196,106,.4);background:rgba(52,38,20,.7);
+  opacity:0;animation:venir .7s forwards;text-align:center}
+.port .su{font-size:8.5px;letter-spacing:.28em;text-transform:uppercase;color:#f0c46a}
+.port b{display:block;font-size:26px;font-weight:700;color:#f6e8d0;margin-top:10px}
+.port .q{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(246,228,200,.44);margin-top:6px}
+.port .d{display:flex;justify-content:center;gap:22px;margin-top:16px}
+.port .d span{font-size:11.5px;color:rgba(246,228,200,.62);font-family:system-ui,sans-serif}
+.port .d span b{display:block;font-size:16px;color:#f0c46a;margin-top:3px}
+.port button{width:100%;margin-top:18px;padding:15px;border:0;border-radius:9px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:13.5px;font-weight:700;letter-spacing:.06em}
+
 .mot{font-size:11.5px;color:rgba(246,228,200,.44);line-height:1.7;
   margin:20px 4px 4px;font-family:system-ui,sans-serif;font-style:italic;text-align:center}
 
@@ -351,6 +383,89 @@ function poserFerme(r){
     + '<p class="sous">Niveau ' + es + ' — il en faut ' + faut + '.</p></div>';
 }
 
+/* ---------- ce qu'elle te demande ---------- */
+const ARDIT = {
+  dit:["Elle repose son verre. Elle ne l'a pas fini d'essuyer.",
+     "« Ardit Bonaventura. Marchand de tissu. Il me doit six mois. »",
+     "« Il a fermé sa boutique du jour au lendemain. Sa femme dit qu'il est parti "
+     + "chez son frère. Son frère habite Majorque. »",
+     "Elle glisse une lettre cachetée sur le comptoir.",
+     "« Tu la lui donnes. Tu ne l'ouvres pas. Et tu me dis ce qu'il répond. »"],
+  choix:[
+    { k:'accepte', t:"Prendre la lettre", s:"Ne pas poser de questions.",
+      dv:'+14 avec Núria' },
+    { k:'negocie', t:"« Et moi, j'y gagne quoi ? »",
+      s:"Six jours de mer, ça se paie.", besoin:{negociation:2}, dv:'+8 avec Núria' },
+    { k:'demande', t:"« Qu'est-ce qu'il t'a fait, exactement ? »",
+      s:"Savoir dans quoi tu mets les pieds.", besoin:{discussion:2},
+      dv:'+18 avec Núria' } ]
+};
+const APRES_ARDIT = {
+  accepte: ["Elle hoche la tête, une fois.",
+    "« Bien. » Elle reprend son verre et son torchon."],
+  negocie: ["« Ce que tu y gagnes ? »",
+    "Elle sourit sans chaleur. « Tu y gagnes que je te connaisse. "
+    + "À Barcelone, ça vaut plus que de l'argent. »",
+    "Un temps.",
+    "« Et cinquante écus si tu reviens avec sa réponse. »"],
+  demande: ["Elle réfléchit un moment. Elle décide de te le dire.",
+    "« Il ne m'a rien fait de mal. C'est ça, le pire. »",
+    "« Il venait tous les soirs pendant deux ans. On parlait. Et puis un jour "
+    + "il a emprunté, et un jour il n'est plus venu. »",
+    "Elle regarde la porte.",
+    "« Je veux savoir s'il avait honte, ou s'il s'en fout. »"]
+};
+
+let MOI = { negociation:0, discussion:0 };
+
+function poserArdit(){
+  const W2 = document.getElementById('w');
+  const assez = b => !b || Object.entries(b).every(([k,v]) => (MOI[k]||0) >= v);
+  let s = '<div class="dit">' + ARDIT.dit.map((t,i) =>
+    '<p class="' + (t.trim().startsWith('«') ? 'parle' : '') + '" '
+    + 'style="animation-delay:' + (i*.5+.1).toFixed(2) + 's">' + t + '</p>').join('') + '</div>';
+  s += '<div class="choix" style="animation-delay:' + (ARDIT.dit.length*.5+.4).toFixed(2) + 's">'
+    + ARDIT.choix.map(c => {
+      const ok = assez(c.besoin);
+      let h = '<button data-a="' + c.k + '" class="' + (ok ? '' : 'ferme') + '">'
+        + '<b>' + c.t + '</b><span class="s">' + c.s + '</span>';
+      if (c.besoin){
+        const [q,v] = Object.entries(c.besoin)[0];
+        const N = { negociation:'Négociation', discussion:'Discussion' }[q];
+        h += '<span class="cle">' + N + ' ' + v + (ok ? '' : ' — tu as ' + (MOI[q]||0)) + '</span>';
+      }
+      return h + '</button>';
+    }).join('') + '</div>';
+  W2.innerHTML = s;
+  W2.querySelectorAll('[data-a]').forEach(b => {
+    if (b.classList.contains('ferme')) return;
+    b.onclick = () => conclure(b.dataset.a);
+  });
+}
+
+async function conclure(issue){
+  const W2 = document.getElementById('w');
+  W2.querySelector('.choix').innerHTML =
+    '<button disabled style="opacity:.5">…</button>';
+  const r = await BD.agir('prendre_ardit', { p_issue: issue });
+  const L = APRES_ARDIT[issue] || [];
+  let s = '<div class="dit">' + L.map((t,i) =>
+    '<p class="' + (t.trim().startsWith('«') ? 'parle' : '') + '" '
+    + 'style="animation-delay:' + (i*.5+.1).toFixed(2) + 's">' + t + '</p>').join('') + '</div>';
+  if (r.ok){
+    const P = r.port;
+    s += '<div class="port" style="animation-delay:' + (L.length*.5+.5).toFixed(2) + 's">'
+      + '<p class="su">Un cap de plus</p><b>' + P.nom + '</b>'
+      + '<span class="q">' + P.quoi + '</span>'
+      + '<div class="d"><span>Traversée<b>' + P.jours + ' jours</b></span>'
+      + '<span>Il te faudra<b>' + P.energie + ' d\'énergie</b></span></div>'
+      + '<button id="ok">Aller voir ta barque</button></div>';
+  }
+  W2.innerHTML = s;
+  const b = document.getElementById('ok');
+  if (b) b.onclick = () => location.href = 'barcelone.html';
+}
+
 function poser(r){
   const C = r.cours || [];
   let s = '<div class="dit">'
@@ -374,12 +489,21 @@ function poser(r){
           + (c.precis && note ? '<em>' + note + '</em>' : '') + '</span></div>';
       }).join('') + '</div>';
 
+  /* si la quête n'est pas prise, elle a quelque chose à te demander */
+  if (!r.ardit_prise)
+    s += '<div class="choix" style="animation-delay:2.6s">'
+      + '<button id="parler"><b>« Tu as l\'air d\'avoir quelque chose à dire. »</b>'
+      + '<span class="s">Elle t\'a regardé deux fois depuis que tu es entré.</span>'
+      + '</button></div>';
+
   s += '<p class="mot">'
     + (r.lien >= 30
        ? 'Elle t\'en dit plus qu\'aux autres. Ça se mérite, et ça se garde.'
        : 'Elle te jauge encore. Reviens souvent, elle finira par en dire davantage.')
     + '</p>';
   document.getElementById('w').innerHTML = s;
+  const p = document.getElementById('parler');
+  if (p) p.onclick = poserArdit;
 }
 
 document.getElementById('ret').onclick = () => location.href = 'rue.html';
@@ -392,8 +516,14 @@ document.getElementById('ret').onclick = () => location.href = 'rue.html';
   } catch(e){ return; }
   if (d.parti_le || d.port !== 'barcelone'){ location.href = 'jeu.html'; return; }
 
+  const c = d.competences || {};
+  MOI = { negociation: +c.negociation || 0, discussion: +c.discussion || 0 };
   const r = await BD.agir('la_taverne');
-  if (r.ok) poser(r);
+  if (r.ok){
+    const Q = await BD.agir('mes_quetes');
+    r.ardit_prise = Array.isArray(Q) && Q.some(q => q.k === 'ardit');
+    poser(r);
+  }
   else if (r.pourquoi === 'trop_tot') poserFerme(r);
   else location.href = 'rue.html';
 })();
