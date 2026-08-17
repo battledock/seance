@@ -1198,7 +1198,7 @@ const ICO = {
 };
 const LIEUX = [
   { k:'marche',   n:'Le marché',   ouvert:false },
-  { k:'taverne',  n:'La taverne',  ouvert:false },
+  { k:'taverne',  n:'La taverne',  ouvert:true },
   { k:'docks',    n:'Les docks',   ouvert:false },
   { k:'entrepot', n:"L'entrepôt",  ouvert:false },
   { k:'bateau',   n:'Ta barque',   ouvert:true }
@@ -1234,6 +1234,8 @@ document.getElementById('q-fer').onclick = () => ouvrirBarque(false);
 addEventListener('keydown', e => { if (e.key === 'Escape') ouvrirBarque(false); });
 document.querySelectorAll('[data-k="bateau"]').forEach(b =>
   b.onclick = () => ouvrirBarque(true));
+document.querySelectorAll('[data-k="taverne"]').forEach(b =>
+  b.onclick = () => location.href = 'taverne.html');
 
 document.getElementById('ret').onclick = () => location.href = 'barcelone.html';
 
