@@ -1394,6 +1394,53 @@ document.querySelectorAll('[data-k="bateau"]').forEach(b =>
 document.querySelectorAll('[data-k="taverne"]').forEach(b =>
   b.onclick = () => location.href = 'taverne.html');
 
+/* ---------- il traverse la rue et vient te parler ---------- */
+function aborder(){
+  const svg = document.querySelector('#rue svg');
+  const g = svg && svg.querySelector('.pnj');
+  if (!g){ location.href = 'miquel.html'; return; }
+
+  /* on l'enveloppe : l'animation « il attend » reste sur lui,
+     et c'est l'enveloppe qui le déplace */
+  const env = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.parentNode.insertBefore(env, g);
+  env.appendChild(g);
+  svg.appendChild(env);          /* devant tout le reste */
+  g.classList.remove('pnj');     /* il ne trépigne plus, il marche */
+  const sg = g.querySelector('.signe');
+  if (sg) sg.remove();           /* plus besoin du point d'exclamation */
+
+  env.style.transition = 'transform 2.4s cubic-bezier(.34,.5,.5,1)';
+  requestAnimationFrame(() => {
+    /* il va vers le centre, il descend, il grandit : il vient sur nous */
+    env.setAttribute('transform',
+      'translate(404 400) scale(3.4) translate(-404 -400) translate(-46 34)');
+  });
+
+  /* la rue s'assombrit derrière lui, sans le flouter */
+  const nuit = document.createElement('div');
+  nuit.style.cssText = 'position:fixed;inset:0;z-index:2;background:#060c16;'
+    + 'opacity:0;transition:opacity 1.8s .5s;pointer-events:none';
+  document.body.appendChild(nuit);
+  requestAnimationFrame(() => nuit.style.opacity = '.5');
+
+  /* la barre du bas s'efface : ce n'est plus le moment */
+  const bas = document.querySelector('.bas');
+  if (bas){ bas.style.transition = 'opacity .7s'; bas.style.opacity = '0'; }
+
+  /* la ligne qui dit ce qui se passe */
+  const m = document.createElement('p');
+  m.textContent = "Il te voit. Il s'écarte du mur et vient vers toi.";
+  m.style.cssText = 'position:fixed;left:24px;right:24px;bottom:16%;z-index:12;'
+    + 'text-align:center;font-size:15.5px;line-height:1.6;color:#fff;'
+    + 'font-family:system-ui,sans-serif;text-shadow:0 2px 18px rgba(4,10,20,.95);'
+    + 'opacity:0;transition:opacity 1s .9s';
+  document.body.appendChild(m);
+  requestAnimationFrame(() => m.style.opacity = '1');
+
+  setTimeout(() => location.href = 'miquel.html', 2900);
+}
+
 document.getElementById('ret').onclick = () => location.href = 'barcelone.html';
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
 
@@ -1450,10 +1497,15 @@ function poserMiquel(vecue){
     + barqueQ(n, false) + '</svg>');
 
   /* le signe au-dessus de sa tête disparaît une fois la scène vécue */
-  poserMiquel((d.rencontres || []).includes('miquel'));
   MOI = d;
-  /* le chargement n'est ouvert que si Miquel te connaît */
+  const vu = (d.rencontres || []).includes('miquel');
   const connu = (d.quetes || []).some(q => q.k === 'miquel_2');
+
+  /* il te connaît et il a du travail : il vient vers toi */
+  if (vu && !connu){ aborder(); return; }
+
+  poserMiquel(vu);
+  /* le chargement n'est ouvert que si Miquel te connaît */
   const bd2 = document.querySelector('[data-k="docks"]');
   if (bd2){
     bd2.disabled = !connu;
