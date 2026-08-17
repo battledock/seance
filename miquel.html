@@ -1432,7 +1432,14 @@ document.getElementById('f-b').onclick = () => location.href =
   const dejaVu = (d.rencontres || []).includes('miquel');
   const dejaOffre = (d.quetes || []).some(q => q.k === 'miquel_2');
   if (dejaVu && dejaOffre){ location.href = 'rue.html'; return; }
-  if (dejaVu){ PREM = d.miquel_issue || 'cinquante'; majAvertissement(); }
+  if (dejaVu){
+    PREM = d.miquel_issue || 'cinquante';
+    /* il est venu à toi : on enchaîne sans écran d'avertissement */
+    document.getElementById('avert').classList.add('parti');
+    document.getElementById('qui').classList.add('on');
+    document.getElementById('quoi').textContent = 'Il te connaît, maintenant';
+    setTimeout(jouerRevoir, 200);
+  }
 
   const c = d.competences || {};
   MOI = { instinct: +d.instinct || 0, sang_froid: +d.sang_froid || 0,
