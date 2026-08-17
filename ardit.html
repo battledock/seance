@@ -169,7 +169,7 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
   <span class="ic"><svg viewBox="0 0 24 24">
     <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
   </svg></span>
-  <h1>La ruelle</h1>
+  <h1 id="a-t">La ruelle</h1>
   <p>Tu portes une lettre qui ne t'appartient pas. <b>Ce que tu obtiendras
      dépend de ce que tu dis.</b></p>
   <p class="petit">Núria n'a pas demandé l'argent. Elle a demandé une réponse.</p>
@@ -461,7 +461,7 @@ const FINS_A = {
    La fenêtre est à gauche : tout ce qui la regarde est éclairé,
    le reste tombe dans la pénombre.
    ============================================================ */
-function chambre(){
+function chambre(vide){
   const F2 = 727, OEIL2 = 1.5, HZ2 = 240;
   const px2 = (m,d) => m*F2/d, sol2 = d => HZ2 + OEIL2*F2/d, pX2 = (X,d) => 240 + X*F2/d;
   const NUIT = '#241a14', JOUR = '#f4e2b8';
@@ -617,7 +617,21 @@ function chambre(){
   s += `<path d="M${(xl-ml(1.86)).toFixed(1)} ${(yl-ml(.92)).toFixed(1)}
     h${ml(3.72).toFixed(1)} v${(-ml(.42)).toFixed(1)} h${(-ml(3.72)).toFixed(1)} z"
     fill="${modele('#cbbb9a', xl, .3)}"/>`;
-  /* la couverture, avec le corps dessous */
+  /* la couverture : bosselée s'il est là, tirée au carré s'il n'y est plus */
+  if (vide){
+    s += `<path d="M${(xl-ml(1.86)).toFixed(1)} ${(yl-ml(1.4)).toFixed(1)}
+      h${ml(3.72).toFixed(1)} v${ml(.48).toFixed(1)} h${(-ml(3.72)).toFixed(1)} z"
+      fill="${modele('#8a7a64', xl, .26)}"/>`;
+    /* le drap replié au bord, bien net */
+    s += `<path d="M${(xl-ml(1.86)).toFixed(1)} ${(yl-ml(1.4)).toFixed(1)}
+      h${ml(3.72).toFixed(1)} v${ml(.14).toFixed(1)} h${(-ml(3.72)).toFixed(1)} z"
+      fill="${jour('#ded2ba',.24)}"/>`;
+    /* l'oreiller, seul, à plat */
+    s += `<path d="M${(xl+ml(.7)).toFixed(1)} ${(yl-ml(1.42)).toFixed(1)}
+      q${ml(.5).toFixed(1)} ${(-ml(.24)).toFixed(1)} ${ml(1).toFixed(1)} 0
+      v${ml(.04).toFixed(1)} h${(-ml(1)).toFixed(1)} z"
+      fill="${modele('#e0d4bc', xl+ml(1.2), .22)}"/>`;
+  } else {
   s += `<path d="M${(xl-ml(1.86)).toFixed(1)} ${(yl-ml(1.34)).toFixed(1)}
     C${(xl-ml(1.2)).toFixed(1)} ${(yl-ml(1.62)).toFixed(1)}
      ${(xl-ml(.5)).toFixed(1)} ${(yl-ml(1.7)).toFixed(1)}
@@ -644,9 +658,11 @@ function chambre(){
     q${ml(.4).toFixed(1)} ${(-ml(.1)).toFixed(1)} ${ml(.86).toFixed(1)} ${(-ml(.04)).toFixed(1)}
     v${ml(.22).toFixed(1)} q${(-ml(.46)).toFixed(1)} ${(-ml(.06)).toFixed(1)}
     ${(-ml(.86)).toFixed(1)} ${ml(.04).toFixed(1)} z" fill="${jour('#d8cbb0',.22)}"/>`;
+  }
 
-  /* --- Ardit --- */
-  s += `<g class="ardit">`;
+  /* --- Ardit, s'il est encore là --- */
+  if (!vide){
+s += `<g class="ardit">`;
   /* l'oreiller, creusé */
   /* l'oreiller, à plat, creusé au milieu par le poids de la tête */
   s += `<path d="M${(xl+ml(.62)).toFixed(1)} ${(yl-ml(1.52)).toFixed(1)}
@@ -765,6 +781,8 @@ function chambre(){
       v${ml(.07).toFixed(2)}" stroke="${peauO}" stroke-width=".8" opacity=".5"/>`;
   s += `</g>`;
 
+  }
+
   /* --- la table de chevet --- */
   const dt = 12.5, yt = sol2(dt), mt = u => px2(u,dt), xt = pX2(-2.2, dt);
   s += `<ellipse cx="${xt.toFixed(1)}" cy="${yt.toFixed(1)}" rx="${mt(.9).toFixed(1)}"
@@ -801,6 +819,16 @@ function chambre(){
   s += `<path d="M${(xt+mt(.27)).toFixed(1)} ${(yt-mt(1.6)).toFixed(1)}
     q${(-mt(.04)).toFixed(2)} ${mt(.14).toFixed(2)} ${mt(.01).toFixed(2)} ${mt(.2).toFixed(2)}"
     stroke="#f4ead2" stroke-width="${Math.max(.8,mt(.05)).toFixed(2)}" fill="none"/>`;
+  /* la mèche : éteinte, s'il n'est plus là */
+  if (vide){
+    s += `<path d="M${(xt+mt(.34)).toFixed(1)} ${(yt-mt(1.78)).toFixed(1)} v${mt(.06).toFixed(2)}"
+      stroke="#2a1c10" stroke-width="1.4"/>`;
+    /* et une pile de drap sur la table, à la place du verre */
+    for (let q = 0; q < 4; q++)
+      s += `<path d="M${(xt-mt(.5)).toFixed(1)} ${(yt-mt(1.3+q*.09)).toFixed(1)}
+        h${mt(1).toFixed(1)} v${mt(.08).toFixed(2)} h${(-mt(1)).toFixed(1)} z"
+        fill="${modele(['#5e7a8a','#7a6a8a','#8a6a5a','#6a7a5e'][q], xt, .3)}"/>`;
+  } else {
   /* la mèche et la flamme */
   s += `<path d="M${(xt+mt(.34)).toFixed(1)} ${(yt-mt(1.78)).toFixed(1)} v${mt(.05).toFixed(2)}"
     stroke="#2a1c10" stroke-width="1"/>`;
@@ -810,6 +838,7 @@ function chambre(){
     rx="2.2" ry="5" fill="#fff2c0"/>`;
   s += `<ellipse class="flam" cx="${(xt+mt(.34)).toFixed(1)}" cy="${(yt-mt(1.82)).toFixed(1)}"
     rx="22" ry="24" fill="#ffb85a" opacity=".1" filter="url(#c-flou)"/>`;
+  }
 
   /* --- le frère, debout dans l'ombre --- */
   const df = 8.4, yfr = sol2(df), mf = u => px2(u,df), xf = pX2(-3.2, df);
@@ -838,6 +867,24 @@ function chambre(){
     l${(-mf(.05)).toFixed(2)} ${mf(.08).toFixed(2)} l${(-mf(.38)).toFixed(2)} 0 z"
     fill="#2e241c"/>`;
   s += `</g>`;
+
+  /* les piles de drap contre le mur, quand c'est devenu un atelier */
+  if (vide){
+    for (let q = 0; q < 7; q++){
+      const dp = 13 + (q % 3) * 2.4, Xp = -4.4 + Math.floor(q / 3) * 1.3;
+      const yp2 = sol2(dp), mp2 = u => px2(u, dp), xp2 = pX2(Xp, dp);
+      const ht = 1.4 + rnd(q * 5) * 1.6;
+      s += `<path d="M${(xp2-mp2(.5)).toFixed(1)} ${yp2.toFixed(1)} v${(-mp2(ht)).toFixed(1)}
+        h${mp2(1).toFixed(1)} v${mp2(ht).toFixed(1)} z"
+        fill="${modele('#6a6250', xp2, .34)}"/>`;
+      /* les tranches des pièces empilées */
+      for (let e = 0; e < Math.round(ht * 4); e++)
+        s += `<path d="M${(xp2-mp2(.5)).toFixed(1)} ${(yp2-mp2(e*.25)).toFixed(1)}
+          h${mp2(1).toFixed(1)}" stroke="${modele(
+            ['#5e7a8a','#7a6a8a','#8a6a5a','#6a7a5e','#7a7460'][(q+e)%5], xp2, .4)}"
+          stroke-width="${Math.max(1, mp2(.2)).toFixed(1)}"/>`;
+    }
+  }
 
   /* la pénombre */
   s += `<defs><radialGradient id="c-vig" cx="0.42" cy="0.46" r="0.78">
@@ -965,7 +1012,7 @@ function dessiner(){
   document.getElementById('rue').innerHTML =
     '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + (DEDANS ? chambre() : ruelle()) + '</svg>';
+    + (DEDANS ? chambre(SUITE) : ruelle()) + '</svg>';
 }
 dessiner();
 
@@ -979,8 +1026,10 @@ function jouer(cle){
   /* on est dedans à partir de là */
   if ((cle === 'dedans' || (SUITE && cle === 'stock')) && !DEDANS){
     DEDANS = true;
-    document.getElementById('q-n').textContent = 'Ardit';
-    document.getElementById('q-q').textContent = 'Marchand de tissu';
+    if (!SUITE){
+      document.getElementById('q-n').textContent = 'Ardit';
+      document.getElementById('q-q').textContent = 'Marchand de tissu';
+    }
     /* la porte s'ouvre : le décor change en fondu */
     const R = document.getElementById('rue');
     R.style.transition = 'opacity .5s';
