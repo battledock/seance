@@ -103,6 +103,18 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 .p5{animation-duration:2.7s;animation-delay:-1.1s}
 @keyframes brille{0%,100%{opacity:.12}45%{opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+/* ---------- le choix du cap ---------- */
+.caps{display:flex;gap:7px;margin-bottom:16px}
+.caps button{flex:1;padding:11px 4px;border:1.5px solid rgba(255,255,255,.2);
+  border-radius:9px;background:rgba(16,30,48,.5);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;
+  font-family:'Courier Prime',monospace;font-size:11.5px;color:rgba(255,255,255,.68);
+  transition:all .16s}
+.caps button.on{border-color:rgba(240,196,106,.75);background:rgba(52,44,26,.6);
+  color:#f0c46a;font-weight:700}
+.caps button:disabled{opacity:.36;cursor:default}
+.caps button small{display:block;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;
+  margin-top:4px;opacity:.7}
 </style>
 </head>
 <body>
@@ -120,6 +132,7 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 </div>
 
 <div class="bas">
+  <div class="caps fondu d1" id="caps"></div>
   <p class="lieu fondu d1" id="lieu">—</p>
   <h1 class="nom fondu d2" id="nom">—</h1>
   <p class="dit fondu d2" id="dit">—</p>
@@ -742,13 +755,16 @@ function barqueQ(n, route){
 /* deux caps, selon la rive où l'on se trouve */
 const CAPS = {
   barcelone: { k:'barcelone', n:'Barcelone', lieu:'Un jour de mer, plein ouest',
-    s:"Tu n'y es jamais allé. On dit que là-bas tout se vend, tout se rachète, "
-      + "et que tout se sait.", jours:1, nrj:30 },
+    s:"Là-bas tout se vend, tout se rachète, et tout se sait.", jours:1, nrj:30 },
   anse:      { k:'anse', n:'Chez toi', lieu:'Un jour de mer, plein est',
-    s:"Le retour. Ton mouillage, ta cabane, et Toussaint qui te demandera "
-      + "ce que tu as rapporté.", jours:1, nrj:30 }
+    s:"Le retour. Ton mouillage, ton atelier, et Toussaint qui te demandera "
+      + "ce que tu as rapporté.", jours:1, nrj:30 },
+  palma:     { k:'palma', n:'Palma', lieu:'Deux jours de mer, plein sud',
+    s:"L'île. La cathédrale se voit à trois lieues, et derrière elle il y a "
+      + "un homme qui doit de l'argent.", jours:2, nrj:55 }
 };
 let CAP = CAPS.barcelone;
+let PORTS = [];
 
 /* ================= le large, rien d'autre ================= */
 /* On ne montre pas Barcelone : le joueur la découvrira en arrivant. */
@@ -794,9 +810,13 @@ document.getElementById('ret').onclick = () => location.href = retour;
   const n = Number(d.barque || 0);
   if (!n){ location.href = 'jeu.html'; return; }
   if (d.parti_le){ location.href = 'mer.html'; return; }
-  /* on ne propose que la rive d'en face */
-  CAP = d.port === 'barcelone' ? CAPS.anse : CAPS.barcelone;
-  retour = d.port === 'barcelone' ? 'barcelone.html' : 'jeu.html';
+  /* on propose tous les ports ouverts, sauf celui où l'on est */
+  PORTS = await BD.agir('mes_ports');
+  if (!Array.isArray(PORTS)) PORTS = [];
+  const RET = { barcelone:'barcelone.html', palma:'palma.html', anse:'jeu.html' };
+  retour = RET[d.port] || 'jeu.html';
+  const possibles = PORTS.filter(p => p.k !== d.port);
+  CAP = CAPS[(possibles.find(p => p.ouvert) || {}).k] || CAPS.anse;
   const P = PALIERS_B[n - 1];
   const nrj = Number(d.energie ?? 100);
 
@@ -805,10 +825,21 @@ document.getElementById('ret').onclick = () => location.href = retour;
   document.getElementById('m-nom').textContent = P.nom;
   document.getElementById('m-cale').textContent = P.places + (P.places > 1 ? ' places' : ' place');
 
+  /* les boutons de cap */
+  function poserCaps(){
+    document.getElementById('caps').innerHTML = possibles.map(p =>
+      '<button data-c="' + p.k + '" class="' + (p.k === CAP.k ? 'on' : '') + '"'
+      + (p.ouvert ? '' : ' disabled') + '>' + (CAPS[p.k] ? CAPS[p.k].n : p.nom)
+      + '<small>' + (p.ouvert ? p.jours + (p.jours > 1 ? ' jours' : ' jour')
+         : 'fermé') + '</small></button>').join('');
+    document.querySelectorAll('[data-c]').forEach(b =>
+      b.onclick = () => { CAP = CAPS[b.dataset.c]; poserCaps(); poserCap(); });
+  }
+  function poserCap(){
   document.getElementById('lieu').textContent = CAP.lieu;
   document.getElementById('nom').textContent = CAP.n;
   document.getElementById('dit').textContent = CAP.s;
-  document.getElementById('c-j').innerHTML = CAP.jours + ' <small>jour</small>';
+  document.getElementById('c-j').innerHTML = CAP.jours + ' <small>' + (CAP.jours > 1 ? 'jours' : 'jour') + '</small>';
   document.getElementById('c-e').innerHTML = CAP.nrj + ' <small>points</small>';
   document.getElementById('c-c').innerHTML = P.places
     + ' <small>' + (P.places > 1 ? 'places' : 'place') + '</small>';
@@ -821,17 +852,19 @@ document.getElementById('ret').onclick = () => location.href = retour;
     ? 'Il te restera ' + Math.round(nrj - CAP.nrj) + " d'énergie en arrivant."
     : 'Il te manque ' + Math.round(CAP.nrj - nrj) + " d'énergie — "
       + Math.round(CAP.nrj - nrj) + ' minutes de repos.';
-  if (assez) bt.onclick = async () => {
+  bt.onclick = !assez ? null : async () => {
     bt.disabled = true; bt.textContent = 'On largue…';
     const r = await BD.agir('partir_en_mer', { destination: CAP.k });
     if (r.ok) location.href = 'mer.html';
     else {
       const M = { deja_la:'Tu y es déjà.', sans_bateau:'Il te faut un bateau.',
-                  deja_en_mer:'Tu es déjà en mer.',
-                  trop_fatigue:'Il te manque ' + (r.manque || 0) + " d'énergie." };
+                  deja_en_mer:'Tu es déjà en mer.', ferme:"Ce port ne t'est pas ouvert.",
+                  trop_fatigue:'Il te manque ' + ((r.faut||0) - (r.tu_as||0)) + " d'énergie." };
       bt.textContent = M[r.pourquoi] || 'Impossible pour l\'instant';
     }
   };
+  }
+  poserCaps(); poserCap();
 
   requestAnimationFrame(() =>
     document.querySelectorAll('.fondu').forEach(e => e.classList.add('on')));
