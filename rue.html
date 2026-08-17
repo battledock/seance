@@ -57,6 +57,63 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
   text-align:center;line-height:1.2}
 .lieux button.vif span{color:#f0c46a;font-weight:700}
 
+/* ---------- les contrats ---------- */
+.ct{position:fixed;z-index:22;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
+  background:rgba(20,34,50,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 12px 40px rgba(6,16,28,.6);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.ct.on{opacity:1;transform:none;pointer-events:auto}
+.ct::-webkit-scrollbar{display:none}
+
+.ct .haut{display:flex;align-items:center;padding:14px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.ct .haut .ti{flex:1}
+.ct .haut b{display:block;font-size:15px;color:#fff;font-weight:700;letter-spacing:.04em}
+.ct .haut span{display:block;font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-top:3px}
+.ct .haut .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.5);
+  font-size:22px;line-height:1;padding:3px 2px}
+
+.ct .cale{display:flex;align-items:center;gap:9px;padding:11px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);font-size:10.5px;
+  color:rgba(255,255,255,.6);font-family:system-ui,sans-serif}
+.ct .cale b{color:#f0c46a;font-family:'Courier Prime',monospace;font-size:13px}
+
+.ct ul{list-style:none;padding:8px}
+.ct li{border-radius:8px;padding:13px;margin-bottom:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12)}
+.ct li:last-child{margin-bottom:0}
+.ct li.pris{background:rgba(140,224,168,.1);border-color:rgba(140,224,168,.3)}
+.ct li .l1{display:flex;align-items:flex-start;gap:10px}
+.ct li .l1 .tx{flex:1;min-width:0}
+.ct li .l1 b{display:block;font-size:14px;color:#fff;font-weight:700}
+.ct li .l1 .no{display:block;font-size:10.5px;color:rgba(255,255,255,.48);margin-top:3px;
+  font-family:system-ui,sans-serif;line-height:1.45}
+.ct li .l1 .px{flex:0 0 auto;text-align:right}
+.ct li .l1 .px em{display:block;font-style:normal;font-size:17px;font-weight:700;color:#ffd894}
+.ct li .l1 .px i{display:block;font-style:normal;font-size:8px;letter-spacing:.1em;
+  text-transform:uppercase;margin-top:3px}
+.ct li .l2{display:flex;align-items:center;gap:8px;margin-top:11px}
+.ct li .l2 .d{flex:1;font-size:9.5px;color:rgba(255,255,255,.44);
+  font-family:system-ui,sans-serif}
+.ct li button{flex:0 0 auto;padding:9px 18px;border:0;border-radius:7px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:11.5px;font-weight:700;letter-spacing:.05em}
+.ct li button:disabled{background:rgba(255,255,255,.09);color:rgba(255,255,255,.4);
+  cursor:default}
+.ct li .fait{font-size:11px;color:#8ce0a8;font-weight:700;letter-spacing:.05em}
+.ct .rien{padding:26px 16px;text-align:center;font-size:12px;
+  color:rgba(255,255,255,.5);line-height:1.7}
+.ct .mot{padding:0 15px 15px;font-size:10.5px;color:rgba(255,255,255,.42);
+  line-height:1.6;text-align:center;font-family:system-ui,sans-serif}
+
+
 /* ---------- le panneau de la barque ---------- */
 .voile{position:fixed;inset:0;z-index:8;background:rgba(6,12,22,.6);
   backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
@@ -164,6 +221,16 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 </div>
 
 <div class="voile" id="voile"></div>
+
+<section class="ct" id="ct">
+  <div class="haut">
+    <span class="ti"><b>Les contrats</b><span id="k-ou">Ce qu'on charge ici</span></span>
+    <button class="fer" id="k-fer">×</button>
+  </div>
+  <p class="cale">Ta cale : <b id="k-cale">—</b></p>
+  <ul id="k-liste"><li class="rien">On regarde ce qu'il y a…</li></ul>
+  <p class="mot" id="k-mot"></p>
+</section>
 
 <section class="bq" id="bq">
   <div class="vue" id="q-vue">
@@ -1199,7 +1266,7 @@ const ICO = {
 const LIEUX = [
   { k:'marche',   n:'Le marché',   ouvert:false },
   { k:'taverne',  n:'La taverne',  ouvert:true },
-  { k:'docks',    n:'Les docks',   ouvert:false },
+  { k:'docks',    n:'Le chargement', ouvert:true },
   { k:'entrepot', n:"L'entrepôt",  ouvert:false },
   { k:'bateau',   n:'Ta barque',   ouvert:true }
 ];
@@ -1222,6 +1289,96 @@ document.getElementById('lieux').innerHTML = LIEUX.map(L =>
   + '<svg viewBox="0 0 24 24">' + ICO[L.k] + '</svg>'
   + '<span>' + L.n + '</span></button>').join('');
 
+let MOI = null;
+let chargesCt = false;
+
+async function poserContrats(d, forcer){
+  const el = document.getElementById('k-liste');
+  if (!el) return;
+  if (chargesCt && !forcer) return;
+  chargesCt = true;
+
+  const r = await BD.agir('contrats_du_jour');
+  if (!r.ok){
+    el.innerHTML = '<li class="rien">' + (r.pourquoi === 'sans_bateau'
+      ? "Il te faut un bateau avant qu'on te confie quoi que ce soit."
+      : "Rien pour l'instant. Reviens plus tard.") + '</li>';
+    document.getElementById('k-cale').textContent = '—';
+    return;
+  }
+
+  const occupe = (d.cale || []).reduce((n, o) => n + (+o.places || 1), 0);
+  const libre = r.places - occupe;
+  document.getElementById('k-cale').innerHTML =
+    '<b>' + libre + ' / ' + r.places + '</b> ' + (r.places > 1 ? 'places libres' : 'place libre');
+
+  const L = r.contrats || [];
+  if (!L.length){
+    el.innerHTML = '<li class="rien">Personne ne cherche de bras aujourd\'hui.</li>';
+    return;
+  }
+
+  el.innerHTML = L.map(c => {
+    const pris = c.etat === 'pris';
+    const tient = libre >= c.places;
+    const d2 = +c.demande, pr = +c.pression || 0;
+    /* ce qu'on en dit dépend surtout de ce qui arrive au port là-bas */
+    const mot = pr >= 18 ? ['Le port en déborde', '#e08a6a']
+      : pr >= 9 ? ['Il en arrive beaucoup', '#e0a878']
+      : d2 >= 1.2 ? ['On en manque là-bas', '#8ce0a8']
+      : d2 >= 1.02 ? ['La demande est bonne', '#c4d88a']
+      : d2 >= 0.85 ? ['Le cours est normal', 'rgba(255,255,255,.5)']
+      : ['Ils en ont déjà beaucoup', '#e0a878'];
+    return '<li class="' + (pris ? 'pris' : '') + '">'
+      + '<div class="l1"><span class="tx"><b>' + c.nom + '</b>'
+      + '<span class="no">' + c.note + '</span></span>'
+      + '<span class="px"><em>' + c.paie + ' €</em>'
+      + '<i style="color:' + mot[1] + '">' + mot[0] + '</i></span></div>'
+      + '<div class="l2"><span class="d">' + c.kg + ' kg — '
+      + c.places + (c.places > 1 ? ' places' : ' place') + ' en cale'
+      + (pr >= 3 ? '<br><span style="color:' + mot[1] + '">'
+          + Math.round(pr) + ' livrées ces jours-ci</span>' : '') + '</span>'
+      + (pris ? '<span class="fait">À bord ✓</span>'
+         : '<button data-c="' + c.id + '"' + (tient ? '' : ' disabled') + '>'
+           + (tient ? 'Charger' : 'Cale pleine') + '</button>')
+      + '</div></li>';
+  }).join('');
+
+  const OU = { anse:'chez toi', barcelone:'à Barcelone', palma:'à Palma' };
+  const ou2 = document.getElementById('k-ou');
+  if (ou2) ou2.textContent = r.depuis === 'barcelone'
+    ? 'Ce que Miquel te confie' : "Ce qu'on te propose aujourd'hui";
+  document.getElementById('k-mot').innerHTML =
+    'Les contrats changent chaque jour. Tu es payé en arrivant '
+    + (OU[r.vers] || 'à destination') + '.<br>'
+    + '<span style="color:rgba(255,255,255,.34)">Plus une marchandise arrive là-bas, '
+    + 'moins elle vaut — pour tout le monde.</span>';
+
+  el.querySelectorAll('[data-c]').forEach(b =>
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = '…';
+      const p = await BD.agir('prendre_contrat', { p_id: b.dataset.c });
+      if (p.ok){
+        secousse('bien');
+        const f = await BD.charger();
+        Object.assign(d, f);
+        poserBarre(d); poserMenu(d); poserBarque(d); poserBas(d);
+        poserContrats(d, true);
+      } else {
+        b.textContent = p.pourquoi === 'cale_pleine' ? 'Cale pleine' : 'Impossible';
+      }
+    });
+}
+
+
+let ctOuvert = false;
+function basculerContrats(o, d){
+  ctOuvert = o === undefined ? !ctOuvert : o;
+  document.getElementById('ct').classList.toggle('on', ctOuvert);
+  document.getElementById('voile').classList.toggle('on', ctOuvert || ouvert);
+  if (ctOuvert && d) poserContrats(d);
+}
+
 /* ---------- le panneau de la barque ---------- */
 let ouvert = false;
 function ouvrirBarque(o){
@@ -1238,6 +1395,7 @@ document.querySelectorAll('[data-k="taverne"]').forEach(b =>
   b.onclick = () => location.href = 'taverne.html');
 
 document.getElementById('ret').onclick = () => location.href = 'barcelone.html';
+document.getElementById('k-fer').onclick = () => basculerContrats(false);
 
 /* on peut toucher le type qui attend */
 document.getElementById('rue').style.cursor = 'default';
@@ -1293,6 +1451,15 @@ function poserMiquel(vecue){
 
   /* le signe au-dessus de sa tête disparaît une fois la scène vécue */
   poserMiquel((d.rencontres || []).includes('miquel'));
+  MOI = d;
+  /* le chargement n'est ouvert que si Miquel te connaît */
+  const connu = (d.quetes || []).some(q => q.k === 'miquel_2');
+  const bd2 = document.querySelector('[data-k="docks"]');
+  if (bd2){
+    bd2.disabled = !connu;
+    bd2.classList.toggle('vif', connu);
+    if (connu) bd2.onclick = () => basculerContrats(true, d);
+  }
 })();
 
 let t = null;
