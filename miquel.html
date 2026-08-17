@@ -560,7 +560,7 @@ function centre(){
    Il est là tous les soirs. C'est lui qui donnera du travail.
    La lampe est au-dessus à sa droite : elle lui fait un liseré
    sur une joue et laisse l'autre dans le noir. */
-function typeQuiAttend(){
+function typeQuiAttend(pres){
   const d = 11.5, X = 2.6;
   const x = projX(X, d), y = sol(d), H = px(1.76, d);
   const m = (u) => H * u;                       /* une mesure, en parts de sa taille */
@@ -580,7 +580,9 @@ function typeQuiAttend(){
   const CHAP_C = clair('#4e4450', .3);
   const CHEM   = voiler('#c9bda8', d);
 
-  let s = `<g class="pnj">`;
+  let s = pres
+    ? `<g transform="translate(404 400) scale(1.9) translate(-404 -400) translate(-150 96)">`
+    : `<g class="pnj">`;
 
   /* ================= son ombre ================= */
   /* la lampe est en haut à droite : l'ombre part vers la gauche */
@@ -829,7 +831,7 @@ function typeQuiAttend(){
 }
 
 /* ---------- la scène ---------- *//* ---------- la scène ---------- */
-function ruelle(){
+function ruelle(pres){
   let s = ciel() + pave();
   /* les façades, du fond vers nous */
   const P = [90, 74, 60, 48, 38, 30, 24, 19, 15, 11.6, 8.8, 6.4, 4.4, 3.4];
@@ -839,7 +841,7 @@ function ruelle(){
   }
   s += linge();
   s += centre();
-  s += typeQuiAttend();
+  s += typeQuiAttend(pres);
   /* le voile chaud du fond de rue */
   s += `<ellipse cx="${SOLEIL.x}" cy="${sol(SOLEIL.d).toFixed(1)}" rx="220" ry="170"
     fill="#e0a868" opacity=".1"/>`;
@@ -1218,12 +1220,16 @@ const NOMS = { instinct:'Instinct', sang_froid:'Sang-froid', discussion:'Discuss
 let MOI = { instinct:0, sang_froid:0, discussion:0, negociation:0, chance:0 };
 let issue = null, bonus = {}, fini = false, monteNiveau = false;
 
+/* PRES = il est venu à toi : on le montre en gros plan, là où
+   l'approche de la rue s'est arrêtée. */
+let PRES = false;
 function dessiner(){
   const v = cadrer(innerWidth, innerHeight);
+  const x = ruelle(PRES);
   document.getElementById('rue').innerHTML =
     '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + ruelle() + '</svg>';
+    + x + '</svg>';
 }
 dessiner();
 
@@ -1438,6 +1444,7 @@ document.getElementById('f-b').onclick = () => location.href =
   if (dejaVu && dejaOffre){ location.href = 'rue.html'; return; }
   if (dejaVu){
     PREM = d.miquel_issue || 'cinquante';
+    PRES = true; dessiner();
     /* il est venu à toi : on enchaîne sans écran d'avertissement */
     document.getElementById('avert').classList.add('parti');
     document.getElementById('qui').classList.add('on');
