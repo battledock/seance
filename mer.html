@@ -819,10 +819,13 @@ async function arriver(){
   if (r.ok){
     const monte = r.niveau && r.niveau.monte;
     /* on relit la fiche : y a-t-il quelque chose à raconter en arrivant ? */
-    let suite = r.port === 'barcelone' ? 'barcelone.html' : 'jeu.html';
-    let mot = r.port === 'barcelone' ? 'Débarquer à Barcelone' : 'Rentrer chez toi';
+    const PAGE = { barcelone:'barcelone.html', palma:'palma.html', anse:'jeu.html' };
+    const MOT  = { barcelone:'Débarquer à Barcelone', palma:'Débarquer à Palma',
+                   anse:'Rentrer chez toi' };
+    let suite = PAGE[r.port] || 'jeu.html';
+    let mot = MOT[r.port] || 'Débarquer';
     if (monte){ suite = 'niveau.html'; mot = 'Tu as changé de niveau'; }
-    else if (r.port !== 'barcelone'){
+    else if (r.port === 'anse'){
       try {
         const f = await BD.charger();
         const aCaisse = (f.cale || []).some(o => o && o.quoi === 'caisse');
