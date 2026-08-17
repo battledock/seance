@@ -101,19 +101,39 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 @keyframes scint{0%,100%{opacity:.15}50%{opacity:.7}}
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
 
-/* ---------- le titre qu'on te donne ---------- */
-.titre{margin:0 0 14px;padding:18px 16px;border-radius:12px;text-align:center;
-  border:1.5px solid rgba(240,196,106,.5);
-  background:linear-gradient(180deg,rgba(74,58,26,.72),rgba(38,30,16,.6));
-  box-shadow:0 6px 28px rgba(240,196,106,.16);
-  opacity:0;transform:scale(.94);animation:sacre .8s .25s forwards}
-@keyframes sacre{to{opacity:1;transform:none}}
-.titre .su{font-size:8px;letter-spacing:.32em;text-transform:uppercase;
-  color:rgba(240,196,106,.72)}
-.titre b{display:block;font-size:29px;font-weight:700;color:#f6dfa6;margin-top:8px;
-  letter-spacing:.05em}
-.titre span{display:block;font-size:11.5px;color:rgba(246,223,166,.6);margin-top:8px;
-  font-family:system-ui,sans-serif;line-height:1.5}
+/* ---------- le feu d'artifice ---------- */
+#feu{position:fixed;inset:0;z-index:9;pointer-events:none;
+  mix-blend-mode:screen}
+#feu svg{display:block;width:100%;height:100%}
+/* la fusée qui monte */
+.fusee{animation:monte var(--d) cubic-bezier(.15,.6,.5,1) forwards}
+@keyframes monte{
+  0%{opacity:0;transform:translateY(0)}
+  8%{opacity:1}
+  92%{opacity:1}
+  100%{opacity:0;transform:translateY(var(--h))}}
+/* l'éclat */
+.ecl{opacity:0;animation:eclate var(--e) ease-out var(--r) forwards}
+@keyframes eclate{
+  0%{opacity:0;transform:scale(.05)}
+  6%{opacity:1;transform:scale(.3)}
+  46%{opacity:.9}
+  100%{opacity:0;transform:scale(1)}}
+/* les étincelles qui retombent */
+.et{opacity:0;animation:tombe var(--e) cubic-bezier(.1,.5,.4,1) var(--r) forwards}
+@keyframes tombe{
+  0%{opacity:0;transform:translate(0,0) scale(1)}
+  8%{opacity:1}
+  70%{opacity:.8}
+  100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3)}}
+/* le halo qui éclaire le ciel un instant */
+.halo{opacity:0;animation:flash var(--e) ease-out var(--r) forwards}
+@keyframes flash{0%{opacity:0}8%{opacity:.34}100%{opacity:0}}
+
+/* le grand chiffre pulse au rythme des tirs */
+.page.cinq .haut .n{animation:battre 2.6s ease-in-out infinite}
+@keyframes battre{0%,100%{filter:drop-shadow(0 4px 22px rgba(240,196,106,.3))}
+  50%{filter:drop-shadow(0 4px 40px rgba(255,214,140,.62))}}
 .gain.eur .ic{background:rgba(240,196,106,.14)}
 .gain.eur .ic svg{stroke:#f0c46a}
 .gain.eur .v{color:#f0c46a}
@@ -227,10 +247,70 @@ function objetSVG(k){
   return '<svg viewBox="0 0 48 40" xmlns="http://www.w3.org/2000/svg">' + O + '</svg>';
 }
 
+/* ============================================================
+   LE FEU D'ARTIFICE — pour le cinquième palier
+   ============================================================ */
+const FEUX = ['#ffd88a','#9cf0b8','#ff88a4','#96c8ff','#ffb060','#d89aff'];
+
+function feuDArtifice(){
+  const el = document.createElement('div');
+  el.id = 'feu';
+  document.body.appendChild(el);
+  const L = innerWidth, H = innerHeight;
+  let s = '<svg viewBox="0 0 ' + L + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+
+  /* neuf tirs, étalés dans le temps */
+  for (let i = 0; i < 9; i++){
+    const c = FEUX[i % FEUX.length];
+    const x = L * (.12 + (i * .37) % .76);
+    const yh = H * (.1 + ((i * .19) % .2));      /* où ça éclate */
+    const mont = 1 + (i % 3) * .22;                /* durée de la montée */
+    const dep = i * .58 + (i % 2) * .3;            /* quand ça part */
+    const ecl = 1.5 + (i % 4) * .25;               /* durée de l'éclat */
+
+    /* la traînée qui monte */
+    s += '<g class="fusee" style="--d:' + mont.toFixed(2) + 's;--h:'
+      + (yh - H).toFixed(0) + 'px;animation-delay:' + dep.toFixed(2) + 's">'
+      + '<path d="M' + x.toFixed(0) + ' ' + H + ' v-14" stroke="' + c
+      + '" stroke-width="2.2" stroke-linecap="round" opacity=".8"/>'
+      + '<circle cx="' + x.toFixed(0) + '" cy="' + (H - 4) + '" r="2.4" fill="'
+      + c + '"/></g>';
+
+    const r = (dep + mont * .92).toFixed(2);
+
+    /* le halo dans le ciel */
+    s += '<circle class="halo" cx="' + x.toFixed(0) + '" cy="' + yh.toFixed(0)
+      + '" r="' + (H * .1).toFixed(0) + '" fill="' + c
+      + '" style="--e:' + ecl.toFixed(2) + 's;--r:' + r + 's"/>';
+
+    /* le cœur de l'éclat */
+    s += '<circle class="ecl" cx="' + x.toFixed(0) + '" cy="' + yh.toFixed(0)
+      + '" r="' + (H * .05).toFixed(0) + '" fill="none" stroke="' + c
+      + '" stroke-width="1.4" style="--e:' + ecl.toFixed(2) + 's;--r:' + r + 's"/>';
+
+    /* les étincelles : une couronne qui s'ouvre et retombe */
+    const n = 20 + (i % 3) * 6;
+    for (let k = 0; k < n; k++){
+      const a = (k / n) * Math.PI * 2 + i;
+      const d2 = H * (.06 + (k % 4) * .016);
+      const tx = Math.cos(a) * d2;
+      const ty = Math.sin(a) * d2 + H * .05;      /* la gravité les tire vers le bas */
+      s += '<circle class="et" cx="' + x.toFixed(0) + '" cy="' + yh.toFixed(0)
+        + '" r="' + (2 + (k % 3) * .9).toFixed(1) + '" fill="'
+        + (k % 5 === 0 ? '#fff8e0' : c) + '"'
+        + ' style="--e:' + ecl.toFixed(2) + 's;--r:' + r + 's;--tx:'
+        + tx.toFixed(0) + 'px;--ty:' + ty.toFixed(0) + 'px"/>';
+    }
+  }
+  el.innerHTML = s + '</svg>';
+  /* on nettoie quand c'est fini */
+  setTimeout(() => el.remove(), 12000);
+}
+
 /* ce que chaque niveau apporte */
 /* seul le cinquième palier sort du lot */
 const CADEAUX = {
-  5:{ points:4, energie:4, euros:400, objet:'boussole', cale:1, titre:'Patron',
+  5:{ points:4, energie:4, euros:400, objet:'boussole', cale:1, fete:true,
       mot:"Ce n'est plus toi qui cherches du travail." }
 };
 const OBJETS = {
@@ -554,13 +634,10 @@ const MOTS = {
   document.getElementById('m').textContent = C.mot || MOTS[niv]
     || (gagnes > 1 ? 'Tu montes vite.' : 'Tu montes.');
 
-  /* le titre, s'il y en a un : c'est ce qui change tout */
-  if (C.titre){
+  /* le cinquième : on tire le feu d'artifice */
+  if (C.fete){
     document.querySelector('.page').classList.add('cinq');
-    document.getElementById('titre').innerHTML =
-      '<div class="titre"><p class="su">On t\'appelle désormais</p>'
-      + '<b>' + C.titre + '</b>'
-      + '<span>Ton nom apparaîtra ainsi dans les trois ports.</span></div>';
+    feuDArtifice();
   }
 
   const ICO = {
@@ -591,7 +668,7 @@ const MOTS = {
       + '<span class="v">reçu</span></div>';
   document.getElementById('gains').innerHTML = h;
   /* beaucoup de choses à montrer : on resserre tout */
-  if (G.length + (C.objet ? 1 : 0) > 2 || C.titre)
+  if (G.length + (C.objet ? 1 : 0) > 2 || C.fete)
     document.querySelector('.page').classList.add('charge');
 
   document.getElementById('sous').textContent =
