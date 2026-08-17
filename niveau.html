@@ -27,11 +27,17 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
   60%{opacity:1}100%{opacity:.85;transform:translate(-50%,-50%) scale(1)}}
 
 .page{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;
+  overflow-y:auto;
   padding:calc(env(safe-area-inset-top) + 20px) 24px
           calc(env(safe-area-inset-bottom) + 24px)}
+.page::-webkit-scrollbar{display:none}
 
 /* le titre */
 .haut{flex:0 0 auto;text-align:center;margin-top:6vh}
+.page.charge .haut{margin-top:2vh}
+.page.charge .haut .n{font-size:76px;line-height:1}
+.page.charge .gains{margin:16px 0 0}
+.page.charge .bas{margin-top:18px}
 .haut .sur{font-size:9.5px;letter-spacing:.4em;text-transform:uppercase;
   color:rgba(255,255,255,.5);padding-left:.4em}
 .haut .n{font-size:120px;font-weight:700;line-height:.86;margin-top:10px;
@@ -40,7 +46,7 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
   font-family:system-ui,sans-serif;line-height:1.6}
 
 /* ce qu'on gagne */
-.gains{flex:1;display:flex;flex-direction:column;justify-content:center;gap:11px;
+.gains{flex:0 0 auto;display:flex;flex-direction:column;gap:11px;margin:auto 0;
   min-height:0;margin:20px 0}
 .gain{display:flex;align-items:center;gap:14px;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
@@ -67,7 +73,7 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 .gain.nrj .v{color:#8ce0a8}
 
 /* le bouton */
-.bas{flex:0 0 auto;opacity:0;animation:venir .6s 1.4s cubic-bezier(.2,.85,.3,1) forwards}
+.bas{flex:0 0 auto;margin-top:auto;padding-top:18px;opacity:0;animation:venir .6s 1.4s cubic-bezier(.2,.85,.3,1) forwards}
 .bas button{width:100%;padding:18px;border:0;border-radius:9px;cursor:pointer;
   background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
   box-shadow:0 6px 26px rgba(240,196,106,.34);
@@ -584,6 +590,9 @@ const MOTS = {
       + '<span>' + OBJETS[C.objet].note + '</span></span>'
       + '<span class="v">reçu</span></div>';
   document.getElementById('gains').innerHTML = h;
+  /* beaucoup de choses à montrer : on resserre tout */
+  if (G.length + (C.objet ? 1 : 0) > 2 || C.titre)
+    document.querySelector('.page').classList.add('charge');
 
   document.getElementById('sous').textContent =
     "Prochain palier à " + (d.seuil_xp || 60) + " points d'expérience.";
