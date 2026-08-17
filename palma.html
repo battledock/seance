@@ -77,19 +77,14 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
 .o2{animation:v0 52s linear infinite}.o3{animation:v1 64s linear infinite}
 @keyframes v0{to{transform:translateX(50px)}}
 @keyframes v1{to{transform:translateX(-50px)}}
-.houle{animation:souleve 5s ease-in-out infinite}
+.amarre{animation:souleve 6.4s ease-in-out infinite}
 @keyframes souleve{0%,50%,100%{transform:translateY(0)}
   25%{transform:translateY(-3px)}75%{transform:translateY(2.2px)}}
-.gite{animation:penche 5s ease-in-out infinite}
-@keyframes penche{0%{transform:rotate(1.4deg)}25%{transform:rotate(0)}
-  50%{transform:rotate(-1.4deg)}75%{transform:rotate(0)}100%{transform:rotate(1.4deg)}}
+
 .nue{animation:derive 140s linear infinite}
 .nue.n1{animation-duration:190s}.nue.n2{animation-duration:110s}
 @keyframes derive{to{transform:translateX(620px)}}
-.oiseau{animation:vole 14s ease-in-out infinite}
-.oiseau.v1{animation-duration:19s;animation-delay:-6s}
-.oiseau.v2{animation-duration:11s;animation-delay:-3s}
-@keyframes vole{0%,100%{transform:translate(0,0)}50%{transform:translate(-38px,-14px)}}
+
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
 </style>
 </head>
@@ -179,17 +174,6 @@ function ciel(){
       fill="${mel('#ffffff', OR, .2 + (y-HAUT)/(yh-HAUT)*.5)}"
       opacity="${(.14+rnd(i)*.26).toFixed(2)}"/></g>`;
   }
-  /* les mouettes, très haut */
-  for (let i = 0; i < 9; i++){
-    const x = 40 + rnd(i*13)*400, y = HAUT + 60 + rnd(i*5)*230;
-    const e = 5 + rnd(i)*5;
-    s += `<g class="oiseau v${i%3}"><path d="M${x.toFixed(0)} ${y.toFixed(0)}
-      q${(e*.5).toFixed(1)} ${(-e*.5).toFixed(1)} ${e.toFixed(1)} 0
-      q${(e*.5).toFixed(1)} ${(-e*.5).toFixed(1)} ${e.toFixed(1)} 0"
-      stroke="#5a6a74" stroke-width="1.3" fill="none" stroke-linecap="round"
-      opacity="${(.24+rnd(i+3)*.3).toFixed(2)}"/></g>`;
-  }
-
   /* l'eau */
   s += `<rect x="0" y="${yh.toFixed(1)}" width="${W}" height="${(BAS-yh+10).toFixed(1)}"
     fill="url(#p-eau)"/>`;
@@ -400,26 +384,25 @@ function collines(){
   return s;
 }
 
-/* ---------- ta barque, qui entre dans la baie ---------- */
+/* ---------- ta barque, amarrée au quai : tu viens d'en descendre ---------- */
 function barque(){
-  const d = 24, y = sol(d), m = u => px(u,d), x = pX(-1, d);
+  const d = 56, y = sol(d), m = u => px(u,d), x = pX(-11, d);
   const co = sombre('#a87c4c',.16), coC = clair('#e0b878',.34);
-  let s = `<g class="houle">`;
-  s += `<ellipse class="sil" cx="${x.toFixed(1)}" cy="${(y+m(.12)).toFixed(1)}"
-    rx="${m(2.6).toFixed(1)}" ry="${m(.28).toFixed(1)}" fill="#12324a" opacity=".32"/>`;
-  s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><g class="gite">`;
-  s += `<path d="M${(-m(2.3)).toFixed(1)} ${(-m(.62)).toFixed(1)}
-    q${m(.38).toFixed(1)} ${m(.76).toFixed(1)} ${m(1.92).toFixed(1)} ${m(.76).toFixed(1)}
-    h${m(.76).toFixed(1)} q${m(1.54).toFixed(1)} 0 ${m(1.92).toFixed(1)} ${(-m(.76)).toFixed(1)}
-    q${(-m(2.3)).toFixed(1)} ${(-m(.44)).toFixed(1)} ${(-m(4.6)).toFixed(1)} 0 z" fill="${co}"/>`;
-  s += `<path d="M${(-m(2.3)).toFixed(1)} ${(-m(.62)).toFixed(1)}
-    q${m(2.3).toFixed(1)} ${(-m(.44)).toFixed(1)} ${m(4.6).toFixed(1)} 0"
+  let s = `<g class="amarre">`;
+  s += `<ellipse cx="${x.toFixed(1)}" cy="${(y+m(.14)).toFixed(1)}" rx="${m(2.4).toFixed(1)}"
+    ry="${m(.3).toFixed(1)}" fill="#12324a" opacity=".26"/>`;
+  s += `<path d="M${(x-m(2.1)).toFixed(1)} ${(y-m(.56)).toFixed(1)}
+    q${m(.34).toFixed(1)} ${m(.7).toFixed(1)} ${m(1.76).toFixed(1)} ${m(.7).toFixed(1)}
+    h${m(.7).toFixed(1)} q${m(1.42).toFixed(1)} 0 ${m(1.76).toFixed(1)} ${(-m(.7)).toFixed(1)}
+    q${(-m(2.1)).toFixed(1)} ${(-m(.4)).toFixed(1)} ${(-m(4.2)).toFixed(1)} 0 z" fill="${co}"/>`;
+  s += `<path d="M${(x-m(2.1)).toFixed(1)} ${(y-m(.56)).toFixed(1)}
+    q${m(2.1).toFixed(1)} ${(-m(.4)).toFixed(1)} ${m(4.2).toFixed(1)} 0"
     stroke="${coC}" stroke-width="${Math.max(.6,m(.16)).toFixed(1)}" fill="none"/>`;
-  s += `<path d="M0 ${(-m(.9)).toFixed(1)} v${(-m(.4)).toFixed(1)}"
-    stroke="${sombre('#4a5468',.2)}" stroke-width="${m(.36).toFixed(1)}" stroke-linecap="round"/>`;
-  s += `<circle cx="0" cy="${(-m(1.44)).toFixed(1)}" r="${m(.26).toFixed(2)}"
-    fill="${sombre('#c98f5e',.16)}"/>`;
-  return s + `</g></g></g>`;
+  /* l'amarre qui monte au quai */
+  s += `<path d="M${(x+m(2)).toFixed(1)} ${(y-m(.6)).toFixed(1)}
+    q${m(1.2).toFixed(1)} ${(-m(.6)).toFixed(1)} ${m(2.2).toFixed(1)} ${(-m(1.4)).toFixed(1)}"
+    stroke="${sombre('#8a7a5c',.2)}" stroke-width="${Math.max(.5,m(.1)).toFixed(1)}" fill="none"/>`;
+  return s + `</g>`;
 }
 
 function palma(){
@@ -455,7 +438,7 @@ const LIEUX = [
   { k:'frere',  n:"Le frère d'Ardit", ouvert:false },
   { k:'marche', n:'Le marché',        ouvert:false },
   { k:'moulin', n:'Les moulins',      ouvert:false },
-  { k:'barque', n:'Ta barque',        ouvert:true }
+  { k:'barque', n:'Reprendre la mer', ouvert:true }
 ];
 
 document.getElementById('ret').onclick = () => location.href = 'jeu.html';
