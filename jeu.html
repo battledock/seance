@@ -706,11 +706,58 @@ html.sans-decor .onde{animation:none !important}
 html.sans-decor .barque{animation:none !important}
 html{font-size:calc(16px * var(--txt, 1))}
 .bulle,.dit p,.ct li .l1 .no,.bat .a{font-size:calc(11.5px * var(--txt, 1))}
+
+/* ---------- les autres joueurs ---------- */
+#eti{position:fixed;inset:0;z-index:5;pointer-events:none}
+.eti{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;
+  display:flex;align-items:center;gap:6px;padding:4px 9px 4px 4px;border-radius:20px;
+  background:rgba(12,26,42,.74);border:1.5px solid rgba(255,255,255,.24);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  white-space:nowrap;transition:transform .16s;font-family:'Courier Prime',monospace;
+  color:#fff;box-shadow:0 3px 12px rgba(6,16,28,.4)}
+.eti:active{transform:translate(-50%,-100%) scale(.94)}
+.eti .em{width:18px;height:18px;flex:0 0 18px;display:flex;align-items:center;
+  justify-content:center}
+.eti .em svg{width:11px;height:11px}
+.eti b{font-size:10px;font-weight:700}
+.eti i{width:5px;height:5px;border-radius:50%;background:#8ce0a8;font-style:normal;
+  flex:0 0 5px}
+.eti.charge i{background:#f0c46a}
+
+.fi{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 92px);
+  z-index:24;max-width:340px;margin:0 auto;
+  background:rgba(16,32,50,.96);border:2px solid rgba(255,255,255,.26);
+  border-radius:12px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 14px 44px rgba(6,16,28,.6);color:#fff;
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.fi.on{opacity:1;transform:none;pointer-events:auto}
+.fi .h{display:flex;align-items:center;gap:12px;padding:15px}
+.fi .h .em{flex:0 0 40px;height:40px;display:flex;align-items:center;justify-content:center}
+.fi .h .em svg{width:23px;height:23px}
+.fi .h .tx{flex:1;min-width:0}
+.fi .h b{display:block;font-size:16px;font-weight:700;font-family:'Courier Prime',monospace}
+.fi .h span{display:block;font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;
+  font-family:system-ui,sans-serif}
+.fi .h .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.44);
+  font-size:20px;padding:2px}
+.fi ul{list-style:none;border-top:1px solid rgba(255,255,255,.12)}
+.fi li{display:flex;justify-content:space-between;padding:11px 15px;font-size:12px;
+  border-bottom:1px solid rgba(255,255,255,.07);font-family:system-ui,sans-serif}
+.fi li:last-child{border-bottom:0}
+.fi li span{color:rgba(255,255,255,.46)}
+.fi li b{font-family:'Courier Prime',monospace}
+.amarre.a1{animation-duration:7.8s;animation-delay:-2s}
+.amarre.a2{animation-duration:5.6s;animation-delay:-3.4s}
+.amarre.a3{animation-duration:8.6s;animation-delay:-1.2s}
+
 </style>
 </head>
 <body>
 
 <div id="sc"></div>
+<div id="eti"></div>
+<div class="fi" id="fi"></div>
 
 <div class="av" id="av"></div>
 
@@ -2274,6 +2321,102 @@ function caisse(x, d, dy, ton){
 }
 
 /* ---------- la scène complète ---------- */
+
+/* ============================================================
+   QUI EST AU PORT — les barques des autres joueurs
+   ============================================================ */
+const MET_A = { savon:'Savonnier', poisson:'Sécheur', cordage:'Cordier', huile:'Huilier' };
+const BARQ_A = ['—','La coque nue','Le pontet','La barquette','Le canot','La chaloupe',
+  'Le pointu','Le bateau-bœuf','Le mourre de pouar','La tartane','Le gourse',
+  'La barquette longue','Le lligot','Le llaüt','La bombarde','Le tartanon',
+  'La bette','Le bisquine','La galiote','Le brigantin','Le trois-mâts'];
+let AUTRES = [], POS_A = [];
+
+/* leurs barques, dessinées dans la scène */
+function barquesDesAutres(depart, ecart){
+  let s = '';
+  POS_A = [];
+  AUTRES.slice(0, 5).forEach((j, i) => {
+    const c = COULEURS.find(x => x.k === j.couleur) || COULEURS[0];
+    const d = depart + i * ecart;
+    const X = (i % 2 ? 1 : -1) * (5.5 + Math.floor(i / 2) * 4.5);
+    const y = sol(d), m = u => px(u, d), x = projX(X, d);
+    const n = Math.max(1, Math.min(20, j.barque || 1));
+    const k = m(2 + n * .07) / (76 + n * 5.6);
+    s += `<g class="amarre a${i % 4}">`;
+    s += `<ellipse cx="${x.toFixed(1)}" cy="${(y + m(.1)).toFixed(1)}"
+      rx="${m(2).toFixed(1)}" ry="${m(.2).toFixed(1)}" fill="#12324a" opacity=".22"/>`;
+    s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${k.toFixed(4)})">`
+      + `<g transform="translate(-150,-122)">` + barqueQ(n, false) + `</g></g>`;
+    /* son pavillon */
+    s += `<path d="M${(x + m(1.9)).toFixed(1)} ${y.toFixed(1)} v${(-m(1.6)).toFixed(1)}"
+      stroke="#5a4a38" stroke-width="${Math.max(.5, m(.08)).toFixed(1)}"/>`;
+    s += `<path d="M${(x + m(1.9)).toFixed(1)} ${(y - m(1.6)).toFixed(1)}
+      l${m(.66).toFixed(1)} ${m(.2).toFixed(1)} l${(-m(.66)).toFixed(1)} ${m(.2).toFixed(1)} z"
+      fill="${c.c}"/>`;
+    s += `</g>`;
+    POS_A.push({ j, x, y: y - m(2.4) });
+  });
+  return s;
+}
+
+/* les étiquettes, posées au-dessus */
+function etiquettes(v){
+  const el = document.getElementById('sc');
+  if (!el || !POS_A.length){
+    const e2 = document.getElementById('eti');
+    if (e2) e2.innerHTML = '';
+    return;
+  }
+  const L = el.clientWidth, H = el.clientHeight;
+  const ech = Math.max(L / W, H / v.h);
+  const dx = (L - W * ech) / 2, dy = (H - v.h * ech) / 2;
+  document.getElementById('eti').innerHTML = POS_A.map((p, i) => {
+    const c = COULEURS.find(x => x.k === p.j.couleur) || COULEURS[0];
+    const f = (ECUSSONS.find(x => x.k === p.j.ecusson) || ECUSSONS[0]).r;
+    const X = dx + p.x * ech, Y = dy + (p.y - v.y) * ech;
+    if (X < 20 || X > L - 20 || Y < 96 || Y > H - 110) return '';
+    return '<button class="eti' + (p.j.charge ? ' charge' : '') + '" data-a="' + i + '"'
+      + ' style="left:' + X.toFixed(0) + 'px;top:' + Y.toFixed(0) + 'px">'
+      + '<span class="em" style="background:' + c.c + ';border-radius:' + f + '">'
+      + (p.j.signe ? signe(p.j.signe, '#fff') : '') + '</span>'
+      + '<b>' + p.j.pseudo + '</b><i></i></button>';
+  }).join('');
+  document.querySelectorAll('[data-a]').forEach(b =>
+    b.onclick = () => ficheAutre(+b.dataset.a));
+}
+
+function ficheAutre(i){
+  const j = POS_A[i].j;
+  const c = COULEURS.find(x => x.k === j.couleur) || COULEURS[0];
+  const f = (ECUSSONS.find(x => x.k === j.ecusson) || ECUSSONS[0]).r;
+  const h = +j.depuis_h || 0;
+  document.getElementById('fi').innerHTML =
+    '<div class="h"><span class="em" style="background:' + c.c
+    + ';border-radius:' + f + '">' + (j.signe ? signe(j.signe, '#fff') : '') + '</span>'
+    + '<span class="tx"><b>' + j.pseudo + '</b>'
+    + '<span>' + (j.nom ? j.nom + ' — ' + (MET_A[j.metier] || '') : 'Sans affaire')
+    + '</span></span><button class="fer" id="fi-x">×</button></div>'
+    + '<ul>'
+    + '<li><span>Niveau</span><b>' + (j.niveau || 1) + '</b></li>'
+    + '<li><span>Sa barque</span><b>' + (BARQ_A[j.barque] || '—') + '</b></li>'
+    + '<li><span>Au port depuis</span><b>'
+    + (h < 1 ? "moins d'une heure" : h + ' h') + '</b></li>'
+    + '<li><span>Sa cale</span><b style="color:' + (j.charge ? '#f0c46a' : '#8ce0a8')
+    + '">' + (j.charge ? 'chargée' : 'vide') + '</b></li></ul>';
+  document.getElementById('fi').classList.add('on');
+  document.getElementById('fi-x').onclick = () =>
+    document.getElementById('fi').classList.remove('on');
+}
+
+async function chercherLesAutres(){
+  try {
+    const r = await BD.agir('qui_est_la');
+    AUTRES = Array.isArray(r) ? r : [];
+  } catch(e){ AUTRES = []; }
+  return AUTRES.length;
+}
+
 function scene(){
   let s = defs() + ciel() + marseilleFond();
 
@@ -3371,6 +3514,7 @@ function poserAvatar(d){
     poserChantier(d);
     poserBas(d);
     MOI = d;
+    chercherLesAutres().then(n => { if (n) dessiner(); });
     lireReglages();
     /* le troisième bouton devient ton anse, chez toi */
     const bm = document.getElementById('b-mar');
@@ -3409,13 +3553,15 @@ function poserAvatar(d){
   }
 })();
 
+
 /* ---------- la scène ---------- */
 function dessiner(){
   const v = cadrer(innerWidth, innerHeight);
   document.getElementById('sc').innerHTML =
     '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + scene() + '</svg>';
+    + scene() + barquesDesAutres(40, 11) + '</svg>';
+  etiquettes(v);
 }
 dessiner();
 let t = null;
