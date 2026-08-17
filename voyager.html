@@ -815,8 +815,10 @@ document.getElementById('ret').onclick = () => location.href = retour;
   if (!Array.isArray(PORTS)) PORTS = [];
   const RET = { barcelone:'barcelone.html', palma:'palma.html', anse:'jeu.html' };
   retour = RET[d.port] || 'jeu.html';
-  const possibles = PORTS.filter(p => p.k !== d.port);
-  CAP = CAPS[(possibles.find(p => p.ouvert) || {}).k] || CAPS.anse;
+  /* mes_ports ne renvoie déjà que ce qu'on peut atteindre d'ici */
+  const possibles = PORTS;
+  possibles.forEach(p => { if (CAPS[p.k]){ CAPS[p.k].jours = p.jours; CAPS[p.k].nrj = p.energie; } });
+  CAP = CAPS[(possibles.find(p => p.ouvert) || possibles[0] || {}).k] || CAPS.anse;
   const P = PALIERS_B[n - 1];
   const nrj = Number(d.energie ?? 100);
 
@@ -859,6 +861,7 @@ document.getElementById('ret').onclick = () => location.href = retour;
     else {
       const M = { deja_la:'Tu y es déjà.', sans_bateau:'Il te faut un bateau.',
                   deja_en_mer:'Tu es déjà en mer.', ferme:"Ce port ne t'est pas ouvert.",
+                  pas_de_route:"On ne va pas là-bas d'ici.",
                   trop_fatigue:'Il te manque ' + ((r.faut||0) - (r.tu_as||0)) + " d'énergie." };
       bt.textContent = M[r.pourquoi] || 'Impossible pour l\'instant';
     }
