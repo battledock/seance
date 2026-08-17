@@ -848,10 +848,116 @@ function chambre(){
   return s;
 }
 
+/* ============================================================
+   PERE — le frère, quelques semaines après
+   ============================================================ */
+const PERE = {
+  debut: {
+    dit: ["La porte s'ouvre avant que tu frappes. Il t'a vu monter la ruelle.",
+        "« C'est vous. »",
+        "Il s'écarte. Le lit du fond est fait, et vide.",
+        "« Il est mort le mardi. Elle est arrivée le dimanche d'avant. "
+        + "Ils ont eu six jours. »",
+        "Il dit ça comme on rend des comptes."],
+    lire: { instinct: 2,
+      texte: "L'atelier n'a pas servi depuis. Les métiers sont montés, "
+           + "les fils sont tendus, et il y a de la poussière dessus." },
+    choix: [
+      { t: "« Et vous, maintenant ? »",
+        s: "Il est seul dans cette maison.", vers:'lui' },
+      { t: "Regarder les métiers à tisser.",
+        s: "Il y a du travail arrêté là-dessus.", vers:'atelier' },
+      { t: "« Il vous a laissé quelque chose ? »",
+        s: "Aller au fait.", besoin:{negociation:2}, vers:'stock' } ]
+  },
+
+  lui: {
+    dit: ["Il met du temps à répondre.",
+        "« Je tisse. C'est ce que je fais depuis que j'ai douze ans. »",
+        "« Lui il vendait. Moi je tisse. »",
+        "Il montre le fond de la pièce d'un mouvement de menton. "
+        + "Il y a des piles jusqu'au plafond, sous des draps.",
+        "« Deux cents pièces. Personne ne vient les chercher. »"],
+    choix: [{ t: "Aller voir.", s:"", vers:'stock' }]
+  },
+
+  atelier: {
+    dit: ["Deux métiers de haute lisse, montés, avec l'ouvrage à moitié fait.",
+        "Tu passes la main sur le drap. C'est serré, régulier. "
+        + "Tu n'as jamais rien touché de pareil.",
+        "« Trente-deux fils au pouce. »",
+        "Il le dit sans fierté. C'est un fait, comme le prix du pain.",
+        "« À Barcelone ils font vingt-quatre et ils appellent ça du beau. »"],
+    choix: [{ t: "« Vous en avez combien ? »", s:"", vers:'stock' }]
+  },
+
+  stock: {
+    dit: ["Il soulève un drap. Les piles vont du sol au plafond.",
+        "Du bleu, du gris, un rouge très sombre. Deux cents pièces, peut-être plus.",
+        "« Il partait avec dix pièces et il revenait avec de l'argent. "
+        + "Je n'ai jamais su comment il faisait. »",
+        "Il repose le drap.",
+        "« Moi si je descends au port on me prend pour un fou. »"],
+    choix: [
+      { t: "« Je peux les porter. »",
+        s: "Simple, direct, sans conditions.", vers:'fin_affaire' },
+      { t: "« Parlez-moi de lui. »",
+        s: "Le tissu attendra. Lui non.",
+        besoin:{discussion:2}, vers:'fin_ardit' },
+      { t: "« Montrez-moi comment vous les faites. »",
+        s: "Comprendre ce que tu vas vendre.",
+        besoin:{precision_:2}, vers:'fin_atelier' } ]
+  },
+
+  fin_affaire: {
+    dit: ["« Combien vous prenez ? »",
+        "Tu lui dis ta part. Il ne discute pas, il hoche la tête.",
+        "« D'accord. »",
+        "Il commence à compter des pièces sur la table, dix par dix."],
+    fin: 'affaire'
+  },
+
+  fin_ardit: {
+    dit: ["Il s'assoit sur le bord du lit vide.",
+        "« Il avait dix ans de plus que moi. C'est lui qui m'a appris. »",
+        "« À douze ans il m'a mis devant le métier et il m'a dit : "
+        + "toi tu feras ça, moi je ferai le reste. »",
+        "Un temps.",
+        "« Il a fait le reste pendant quarante ans. »",
+        "Il ouvre le tiroir de la table de chevet et en sort quelque chose.",
+        "« Elle était à notre mère. Il la gardait pour la femme de Barcelone. "
+        + "Il n'a pas osé. »",
+        "Il te la pose dans la main.",
+        "« Vous la lui donnerez. Vous saurez quand. »"],
+    fin: 'ardit'
+  },
+
+  fin_atelier: {
+    dit: ["Il s'installe au métier et il travaille dix minutes sans parler.",
+        "Tu regardes ses mains. Elles savent où aller sans qu'il regarde.",
+        "« Le fil de chaîne, on le tend une fois pour trois mois. "
+        + "Si on le tend mal, tout est faux et on ne le voit qu'à la fin. »",
+        "Il s'arrête et te regarde.",
+        "« C'est pour ça que je ne descends pas au port. Je ne peux pas "
+        + "tout reprendre si je me trompe. »"],
+    fin: 'atelier'
+  }
+};
+
+const FINS_P = {
+  affaire: { txt:"Il te compte dix pièces et note quelque chose sur un carnet. "
+    + "C'est un accord, pas une amitié.", part:'60 %' },
+  ardit:   { txt:"Il te raccompagne jusqu'au bas de la ruelle, ce qu'il n'avait "
+    + "pas fait la première fois.", part:'60 %' },
+  atelier: { txt:"« Revenez quand vous voulez. Il y a toujours de quoi charger. »",
+    part:'60 %' }
+};
+
 const NOMS = { instinct:'Instinct', sang_froid:'Sang-froid', discussion:'Discussion',
                negociation:'Négociation', chance:'Chance' };
 let MOI = { instinct:0, sang_froid:0, discussion:0, negociation:0, chance:0 };
 let issue = null, fini = false, monteNiveau = false;
+let SUITE = false;   /* la visite à Pere */
 
 let DEDANS = false;
 function dessiner(){
@@ -866,12 +972,12 @@ dessiner();
 const assez = b => !b || Object.entries(b).every(([k, v]) => (MOI[k] || 0) >= v);
 
 function jouer(cle){
-  const E = SCENE_A[cle];
+  const E = (SUITE ? PERE : SCENE_A)[cle];
   if (!E) return;
   const L = document.getElementById('lignes'), C = document.getElementById('choix');
   L.innerHTML = ''; C.innerHTML = '';
   /* on est dedans à partir de là */
-  if (cle === 'dedans' && !DEDANS){
+  if ((cle === 'dedans' || (SUITE && cle === 'stock')) && !DEDANS){
     DEDANS = true;
     document.getElementById('q-n').textContent = 'Ardit';
     document.getElementById('q-q').textContent = 'Marchand de tissu';
@@ -924,24 +1030,38 @@ function jouer(cle){
 async function terminer(quoi, n){
   if (fini) return; fini = true;
   issue = quoi;
-  const F = FINS_A[quoi];
-  const r = await BD.agir('conclure_ardit', { p_issue: quoi });
+  const F = (SUITE ? FINS_P : FINS_A)[quoi];
+  const r = SUITE
+    ? await BD.agir('conclure_pere',  { p_issue: quoi })
+    : await BD.agir('conclure_ardit', { p_issue: quoi });
   monteNiveau = !!(r.niveau && r.niveau.monte);
 
-  document.getElementById('f-t').textContent =
-    quoi === 'muet' ? 'Tu redescends la ruelle' : 'Il te rattrape à la porte';
-  document.getElementById('f-g').textContent =
-    (r.ok ? r.euros : F.euros) + ' €';
+  if (SUITE){
+    document.getElementById('f-t').textContent = 'Tu charges à Palma, maintenant';
+    document.getElementById('f-g').textContent = 'Le drap de Majorque';
+    document.getElementById('f-g').style.fontSize = '24px';
+  } else {
+    document.getElementById('f-t').textContent =
+      quoi === 'muet' ? 'Tu redescends la ruelle' : 'Il te rattrape à la porte';
+    document.getElementById('f-g').textContent = (r.ok ? r.euros : F.euros) + ' €';
+  }
   document.getElementById('f-p').textContent = F.txt;
   const P = [];
   if (r.ok && r.reputation) P.push('+' + r.reputation + ' réputation');
   if (r.ok && r.xp) P.push('+' + r.xp + " points d'expérience");
-  P.push('Núria attend ta réponse');
+  if (SUITE){
+    if (r.ok && r.objet && r.objet.nom) P.push(r.objet.nom);
+    P.push('Il te laisse ' + F.part + ' du prix');
+  } else P.push('Núria attend ta réponse');
   if (monteNiveau) P.push('Tu changes de niveau');
   document.getElementById('f-plus').innerHTML =
     P.map(t => '<span>' + t + '</span>').join('');
   document.getElementById('f-b').textContent =
     monteNiveau ? 'Voir ton niveau' : 'Redescendre au port';
+  if (SUITE){
+    const cs = document.getElementById('f-caisse');
+    if (cs) cs.remove();
+  }
   /* on laisse le temps de lire : les répliques d'abord, puis un bouton */
   const D = document.querySelector('.dit');
   const C = document.getElementById('choix');
@@ -967,7 +1087,23 @@ document.getElementById('f-b').onclick = () => location.href =
     if (!d){ location.href = 'index.html'; return; }
   } catch(e){ return; }
   if (d.parti_le || d.port !== 'palma'){ location.href = 'jeu.html'; return; }
-  if (!(d.sacoche || []).some(o => o.k === 'lettre')){ location.href = 'palma.html'; return; }
+  const aLettre = (d.sacoche || []).some(o => o.k === 'lettre');
+  const Q = d.quetes || [];
+  const ardit = Q.find(q => q.k === 'ardit');
+  const pere  = Q.find(q => q.k === 'pere');
+  /* la lettre portée, le niveau 4 atteint, et Pere pas encore vu : c'est la suite */
+  if (!aLettre){
+    if (pere || !ardit || ardit.etape < 2 || (d.niveau || 1) < 4){
+      location.href = 'palma.html'; return;
+    }
+    SUITE = true;
+    document.getElementById('a-t').textContent = 'Quelques semaines plus tard';
+    const pp = document.querySelectorAll('.avert p');
+    if (pp[0]) pp[0].innerHTML = "Ardit est mort. <b>Son frère est resté.</b>";
+    if (pp[1]) pp[1].textContent = "Il ne sait pas vendre. Toi si.";
+    document.getElementById('q-n').textContent = 'Pere';
+    document.getElementById('q-q').textContent = 'Tisserand';
+  }
   const c = d.competences || {};
   MOI = { instinct:+d.instinct||0, sang_froid:+d.sang_froid||0, chance:+d.chance||0,
           discussion:+c.discussion||0, negociation:+c.negociation||0 };
