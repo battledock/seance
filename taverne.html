@@ -418,6 +418,95 @@ const APRES_ARDIT = {
 
 let MOI = { negociation:0, discussion:0 };
 
+/* ---------- le retour : elle attend la réponse ---------- */
+const RETOUR = {
+  /* il n'a rien dit */
+  muet: {
+    dit: ["Tu poses la lettre du regard sur le comptoir, sans lettre.",
+        "« Alors ? »",
+        "Tu lui dis que tu l'as remise. Qu'il a dit merci. Que c'est tout.",
+        "Elle attend la suite. Il n'y a pas de suite.",
+        "« Merci. »",
+        "Elle range un verre qui était déjà rangé."],
+    choix: [
+      { k:'fidele',  t:"« C'est tout ce qu'il a dit. »",
+        s:"La vérité, telle qu'elle est.", note:"Elle n'apprendra rien." },
+      { k:'adoucis', t:"« Il avait l'air d'aller mal. »",
+        s:"Ce n'est pas faux. Ce n'est pas ce qu'il a dit.",
+        note:"Tu ajoutes ce qu'il n'a pas dit." } ] },
+
+  /* il a dit qu'il avait honte */
+  honte: {
+    dit: ["« Alors ? »",
+        "Tu répètes ce qu'il a dit. Mot pour mot, parce que les mots comptaient.",
+        "Elle t'écoute jusqu'au bout sans bouger.",
+        "« Qu'il n'a pas voulu que je le voie comme ça. »",
+        "« Comme quoi ? »",
+        "Et là tu comprends qu'elle ne sait pas."],
+    choix: [
+      { k:'fidele',  t:"Tout lui dire. Le lit, la maladie, le frère.",
+        s:"Elle a le droit de savoir où il est.",
+        note:"Elle ne l'a pas demandé." },
+      { k:'adoucis', t:"« Il n'est pas en forme. Rien de grave. »",
+        s:"Lui laisser le temps.", note:"Tu choisis pour elle." },
+      { k:'tais',    t:"« Je ne sais pas. Il n'a pas précisé. »",
+        s:"Ce n'est pas ton histoire.", note:"Tu lui mens." } ] },
+
+  /* il a dit de venir */
+  venir: {
+    dit: ["Elle voit ta tête avant que tu ouvres la bouche.",
+        "« Quoi. »",
+        "Tu lui dis. La maison derrière la Seu, le lit, son frère debout. "
+        + "Et les quatre mots.",
+        "« Dites-lui de venir. »",
+        "Elle repose son torchon. Elle le repose vraiment, elle ne le lâche pas.",
+        "Un long moment.",
+        "« Six mois. »"],
+    choix: [
+      { k:'fidele',  t:"« Il a dit de venir. Il l'a dit deux fois. »",
+        s:"Insister. Elle doit entendre que c'était sérieux.",
+        note:"Elle décidera seule après." },
+      { k:'adoucis', t:"« Il ira mieux. Tu as le temps. »",
+        s:"Elle a l'air bouleversée. La rassurer.",
+        note:"Tu ne sais pas s'il ira mieux." },
+      { k:'tais',    t:"Ne rien ajouter.",
+        s:"Elle a compris. Laisse-la.", note:"Elle attendra peut-être trop." } ] }
+};
+
+const APRES_RETOUR = {
+  muet:   { fidele: ["« D'accord. »",
+              "Elle hoche la tête et te sert un verre que tu n'as pas demandé.",
+              "Elle ne parlera plus d'Ardit ce soir."],
+            adoucis: ["Elle te regarde par-dessus le comptoir.",
+              "« Vous dites ça pour me faire plaisir. »",
+              "Elle n'a pas tort. Elle te sert quand même."] },
+  honte:  { fidele: ["Tu lui dis tout. Le lit contre le mur, la bougie, "
+              + "son frère qui ne bouge pas de l'embrasure.",
+              "Elle écoute sans t'interrompre une seule fois.",
+              "À la fin, elle regarde ses mains.",
+              "« Il aurait pu me le dire. »",
+              "« Je serais venue. »"],
+            adoucis: ["« Pas en forme. »",
+              "Elle répète les mots comme si elle les soupesait.",
+              "« Vous êtes gentil. Vous mentez mal. »"],
+            tais: ["Elle te fixe une seconde de trop.",
+              "« Bon. »",
+              "Elle va servir quelqu'un d'autre au bout du comptoir."] },
+  venir:  { fidele: ["« Deux fois. »",
+              "Elle défait son tablier. Elle le plie, ce qui est absurde, "
+              + "et elle le pose sur le comptoir.",
+              "« Marcel ! » Un type se lève au fond. « Tu fermes ce soir. »",
+              "Elle passe devant toi et s'arrête à la porte.",
+              "« Vous auriez pu ne rien dire. »",
+              "Elle sort quelque chose de sa poche et te le met dans la main."],
+            adoucis: ["« J'ai le temps. »",
+              "Elle sourit sans y croire.",
+              "« On dit toujours ça. »"],
+            tais: ["Elle reste un moment à regarder la porte.",
+              "Puis elle reprend son torchon et son verre.",
+              "Tu ne sais pas si elle ira."] }
+};
+
 function poserArdit(){
   const W2 = document.getElementById('w');
   const assez = b => !b || Object.entries(b).every(([k,v]) => (MOI[k]||0) >= v);
@@ -466,6 +555,53 @@ async function conclure(issue){
   if (b) b.onclick = () => location.href = 'barcelone.html';
 }
 
+let AR = null;   /* où en est la quête d'Ardit */
+
+function poserRetour(){
+  const R = RETOUR[AR.issue];
+  if (!R) return;
+  const W2 = document.getElementById('w');
+  let s = '<div class="dit">' + R.dit.map((t,i) =>
+    '<p class="' + (t.trim().startsWith('«') ? 'parle' : '') + '" '
+    + 'style="animation-delay:' + (i*.5+.1).toFixed(2) + 's">' + t + '</p>').join('') + '</div>';
+  s += '<div class="choix" style="animation-delay:' + (R.dit.length*.5+.4).toFixed(2) + 's">'
+    + R.choix.map(c => '<button data-r="' + c.k + '">'
+        + '<b>' + c.t + '</b><span class="s">' + c.s + '</span>'
+        + '<span class="cle" style="background:rgba(255,255,255,.07);color:rgba(246,228,200,.5)">'
+        + c.note + '</span></button>').join('') + '</div>';
+  W2.innerHTML = s;
+  W2.querySelectorAll('[data-r]').forEach(b =>
+    b.onclick = () => conclureRetour(b.dataset.r));
+}
+
+async function conclureRetour(quoi){
+  const W2 = document.getElementById('w');
+  W2.querySelector('.choix').innerHTML = '<button disabled style="opacity:.5">…</button>';
+  const r = await BD.agir('conclure_reponse', { p_issue: quoi });
+  const L = (APRES_RETOUR[AR.issue] || {})[quoi] || [];
+  let s = '<div class="dit">' + L.map((t,i) =>
+    '<p class="' + (t.trim().startsWith('«') ? 'parle' : '') + '" '
+    + 'style="animation-delay:' + (i*.5+.1).toFixed(2) + 's">' + t + '</p>').join('') + '</div>';
+  if (r.ok){
+    const P = [];
+    if (r.euros) P.push('+' + r.euros + ' €');
+    if (r.reputation) P.push('+' + r.reputation + ' de réputation');
+    if (r.xp) P.push('+' + r.xp + " points d'expérience");
+    s += '<div class="port" style="animation-delay:' + (L.length*.5+.5).toFixed(2) + 's">'
+      + '<p class="su">Le compte d\'Ardit</p><b style="font-size:20px">Réglé</b>'
+      + '<div class="d" style="flex-wrap:wrap">'
+      + P.map(t => '<span style="font-size:12.5px">' + t + '</span>').join('') + '</div>'
+      + (r.objet && r.objet.nom
+         ? '<p style="font-size:12.5px;color:#f0c46a;margin-top:14px;'
+           + 'font-family:system-ui,sans-serif">' + r.objet.nom + '</p>' : '')
+      + '<button id="ok2">Redescendre au port</button></div>';
+  }
+  W2.innerHTML = s;
+  const b = document.getElementById('ok2');
+  if (b) b.onclick = () => location.href =
+    (r.niveau && r.niveau.monte) ? 'niveau.html' : 'rue.html';
+}
+
 function poser(r){
   const C = r.cours || [];
   let s = '<div class="dit">'
@@ -489,12 +625,20 @@ function poser(r){
           + (c.precis && note ? '<em>' + note + '</em>' : '') + '</span></div>';
       }).join('') + '</div>';
 
-  /* si la quête n'est pas prise, elle a quelque chose à te demander */
-  if (!r.ardit_prise)
+  /* selon où on en est avec Ardit */
+  AR = r.ardit;
+  if (!AR)
     s += '<div class="choix" style="animation-delay:2.6s">'
       + '<button id="parler"><b>« Tu as l\'air d\'avoir quelque chose à dire. »</b>'
       + '<span class="s">Elle t\'a regardé deux fois depuis que tu es entré.</span>'
       + '</button></div>';
+  else if (AR.etape === 2 && AR.etat !== 'finie')
+    s += '<div class="choix" style="animation-delay:2.6s">'
+      + '<button id="rendre"><b>« Je reviens de Majorque. »</b>'
+      + '<span class="s">Elle attend cette phrase depuis que tu es parti.</span>'
+      + '</button></div>';
+  else if (AR.etape === 1)
+    s += '<p class="mot">« Vous êtes encore là ? Il est à Majorque, pas dans ma salle. »</p>';
 
   s += '<p class="mot">'
     + (r.lien >= 30
@@ -504,6 +648,8 @@ function poser(r){
   document.getElementById('w').innerHTML = s;
   const p = document.getElementById('parler');
   if (p) p.onclick = poserArdit;
+  const q = document.getElementById('rendre');
+  if (q) q.onclick = poserRetour;
 }
 
 document.getElementById('ret').onclick = () => location.href = 'rue.html';
@@ -519,11 +665,7 @@ document.getElementById('ret').onclick = () => location.href = 'rue.html';
   const c = d.competences || {};
   MOI = { negociation: +c.negociation || 0, discussion: +c.discussion || 0 };
   const r = await BD.agir('la_taverne');
-  if (r.ok){
-    const Q = await BD.agir('mes_quetes');
-    r.ardit_prise = Array.isArray(Q) && Q.some(q => q.k === 'ardit');
-    poser(r);
-  }
+  if (r.ok) poser(r);
   else if (r.pourquoi === 'trop_tot') poserFerme(r);
   else location.href = 'rue.html';
 })();
