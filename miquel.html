@@ -113,6 +113,7 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 .fin .plus{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:4px}
 .fin .plus span{font-size:12px;padding:8px 14px;border-radius:20px;
   background:rgba(140,224,168,.14);color:#8ce0a8;border:1px solid rgba(140,224,168,.26)}
+.fin .caisse:empty{display:none}
 .fin .caisse{display:flex;align-items:center;gap:12px;margin-top:6px;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
   border-radius:10px;padding:14px 16px;max-width:320px}
@@ -173,10 +174,10 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 </div>
 
 <div class="fin" id="fin">
-  <p class="t">Il te tend les billets, pliés en quatre</p>
+  <p class="t" id="f-t">Il te tend les billets, pliés en quatre</p>
   <p class="g" id="f-g">—</p>
   <p class="p" id="f-p">—</p>
-  <div class="caisse">
+  <div class="caisse" id="f-caisse">
     <span class="ic"><svg viewBox="0 0 24 24">
       <path d="M4 8h16v12H4zM4 8l2-4h12l2 4M9 12h6"/></svg></span>
     <span class="tx"><b>Une caisse sans marque</b>
@@ -1386,6 +1387,9 @@ async function conclureRevoir(quoi){
   C.innerHTML = '<button id="fin2"><b>Continuer</b></button>';
   document.getElementById('fin2').onclick = () => {
     monteNiveau = !!(r.niveau && r.niveau.monte);
+    /* ce n'est pas la première rencontre : pas de caisse */
+    const cs = document.getElementById('f-caisse');
+    if (cs) cs.remove();
     document.getElementById('f-t').textContent = 'Tu charges ici, maintenant';
     document.getElementById('f-g').textContent = 'Les contrats de Barcelone';
     document.getElementById('f-g').style.fontSize = '24px';
