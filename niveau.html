@@ -94,6 +94,32 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 .e3{animation-duration:6.8s;animation-delay:-.7s}
 @keyframes scint{0%,100%{opacity:.15}50%{opacity:.7}}
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+/* ---------- le titre qu'on te donne ---------- */
+.titre{margin:0 0 14px;padding:18px 16px;border-radius:12px;text-align:center;
+  border:1.5px solid rgba(240,196,106,.5);
+  background:linear-gradient(180deg,rgba(74,58,26,.72),rgba(38,30,16,.6));
+  box-shadow:0 6px 28px rgba(240,196,106,.16);
+  opacity:0;transform:scale(.94);animation:sacre .8s .25s forwards}
+@keyframes sacre{to{opacity:1;transform:none}}
+.titre .su{font-size:8px;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(240,196,106,.72)}
+.titre b{display:block;font-size:29px;font-weight:700;color:#f6dfa6;margin-top:8px;
+  letter-spacing:.05em}
+.titre span{display:block;font-size:11.5px;color:rgba(246,223,166,.6);margin-top:8px;
+  font-family:system-ui,sans-serif;line-height:1.5}
+.gain.eur .ic{background:rgba(240,196,106,.14)}
+.gain.eur .ic svg{stroke:#f0c46a}
+.gain.eur .v{color:#f0c46a}
+.gain.cal .ic{background:rgba(168,140,90,.16)}
+.gain.cal .ic svg{stroke:#c9a374}
+.gain.cal .v{color:#c9a374}
+.gain.obj .ic{padding:4px;background:rgba(240,196,106,.1)}
+.gain.obj .ic svg{width:100%;height:100%}
+.gain.obj .v{font-size:12px;color:#8ce0a8}
+.gain.obj .ic svg{stroke:none}
+.page.cinq .haut .sur{color:#f0c46a}
+.page.cinq .gain{border-color:rgba(240,196,106,.24)}
 </style>
 </head>
 <body>
@@ -108,24 +134,8 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
     <p class="m" id="m">Cinq traversées, et on commence à te reconnaître sur les quais.</p>
   </div>
 
-  <div class="gains">
-    <div class="gain pts">
-      <span class="ic"><svg viewBox="0 0 24 24">
-        <path d="M12 3l2.6 5.6L21 9.4l-4.6 4.3 1.2 6.3L12 17l-5.6 3 1.2-6.3L3 9.4l6.4-.8z"/>
-      </svg></span>
-      <span class="tx"><b>Points de compétence</b>
-        <span>À placer où tu veux, dans ta fiche.</span></span>
-      <span class="v" id="g-pts">+2</span>
-    </div>
-    <div class="gain nrj">
-      <span class="ic"><svg viewBox="0 0 24 24">
-        <path d="M13 2L4.5 13H11l-1 9 8.5-11H12z"/>
-      </svg></span>
-      <span class="tx"><b>Énergie maximale</b>
-        <span>Tu tiens un peu plus longtemps en mer.</span></span>
-      <span class="v" id="g-nrj">+1</span>
-    </div>
-  </div>
+  <div id="titre"></div>
+  <div class="gains" id="gains"></div>
 
   <div class="bas">
     <button id="ok">Placer mes points</button>
@@ -136,6 +146,101 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js"></script>
 <script>
+/* ============================================================
+   LES OBJETS — dessinés, pas des émojis
+   ============================================================ */
+function objetSVG(k){
+  const O = {
+    cle: `<path d="M17 22a7 7 0 1 0 0-14 7 7 0 0 0 0 14z" fill="none" stroke="#c9a374" stroke-width="3"/>
+      <circle cx="17" cy="15" r="2.6" fill="#3a3028"/>
+      <path d="M24 15h20M40 15v6M35 15v4M44 15v7" stroke="#c9a374" stroke-width="3"
+        stroke-linecap="round"/>
+      <path d="M17 8.4a7 7 0 0 0-6.4 4.2 7 7 0 0 1 9.6 8.6A7 7 0 0 0 17 8.4z"
+        fill="#e0bc8c" opacity=".5"/>`,
+
+    carte: `<path d="M5 8l12-3 13 4 12-3v22l-12 3-13-4-12 3z" fill="#e4d8b8"/>
+      <path d="M5 8l12-3v22l-12 3z" fill="#f0e6cc"/>
+      <path d="M17 5v22M30 9v22" stroke="#c4b490" stroke-width="1"/>
+      <path d="M9 15q6-3 11 1t9-1" stroke="#8a9aa8" stroke-width="1.4" fill="none"/>
+      <path d="M11 21q7-2 12 2" stroke="#8a9aa8" stroke-width="1.2" fill="none"/>
+      <path d="M24 17l3 3M27 17l-3 3" stroke="#8a4a3a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M42 6v22l-2-1V7z" fill="#c4b490"/>
+      <path d="M42 6l-2 1v20l2 1z" fill="#3a3630" opacity=".2"/>`,
+
+    boussole: `<circle cx="24" cy="18" r="14" fill="#a8823c"/>
+      <circle cx="24" cy="18" r="11.6" fill="#e8dcc0"/>
+      <circle cx="24" cy="18" r="11.6" fill="none" stroke="#8a6a30" stroke-width="1"/>
+      <path d="M24 8v3M24 25v3M14 18h3M31 18h3" stroke="#6d5a38" stroke-width="1.4"/>
+      <path d="M24 9l3 8-3 2-3-2z" fill="#b8483a"/>
+      <path d="M24 27l-3-8 3-2 3 2z" fill="#e8e2d4"/>
+      <circle cx="24" cy="18" r="1.6" fill="#6d5a38"/>
+      <path d="M24 4a14 14 0 0 0-9.9 4.1 14 14 0 0 1 19.8 19.8A14 14 0 0 0 24 4z"
+        fill="#e0c088" opacity=".34"/>
+      <path d="M20 4h8v2h-8z" fill="#8a6a30"/>`,
+
+    bague: `<ellipse cx="24" cy="19" rx="10" ry="11" fill="none" stroke="#9a9aa0" stroke-width="3.4"/>
+      <ellipse cx="24" cy="19" rx="10" ry="11" fill="none" stroke="#d0d0d6" stroke-width="1.2"
+        stroke-dasharray="8 20" stroke-dashoffset="14"/>
+      <path d="M19 9q5-3 10 0" stroke="#e4e4e8" stroke-width="1.4" fill="none"/>
+      <ellipse cx="24" cy="19" rx="6.4" ry="7.4" fill="#2a2e36" opacity=".2"/>`,
+
+    lettre: `<path d="M7 10h34v20H7z" fill="#f0e8d4"/>
+      <path d="M7 10h34v20H7z" fill="none" stroke="#c9bda0" stroke-width="1"/>
+      <path d="M7 10l17 11 17-11" fill="none" stroke="#c9bda0" stroke-width="1.4"/>
+      <path d="M7 30l12-9M41 30l-12-9" fill="none" stroke="#dcd2ba" stroke-width="1"/>
+      <circle cx="24" cy="22" r="4.6" fill="#a8433a"/>
+      <circle cx="24" cy="22" r="4.6" fill="none" stroke="#7a2e28" stroke-width=".8"/>
+      <path d="M22 20.4l4 3.2M26 20.4l-4 3.2" stroke="#7a2e28" stroke-width="1"/>`,
+
+    couteau: `<path d="M6 22q10-9 22-10 4-.4 5 1.4t-2 4Q20 22 8 25z" fill="#c4ccd2"/>
+      <path d="M6 22q10-9 22-10 4-.4 5 1.4-12 2-25 11z" fill="#e8eef2"/>
+      <path d="M31 17l11 3.4q2 .6 2 2.2t-2 2.2L31 25z" fill="#6d4a30"/>
+      <path d="M31 17l11 3.4q2 .6 2 2.2l-13-2z" fill="#8a6444"/>
+      <circle cx="36" cy="21.4" r="1" fill="#3a2a1c"/>
+      <circle cx="40" cy="22" r="1" fill="#3a2a1c"/>`,
+
+    medaille: `<circle cx="24" cy="21" r="11" fill="#b4a068"/>
+      <circle cx="24" cy="21" r="9.2" fill="#cdb87e"/>
+      <circle cx="24" cy="21" r="9.2" fill="none" stroke="#9a8850" stroke-width=".8"/>
+      <path d="M24 14v5M21.4 19h5.2M24 19v9" stroke="#7a6a3c" stroke-width="1.6"
+        stroke-linecap="round"/>
+      <path d="M19 27q5 3 10 0" stroke="#7a6a3c" stroke-width="1.2" fill="none"/>
+      <path d="M24 10a11 11 0 0 0-7.8 3.2 11 11 0 0 1 15.6 15.6A11 11 0 0 0 24 10z"
+        fill="#e0cf9a" opacity=".4"/>
+      <path d="M22 10l2-6 2 6z" fill="#8a7a48"/>`,
+
+    carnet: `<path d="M9 7h28q2 0 2 2v22q0 2-2 2H9z" fill="#7a5c3a"/>
+      <path d="M11 7h26v26H11z" fill="#e4d8bc"/>
+      <path d="M11 7h26v26H11z" fill="none" stroke="#c4b494" stroke-width=".8"/>
+      <path d="M15 13h18M15 17h18M15 21h14M15 25h16M15 29h11"
+        stroke="#a89a80" stroke-width="1"/>
+      <path d="M15 17h18" stroke="#8a4a3a" stroke-width="1.2"/>
+      <path d="M9 7h3v26H9z" fill="#5a4028"/>
+      <path d="M37 15h5v6l-2.5-2-2.5 2z" fill="#b8483a"/>`
+  }[k] || '';
+  return '<svg viewBox="0 0 48 40" xmlns="http://www.w3.org/2000/svg">' + O + '</svg>';
+}
+
+/* ce que chaque niveau apporte */
+const CADEAUX = {
+  2:{ points:2, energie:1, mot:"Tu tiens debout sur le pont. C'est un début." },
+  3:{ points:2, energie:2, euros:60,
+      mot:"On commence à te servir sans que tu demandes." },
+  4:{ points:3, energie:2, euros:120, objet:'carte',
+      mot:"Quelqu'un a glissé ça dans ta poche pendant la traversée." },
+  5:{ points:4, energie:4, euros:400, objet:'boussole', cale:1, titre:'Patron',
+      mot:"Ce n'est plus toi qui cherches du travail." },
+  6:{ points:3, energie:2, euros:180, mot:"Ton nom circule dans trois ports." },
+  7:{ points:3, energie:3, euros:240, cale:1,
+      mot:"Tu connais les courants mieux que la plupart." }
+};
+const OBJETS = {
+  carte:    { nom:'Une carte déchirée', svg:objetSVG('carte'),
+              note:"La moitié d'une carte marine, arrachée net." },
+  boussole: { nom:'Une boussole ancienne', svg:objetSVG('boussole'),
+              note:"Le boîtier est en laiton piqué. L'aiguille tourne encore." }
+};
+
 /* ============================================================
    LE PORT À L'AUBE — le socle : charte, lumière, matière
    ============================================================ */
@@ -444,10 +549,49 @@ const MOTS = {
   const gagnes = Math.max(1, Math.round(pts / 2));
 
   document.getElementById('n').textContent = niv;
-  document.getElementById('m').textContent = MOTS[niv]
+
+  /* ce que ce niveau apporte */
+  const C = CADEAUX[niv] || { points:pts, energie:gagnes };
+  document.getElementById('m').textContent = C.mot || MOTS[niv]
     || (gagnes > 1 ? 'Tu montes vite.' : 'Tu montes.');
-  document.getElementById('g-pts').textContent = '+' + pts;
-  document.getElementById('g-nrj').textContent = '+' + gagnes;
+
+  /* le titre, s'il y en a un : c'est ce qui change tout */
+  if (C.titre){
+    document.querySelector('.page').classList.add('cinq');
+    document.getElementById('titre').innerHTML =
+      '<div class="titre"><p class="su">On t\'appelle désormais</p>'
+      + '<b>' + C.titre + '</b>'
+      + '<span>Ton nom apparaîtra ainsi dans les trois ports.</span></div>';
+  }
+
+  const ICO = {
+    pts:'<path d="M12 3l2.6 5.6L21 9.4l-4.6 4.3 1.2 6.3L12 17l-5.6 3 1.2-6.3L3 9.4l6.4-.8z"/>',
+    nrj:'<path d="M13 2L4.5 13H11l-1 9 8.5-11H12z"/>',
+    eur:'<path d="M16 6.5a6.5 6.5 0 1 0 0 11M4 10.5h9M4 14h9"/>',
+    cal:'<path d="M4 9h16v11H4zM4 9l2.5-5h11L20 9M9.5 13h5"/>'
+  };
+  const G = [];
+  G.push(['pts', 'Points de compétence', 'À placer où tu veux, dans ta fiche.',
+    '+' + pts]);
+  if (C.energie) G.push(['nrj', 'Énergie maximale',
+    'Tu tiens plus longtemps en mer.', '+' + C.energie]);
+  if (C.euros) G.push(['eur', 'Une prime', 'On te la doit depuis un moment.',
+    '+' + C.euros + ' €']);
+  if (C.cale) G.push(['cal', 'Une place de cale',
+    'En plus de ce que porte ta barque.', '+' + C.cale]);
+
+  let h = G.map(([k, t, s2, v]) =>
+    '<div class="gain ' + k + '"><span class="ic"><svg viewBox="0 0 24 24">'
+    + ICO[k] + '</svg></span><span class="tx"><b>' + t + '</b>'
+    + '<span>' + s2 + '</span></span><span class="v">' + v + '</span></div>').join('');
+  /* l'objet reçu, s'il y en a un */
+  if (C.objet && OBJETS[C.objet])
+    h += '<div class="gain obj"><span class="ic">' + OBJETS[C.objet].svg + '</span>'
+      + '<span class="tx"><b>' + OBJETS[C.objet].nom + '</b>'
+      + '<span>' + OBJETS[C.objet].note + '</span></span>'
+      + '<span class="v">reçu</span></div>';
+  document.getElementById('gains').innerHTML = h;
+
   document.getElementById('sous').textContent =
     "Prochain palier à " + (d.seuil_xp || 60) + " points d'expérience.";
 
