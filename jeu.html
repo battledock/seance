@@ -114,6 +114,45 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
   font-size:10px;color:rgba(255,255,255,.34);line-height:1.6;text-align:center;
   font-family:system-ui,sans-serif}
 
+/* ---------- ce que tu as commencé ---------- */
+.qt{position:fixed;z-index:22;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
+  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
+  background:rgba(20,34,50,.94);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 12px 40px rgba(6,16,28,.6);
+  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
+  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
+.qt.on{opacity:1;transform:none;pointer-events:auto}
+.qt::-webkit-scrollbar{display:none}
+.qt .haut{display:flex;align-items:center;padding:14px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.qt .haut .ti{flex:1}
+.qt .haut b{display:block;font-size:15px;color:#fff;font-weight:700;letter-spacing:.04em}
+.qt .haut span{display:block;font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-top:3px}
+.qt .haut .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.5);
+  font-size:22px;line-height:1;padding:3px 2px}
+.qt .lab{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);padding:14px 15px 8px}
+.qt .q{padding:14px 15px;border-top:1px solid rgba(255,255,255,.08)}
+.qt .q .l1{display:flex;align-items:baseline;gap:10px}
+.qt .q .l1 b{flex:1;font-size:14.5px;color:#fff;font-weight:700}
+.qt .q .l1 .ou{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(255,255,255,.36)}
+.qt .q .r{display:block;font-size:11.5px;color:rgba(255,255,255,.5);margin-top:6px;
+  font-family:system-ui,sans-serif;line-height:1.55}
+.qt .q .fait{display:inline-block;margin-top:10px;font-size:10px;padding:4px 11px;
+  border-radius:12px;background:rgba(140,224,168,.14);color:#8ce0a8}
+.qt .q .suite{display:block;font-size:11.5px;color:#f0c46a;margin-top:10px;
+  padding-left:11px;border-left:2px solid rgba(240,196,106,.5);
+  font-family:system-ui,sans-serif;line-height:1.55}
+.qt .q.finie .l1 b{color:rgba(255,255,255,.5)}
+.qt .vide{padding:30px 18px;text-align:center;font-size:12px;
+  color:rgba(255,255,255,.44);line-height:1.7;font-family:system-ui,sans-serif}
+
 /* ---------- la sacoche ---------- */
 .sa{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -795,6 +834,14 @@ html{font-size:calc(16px * var(--txt, 1))}
   </div>
   <div id="n-liste"></div>
   <p class="pied" id="n-pied"></p>
+</section>
+
+<section class="qt" id="qt">
+  <div class="haut">
+    <span class="ti"><b>Ce que tu as commencé</b><span>Et où tu en es</span></span>
+    <button class="fer" id="q-fer">×</button>
+  </div>
+  <div id="q-liste"></div>
 </section>
 
 <section class="sa" id="sa">
@@ -2643,6 +2690,62 @@ function objetSVG(k){
   return '<svg viewBox="0 0 48 40" xmlns="http://www.w3.org/2000/svg">' + O + '</svg>';
 }
 
+/* ---------- ce que tu as commencé ---------- */
+/* pour chaque quête, ce qu'il te reste à faire */
+const SUITES = {
+  ardit: {
+    1: "Porte la lettre à Ardit, chez son frère, derrière la Seu de Palma.",
+    2: "Rapporte sa réponse à Núria, à la taverne de Barcelone.",
+    3: null },
+  miquel_2: {
+    1: "Charge chez Miquel à Barcelone, vends à Marseille. Et si un type "
+       + "te demande si tu t'appelles Ramírez, tu dis non." },
+  pere: {
+    1: "Prends son drap à Palma. Personne d'autre n'en vend." }
+};
+
+let QUETES = null;
+
+async function poserQuetes(){
+  const el = document.getElementById('q-liste');
+  if (!el) return;
+  if (!QUETES){
+    el.innerHTML = '<p class="vide">On regarde…</p>';
+    QUETES = await BD.agir('mes_quetes');
+    if (!Array.isArray(QUETES)) QUETES = [];
+  }
+  if (!QUETES.length){
+    el.innerHTML = '<p class="vide">Tu n\'as rien commencé.<br>'
+      + 'Les gens que tu croises finiront par te demander quelque chose.</p>';
+    return;
+  }
+  const cours = QUETES.filter(q => q.etat !== 'finie');
+  const fini  = QUETES.filter(q => q.etat === 'finie');
+  let h = '';
+  const carte = q => {
+    const s2 = (SUITES[q.k] || {})[q.etape];
+    return '<div class="q' + (q.etat === 'finie' ? ' finie' : '') + '">'
+      + '<div class="l1"><b>' + q.nom + '</b>'
+      + '<span class="ou">' + q.ou + '</span></div>'
+      + '<span class="r">' + q.resume + '</span>'
+      + (q.etat === 'finie'
+         ? '<span class="fait">Réglé</span>'
+         : (s2 ? '<span class="suite">' + s2 + '</span>' : ''))
+      + '</div>';
+  };
+  if (cours.length) h += '<p class="lab">En cours</p>' + cours.map(carte).join('');
+  if (fini.length)  h += '<p class="lab">Derrière toi</p>' + fini.map(carte).join('');
+  el.innerHTML = h;
+}
+
+let qtOuvert = false;
+function basculerQuetes(o){
+  qtOuvert = o === undefined ? !qtOuvert : o;
+  document.getElementById('qt').classList.toggle('on', qtOuvert);
+  majVoile();
+  if (qtOuvert) poserQuetes();
+}
+
 /* ---------- les gens ---------- */
 const PALIERS_L = [
   [20,  'Il te reconnaît',   'Il te parle plus longuement'],
@@ -3184,7 +3287,7 @@ function basculerClassement(forcer){
 
 function majVoile(){
   document.getElementById('voile').classList.toggle('on',
-    gnOuvert || saOuvert || rgOuvert || ctOuvert || chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
+    qtOuvert || gnOuvert || saOuvert || rgOuvert || ctOuvert || chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
 }
 
 /* ---------- la barque ---------- */
@@ -3375,6 +3478,8 @@ const ICONES = {
   reglages:'<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1A1.7 1.7 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1z"/>',
   sortie:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
   /* la sacoche : une besace à rabat */
+  quetes:'<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2'
+    + 'M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2M9 12l2 2 4-4"/>',
   sacoche:'<path d="M5 9h14l1.4 10.2a1.6 1.6 0 0 1-1.6 1.8H5.2a1.6 1.6 0 0 1-1.6-1.8z'
     + 'M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9M9.5 13h5"/>',
   /* le classement : trois barres et une couronne */
@@ -3397,6 +3502,11 @@ function poserMenu(d){
       ouvert:true, f:() => { basculerMenu(false); basculerBarque(true); } },
     { k:'chantier', n:'Le chantier', s:'Toussaint et son bois',    ouvert:true,
       f:() => { basculerMenu(false); basculerChantier(true); } },
+    { k:'quetes', n:'Tes affaires en cours',
+      s: (d.quetes || []).filter(q => q.etat !== 'finie').length
+         ? (d.quetes || []).filter(q => q.etat !== 'finie').length + ' à finir'
+         : 'Rien pour l\'instant',
+      ouvert:true, f:() => { basculerMenu(false); basculerQuetes(true); } },
     { k:'gens', n:'Les gens', s:'Ce qu\'ils pensent de toi', ouvert:true,
       f:() => { basculerMenu(false); basculerGens(true); } },
     { k:'sacoche', n:'Ta sacoche',
@@ -3440,7 +3550,7 @@ function basculerMenu(forcer){
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
 document.getElementById('av').onclick = e => { e.stopPropagation(); basculerMenu(); };
-function toutFermer(){ fermerDemande(); basculerGens(false); basculerSacoche(false); basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
+function toutFermer(){ fermerDemande(); basculerQuetes(false); basculerGens(false); basculerSacoche(false); basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
   basculerBarque(false); basculerFiche(false); basculerMenu(false); }
 document.getElementById('voile').onclick = toutFermer;
 document.getElementById('f-fer').onclick = () => basculerFiche(false);
@@ -3451,6 +3561,7 @@ document.getElementById('k-fer').onclick = () => basculerContrats(false);
 document.getElementById('g-fer').onclick = () => basculerReglages(false);
 document.getElementById('s-fer').onclick = () => basculerSacoche(false);
 document.getElementById('n-fer').onclick = () => basculerGens(false);
+document.getElementById('q-fer').onclick = () => basculerQuetes(false);
 document.getElementById('c-non').onclick = fermerDemande;
 document.getElementById('c-oui').onclick = () => { const f = siOui; fermerDemande(); if (f) f(); };
 addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
