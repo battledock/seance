@@ -942,7 +942,14 @@ async function terminer(quoi, n){
     P.map(t => '<span>' + t + '</span>').join('');
   document.getElementById('f-b').textContent =
     monteNiveau ? 'Voir ton niveau' : 'Redescendre au port';
-  setTimeout(() => document.getElementById('fin').classList.add('on'), n * 500 + 700);
+  /* on laisse le temps de lire : les répliques d'abord, puis un bouton */
+  const D = document.querySelector('.dit');
+  const C = document.getElementById('choix');
+  C.style.animationDelay = (n * .5 + .4) + 's';
+  C.innerHTML = '<button id="suite"><b>Continuer</b></button>';
+  document.getElementById('suite').onclick = () => {
+    document.getElementById('fin').classList.add('on');
+  };
 }
 
 document.getElementById('a-ok').onclick = () => {
