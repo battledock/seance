@@ -12,7 +12,9 @@
 html,body{height:100%;overflow:hidden;background:#150e09;
   font-family:'Courier Prime',monospace;color:#fff}
 
-#sc{position:fixed;left:0;right:0;top:0;height:52%;overflow:hidden}
+#sc{position:fixed;left:0;right:0;top:0;height:52%;overflow:hidden;
+  opacity:0;transition:opacity .5s}
+#sc.pret{opacity:1}
 #sc svg{display:block;width:100%;height:100%}
 #sc::after{content:"";position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(21,14,9,.3) 0,rgba(21,14,9,0) 26%,
@@ -362,8 +364,9 @@ function decor(){
   document.getElementById('sc').innerHTML =
     '<svg viewBox="0 0 480 900" preserveAspectRatio="xMidYMid slice" '
     + 'xmlns="http://www.w3.org/2000/svg">' + d + '</svg>';
+  /* on ne montre la salle qu'une fois qu'on sait qui est là */
+  document.getElementById('sc').classList.add('pret');
 }
-decor();
 
 /* ce qu'elle dit du cours, en mots */
 function mot(d, pr, precis){
@@ -632,6 +635,7 @@ async function conclureRetour(quoi){
 }
 
 function poser(r){
+  LA = true; decor();
   const C = r.cours || [];
   let s = '<div class="dit">'
     + '<p style="animation-delay:.1s">Elle te voit entrer et elle ne bouge pas. '
@@ -707,7 +711,7 @@ document.getElementById('ret').onclick = () => location.href = 'rue.html';
   try {
     d = await BD.charger();
     if (!d){ location.href = 'index.html'; return; }
-  } catch(e){ return; }
+  } catch(e){ LA = true; decor(); return; }
   if (d.parti_le || d.port !== 'barcelone'){ location.href = 'jeu.html'; return; }
 
   const c = d.competences || {};
