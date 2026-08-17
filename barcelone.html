@@ -1203,6 +1203,7 @@ function dessinerVille(){
 
   /* on n'est ici que si on y est vraiment */
   if (d.parti_le){ location.href = 'mer.html'; return; }
+  if (d.port === 'palma'){ location.href = 'palma.html'; return; }
   if (d.port !== 'barcelone'){ location.href = 'jeu.html'; return; }
 
   const n = Number(d.barque || 1);
