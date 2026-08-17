@@ -150,7 +150,7 @@ const noir  = (c,k) => mel(c, NOIR, k===undefined?.3:k);
 /* ============================================================
    A — AU COMPTOIR : elle est à un mètre, on ne voit qu'elle
    ============================================================ */
-function angleA(){
+function angleA(avecElle){
   const H = 900;
   let s = `<defs>
     <radialGradient id="a-l" cx="0.44" cy="0.24">
@@ -205,7 +205,7 @@ function angleA(){
       rx="2" fill="#c9bda0" opacity="${(.24 + rnd(q)*.2).toFixed(2)}"/>`);
 
   /* --- Núria, centrée, en buste bien visible --- */
-  s += nuriaGrande(228, 604, 1);
+  if (avecElle !== false) s += nuriaGrande(228, 604, 1);
 
   /* --- le comptoir, au premier plan : il est dans l'ombre --- */
   s += `<path d="M-20 748 h520 v${H} h-520 z" fill="url(#a-c)"/>`;
@@ -354,10 +354,14 @@ function nuriaGrande(x, y, k){
 
 
 
+let LA = true;   /* est-elle derrière son comptoir ? */
 function decor(){
+  let d = angleA(LA);
+  /* si elle est partie, la salle est éteinte */
+  if (!LA) d += '<rect x="0" y="0" width="480" height="900" fill="#0a0604" opacity=".58"/>';
   document.getElementById('sc').innerHTML =
     '<svg viewBox="0 0 480 900" preserveAspectRatio="xMidYMid slice" '
-    + 'xmlns="http://www.w3.org/2000/svg">' + angleA() + '</svg>';
+    + 'xmlns="http://www.w3.org/2000/svg">' + d + '</svg>';
 }
 decor();
 
@@ -371,7 +375,26 @@ function mot(d, pr, precis){
   return ['Ils en ont assez', '#e0a878', 'Attends quelques jours'];
 }
 
+
+function poserPartie(r){
+  LA = false; decor();
+  const h = r.reste_h || 1;
+  const q = h > 24 ? Math.ceil(h/24) + (h > 48 ? ' jours' : ' jour') : h + ' heures';
+  document.getElementById('t-s').textContent = 'Close';
+  document.getElementById('w').innerHTML =
+    '<div class="ferme"><span class="ic"><svg viewBox="0 0 24 24">'
+    + '<path d="M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5z"/></svg></span>'
+    + '<b>Il y a un mot sur la porte</b>'
+    + '<p>« Fermé. »<br>Rien d\'autre. Pas de date, pas d\'explication.</p>'
+    + '<p class="sous" style="margin-top:18px">Un type balaie devant la boutique '
+    + 'd\'à côté. Il te dit qu\'elle est partie sur un bateau, avant-hier, '
+    + 'sans dire quand elle rentrait.</p>'
+    + '<p class="sous" style="margin-top:14px;color:#f0c46a">Elle devrait être '
+    + 'de retour dans ' + q + '.</p></div>';
+}
+
 function poserFerme(r){
+  LA = false; decor();
   const faut = r.faut || 3, es = r.tu_es || 1;
   document.getElementById('t-s').textContent = 'Fermée';
   document.getElementById('w').innerHTML =
@@ -631,6 +654,25 @@ function poser(r){
           + (c.precis && note ? '<em>' + note + '</em>' : '') + '</span></div>';
       }).join('') + '</div>';
 
+  /* elle est revenue de Majorque : elle a quelque chose à dire */
+  if (r.revenue && !localStorage.getItem('bd-nuria-revenue')){
+    try { localStorage.setItem('bd-nuria-revenue', '1'); } catch(e){}
+    s = '<div class="dit">'
+      + '<p style="animation-delay:.1s">La taverne a rouvert. Elle est derrière '
+      + 'son comptoir comme si elle n\'était jamais partie.</p>'
+      + '<p style="animation-delay:.7s">Elle te voit. Elle ne dit rien tout de suite.</p>'
+      + '<p class="parle" style="animation-delay:1.3s">« Il est mort mardi. »</p>'
+      + '<p style="animation-delay:1.9s">Elle essuie le comptoir avec le plat de la main, '
+      + 'un geste qui ne sert à rien.</p>'
+      + '<p class="parle" style="animation-delay:2.5s">« J\'ai eu six jours. »</p>'
+      + '<p style="animation-delay:3.1s">Elle te sert un verre que tu n\'as pas demandé, '
+      + 'et elle va servir quelqu\'un d\'autre.</p></div>'
+      + '<p class="mot" style="animation-delay:3.7s">Elle ne t\'a pas remercié. '
+      + 'Elle n\'aura pas à le faire.</p>';
+    document.getElementById('w').innerHTML = s;
+    return;
+  }
+
   /* selon où on en est avec Ardit */
   AR = r.ardit;
   if (!AR)
@@ -672,7 +714,9 @@ document.getElementById('ret').onclick = () => location.href = 'rue.html';
   MOI = { negociation: +c.negociation || 0, discussion: +c.discussion || 0 };
   const r = await BD.agir('la_taverne');
   if (r.ok) poser(r);
+  else if (r.pourquoi === 'partie') poserPartie(r);
   else if (r.pourquoi === 'trop_tot') poserFerme(r);
+  else if (r.pourquoi === 'elle_est_partie') poserPartie(r);
   else location.href = 'rue.html';
 })();
 </script>
