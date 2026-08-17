@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2f6ba0">
+<title>Battle Dock — Palma</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#1b3550;
+  font-family:'Courier Prime',monospace;color:#fff}
+#sc{position:fixed;inset:0}
+#sc svg{display:block;width:100%;height:100%}
+
+/* le rideau d'arrivée */
+.rid{position:fixed;inset:0;z-index:20;background:#0e1c2e;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  transition:opacity 1.2s}
+.rid.parti{opacity:0;pointer-events:none}
+.rid .su{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:#f0c46a}
+.rid b{font-size:38px;font-weight:700;letter-spacing:-.01em}
+.rid span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.44)}
+
+.tete{position:fixed;left:0;right:0;top:0;z-index:6;
+  padding:calc(env(safe-area-inset-top) + 14px) 14px 0;display:flex;align-items:center;gap:10px;
+  opacity:0;transition:opacity .8s .6s}
+.tete.on{opacity:1}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:9px;
+  border:1.5px solid rgba(255,255,255,.3);background:rgba(16,34,52,.4);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tete .ret svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou{flex:1;min-width:0;background:rgba(16,34,52,.4);
+  border:1.5px solid rgba(255,255,255,.26);border-radius:9px;padding:7px 13px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.tete .ou b{display:block;font-size:14px;font-weight:700}
+.tete .ou span{display:block;font-size:8px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.56);margin-top:2px}
+.tete .eu{flex:0 0 auto;background:rgba(16,34,52,.4);border:1.5px solid rgba(255,255,255,.26);
+  border-radius:9px;padding:9px 12px;backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);font-size:12.5px;font-weight:700;color:#ffd894}
+
+/* ce qu'on te dit en arrivant */
+.dit{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom) + 108px);
+  z-index:5;padding:0 22px;opacity:0;transition:opacity .8s 1s}
+.dit.on{opacity:1}
+.dit p{font-size:14.5px;line-height:1.7;color:#fff;
+  font-family:system-ui,sans-serif;text-shadow:0 2px 14px rgba(8,24,40,.8);
+  padding:14px 16px;border-radius:11px;background:rgba(16,34,52,.5);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.14)}
+
+.bas{position:fixed;left:14px;right:14px;bottom:0;z-index:6;
+  padding-bottom:calc(env(safe-area-inset-bottom) + 14px);display:flex;gap:7px;
+  opacity:0;transition:opacity .8s 1.2s}
+.bas.on{opacity:1}
+.bas button{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:11px 3px;border:1.5px solid rgba(255,255,255,.26);border-radius:9px;
+  background:rgba(16,34,52,.5);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer;
+  font-family:'Courier Prime',monospace;transition:transform .11s}
+.bas button:active{transform:scale(.95)}
+.bas button:disabled{opacity:.4;cursor:default}
+.bas button.vif{border-color:rgba(240,196,106,.75);background:rgba(52,44,26,.6)}
+.bas svg{width:20px;height:20px;stroke:rgba(255,255,255,.72);fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.bas button.vif svg{stroke:#f0c46a}
+.bas span{font-size:9px;color:rgba(255,255,255,.72);text-align:center;line-height:1.2}
+.bas button.vif span{color:#f0c46a;font-weight:700}
+
+.onde{will-change:transform}
+.o0{animation:v0 30s linear infinite}.o1{animation:v1 40s linear infinite}
+.o2{animation:v0 52s linear infinite}.o3{animation:v1 64s linear infinite}
+@keyframes v0{to{transform:translateX(50px)}}
+@keyframes v1{to{transform:translateX(-50px)}}
+.houle{animation:souleve 5s ease-in-out infinite}
+@keyframes souleve{0%,50%,100%{transform:translateY(0)}
+  25%{transform:translateY(-3px)}75%{transform:translateY(2.2px)}}
+.gite{animation:penche 5s ease-in-out infinite}
+@keyframes penche{0%{transform:rotate(1.4deg)}25%{transform:rotate(0)}
+  50%{transform:rotate(-1.4deg)}75%{transform:rotate(0)}100%{transform:rotate(1.4deg)}}
+.nue{animation:derive 140s linear infinite}
+.nue.n1{animation-duration:190s}.nue.n2{animation-duration:110s}
+@keyframes derive{to{transform:translateX(620px)}}
+.oiseau{animation:vole 14s ease-in-out infinite}
+.oiseau.v1{animation-duration:19s;animation-delay:-6s}
+.oiseau.v2{animation-duration:11s;animation-delay:-3s}
+@keyframes vole{0%,100%{transform:translate(0,0)}50%{transform:translate(-38px,-14px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+
+<div id="sc"></div>
+
+<div class="rid" id="rid">
+  <p class="su">Deux jours de mer</p>
+  <b>Palma</b>
+  <span>Majorque</span>
+</div>
+
+<div class="tete" id="tete">
+  <button class="ret" id="ret"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="ou"><b>Palma</b><span>Majorque</span></span>
+  <span class="eu" id="eu">—</span>
+</div>
+
+<div class="dit" id="dit"><p id="d-t">—</p></div>
+
+<div class="bas" id="bas"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+/* ============================================================
+   PALMA — la Seu vue depuis la mer, en fin d'après-midi
+   ============================================================ */
+const W = 480, F = 727, OEIL = 2.2, HORIZON = 330;
+const px = (m,d) => m*F/d, sol = d => HORIZON + OEIL*F/d, pX = (X,d) => 240 + X*F/d;
+const rnd = s => { const x = Math.sin(s*127.1)*43758.5; return x - Math.floor(x); };
+const rnd2 = (a,b) => { const x = Math.sin(a*127.1+b*311.7)*43758.5; return x - Math.floor(x); };
+function hx(c){ return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]; }
+function ch(a){ return '#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join(''); }
+function mel(a,b,k){ const A=hx(a),B=hx(b); return ch([0,1,2].map(i=>A[i]+(B[i]-A[i])*k)); }
+
+/* le soleil est bas à tribord : la pierre dorée s'embrase */
+const OR = '#ffcf8a', OMBRE = '#3a4260';
+const clair = (c,k) => mel(c, OR, k===undefined?.3:k);
+const sombre = (c,k) => mel(c, OMBRE, k===undefined?.28:k);
+const loin = (c,d) => mel(c, mel('#e8d8c0', OR, .4), Math.min(.5, Math.pow(d/300,.8)));
+
+let HAUT=-200, BAS=900;
+function cadrer(l,h){
+  const t = W*h/l;
+  HAUT = HORIZON - t*.66; BAS = HAUT + t;
+  return { y:HAUT, h:t };
+}
+
+/* ---------- le ciel et la baie ---------- */
+function ciel(){
+  let s = `<defs>
+    <linearGradient id="p-ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#2f6ba0"/>
+      <stop offset="20%"  stop-color="#5a93bc"/>
+      <stop offset="42%"  stop-color="#93b8ce"/>
+      <stop offset="62%"  stop-color="#cdcdc4"/>
+      <stop offset="80%"  stop-color="#eecfa0"/>
+      <stop offset="94%"  stop-color="#f8dcaa"/>
+      <stop offset="100%" stop-color="#fce4b8"/></linearGradient>
+    <linearGradient id="p-eau" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#dcc498"/>
+      <stop offset="5%"   stop-color="#a8b8a8"/>
+      <stop offset="18%"  stop-color="#5e9aa8"/>
+      <stop offset="42%"  stop-color="#3a7e98"/>
+      <stop offset="72%"  stop-color="#276484"/>
+      <stop offset="100%" stop-color="#1b4c6c"/></linearGradient>
+    <radialGradient id="p-halo" cx="0.5" cy="0.5">
+      <stop offset="0%"   stop-color="${OR}" stop-opacity=".54"/>
+      <stop offset="46%"  stop-color="${OR}" stop-opacity=".16"/>
+      <stop offset="100%" stop-color="${OR}" stop-opacity="0"/></radialGradient>
+    <filter id="p-flou"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>`;
+  const yh = sol(2000);
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(yh-HAUT).toFixed(1)}" fill="url(#p-ciel)"/>`;
+  /* le soleil, bas à droite */
+  s += `<ellipse cx="404" cy="${(yh-52).toFixed(0)}" rx="230" ry="170" fill="url(#p-halo)"/>`;
+  s += `<circle cx="404" cy="${(yh-52).toFixed(0)}" r="19" fill="#fff4d8"/>`;
+
+  /* les nuages, étalés sur toute la hauteur du ciel */
+  for (let i = 0; i < 16; i++){
+    const y = HAUT + 20 + rnd(i*7)*((yh-HAUT)*.82);
+    const x = -60 + rnd(i*11)*580;
+    s += `<g class="nue n${i%3}"><ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}"
+      rx="${(44+rnd(i*3)*140).toFixed(0)}" ry="${(4+rnd(i*5)*10).toFixed(0)}"
+      fill="${mel('#ffffff', OR, .2 + (y-HAUT)/(yh-HAUT)*.5)}"
+      opacity="${(.14+rnd(i)*.26).toFixed(2)}"/></g>`;
+  }
+  /* les mouettes, très haut */
+  for (let i = 0; i < 9; i++){
+    const x = 40 + rnd(i*13)*400, y = HAUT + 60 + rnd(i*5)*230;
+    const e = 5 + rnd(i)*5;
+    s += `<g class="oiseau v${i%3}"><path d="M${x.toFixed(0)} ${y.toFixed(0)}
+      q${(e*.5).toFixed(1)} ${(-e*.5).toFixed(1)} ${e.toFixed(1)} 0
+      q${(e*.5).toFixed(1)} ${(-e*.5).toFixed(1)} ${e.toFixed(1)} 0"
+      stroke="#5a6a74" stroke-width="1.3" fill="none" stroke-linecap="round"
+      opacity="${(.24+rnd(i+3)*.3).toFixed(2)}"/></g>`;
+  }
+
+  /* l'eau */
+  s += `<rect x="0" y="${yh.toFixed(1)}" width="${W}" height="${(BAS-yh+10).toFixed(1)}"
+    fill="url(#p-eau)"/>`;
+  /* le chemin du soleil */
+  s += `<path d="M386 ${yh.toFixed(0)} L422 ${yh.toFixed(0)} L560 ${(BAS+20).toFixed(0)}
+    L246 ${(BAS+20).toFixed(0)} Z" fill="${OR}" filter="url(#p-flou)" opacity=".26"/>`;
+  /* la houle */
+  for (let n = 0; n < 11; n++){
+    const d = 900/Math.pow(n+1,1.24), y = sol(d);
+    if (y > BAS-2 || y < yh) continue;
+    const amp = px(.2,d), esp = px(7,d);
+    let p = `M-150 ${y.toFixed(1)} `;
+    for (let k=0;k<24;k++) p += `q${(esp*.5).toFixed(1)} ${(-amp).toFixed(1)} ${esp.toFixed(1)} 0 `;
+    s += `<g class="onde o${n%4}"><path d="${p}" stroke="#fff"
+      stroke-width="${Math.max(.4,amp*.36).toFixed(2)}" fill="none"
+      opacity="${(.17-n*.013).toFixed(3)}"/></g>`;
+  }
+  return s;
+}
+
+/* ---------- la Seu : la cathédrale, énorme, au bord de l'eau ---------- */
+function cathedrale(){
+  const d = 190, y = sol(d), m = u => px(u, d), cx = pX(-1.6, d);
+  const P  = loin('#e8cf9a', d);          /* le grès doré */
+  const PC = clair('#fbe6bc', .34);       /* ce que le soleil touche */
+  const PO = sombre('#b09a6c', .2);       /* l'ombre */
+  const TO = sombre('#7a6a54', .24);      /* les toits */
+  let s = `<g class="seu">`;
+
+  /* --- la terrasse qui la porte, au-dessus de l'eau --- */
+  s += `<path d="M${(cx-m(56)).toFixed(1)} ${y.toFixed(1)} v${(-m(9)).toFixed(1)}
+    h${m(112).toFixed(1)} v${m(9).toFixed(1)} z" fill="${PO}"/>`;
+  s += `<path d="M${(cx-m(56)).toFixed(1)} ${(y-m(9)).toFixed(1)}
+    h${m(112).toFixed(1)} v${m(1.4).toFixed(1)} h${(-m(112)).toFixed(1)} z" fill="${PC}"/>`;
+  /* les arcs du soubassement */
+  for (let k = 0; k < 16; k++){
+    const x = cx - m(53) + m(k * 7);
+    s += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} v${(-m(4.4)).toFixed(1)}
+      a${m(2.2).toFixed(1)} ${m(2.4).toFixed(1)} 0 0 1 ${m(4.4).toFixed(1)} 0
+      v${m(4.4).toFixed(1)} z" fill="${sombre('#5a5a5e',.3)}" opacity=".62"/>`;
+  }
+
+  /* --- le corps de la nef --- */
+  const H = 44;
+  s += `<path d="M${(cx-m(38)).toFixed(1)} ${(y-m(9)).toFixed(1)} v${(-m(H)).toFixed(1)}
+    h${m(76).toFixed(1)} v${m(H).toFixed(1)} z" fill="${P}"/>`;
+  /* le pan de droite, en plein soleil */
+  s += `<path d="M${(cx+m(14)).toFixed(1)} ${(y-m(9)).toFixed(1)} v${(-m(H)).toFixed(1)}
+    h${m(24).toFixed(1)} v${m(H).toFixed(1)} z" fill="${PC}" opacity=".5"/>`;
+  /* et l'ombre à gauche */
+  s += `<path d="M${(cx-m(38)).toFixed(1)} ${(y-m(9)).toFixed(1)} v${(-m(H)).toFixed(1)}
+    h${m(11).toFixed(1)} v${m(H).toFixed(1)} z" fill="${PO}" opacity=".4"/>`;
+
+  /* --- les contreforts et leurs arcs-boutants : la signature de la Seu --- */
+  for (let k = 0; k < 9; k++){
+    const x = cx - m(36) + m(k * 9);
+    /* le pilier */
+    s += `<path d="M${x.toFixed(1)} ${(y-m(9)).toFixed(1)} v${(-m(H*.82)).toFixed(1)}
+      h${m(3.4).toFixed(1)} v${m(H*.82).toFixed(1)} z"
+      fill="${k > 4 ? PC : P}" opacity="${k > 4 ? .9 : 1}"/>`;
+    /* le pinacle qui le termine */
+    s += `<path d="M${(x-m(.6)).toFixed(1)} ${(y-m(9+H*.82)).toFixed(1)}
+      l${m(2.3).toFixed(1)} ${(-m(5.5)).toFixed(1)} l${m(2.3).toFixed(1)} ${m(5.5).toFixed(1)} z"
+      fill="${k > 4 ? PC : sombre(P,.14)}"/>`;
+    /* l'arc-boutant, qui rejoint la nef */
+    if (k < 8)
+      s += `<path d="M${(x+m(3.4)).toFixed(1)} ${(y-m(9+H*.5)).toFixed(1)}
+        q${m(2.8).toFixed(1)} ${(-m(3.4)).toFixed(1)} ${m(5.6).toFixed(1)} ${(-m(1)).toFixed(1)}"
+        stroke="${sombre(P,.1)}" stroke-width="${m(1.2).toFixed(1)}" fill="none"/>`;
+  }
+
+  /* --- les hautes fenêtres, entre les contreforts --- */
+  for (let k = 0; k < 8; k++){
+    const x = cx - m(31.5) + m(k * 9);
+    s += `<path d="M${x.toFixed(1)} ${(y-m(14)).toFixed(1)} v${(-m(22)).toFixed(1)}
+      a${m(2.1).toFixed(1)} ${m(3).toFixed(1)} 0 0 1 ${m(4.2).toFixed(1)} 0
+      v${m(22).toFixed(1)} z" fill="${sombre('#4a4a52',.24)}" opacity=".72"/>`;
+    /* un éclat de vitrail */
+    s += `<path d="M${(x+m(.4)).toFixed(1)} ${(y-m(16)).toFixed(1)} v${(-m(18)).toFixed(1)}
+      a${m(1.6).toFixed(1)} ${m(2.4).toFixed(1)} 0 0 1 ${m(1.4).toFixed(1)} ${(-m(.2)).toFixed(1)}"
+      stroke="${clair('#c98a5a',.4)}" stroke-width="${m(.6).toFixed(1)}" fill="none" opacity=".5"/>`;
+  }
+
+  /* --- le toit --- */
+  s += `<path d="M${(cx-m(39)).toFixed(1)} ${(y-m(9+H)).toFixed(1)}
+    h${m(78).toFixed(1)} l${(-m(6)).toFixed(1)} ${(-m(7)).toFixed(1)}
+    h${(-m(66)).toFixed(1)} z" fill="${TO}"/>`;
+  s += `<path d="M${(cx-m(39)).toFixed(1)} ${(y-m(9+H)).toFixed(1)}
+    h${m(30).toFixed(1)} l${(-m(2.4)).toFixed(1)} ${(-m(7)).toFixed(1)}
+    h${(-m(25.6)).toFixed(1)} z" fill="${clair(TO,.2)}"/>`;
+
+  /* --- la rosace, sur le pignon ouest --- */
+  const rx = cx - m(30), ry = y - m(9 + H * .62);
+  s += `<circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="${m(7).toFixed(1)}"
+    fill="${sombre('#4a4a52',.22)}"/>`;
+  s += `<circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="${m(5.6).toFixed(1)}"
+    fill="${sombre('#6a4a52',.2)}"/>`;
+  for (let k = 0; k < 12; k++){
+    const a = k * Math.PI / 6;
+    s += `<path d="M${rx.toFixed(1)} ${ry.toFixed(1)}
+      l${(Math.cos(a)*m(5.6)).toFixed(1)} ${(Math.sin(a)*m(5.6)).toFixed(1)}"
+      stroke="${P}" stroke-width="${m(.7).toFixed(1)}"/>`;
+  }
+  s += `<circle cx="${rx.toFixed(1)}" cy="${ry.toFixed(1)}" r="${m(1.6).toFixed(1)}" fill="${P}"/>`;
+
+  /* --- le clocher, à gauche --- */
+  const bx = cx - m(43);
+  s += `<path d="M${(bx-m(5)).toFixed(1)} ${(y-m(9)).toFixed(1)} v${(-m(H+13)).toFixed(1)}
+    h${m(10).toFixed(1)} v${m(H+13).toFixed(1)} z" fill="${P}"/>`;
+  s += `<path d="M${(bx+m(2)).toFixed(1)} ${(y-m(9)).toFixed(1)} v${(-m(H+13)).toFixed(1)}
+    h${m(3).toFixed(1)} v${m(H+13).toFixed(1)} z" fill="${PC}" opacity=".6"/>`;
+  /* les abat-sons */
+  [0,1].forEach(q =>
+    s += `<path d="M${(bx-m(2.6)).toFixed(1)} ${(y-m(9+H+2+q*5)).toFixed(1)}
+      v${(-m(4)).toFixed(1)} a${m(2.6).toFixed(1)} ${m(2.8).toFixed(1)} 0 0 1 ${m(5.2).toFixed(1)} 0
+      v${m(4).toFixed(1)} z" fill="${sombre('#3e3e46',.24)}" opacity=".7"/>`);
+  /* le couronnement crénelé */
+  s += `<path d="M${(bx-m(6)).toFixed(1)} ${(y-m(9+H+13)).toFixed(1)}
+    h${m(12).toFixed(1)} v${m(2).toFixed(1)} h${(-m(12)).toFixed(1)} z" fill="${PC}"/>`;
+  for (let k = 0; k < 5; k++)
+    s += `<path d="M${(bx-m(5.4)+m(k*2.6)).toFixed(1)} ${(y-m(9+H+15)).toFixed(1)}
+      h${m(1.5).toFixed(1)} v${(-m(2)).toFixed(1)} h${(-m(1.5)).toFixed(1)} z" fill="${PC}"/>`;
+
+  /* --- l'abside, à droite, plus basse --- */
+  s += `<path d="M${(cx+m(38)).toFixed(1)} ${(y-m(9)).toFixed(1)} v${(-m(H*.66)).toFixed(1)}
+    h${m(13).toFixed(1)} v${m(H*.66).toFixed(1)} z" fill="${PC}" opacity=".82"/>`;
+  s += `<path d="M${(cx+m(37)).toFixed(1)} ${(y-m(9+H*.66)).toFixed(1)}
+    h${m(15).toFixed(1)} l${(-m(2)).toFixed(1)} ${(-m(4)).toFixed(1)}
+    h${(-m(11)).toFixed(1)} z" fill="${clair(TO,.26)}"/>`;
+
+  return s + `</g>`;
+}
+
+/* ---------- la ville basse, qui l'entoure ---------- */
+function ville(){
+  let s = '';
+  /* les maisons, sur deux rangs, de part et d'autre de la cathédrale */
+  [[230, 1], [205, 2]].forEach(([d, rang]) => {
+    const y = sol(d), m = u => px(u, d);
+    for (let k = 0; k < 30; k++){
+      /* on saute la bande centrale : la cathédrale y est */
+      const X = -70 + k * 4.8 + rnd(k * 3 + rang) * 2;
+      if (Math.abs(X + 1.6) < 42) continue;
+      const h = 5 + rnd(k * 11 + rang) * 8;
+      const l = 3.4 + rnd(k * 5 + rang) * 3;
+      const x = pX(X, d);
+      if (x < -40 || x > W + 40) continue;
+      const c = ['#e8d4a8','#dcc79c','#e0cb9e','#d4bc90'][k % 4];
+      s += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} v${(-m(h)).toFixed(1)}
+        h${m(l).toFixed(1)} v${m(h).toFixed(1)} z" fill="${loin(c, d)}"/>`;
+      /* le toit de tuiles */
+      s += `<path d="M${(x-m(.6)).toFixed(1)} ${(y-m(h)).toFixed(1)}
+        h${m(l+1.2).toFixed(1)} l${(-m(.7)).toFixed(1)} ${(-m(1.3)).toFixed(1)}
+        h${(-m(l-.2)).toFixed(1)} z" fill="${loin('#b86a44', d)}"/>`;
+      /* quelques fenêtres */
+      for (let q = 0; q < 2; q++)
+        if (rnd(k * 7 + q) > .45)
+          s += `<rect x="${(x + m(.7 + q * 1.5)).toFixed(1)}"
+            y="${(y - m(h * .62 - q * .6)).toFixed(1)}"
+            width="${m(.7).toFixed(1)}" height="${m(1.1).toFixed(1)}"
+            fill="${loin('#8a7458', d)}" opacity=".6"/>`;
+    }
+  });
+
+  /* le môle et le phare, à droite */
+  const dm = 175, ym = sol(dm), mm = u => px(u, dm);
+  s += `<path d="M${pX(24,dm).toFixed(1)} ${ym.toFixed(1)} v${(-mm(3)).toFixed(1)}
+    h${(pX(70,dm)-pX(24,dm)).toFixed(1)} v${mm(3).toFixed(1)} z"
+    fill="${loin('#c4b494', dm)}"/>`;
+  const pxr = pX(64, dm);
+  s += `<path d="M${(pxr-mm(2)).toFixed(1)} ${(ym-mm(3)).toFixed(1)}
+    v${(-mm(13)).toFixed(1)} h${mm(4).toFixed(1)} v${mm(13).toFixed(1)} z"
+    fill="${loin('#f4e8cc', dm)}"/>`;
+  s += `<path d="M${(pxr-mm(2.7)).toFixed(1)} ${(ym-mm(16)).toFixed(1)}
+    h${mm(5.4).toFixed(1)} v${mm(2.4).toFixed(1)} h${(-mm(5.4)).toFixed(1)} z"
+    fill="${loin('#7a6a54', dm)}"/>`;
+
+  /* des barques mouillées devant la ville */
+  [[110,-24],[96,26],[130,-38],[86,14],[120,40]].forEach(([d,X],k)=>{
+    const x = pX(X,d), y = sol(d), m = u => px(u,d);
+    if (x < -30 || x > W+30) return;
+    s += `<path d="M${(x-m(1.6)).toFixed(1)} ${(y-m(.4)).toFixed(1)}
+      q${m(.3).toFixed(1)} ${m(.5).toFixed(1)} ${m(1.6).toFixed(1)} ${m(.5).toFixed(1)}
+      q${m(1.3).toFixed(1)} 0 ${m(1.6).toFixed(1)} ${(-m(.5)).toFixed(1)} z"
+      fill="${loin('#8a6a44', d)}"/>`;
+    if (k % 2)
+      s += `<path d="M${x.toFixed(1)} ${(y-m(.5)).toFixed(1)} v${(-m(3.4)).toFixed(1)}"
+        stroke="${loin('#6d5a44', d)}" stroke-width="${Math.max(.5,m(.14)).toFixed(1)}"/>`;
+  });
+  return s;
+}
+
+/* ---------- les collines derrière ---------- */
+function collines(){
+  let s = '';
+  [[900, 60, mel('#9ab0a8','#cdd8d0',.5)],
+   [520, 52, mel('#8aa090','#c4d0c0',.34)]].forEach(([d, h, c], j) => {
+    const y0 = sol(d);
+    const crete = u => h + Math.sin(u*5.4+j*2.2)*h*.3 + Math.sin(u*11+j*3)*h*.14;
+    let p = `M-40 ${(y0+40).toFixed(1)} `;
+    for (let k = 0; k <= 26; k++){
+      const u = k/26;
+      p += `L${(-40+(W+80)*u).toFixed(1)} ${(y0-px(crete(u),d)).toFixed(1)} `;
+    }
+    p += `L${(W+40)} ${(y0+40).toFixed(1)} Z`;
+    s += `<path d="${p}" fill="${loin(c, d)}"/>`;
+  });
+  return s;
+}
+
+/* ---------- ta barque, qui entre dans la baie ---------- */
+function barque(){
+  const d = 24, y = sol(d), m = u => px(u,d), x = pX(-1, d);
+  const co = sombre('#a87c4c',.16), coC = clair('#e0b878',.34);
+  let s = `<g class="houle">`;
+  s += `<ellipse class="sil" cx="${x.toFixed(1)}" cy="${(y+m(.12)).toFixed(1)}"
+    rx="${m(2.6).toFixed(1)}" ry="${m(.28).toFixed(1)}" fill="#12324a" opacity=".32"/>`;
+  s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><g class="gite">`;
+  s += `<path d="M${(-m(2.3)).toFixed(1)} ${(-m(.62)).toFixed(1)}
+    q${m(.38).toFixed(1)} ${m(.76).toFixed(1)} ${m(1.92).toFixed(1)} ${m(.76).toFixed(1)}
+    h${m(.76).toFixed(1)} q${m(1.54).toFixed(1)} 0 ${m(1.92).toFixed(1)} ${(-m(.76)).toFixed(1)}
+    q${(-m(2.3)).toFixed(1)} ${(-m(.44)).toFixed(1)} ${(-m(4.6)).toFixed(1)} 0 z" fill="${co}"/>`;
+  s += `<path d="M${(-m(2.3)).toFixed(1)} ${(-m(.62)).toFixed(1)}
+    q${m(2.3).toFixed(1)} ${(-m(.44)).toFixed(1)} ${m(4.6).toFixed(1)} 0"
+    stroke="${coC}" stroke-width="${Math.max(.6,m(.16)).toFixed(1)}" fill="none"/>`;
+  s += `<path d="M0 ${(-m(.9)).toFixed(1)} v${(-m(.4)).toFixed(1)}"
+    stroke="${sombre('#4a5468',.2)}" stroke-width="${m(.36).toFixed(1)}" stroke-linecap="round"/>`;
+  s += `<circle cx="0" cy="${(-m(1.44)).toFixed(1)}" r="${m(.26).toFixed(2)}"
+    fill="${sombre('#c98f5e',.16)}"/>`;
+  return s + `</g></g></g>`;
+}
+
+function palma(){
+  let s = ciel();
+  s += collines();
+  s += ville();
+  s += cathedrale();
+  s += barque();
+  s += `<defs><radialGradient id="p-vig" cx="0.5" cy="0.46" r="0.8">
+    <stop offset="50%" stop-color="#1b3550" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#1b3550" stop-opacity=".2"/></radialGradient></defs>`;
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(1)}" fill="url(#p-vig)"/>`;
+  return s;
+}
+
+
+function decor(){
+  const v = cadrer(innerWidth, innerHeight);
+  document.getElementById('sc').innerHTML =
+    '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
+    + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+    + palma() + '</svg>';
+}
+decor();
+
+const ICO = {
+  frere:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  marche:'<path d="M4 8h16v13H4zM4 8l2-4h12l2 4M9 21v-7h6v7"/>',
+  moulin:'<path d="M12 12v9M8 21h8M12 12L4 6M12 12l8-6M12 12l-6 8M12 12l6 8"/>',
+  barque:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>'
+};
+const LIEUX = [
+  { k:'frere',  n:"Le frère d'Ardit", ouvert:false },
+  { k:'marche', n:'Le marché',        ouvert:false },
+  { k:'moulin', n:'Les moulins',      ouvert:false },
+  { k:'barque', n:'Ta barque',        ouvert:true }
+];
+
+document.getElementById('ret').onclick = () => location.href = 'jeu.html';
+
+(async () => {
+  let d;
+  try {
+    d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+  } catch(e){ return; }
+  if (d.parti_le){ location.href = 'mer.html'; return; }
+  if (d.port !== 'palma'){ location.href = 'jeu.html'; return; }
+
+  document.getElementById('eu').textContent =
+    Number(d.euros || 0).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
+
+  /* la lettre est-elle encore dans ta sacoche ? */
+  const aLettre = (d.sacoche || []).some(o => o.k === 'lettre');
+  document.getElementById('d-t').textContent = aLettre
+    ? "La cathédrale te regarde arriver. Quelque part derrière, il y a un homme "
+      + "qui ne t'attend pas."
+    : "Le port sent la résine et le poisson. Personne ne fait attention à toi.";
+
+  LIEUX[0].ouvert = aLettre;
+  document.getElementById('bas').innerHTML = LIEUX.map(L =>
+    '<button class="' + (L.ouvert ? 'vif' : '') + '" data-k="' + L.k + '"'
+    + (L.ouvert ? '' : ' disabled') + '>'
+    + '<svg viewBox="0 0 24 24">' + ICO[L.k] + '</svg>'
+    + '<span>' + L.n + '</span></button>').join('');
+
+  document.querySelectorAll('[data-k="barque"]').forEach(b =>
+    b.onclick = () => location.href = 'voyager.html');
+
+  /* le rideau se lève */
+  setTimeout(() => {
+    document.getElementById('rid').classList.add('parti');
+    document.getElementById('tete').classList.add('on');
+    document.getElementById('dit').classList.add('on');
+    document.getElementById('bas').classList.add('on');
+  }, 1600);
+})();
+
+let t = null;
+addEventListener('resize', () => { clearTimeout(t); t = setTimeout(decor, 200); });
+</script>
+</body>
+</html>
