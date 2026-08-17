@@ -558,8 +558,14 @@ async function conclure(issue){
 let AR = null;   /* où en est la quête d'Ardit */
 
 function poserRetour(){
-  const R = RETOUR[AR.issue];
-  if (!R) return;
+  /* si on ne sait plus ce qu'il a dit, on prend le retour le plus sobre
+     plutôt que de ne rien afficher du tout */
+  const R = RETOUR[(AR && AR.issue) || 'muet'] || RETOUR.muet;
+  if (!R){
+    document.getElementById('w').innerHTML =
+      '<p class="mot">Elle attend, mais tu ne retrouves pas les mots. Reviens.</p>';
+    return;
+  }
   const W2 = document.getElementById('w');
   let s = '<div class="dit">' + R.dit.map((t,i) =>
     '<p class="' + (t.trim().startsWith('«') ? 'parle' : '') + '" '
@@ -578,7 +584,7 @@ async function conclureRetour(quoi){
   const W2 = document.getElementById('w');
   W2.querySelector('.choix').innerHTML = '<button disabled style="opacity:.5">…</button>';
   const r = await BD.agir('conclure_reponse', { p_issue: quoi });
-  const L = (APRES_RETOUR[AR.issue] || {})[quoi] || [];
+  const L = (APRES_RETOUR[(AR && AR.issue) || 'muet'] || {})[quoi] || [];
   let s = '<div class="dit">' + L.map((t,i) =>
     '<p class="' + (t.trim().startsWith('«') ? 'parle' : '') + '" '
     + 'style="animation-delay:' + (i*.5+.1).toFixed(2) + 's">' + t + '</p>').join('') + '</div>';
