@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0e0c08">
+<title>Battle Dock — Le premier drap</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#0e0c08;
+  font-family:'Courier Prime',monospace;color:#fff}
+
+.pl{position:fixed;inset:0;display:grid;gap:5px;
+  grid-template-columns:1fr 1fr;grid-template-rows:1.05fr 1.15fr .95fr;
+  padding:calc(env(safe-area-inset-top) + 44px) 10px
+          calc(env(safe-area-inset-bottom) + 62px);background:#0e0c08}
+.pl .c3{grid-column:1 / -1}
+.ca{position:relative;overflow:hidden;background:#0e0c08;border-radius:2px;
+  box-shadow:0 0 0 2px #0e0c08, 0 4px 14px rgba(0,0,0,.5);
+  opacity:0;transform:scale(.965);
+  transition:opacity .55s cubic-bezier(.3,.7,.4,1),transform .7s cubic-bezier(.2,.9,.3,1)}
+.ca.on{opacity:1;transform:none}
+.ca svg{display:block;width:100%;height:100%}
+.ca .tx{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;
+  background:linear-gradient(180deg,transparent,rgba(8,6,4,.94) 52%);
+  font-size:10.5px;line-height:1.45;font-family:system-ui,sans-serif;
+  color:rgba(255,255,255,.9);text-shadow:0 1px 6px rgba(0,0,0,.9);
+  opacity:0;transition:opacity .5s .3s}
+.ca.on .tx{opacity:1}
+.pl .c3 .tx{font-size:12px;padding:26px 14px 10px}
+
+.tete{position:fixed;left:0;right:0;top:0;z-index:10;
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(180deg,#0e0c08 62%,transparent)}
+.tete .su{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:#c9a374}
+.tete button{padding:6px 13px;border:1.5px solid rgba(255,255,255,.2);border-radius:16px;
+  background:none;cursor:pointer;font-family:'Courier Prime',monospace;
+  font-size:10px;color:rgba(255,255,255,.52)}
+
+.pied{position:fixed;left:0;right:0;bottom:0;z-index:10;
+  padding:10px 16px calc(env(safe-area-inset-bottom) + 14px);
+  background:linear-gradient(180deg,transparent,#0e0c08 44%);
+  opacity:0;transition:opacity .6s;pointer-events:none}
+.pied.on{opacity:1;pointer-events:auto}
+.pied button{width:100%;padding:16px;border:0;border-radius:9px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:13.5px;font-weight:700;
+  letter-spacing:.05em}
+
+/* ---------- l'enchère ---------- */
+.en{position:fixed;inset:0;z-index:20;background:#0e0c08;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;transition:opacity .7s}
+.en.on{opacity:1;pointer-events:auto}
+.en .sc{flex:0 0 38%;position:relative;overflow:hidden}
+.en .sc svg{display:block;width:100%;height:100%}
+.en .sc::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 46%,#0e0c08 100%)}
+.en .co{flex:1;padding:0 22px calc(env(safe-area-inset-bottom) + 20px);
+  display:flex;flex-direction:column;justify-content:flex-end}
+.en .lb{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:#c9a374}
+.en .pr{font-size:52px;font-weight:700;letter-spacing:-.02em;margin-top:6px;
+  transition:color .3s,transform .2s}
+.en .pr.saut{transform:scale(1.08)}
+.en .pr small{font-size:21px;opacity:.6}
+.en .qui{font-size:13px;color:rgba(255,255,255,.62);margin-top:8px;
+  font-family:system-ui,sans-serif;min-height:40px;line-height:1.5}
+.en .qui b{color:#fff}
+.en .tm{height:5px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:18px;
+  overflow:hidden}
+.en .tm i{display:block;height:100%;border-radius:3px;
+  background:linear-gradient(90deg,#8ce0a8,#f0c46a)}
+.en .tm i.chaud{background:linear-gradient(90deg,#f0c46a,#e0603a)}
+.en .bt{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.en .bt button{padding:16px;border:0;border-radius:10px;cursor:pointer;
+  font-family:'Courier Prime',monospace;font-size:14px;font-weight:700;
+  letter-spacing:.05em;transition:transform .12s}
+.en .bt button:active{transform:scale(.985)}
+.en .bt .ok{background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  box-shadow:0 5px 20px rgba(240,196,106,.24)}
+.en .bt .att{background:rgba(255,255,255,.07);color:rgba(255,255,255,.72);
+  border:1.5px solid rgba(255,255,255,.16)}
+.en .bt .att b{display:block;font-size:10px;font-weight:400;margin-top:5px;
+  color:rgba(255,255,255,.42);letter-spacing:0;font-family:system-ui,sans-serif}
+
+.fin{position:fixed;inset:0;z-index:30;background:rgba(14,12,8,.97);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;padding:30px;text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .5s}
+.fin.on{opacity:1;pointer-events:auto}
+.fin .lb{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:#c9a374}
+.fin b{font-size:44px;font-weight:700}
+.fin .cmp{font-size:11.5px;color:rgba(255,255,255,.44);font-family:system-ui,sans-serif}
+.fin p{font-size:14px;line-height:1.7;color:rgba(255,255,255,.72);max-width:300px;
+  font-family:system-ui,sans-serif}
+.fin button{margin-top:12px;padding:16px 40px;border:0;border-radius:10px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:13.5px;font-weight:700}
+
+.pi{opacity:0;animation:pose .45s forwards}
+.p1{animation-delay:.1s}.p2{animation-delay:.2s}.p3{animation-delay:.3s}.p4{animation-delay:.4s}
+@keyframes pose{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pou{animation:flotte 7s ease-in-out infinite}
+.v1{animation-duration:9s;animation-delay:-3s}.v2{animation-duration:5.6s;animation-delay:-1.4s}
+@keyframes flotte{0%,100%{transform:translate(0,0)}50%{transform:translate(4px,-9px)}}
+.po{animation:marche 2s ease-in-out infinite}
+.q1{animation-delay:-.66s}.q2{animation-delay:-1.32s}
+@keyframes marche{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.lum{animation:traverse 4.4s ease-in-out infinite}
+@keyframes traverse{0%,100%{opacity:.88}50%{opacity:1}}
+.si{animation:penche 4.6s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:50% 100%}
+.s1{animation-delay:-1.2s}.s2{animation-delay:-2.4s}.s3{animation-delay:-3.4s}
+@keyframes penche{0%,100%{transform:rotate(-1.1deg)}50%{transform:rotate(1.1deg)}}
+.mo{opacity:0;animation:dit .5s forwards}
+.m0{animation-delay:.5s}.m1{animation-delay:.9s}.m2{animation-delay:1.3s}
+@keyframes dit{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:none}}
+.fl{animation:vacille 3.2s ease-in-out infinite}
+@keyframes vacille{0%,100%{opacity:.85;transform:scaleY(1)}44%{opacity:1;transform:scaleY(1.16)}}
+.ac{animation:souffle 5.2s ease-in-out infinite}
+.a1{animation-delay:-1.7s}.a2{animation-delay:-3.4s}
+@keyframes souffle{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.6px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <span class="su">Barcelone — le premier drap</span>
+  <button id="saut">Passer</button>
+</div>
+
+<div class="pl" id="pl"></div>
+
+<div class="pied" id="pied">
+  <button id="suite">Ils veulent l'acheter</button>
+</div>
+
+<div class="en" id="en">
+  <div class="sc" id="en-sc"></div>
+  <div class="co">
+    <p class="lb" id="e-lb">Première offre</p>
+    <p class="pr" id="e-pr">—</p>
+    <p class="qui" id="e-qui">—</p>
+    <div class="tm"><i id="e-tm" style="width:100%"></i></div>
+    <div class="bt">
+      <button class="ok" id="e-ok">Taper dans la main</button>
+      <button class="att" id="e-att">Attendre
+        <b>Le prix peut monter. Ou ils peuvent partir.</b></button>
+    </div>
+  </div>
+</div>
+
+<div class="fin" id="fin">
+  <p class="lb" id="f-lb">Vendu</p>
+  <b id="f-pr">—</b>
+  <p class="cmp" id="f-cmp"></p>
+  <p id="f-tx">—</p>
+  <button id="f-ok">Redescendre au quai</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+/* ============================================================
+   LA PLANCHE — cinq cases sur un seul écran
+   Même méthode que les décors du jeu : perspective, lumière,
+   matière, et une palette qui tient.
+   ============================================================ */
+function hx(c){ return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]; }
+function ch(a){ return '#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join(''); }
+function mel(a,b,k){ const A=hx(a),B=hx(b); return ch([0,1,2].map(i=>A[i]+(B[i]-A[i])*k)); }
+const rnd = s => { const x = Math.sin(s*127.1)*43758.5; return x - Math.floor(x); };
+const rnd2 = (a,b) => { const x = Math.sin(a*127.1+b*311.7)*43758.5; return x - Math.floor(x); };
+
+/* la palette du drap : c'est lui le sujet */
+const DRAPS = ['#3f6a80','#6a5580','#8a5a48','#5a7050','#7a6a4a','#4a5a70'];
+
+/* ============================================================
+   1 — LA CALE : plongée, la lumière tombe par l'écoutille
+   ============================================================ */
+function caseCale(L, H){
+  const cx = L/2;
+  let s = `<defs>
+    <linearGradient id="c1f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a3826"/><stop offset="46%" stop-color="#2a1e14"/>
+      <stop offset="100%" stop-color="#150e08"/></linearGradient>
+    <linearGradient id="c1j" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%" stop-color="#fff0cc" stop-opacity=".62"/>
+      <stop offset="52%" stop-color="#e0c088" stop-opacity=".2"/>
+      <stop offset="100%" stop-color="#c9a068" stop-opacity="0"/></linearGradient>
+    <filter id="c1b"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+  <rect width="${L}" height="${H}" fill="url(#c1f)"/>`;
+
+  /* les membrures du bordé, qui fuient vers le fond */
+  for (let i = 0; i < 7; i++){
+    const t = i / 6, y = H * (.18 + t * .9);
+    const l = L * (.5 + t * .7);
+    s += `<path d="M${(cx - l/2).toFixed(0)} ${y.toFixed(0)} h${l.toFixed(0)}"
+      stroke="#1a120a" stroke-width="${(1.4 + t * 2.6).toFixed(1)}" opacity=".5"/>`;
+  }
+  /* les couples, verticaux */
+  for (let i = -3; i <= 3; i++){
+    const x = cx + i * L * .17;
+    s += `<path d="M${x.toFixed(0)} 0 L${(cx + i * L * .26).toFixed(0)} ${H}"
+      stroke="#241810" stroke-width="3" opacity=".4"/>`;
+  }
+
+  /* l'écoutille : le trapèze de jour */
+  s += `<path d="M${(cx-L*.24).toFixed(0)} -2 L${(cx+L*.24).toFixed(0)} -2
+    L${(cx+L*.16).toFixed(0)} ${(H*.42).toFixed(0)}
+    L${(cx-L*.16).toFixed(0)} ${(H*.42).toFixed(0)} Z" fill="#a8cbe0"/>`;
+  s += `<path d="M${(cx-L*.24).toFixed(0)} -2 L${(cx+L*.24).toFixed(0)} -2
+    L${(cx+L*.44).toFixed(0)} ${H} L${(cx-L*.44).toFixed(0)} ${H} Z"
+    fill="url(#c1j)"/>`;
+  /* le cadre de l'écoutille */
+  s += `<path d="M${(cx-L*.26).toFixed(0)} -2 L${(cx+L*.26).toFixed(0)} -2
+    L${(cx+L*.17).toFixed(0)} ${(H*.44).toFixed(0)}
+    L${(cx-L*.17).toFixed(0)} ${(H*.44).toFixed(0)} Z
+    M${(cx-L*.24).toFixed(0)} 0 L${(cx+L*.24).toFixed(0)} 0
+    L${(cx+L*.16).toFixed(0)} ${(H*.42).toFixed(0)}
+    L${(cx-L*.16).toFixed(0)} ${(H*.42).toFixed(0)} Z"
+    fill="#3a2a1c" fill-rule="evenodd"/>`;
+
+  /* une corde et un croc qui pendent de l'écoutille */
+  s += `<path d="M${(cx+L*.14).toFixed(0)} 0 v${(H*.3).toFixed(0)}"
+    stroke="#5a4a34" stroke-width="2.4"/>`;
+  s += `<path d="M${(cx+L*.14).toFixed(0)} ${(H*.3).toFixed(0)}
+    q${(L*.02).toFixed(0)} ${(H*.05).toFixed(0)} ${(-L*.02).toFixed(0)} ${(H*.07).toFixed(0)}
+    q${(-L*.03).toFixed(0)} ${(-H*.02).toFixed(0)} ${(L*.005).toFixed(0)} ${(-H*.045).toFixed(0)}"
+    stroke="#8a8078" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+  /* un ballot suspendu, en attente */
+  s += `<g class="pi p0"><path d="M${(cx-L*.3).toFixed(0)} ${(H*.16).toFixed(0)}
+    h${(L*.16).toFixed(0)} v${(H*.11).toFixed(0)} h${(-L*.16).toFixed(0)} z"
+    fill="${mel(DRAPS[3],'#140d08',.22)}"/>
+    <path d="M${(cx-L*.3).toFixed(0)} ${(H*.16).toFixed(0)}
+    h${(L*.16).toFixed(0)} v${(H*.025).toFixed(0)} h${(-L*.16).toFixed(0)} z"
+    fill="${mel(DRAPS[3],'#f8ecd0',.3)}"/>
+    <path d="M${(cx-L*.22).toFixed(0)} ${(H*.16).toFixed(0)} v${(-H*.16).toFixed(0)}"
+    stroke="#5a4a34" stroke-width="2"/></g>`;
+
+  /* les pièces de drap, empilées dans le rai de lumière */
+  const P = [[.44,.52,.30],[.50,.62,.34],[.46,.72,.32],[.53,.82,.36],[.48,.92,.34]];
+  P.forEach(([fx, fy, fl], i) => {
+    const x = cx + (fx - .5) * L * 1.1, y = H * fy, l = L * fl, h = H * .085;
+    const c = DRAPS[i % DRAPS.length];
+    /* plus c'est bas, plus c'est dans l'ombre */
+    const om = .1 + fy * .5;
+    s += `<g class="pi p${i}">`;
+    /* la tranche */
+    s += `<path d="M${(x-l/2).toFixed(0)} ${y.toFixed(0)} h${l.toFixed(0)}
+      v${h.toFixed(0)} h${(-l).toFixed(0)} z" fill="${mel(c,'#140d08',om)}"/>`;
+    /* le dessus, qui prend le jour */
+    s += `<path d="M${(x-l/2).toFixed(0)} ${y.toFixed(0)} h${l.toFixed(0)}
+      l${(-l*.09).toFixed(0)} ${(-h*.42).toFixed(0)} h${(-l*.82).toFixed(0)} z"
+      fill="${mel(c,'#f8ecd0',.36-om*.4)}"/>`;
+    /* les plis de l'étoffe roulée */
+    for (let k = 1; k < 5; k++)
+      s += `<path d="M${(x-l/2+l*k/5).toFixed(0)} ${y.toFixed(0)} v${h.toFixed(0)}"
+        stroke="${mel(c,'#0e0a06',.34)}" stroke-width="1.2" opacity=".5"/>`;
+    s += `</g>`;
+  });
+
+  /* la poussière dans le rai */
+  for (let i = 0; i < 24; i++)
+    s += `<circle class="pou v${i%3}" cx="${(cx + (rnd(i*7)-.5)*L*.6).toFixed(0)}"
+      cy="${(rnd(i*3)*H).toFixed(0)}" r="${(.7+rnd(i)*1.3).toFixed(1)}"
+      fill="#ffe8c0" opacity="${(.14+rnd(i+5)*.3).toFixed(2)}"/>`;
+  return s;
+}
+
+/* ============================================================
+   2 — LE DÉCHARGEMENT : vu de dos, il s'éloigne vers le quai
+   ============================================================ */
+function caseQuai(L, H){
+  let s = `<defs>
+    <linearGradient id="c2c" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3f7ba8"/><stop offset="34%" stop-color="#82a8c0"/>
+      <stop offset="60%" stop-color="#d8c8a4"/><stop offset="100%" stop-color="#e8d4ac"/>
+    </linearGradient>
+    <linearGradient id="c2q" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#cdbc98"/><stop offset="100%" stop-color="#8a7a5c"/>
+    </linearGradient></defs>
+  <rect width="${L}" height="${H}" fill="url(#c2c)"/>`;
+
+  /* la ville lointaine */
+  const yv = H * .38;
+  for (let i = 0; i < 16; i++){
+    const x = i * L / 15, h = H * (.03 + rnd(i) * .1);
+    s += `<rect x="${(x-L*.028).toFixed(0)}" y="${(yv-h).toFixed(0)}"
+      width="${(L*.056).toFixed(0)}" height="${h.toFixed(0)}"
+      fill="#b8c0b4" opacity="${(.26+rnd(i+3)*.2).toFixed(2)}"/>`;
+  }
+  s += `<rect y="${yv.toFixed(0)}" width="${L}" height="${(H*.08).toFixed(0)}"
+    fill="#6a94a4" opacity=".8"/>`;
+  /* le quai qui monte vers nous */
+  s += `<rect y="${(yv+H*.08).toFixed(0)}" width="${L}" height="${H}" fill="url(#c2q)"/>`;
+  let yy = yv + H*.08, pas = H*.022;
+  for (let i = 0; yy < H && i < 14; i++){
+    const n = Math.max(2, 8 - i);
+    for (let c2 = 0; c2 <= n; c2++){
+      const k = (c2/n - .5) * (1 + i*.14), x = L/2 + k*L*1.15, l = L/n*(1+i*.14);
+      const t = rnd2(i, c2);
+      s += `<rect x="${(x-l/2).toFixed(0)}" y="${yy.toFixed(0)}"
+        width="${(l-2).toFixed(0)}" height="${(pas*.88).toFixed(0)}" rx="1"
+        fill="${t>.55?'#d8c8a4':'#a89878'}" opacity="${(.3+t*.28).toFixed(2)}"/>`;
+    }
+    yy += pas; pas *= 1.32;
+  }
+
+  /* ---- trois porteurs de dos, en file, du plus loin au plus près ---- */
+  const F = [[.72, .30, 2], [.60, .44, 1], [.40, .78, 0]];
+  F.forEach(([fx, fh, i]) => {
+    const x = L*fx, h = H*fh, y = yv + H*.14 + (fh - .3) * H * .9;
+    const e = h * .13;             /* demi-largeur des épaules */
+    const c = DRAPS[i];
+    s += `<g class="po q${i}">`;
+
+    /* l'ombre au sol */
+    s += `<ellipse cx="${x.toFixed(0)}" cy="${(y+h*.02).toFixed(0)}"
+      rx="${(e*1.5).toFixed(0)}" ry="${(e*.28).toFixed(0)}" fill="#6a5a40" opacity=".34"/>`;
+
+    /* les jambes, une devant l'autre */
+    s += `<path d="M${(x-e*.42).toFixed(0)} ${y.toFixed(0)} v${(-h*.34).toFixed(0)}
+      M${(x+e*.44).toFixed(0)} ${(y-h*.03).toFixed(0)} v${(-h*.31).toFixed(0)}"
+      stroke="#3a3226" stroke-width="${(e*.42).toFixed(1)}" stroke-linecap="round"/>`;
+
+    /* le dos : plus large en haut, resserré à la taille */
+    s += `<path d="M${(x-e*.62).toFixed(0)} ${(y-h*.32).toFixed(0)}
+      C${(x-e*.66).toFixed(0)} ${(y-h*.5).toFixed(0)}
+       ${(x-e).toFixed(0)} ${(y-h*.58).toFixed(0)} ${(x-e).toFixed(0)} ${(y-h*.62).toFixed(0)}
+      L${(x+e).toFixed(0)} ${(y-h*.62).toFixed(0)}
+      C${(x+e).toFixed(0)} ${(y-h*.58).toFixed(0)}
+       ${(x+e*.66).toFixed(0)} ${(y-h*.5).toFixed(0)}
+       ${(x+e*.62).toFixed(0)} ${(y-h*.32).toFixed(0)} Z" fill="#54483a"/>`;
+    /* la chemise, plus claire sur l'épaule éclairée */
+    s += `<path d="M${(x-e).toFixed(0)} ${(y-h*.62).toFixed(0)}
+      L${(x-e*.1).toFixed(0)} ${(y-h*.62).toFixed(0)}
+      L${(x-e*.24).toFixed(0)} ${(y-h*.32).toFixed(0)}
+      L${(x-e*.62).toFixed(0)} ${(y-h*.32).toFixed(0)}
+      C${(x-e*.66).toFixed(0)} ${(y-h*.5).toFixed(0)}
+       ${(x-e).toFixed(0)} ${(y-h*.58).toFixed(0)} ${(x-e).toFixed(0)} ${(y-h*.62).toFixed(0)} Z"
+      fill="#6a5c48"/>`;
+    /* le pli du dos, au creux des reins */
+    s += `<path d="M${x.toFixed(0)} ${(y-h*.56).toFixed(0)} v${(h*.2).toFixed(0)}"
+      stroke="#3e3428" stroke-width="${(e*.1).toFixed(1)}" opacity=".5"/>`;
+
+    /* la nuque et la tête, vues de dos */
+    s += `<path d="M${(x-e*.2).toFixed(0)} ${(y-h*.62).toFixed(0)}
+      h${(e*.4).toFixed(0)} v${(-h*.04).toFixed(0)} h${(-e*.4).toFixed(0)} z"
+      fill="#8a5f3c"/>`;
+    s += `<circle cx="${x.toFixed(0)}" cy="${(y-h*.72).toFixed(0)}"
+      r="${(e*.42).toFixed(1)}" fill="#8a5f3c"/>`;
+    /* les cheveux : on ne voit que l'arrière du crâne */
+    s += `<path d="M${(x-e*.42).toFixed(0)} ${(y-h*.71).toFixed(0)}
+      a${(e*.42).toFixed(1)} ${(e*.42).toFixed(1)} 0 0 1 ${(e*.84).toFixed(1)} 0
+      q${(-e*.06).toFixed(1)} ${(e*.24).toFixed(1)} ${(-e*.42).toFixed(1)} ${(e*.26).toFixed(1)}
+      q${(-e*.36).toFixed(1)} ${(-e*.02).toFixed(1)} ${(-e*.42).toFixed(1)} ${(-e*.26).toFixed(1)} z"
+      fill="#2e2418"/>`;
+
+    /* LA PIÈCE DE DRAP en travers de l'épaule, en perspective */
+    const dy = y - h*.78;
+    s += `<path d="M${(x-e*1.5).toFixed(0)} ${(dy+e*.16).toFixed(0)}
+      Q${x.toFixed(0)} ${(dy-e*.2).toFixed(0)} ${(x+e*1.5).toFixed(0)} ${(dy+e*.06).toFixed(0)}
+      l0 ${(e*.42).toFixed(0)}
+      Q${x.toFixed(0)} ${(dy+e*.16).toFixed(0)} ${(x-e*1.5).toFixed(0)} ${(dy+e*.58).toFixed(0)} z"
+      fill="${mel(c,'#1a1410',.2)}"/>`;
+    /* le dessus du rouleau, éclairé */
+    s += `<path d="M${(x-e*1.5).toFixed(0)} ${(dy+e*.16).toFixed(0)}
+      Q${x.toFixed(0)} ${(dy-e*.2).toFixed(0)} ${(x+e*1.5).toFixed(0)} ${(dy+e*.06).toFixed(0)}
+      l0 ${(e*.12).toFixed(0)}
+      Q${x.toFixed(0)} ${(dy-e*.06).toFixed(0)} ${(x-e*1.5).toFixed(0)} ${(dy+e*.3).toFixed(0)} z"
+      fill="${mel(c,'#eaf4fa',.46)}"/>`;
+    /* les tours du rouleau */
+    for (let k = 1; k < 6; k++){
+      const t2 = k/6, rx = x - e*1.5 + e*3*t2;
+      const ry = dy + e*.16 - Math.sin(t2*Math.PI)*e*.22 + t2*e*.06;
+      s += `<path d="M${rx.toFixed(0)} ${ry.toFixed(1)}
+        l${(-e*.06).toFixed(1)} ${(e*.42).toFixed(1)}" stroke="${mel(c,'#0a1218',.34)}"
+        stroke-width="${Math.max(1, e*.07).toFixed(1)}" opacity=".44"/>`;
+    }
+
+    /* le bras qui remonte tenir la pièce */
+    s += `<path d="M${(x+e*.9).toFixed(0)} ${(y-h*.5).toFixed(0)}
+      C${(x+e*1.2).toFixed(0)} ${(y-h*.62).toFixed(0)}
+       ${(x+e*1.16).toFixed(0)} ${(y-h*.72).toFixed(0)}
+       ${(x+e*.96).toFixed(0)} ${(y-h*.77).toFixed(0)}"
+      stroke="#54483a" stroke-width="${(e*.3).toFixed(1)}" fill="none"
+      stroke-linecap="round"/>`;
+    /* la main dessus */
+    s += `<ellipse cx="${(x+e*.94).toFixed(0)}" cy="${(y-h*.79).toFixed(0)}"
+      rx="${(e*.2).toFixed(1)}" ry="${(e*.15).toFixed(1)}" fill="#8a5f3c"
+      transform="rotate(-16 ${(x+e*.94).toFixed(0)} ${(y-h*.79).toFixed(0)})"/>`;
+    s += `</g>`;
+  });
+
+  /* la pile qui monte sur le quai, à droite */
+  for (let k = 0; k < 5; k++)
+    s += `<path d="M${(L*.84).toFixed(0)} ${(H*.92 - k*H*.035).toFixed(0)}
+      q${(L*.08).toFixed(0)} ${(-H*.012).toFixed(0)} ${(L*.16).toFixed(0)} 0
+      v${(H*.03).toFixed(0)} q${(-L*.08).toFixed(0)} ${(H*.012).toFixed(0)}
+      ${(-L*.16).toFixed(0)} 0 z"
+      fill="${mel(DRAPS[k % DRAPS.length],'#2a2018',.14)}"/>`;
+  return s;
+}
+
+/* ============================================================
+   3 — LE DRAP : la main l'écarte, on voit le fil
+   ============================================================ */
+function caseDrap(L, H){
+  const c = DRAPS[0];
+  const clair = mel(c, '#e8f4fa', .42);
+  const fonce = mel(c, '#0a1218', .42);
+  let s = `<defs>
+    <linearGradient id="c3f" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#f4e4bc"/><stop offset="46%" stop-color="#d4bc92"/>
+      <stop offset="100%" stop-color="#9a8464"/></linearGradient>
+    <filter id="c3b"><feGaussianBlur stdDeviation="${(H*.02).toFixed(1)}"/></filter>
+  </defs>
+  <rect width="${L}" height="${H}" fill="url(#c3f)"/>`;
+
+  /* le fond : le quai flou, très hors champ */
+  for (let i = 0; i < 7; i++)
+    s += `<rect x="${(rnd(i*7)*L).toFixed(0)}" y="${(H*.1+rnd(i*3)*H*.3).toFixed(0)}"
+      width="${(L*.2).toFixed(0)}" height="${(H*.5).toFixed(0)}"
+      fill="#b0a080" opacity=".2" filter="url(#c3b)"/>`;
+
+  /* ---- l'étoffe occupe presque tout : on est à dix centimètres ---- */
+  const y0 = H * .1, y1 = H * .94;
+  /* la nappe de fond */
+  s += `<path d="M${(-L*.05).toFixed(0)} ${y0.toFixed(0)}
+    Q${(L*.5).toFixed(0)} ${(y0-H*.06).toFixed(0)} ${(L*1.05).toFixed(0)} ${y0.toFixed(0)}
+    L${(L*1.05).toFixed(0)} ${y1.toFixed(0)}
+    Q${(L*.5).toFixed(0)} ${(y1+H*.06).toFixed(0)} ${(-L*.05).toFixed(0)} ${y1.toFixed(0)} Z"
+    fill="${c}"/>`;
+
+  /* ---- la CHAÎNE : les fils verticaux, un par un, épais ---- */
+  const nf = Math.round(L / 7);
+  for (let i = 0; i <= nf; i++){
+    const t = i / nf;
+    const x = -L*.05 + L*1.1 * t;
+    /* le fil ondule légèrement : c'est tissé, pas imprimé */
+    const on = Math.sin(t * 34) * H * .006;
+    /* la lumière vient de la gauche : les fils brillent d'un côté */
+    const br = .5 + Math.sin(t * 34 + 1.6) * .5;
+    s += `<path d="M${x.toFixed(1)} ${(y0-H*.03).toFixed(0)}
+      Q${(x+on).toFixed(1)} ${(H*.5).toFixed(0)} ${x.toFixed(1)} ${(y1+H*.03).toFixed(0)}"
+      stroke="${mel(fonce, clair, br)}" stroke-width="3.4" fill="none"
+      opacity="${(.5 + br*.4).toFixed(2)}"/>`;
+  }
+  /* ---- la TRAME : les fils horizontaux, qui passent dessus-dessous ---- */
+  const nt = Math.round(H / 9);
+  for (let i = 0; i <= nt; i++){
+    const t = i / nt, y = y0 + (y1-y0) * t;
+    const cr = y0 - H*.06 + (y1-y0+H*.12) * t;
+    const br = .5 + Math.sin(t * 26 + .8) * .5;
+    let p = `M${(-L*.05).toFixed(0)} ${cr.toFixed(1)} `;
+    for (let k = 0; k < 8; k++)
+      p += `Q${(-L*.05 + L*1.1*(k+.5)/8).toFixed(0)} ${(cr - H*.012).toFixed(1)}
+        ${(-L*.05 + L*1.1*(k+1)/8).toFixed(0)} ${cr.toFixed(1)} `;
+    s += `<path d="${p}" stroke="${mel(fonce, clair, br * .8)}" stroke-width="2.6"
+      fill="none" opacity="${(.34 + br*.3).toFixed(2)}"/>`;
+  }
+
+  /* ---- le pli : là où la main soulève, l'étoffe se creuse ---- */
+  s += `<path d="M${(L*.58).toFixed(0)} ${y0.toFixed(0)}
+    C${(L*.5).toFixed(0)} ${(H*.34).toFixed(0)} ${(L*.52).toFixed(0)} ${(H*.62).toFixed(0)}
+     ${(L*.46).toFixed(0)} ${y1.toFixed(0)}
+    L${(L*.74).toFixed(0)} ${y1.toFixed(0)}
+    C${(L*.7).toFixed(0)} ${(H*.62).toFixed(0)} ${(L*.72).toFixed(0)} ${(H*.34).toFixed(0)}
+     ${(L*.78).toFixed(0)} ${y0.toFixed(0)} Z"
+    fill="${clair}" opacity=".22"/>`;
+  s += `<path d="M${(L*.44).toFixed(0)} ${y0.toFixed(0)}
+    C${(L*.38).toFixed(0)} ${(H*.36).toFixed(0)} ${(L*.4).toFixed(0)} ${(H*.64).toFixed(0)}
+     ${(L*.34).toFixed(0)} ${y1.toFixed(0)}
+    L${(L*.48).toFixed(0)} ${y1.toFixed(0)}
+    C${(L*.54).toFixed(0)} ${(H*.64).toFixed(0)} ${(L*.52).toFixed(0)} ${(H*.36).toFixed(0)}
+     ${(L*.6).toFixed(0)} ${y0.toFixed(0)} Z"
+    fill="${fonce}" opacity=".3"/>`;
+
+  /* ---- la lisière, en bas : la bordure tissée serré ---- */
+  s += `<path d="M${(-L*.05).toFixed(0)} ${(y1-H*.05).toFixed(0)}
+    Q${(L*.5).toFixed(0)} ${(y1+H*.01).toFixed(0)} ${(L*1.05).toFixed(0)} ${(y1-H*.05).toFixed(0)}
+    L${(L*1.05).toFixed(0)} ${y1.toFixed(0)}
+    Q${(L*.5).toFixed(0)} ${(y1+H*.06).toFixed(0)} ${(-L*.05).toFixed(0)} ${y1.toFixed(0)} Z"
+    fill="${mel(c,'#f4f8fa',.3)}"/>`;
+
+  /* ---- la main, en bas à droite, qui pince le tissu ---- */
+  const mx = L*.82, my = H*.78, mh = H*.3;
+  s += `<g class="lum">`;
+  /* le pouce et l'index qui pincent */
+  s += `<path d="M${(mx-mh*.5).toFixed(0)} ${(my+mh*.7).toFixed(0)}
+    C${(mx-mh*.5).toFixed(0)} ${(my+mh*.1).toFixed(0)}
+     ${(mx-mh*.3).toFixed(0)} ${(my-mh*.2).toFixed(0)}
+     ${(mx-mh*.04).toFixed(0)} ${(my-mh*.24).toFixed(0)}
+    C${(mx+mh*.2).toFixed(0)} ${(my-mh*.26).toFixed(0)}
+     ${(mx+mh*.36).toFixed(0)} ${(my-mh*.1).toFixed(0)}
+     ${(mx+mh*.4).toFixed(0)} ${(my+mh*.2).toFixed(0)}
+    L${(mx+mh*.5).toFixed(0)} ${(my+mh*.7).toFixed(0)} Z" fill="#c99a70"/>`;
+  /* les plis des phalanges */
+  for (let k = 0; k < 3; k++)
+    s += `<path d="M${(mx-mh*.3+k*mh*.24).toFixed(0)} ${(my-mh*.18+k*mh*.02).toFixed(0)}
+      q${(mh*.08).toFixed(0)} ${(mh*.1).toFixed(0)} 0 ${(mh*.2).toFixed(0)}"
+      stroke="#a8794f" stroke-width="2" fill="none" opacity=".6"/>`;
+  /* l'ongle du pouce */
+  s += `<ellipse cx="${(mx-mh*.02).toFixed(0)}" cy="${(my-mh*.16).toFixed(0)}"
+    rx="${(mh*.09).toFixed(0)}" ry="${(mh*.06).toFixed(0)}" fill="#e0b48c"/>`;
+  s += `</g>`;
+  return s;
+}
+
+/* ============================================================
+   4 — LA RUMEUR : silhouettes et bouches à oreille
+   ============================================================ */
+function caseRumeur(L, H){
+  let s = `<defs>
+    <radialGradient id="c4l" cx="0.5" cy="0.16">
+      <stop offset="0%" stop-color="#ffcf82" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#ffcf82" stop-opacity="0"/></radialGradient>
+    <linearGradient id="c4f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2e2418"/><stop offset="100%" stop-color="#150f0a"/>
+    </linearGradient></defs>
+  <rect width="${L}" height="${H}" fill="url(#c4f)"/>
+  <ellipse cx="${(L*.5).toFixed(0)}" cy="${(H*.1).toFixed(0)}"
+    rx="${(L*.6).toFixed(0)}" ry="${(H*.5).toFixed(0)}" fill="url(#c4l)"/>`;
+
+  /* la lanterne */
+  s += `<path d="M${(L*.5).toFixed(0)} 0 v${(H*.12).toFixed(0)}"
+    stroke="#1a120a" stroke-width="2.4"/>`;
+  s += `<path d="M${(L*.46).toFixed(0)} ${(H*.12).toFixed(0)}
+    h${(L*.08).toFixed(0)} l${(-L*.01).toFixed(0)} ${(H*.11).toFixed(0)}
+    h${(-L*.06).toFixed(0)} z" fill="#ffd07a"/>`;
+  s += `<ellipse class="fl" cx="${(L*.5).toFixed(0)}" cy="${(H*.18).toFixed(0)}"
+    rx="${(L*.02).toFixed(0)}" ry="${(H*.035).toFixed(0)}" fill="#fff2c0"/>`;
+
+  /* quatre silhouettes, deux à deux, penchées l'une vers l'autre */
+  const G = [[.16,.46,1],[.34,.44,-1],[.64,.45,1],[.86,.47,-1]];
+  G.forEach(([fx, fh, sens], i) => {
+    const x = L*fx, y = H*1.02, h = H*fh;
+    s += `<g class="si s${i}">`;
+    s += `<path d="M${(x-h*.24).toFixed(0)} ${y.toFixed(0)}
+      q0 ${(-h*.6).toFixed(0)} ${(h*.24).toFixed(0)} ${(-h*.68).toFixed(0)}
+      q${(h*.24).toFixed(0)} ${(h*.08).toFixed(0)} ${(h*.24).toFixed(0)} ${(h*.68).toFixed(0)} z"
+      fill="${mel('#4a3e30','#150f0a', .1 + Math.abs(fx-.5)*.6)}"/>`;
+    /* la tête, tournée vers l'autre */
+    s += `<circle cx="${(x + sens*h*.06).toFixed(0)}" cy="${(y-h*.76).toFixed(0)}"
+      r="${(h*.14).toFixed(1)}" fill="${mel('#8a6a4c','#150f0a', .1 + Math.abs(fx-.5)*.5)}"/>`;
+    /* un chapeau pour deux d'entre eux */
+    if (i % 2)
+      s += `<path d="M${(x-h*.2).toFixed(0)} ${(y-h*.84).toFixed(0)}
+        h${(h*.4).toFixed(0)} v${(h*.03).toFixed(0)} h${(-h*.4).toFixed(0)} z
+        M${(x-h*.11).toFixed(0)} ${(y-h*.84).toFixed(0)} v${(-h*.09).toFixed(0)}
+        h${(h*.22).toFixed(0)} v${(h*.09).toFixed(0)} z" fill="#241a12"/>`;
+    s += `</g>`;
+  });
+
+  /* les mots qui passent */
+  [[.25,.3],[.5,.24],[.75,.31]].forEach(([fx, fy], i) => {
+    const x = L*fx, y = H*fy, l = L*.16, h2 = H*.11;
+    s += `<g class="mo m${i}">`;
+    s += `<path d="M${(x-l/2).toFixed(0)} ${y.toFixed(0)}
+      h${l.toFixed(0)} q${(l*.1).toFixed(0)} 0 ${(l*.1).toFixed(0)} ${(h2*.3).toFixed(0)}
+      v${(h2*.4).toFixed(0)} q0 ${(h2*.3).toFixed(0)} ${(-l*.1).toFixed(0)} ${(h2*.3).toFixed(0)}
+      h${(-l*.34).toFixed(0)} l${(-l*.1).toFixed(0)} ${(h2*.28).toFixed(0)}
+      l${(-l*.04).toFixed(0)} ${(-h2*.28).toFixed(0)} h${(-l*.52).toFixed(0)}
+      q${(-l*.1).toFixed(0)} 0 ${(-l*.1).toFixed(0)} ${(-h2*.3).toFixed(0)}
+      v${(-h2*.4).toFixed(0)} q0 ${(-h2*.3).toFixed(0)} ${(l*.1).toFixed(0)} ${(-h2*.3).toFixed(0)} z"
+      fill="#e8dcc4"/>`;
+    for (let k = 0; k < 2; k++)
+      s += `<path d="M${(x-l*.32).toFixed(0)} ${(y+h2*.28+k*h2*.26).toFixed(0)}
+        h${(l*(.4+rnd(i*3+k)*.3)).toFixed(0)}" stroke="#8a7c64"
+        stroke-width="${(h2*.11).toFixed(1)}" stroke-linecap="round"/>`;
+    s += `</g>`;
+  });
+  return s;
+}
+
+/* ============================================================
+   5 — LES TROIS : éclairés par en dessous, chacun sa tête
+   ============================================================ */
+function caseTrois(L, H){
+  let s = `<defs>
+    <radialGradient id="c5l" cx="0.5" cy="0.8">
+      <stop offset="0%" stop-color="#ffdca0" stop-opacity=".46"/>
+      <stop offset="54%" stop-color="#b8802e" stop-opacity=".12"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <linearGradient id="c5f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#140f0a"/><stop offset="100%" stop-color="#302418"/>
+    </linearGradient></defs>
+  <rect width="${L}" height="${H}" fill="url(#c5f)"/>
+  <ellipse cx="${(L*.5).toFixed(0)}" cy="${(H*.8).toFixed(0)}"
+    rx="${(L*.6).toFixed(0)}" ry="${(H*.5).toFixed(0)}" fill="url(#c5l)"/>`;
+
+  /* trois hommes, tailles et allures différentes */
+  const T = [
+    { fx:.16, fh:.62, hab:'#7a3448', chv:'#2a1c14', chap:false, barbe:true,  gros:.9 },
+    { fx:.5,  fh:.72, hab:'#33445c', chv:'#4a3626', chap:true,  barbe:false, gros:1.18 },
+    { fx:.85, fh:.58, hab:'#44543a', chv:'#241c14', chap:false, barbe:false, gros:.86 }
+  ];
+  T.forEach((A, i) => {
+    const x = L*A.fx, y = H*.94, h = H*A.fh;
+    const t = h * .2 * A.gros;      /* rayon de la tête */
+    s += `<g class="ac a${i}">`;
+    /* les épaules */
+    s += `<path d="M${(x-h*.42*A.gros).toFixed(0)} ${y.toFixed(0)}
+      C${(x-h*.4*A.gros).toFixed(0)} ${(y-h*.36).toFixed(0)}
+       ${(x-h*.22).toFixed(0)} ${(y-h*.46).toFixed(0)}
+       ${x.toFixed(0)} ${(y-h*.48).toFixed(0)}
+      C${(x+h*.22).toFixed(0)} ${(y-h*.46).toFixed(0)}
+       ${(x+h*.4*A.gros).toFixed(0)} ${(y-h*.36).toFixed(0)}
+       ${(x+h*.42*A.gros).toFixed(0)} ${y.toFixed(0)} Z" fill="${A.hab}"/>`;
+    /* le col ouvert */
+    s += `<path d="M${(x-h*.13).toFixed(0)} ${(y-h*.47).toFixed(0)}
+      q${(h*.13).toFixed(0)} ${(h*.09).toFixed(0)} ${(h*.26).toFixed(0)} 0
+      l${(h*.05).toFixed(0)} ${(h*.09).toFixed(0)}
+      q${(-h*.18).toFixed(0)} ${(h*.11).toFixed(0)} ${(-h*.36).toFixed(0)} 0 z"
+      fill="#ddd0b4"/>`;
+    /* le cou */
+    s += `<path d="M${(x-t*.4).toFixed(0)} ${(y-h*.48).toFixed(0)}
+      h${(t*.8).toFixed(0)} v${(-t*.5).toFixed(0)} h${(-t*.8).toFixed(0)} z"
+      fill="#8a5f3c"/>`;
+    /* le visage : ovale, menton marqué */
+    const cy = y - h*.48 - t*.86;
+    s += `<path d="M${(x-t*.78).toFixed(0)} ${cy.toFixed(0)}
+      C${(x-t*.8).toFixed(0)} ${(cy-t*.86).toFixed(0)}
+       ${(x-t*.44).toFixed(0)} ${(cy-t*1.06).toFixed(0)} ${x.toFixed(0)} ${(cy-t*1.06).toFixed(0)}
+      C${(x+t*.44).toFixed(0)} ${(cy-t*1.06).toFixed(0)}
+       ${(x+t*.8).toFixed(0)} ${(cy-t*.86).toFixed(0)} ${(x+t*.78).toFixed(0)} ${cy.toFixed(0)}
+      C${(x+t*.76).toFixed(0)} ${(cy+t*.66).toFixed(0)}
+       ${(x+t*.4).toFixed(0)} ${(cy+t*.94).toFixed(0)} ${x.toFixed(0)} ${(cy+t*.94).toFixed(0)}
+      C${(x-t*.4).toFixed(0)} ${(cy+t*.94).toFixed(0)}
+       ${(x-t*.76).toFixed(0)} ${(cy+t*.66).toFixed(0)}
+       ${(x-t*.78).toFixed(0)} ${cy.toFixed(0)} Z" fill="#a8794f"/>`;
+    /* la lumière d'en bas : menton, pommettes, dessous du nez */
+    s += `<path d="M${(x-t*.7).toFixed(0)} ${(cy+t*.12).toFixed(0)}
+      C${(x-t*.6).toFixed(0)} ${(cy+t*.7).toFixed(0)}
+       ${(x-t*.4).toFixed(0)} ${(cy+t*.94).toFixed(0)} ${x.toFixed(0)} ${(cy+t*.94).toFixed(0)}
+      C${(x+t*.4).toFixed(0)} ${(cy+t*.94).toFixed(0)}
+       ${(x+t*.6).toFixed(0)} ${(cy+t*.7).toFixed(0)} ${(x+t*.7).toFixed(0)} ${(cy+t*.12).toFixed(0)}
+      C${(x+t*.4).toFixed(0)} ${(cy+t*.44).toFixed(0)}
+       ${(x-t*.4).toFixed(0)} ${(cy+t*.44).toFixed(0)}
+       ${(x-t*.7).toFixed(0)} ${(cy+t*.12).toFixed(0)} Z"
+      fill="#e0b078" opacity=".6"/>`;
+    /* le front, dans l'ombre */
+    s += `<path d="M${(x-t*.78).toFixed(0)} ${(cy-t*.2).toFixed(0)}
+      C${(x-t*.8).toFixed(0)} ${(cy-t*.86).toFixed(0)}
+       ${(x-t*.44).toFixed(0)} ${(cy-t*1.06).toFixed(0)} ${x.toFixed(0)} ${(cy-t*1.06).toFixed(0)}
+      C${(x+t*.44).toFixed(0)} ${(cy-t*1.06).toFixed(0)}
+       ${(x+t*.8).toFixed(0)} ${(cy-t*.86).toFixed(0)} ${(x+t*.78).toFixed(0)} ${(cy-t*.2).toFixed(0)}
+      Z" fill="#3e2a1a" opacity=".44"/>`;
+    /* les yeux : blanc, iris, pupille */
+    [-1, 1].forEach(sg => {
+      const ex = x + sg*t*.32, ey = cy - t*.24;
+      s += `<path d="M${(ex-t*.19).toFixed(0)} ${ey.toFixed(0)}
+        q${(t*.19).toFixed(0)} ${(-t*.16).toFixed(0)} ${(t*.38).toFixed(0)} 0
+        q${(-t*.19).toFixed(0)} ${(t*.14).toFixed(0)} ${(-t*.38).toFixed(0)} 0 z"
+        fill="#e8dcc8"/>`;
+      s += `<circle cx="${ex.toFixed(0)}" cy="${ey.toFixed(0)}"
+        r="${(t*.1).toFixed(1)}" fill="#3a2414"/>`;
+      s += `<circle cx="${ex.toFixed(0)}" cy="${ey.toFixed(0)}"
+        r="${(t*.05).toFixed(1)}" fill="#100a04"/>`;
+      /* la paupière lourde, par-dessus */
+      s += `<path d="M${(ex-t*.2).toFixed(0)} ${(ey-t*.03).toFixed(0)}
+        q${(t*.2).toFixed(0)} ${(-t*.18).toFixed(0)} ${(t*.4).toFixed(0)} 0"
+        stroke="#4a3018" stroke-width="${(t*.07).toFixed(1)}" fill="none"
+        stroke-linecap="round"/>`;
+      /* le sourcil */
+      s += `<path d="M${(ex-t*.22).toFixed(0)} ${(ey-t*.32).toFixed(0)}
+        q${(t*.22).toFixed(0)} ${(-t*.12).toFixed(0)} ${(t*.44).toFixed(0)} ${(t*.02).toFixed(0)}"
+        stroke="${A.chv}" stroke-width="${(t*.09).toFixed(1)}" fill="none"
+        stroke-linecap="round"/>`;
+    });
+    /* le nez */
+    s += `<path d="M${x.toFixed(0)} ${(cy-t*.18).toFixed(0)}
+      q${(t*.14).toFixed(0)} ${(t*.4).toFixed(0)} ${(-t*.03).toFixed(0)} ${(t*.5).toFixed(0)}"
+      stroke="#7a4e2c" stroke-width="${(t*.07).toFixed(1)}" fill="none"
+      stroke-linecap="round"/>`;
+    /* la bouche */
+    s += `<path d="M${(x-t*.22).toFixed(0)} ${(cy+t*.5).toFixed(0)}
+      q${(t*.22).toFixed(0)} ${(t*.1).toFixed(0)} ${(t*.44).toFixed(0)} 0"
+      stroke="#6a3428" stroke-width="${(t*.08).toFixed(1)}" fill="none"
+      stroke-linecap="round"/>`;
+    /* la barbe, pour celui de gauche */
+    if (A.barbe)
+      s += `<path d="M${(x-t*.66).toFixed(0)} ${(cy+t*.24).toFixed(0)}
+        C${(x-t*.6).toFixed(0)} ${(cy+t*.86).toFixed(0)}
+         ${(x-t*.34).toFixed(0)} ${(cy+t*1.02).toFixed(0)} ${x.toFixed(0)} ${(cy+t*1.02).toFixed(0)}
+        C${(x+t*.34).toFixed(0)} ${(cy+t*1.02).toFixed(0)}
+         ${(x+t*.6).toFixed(0)} ${(cy+t*.86).toFixed(0)} ${(x+t*.66).toFixed(0)} ${(cy+t*.24).toFixed(0)}
+        C${(x+t*.36).toFixed(0)} ${(cy+t*.56).toFixed(0)}
+         ${(x-t*.36).toFixed(0)} ${(cy+t*.56).toFixed(0)}
+         ${(x-t*.66).toFixed(0)} ${(cy+t*.24).toFixed(0)} Z"
+        fill="${A.chv}" opacity=".72"/>`;
+    /* les cheveux */
+    s += `<path d="M${(x-t*.8).toFixed(0)} ${(cy-t*.5).toFixed(0)}
+      C${(x-t*.82).toFixed(0)} ${(cy-t*1).toFixed(0)}
+       ${(x-t*.44).toFixed(0)} ${(cy-t*1.2).toFixed(0)} ${x.toFixed(0)} ${(cy-t*1.16).toFixed(0)}
+      C${(x+t*.44).toFixed(0)} ${(cy-t*1.2).toFixed(0)}
+       ${(x+t*.82).toFixed(0)} ${(cy-t*1).toFixed(0)} ${(x+t*.8).toFixed(0)} ${(cy-t*.5).toFixed(0)}
+      C${(x+t*.66).toFixed(0)} ${(cy-t*.86).toFixed(0)}
+       ${(x-t*.66).toFixed(0)} ${(cy-t*.86).toFixed(0)}
+       ${(x-t*.8).toFixed(0)} ${(cy-t*.5).toFixed(0)} Z" fill="${A.chv}"/>`;
+    /* le chapeau, pour celui du milieu */
+    if (A.chap){
+      s += `<path d="M${(x-t*1.15).toFixed(0)} ${(cy-t*.98).toFixed(0)}
+        q${(t*1.15).toFixed(0)} ${(-t*.24).toFixed(0)} ${(t*2.3).toFixed(0)} 0
+        q${(-t*1.15).toFixed(0)} ${(t*.2).toFixed(0)} ${(-t*2.3).toFixed(0)} 0 z"
+        fill="#241a12"/>`;
+      s += `<path d="M${(x-t*.62).toFixed(0)} ${(cy-t*1.02).toFixed(0)}
+        q0 ${(-t*.6).toFixed(0)} ${(t*.62).toFixed(0)} ${(-t*.6).toFixed(0)}
+        q${(t*.62).toFixed(0)} 0 ${(t*.62).toFixed(0)} ${(t*.6).toFixed(0)} z"
+        fill="#2e2218"/>`;
+    }
+    s += `</g>`;
+  });
+
+  /* le drap posé devant, source de la lumière */
+  const yd = H*.9, ld = L*.7;
+  s += `<path d="M${((L-ld)/2).toFixed(0)} ${yd.toFixed(0)}
+    q${(ld*.5).toFixed(0)} ${(-H*.08).toFixed(0)} ${ld.toFixed(0)} 0
+    v${(H*.14).toFixed(0)} q${(-ld*.5).toFixed(0)} ${(H*.08).toFixed(0)} ${(-ld).toFixed(0)} 0 z"
+    fill="${DRAPS[0]}"/>`;
+  s += `<path d="M${((L-ld)/2).toFixed(0)} ${yd.toFixed(0)}
+    q${(ld*.5).toFixed(0)} ${(-H*.08).toFixed(0)} ${ld.toFixed(0)} 0
+    v${(H*.04).toFixed(0)} q${(-ld*.5).toFixed(0)} ${(H*.08).toFixed(0)} ${(-ld).toFixed(0)} 0 z"
+    fill="${mel(DRAPS[0],'#e8f4fa',.5)}"/>`;
+  return s;
+}
+
+
+const PLANCHE = [
+  { f:caseCale,   c:'c1', t:"Tu ouvres la cale. Il n'a pas bougé de la traversée." },
+  { f:caseQuai,   c:'c2', t:"On décharge. Une pièce par homme, et personne ne parle." },
+  { f:caseDrap,   c:'c3', t:"Le contremaître en déplie une contre le jour. "
+    + "Trente-deux fils au pouce. À Barcelone ils en font vingt-quatre." },
+  { f:caseRumeur, c:'c4', t:"En dix minutes, tout le quai le sait." },
+  { f:caseTrois,  c:'c5', t:"Ils sont trois. Aucun ne connaît le prix." }
+];
+
+const pl = document.getElementById('pl');
+PLANCHE.forEach(C => {
+  const d = document.createElement('div');
+  d.className = 'ca ' + C.c;
+  pl.appendChild(d);
+});
+function dessiner(){
+  [...pl.children].forEach((d, i) => {
+    const L = Math.round(d.clientWidth), H = Math.round(d.clientHeight);
+    if (!L || !H) return;
+    d.innerHTML = '<svg viewBox="0 0 ' + L + ' ' + H + '" '
+      + 'xmlns="http://www.w3.org/2000/svg">' + PLANCHE[i].f(L, H) + '</svg>'
+      + '<p class="tx">' + PLANCHE[i].t + '</p>';
+  });
+}
+requestAnimationFrame(dessiner);
+
+const cases = [...pl.children];
+let n = 0, t = null;
+function suivante(){
+  if (n >= cases.length){ document.getElementById('pied').classList.add('on'); return; }
+  cases[n].classList.add('on'); n++;
+  t = setTimeout(suivante, n === 1 ? 1500 : 1250);
+}
+setTimeout(suivante, 700);
+document.getElementById('saut').onclick = () => {
+  clearTimeout(t);
+  cases.forEach(c => c.classList.add('on'));
+  document.getElementById('pied').classList.add('on');
+};
+
+/* ============================================================
+   L'ENCHÈRE
+   ============================================================ */
+const ACHETEURS = [
+  { n:'Un drapier du Raval', d:"Il a des ciseaux qui dépassent de sa poche." },
+  { n:'Une femme en noir',   d:"Elle n'a pas dit pour qui elle achète." },
+  { n:'Le gros du fond',     d:"Il n'a rien dit depuis le début. Il regarde." }
+];
+let BASE = 0, prix = 0, tour = 0, fini = false, boucle = null;
+
+document.getElementById('suite').onclick = () => {
+  const el = document.getElementById('en-sc');
+  const L = Math.round(innerWidth), H = Math.round(innerHeight * .38);
+  el.innerHTML = '<svg viewBox="0 0 ' + L + ' ' + H + '" '
+    + 'xmlns="http://www.w3.org/2000/svg">' + caseTrois(L, H) + '</svg>';
+  document.getElementById('en').classList.add('on');
+  prix = Math.round(BASE * .72);
+  tour = 0;
+  monter();
+};
+
+function monter(){
+  const A = ACHETEURS[tour % 3];
+  document.getElementById('e-lb').textContent =
+    tour === 0 ? 'Première offre' : 'Offre ' + (tour + 1);
+  const P = document.getElementById('e-pr');
+  P.innerHTML = prix + ' <small>€</small>';
+  P.style.color = prix > BASE * 1.25 ? '#8ce0a8' : prix < BASE * .85 ? '#e0a878' : '#fff';
+  P.classList.add('saut');
+  setTimeout(() => P.classList.remove('saut'), 200);
+  document.getElementById('e-qui').innerHTML = '<b>' + A.n + '</b><br>' + A.d;
+
+  const duree = 4200 - tour * 380;
+  const t0 = Date.now();
+  const jauge = document.getElementById('e-tm');
+  clearInterval(boucle);
+  boucle = setInterval(() => {
+    const reste = 1 - (Date.now() - t0) / duree;
+    if (reste <= 0){ clearInterval(boucle); tourSuivant(); return; }
+    jauge.style.width = (reste * 100).toFixed(1) + '%';
+    jauge.classList.toggle('chaud', reste < .4);
+  }, 60);
+}
+
+function tourSuivant(){
+  tour++;
+  const risque = Math.min(.72, .1 + tour * .13);
+  if (Math.random() < risque){ ilsLachent(); return; }
+  prix = Math.round(prix * (1 + (.22 - tour * .028)));
+  monter();
+}
+
+function ilsLachent(){
+  if (fini) return;
+  clearInterval(boucle);
+  finir(Math.round(prix * .62), 'Personne ne suit',
+    "Un silence. Puis le gros du fond hausse les épaules et s'en va.\n"
+    + "Tu vends au dernier qui reste, et il le sait.");
+}
+
+document.getElementById('e-ok').onclick = () => {
+  if (fini) return;
+  clearInterval(boucle);
+  const A = ACHETEURS[tour % 3];
+  finir(prix, 'Vendu',
+    A.n + " te tend la main. Tu tapes dedans.\n"
+    + (prix > BASE * 1.3
+       ? "Les deux autres se regardent. Ils ont laissé passer quelque chose."
+       : "C'est un bon prix. Tu ne sauras jamais si tu pouvais faire mieux."));
+};
+document.getElementById('e-att').onclick = () => {
+  if (fini) return;
+  clearInterval(boucle);
+  tourSuivant();
+};
+
+async function finir(montant, titre, texte){
+  if (fini) return; fini = true;
+  document.getElementById('f-lb').textContent = titre;
+  document.getElementById('f-pr').textContent = '…';
+  document.getElementById('f-tx').innerHTML = texte.replace('\n', '<br><br>');
+  document.getElementById('fin').classList.add('on');
+  const r = await BD.agir('conclure_enchere', { p_montant: montant, p_tours: tour });
+  const eu = r.ok ? r.euros : montant;
+  document.getElementById('f-pr').textContent = eu + ' €';
+  document.getElementById('f-pr').style.color =
+    eu > BASE * 1.2 ? '#8ce0a8' : eu < BASE * .9 ? '#e0a878' : '#f0c46a';
+  const d = eu - BASE;
+  document.getElementById('f-cmp').textContent =
+    d === 0 ? 'Le prix que tu attendais.'
+    : (d > 0 ? '+' : '') + d + ' € par rapport au contrat.';
+  document.getElementById('f-ok').onclick = () => location.href =
+    (r.niveau && r.niveau.monte) ? 'niveau.html' : 'barcelone.html';
+}
+
+(async () => {
+  let d;
+  try {
+    d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+  } catch(e){ return; }
+  if (d.parti_le || d.port !== 'barcelone'){ location.href = 'jeu.html'; return; }
+  const e = await BD.agir('mon_enchere');
+  if (!e || !e.base){ location.href = 'barcelone.html'; return; }
+  BASE = +e.base;
+})();
+
+let r2 = null;
+addEventListener('resize', () => { clearTimeout(r2); r2 = setTimeout(dessiner, 200); });
+</script>
+</body>
+</html>
