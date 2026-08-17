@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c1830">
+<title>Battle Dock — Ardit</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#0c1830;
+  font-family:'Courier Prime',monospace;color:#fff}
+
+/* la rue s'efface derrière : on est là pour lire */
+#rue{position:fixed;left:0;right:0;top:0;height:42%;overflow:hidden}
+.fin .caisse:empty{display:none}
+#rue svg{display:block;width:100%;height:100%}
+#rue::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,16,28,.34) 0%,rgba(10,16,28,.12) 30%,
+    rgba(10,16,28,.6) 74%,rgba(10,16,28,.97) 100%)}
+
+/* ================= l'avertissement ================= */
+.avert{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:24px;padding:34px 30px;
+  background:rgba(6,12,22,.95);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transition:opacity .6s}
+.avert.parti{opacity:0;pointer-events:none}
+.avert .ic{width:54px;height:54px;border-radius:14px;
+  background:rgba(240,196,106,.14);border:1px solid rgba(240,196,106,.34);
+  display:flex;align-items:center;justify-content:center}
+.avert .ic svg{width:25px;height:25px;stroke:#f0c46a;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.avert h1{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#f0c46a;
+  text-align:center}
+.avert p{font-size:15px;line-height:1.9;color:rgba(255,255,255,.86);
+  text-align:center;max-width:330px;font-family:system-ui,sans-serif}
+.avert p b{color:#fff;font-weight:600}
+.avert p.petit{font-size:13px;color:rgba(255,255,255,.58);line-height:1.8}
+.avert button{margin-top:8px;padding:17px 42px;border:0;border-radius:9px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  box-shadow:0 6px 26px rgba(240,196,106,.3);
+  font-family:'Courier Prime',monospace;font-size:15px;font-weight:700;letter-spacing:.08em}
+.avert button:active{transform:scale(.985)}
+
+/* ================= lui ================= */
+.qui{position:fixed;left:0;right:0;top:0;z-index:3;
+  padding:calc(env(safe-area-inset-top) + 16px) 22px 0;
+  opacity:0;transition:opacity .8s .3s}
+.qui.on{opacity:1}
+.qui b{display:block;font-size:21px;font-weight:700;letter-spacing:.04em;
+  text-shadow:0 2px 16px rgba(4,10,20,.8)}
+.qui span{display:block;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.56);margin-top:4px}
+
+/* ================= la lecture ================= */
+.dit{position:fixed;left:0;right:0;bottom:0;top:34%;z-index:4;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:0 22px calc(env(safe-area-inset-bottom) + 24px);
+  background:linear-gradient(180deg,rgba(10,16,28,0) 0,rgba(10,16,28,.94) 30px,
+    rgba(10,16,28,.98) 100%)}
+.dit::-webkit-scrollbar{display:none}
+.lignes{display:flex;flex-direction:column;gap:16px;padding:26px 0 24px}
+
+/* le corps du texte : grand, aéré, contrasté */
+.lignes p{font-size:16.5px;line-height:1.78;color:rgba(255,255,255,.82);
+  font-family:system-ui,-apple-system,sans-serif;letter-spacing:.005em;
+  opacity:0;transform:translateY(9px);
+  animation:venir .75s cubic-bezier(.2,.85,.3,1) forwards}
+/* ce qu'il dit à voix haute : plus grand, plus blanc */
+.lignes p.parle{color:#fff;font-size:18px;line-height:1.66;font-weight:400;
+  padding-left:15px;border-left:2.5px solid rgba(240,196,106,.72)}
+/* ce que ton instinct te souffle */
+.lignes p.souffle{font-size:14.5px;line-height:1.7;color:#a8cbe8;
+  padding:14px 15px;background:rgba(90,140,190,.12);
+  border:1px solid rgba(138,184,224,.24);border-radius:9px;font-style:normal}
+.lignes p.souffle em{display:block;font-style:normal;font-weight:600;
+  letter-spacing:.14em;font-size:10px;text-transform:uppercase;
+  color:rgba(138,184,224,.75);margin-bottom:7px}
+@keyframes venir{to{opacity:1;transform:none}}
+
+/* ================= tes réponses ================= */
+.choix{display:flex;flex-direction:column;gap:10px;padding-bottom:8px;
+  opacity:0;animation:venir .6s forwards}
+.choix button{width:100%;text-align:left;
+  padding:16px 17px;border:1.5px solid rgba(255,255,255,.22);border-radius:11px;
+  background:rgba(18,28,46,.82);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;
+  font-family:'Courier Prime',monospace;transition:transform .11s,border-color .2s,background .2s}
+.choix button:active{transform:scale(.987);background:rgba(28,40,62,.9)}
+.choix button b{display:block;font-size:15.5px;font-weight:700;color:#fff;line-height:1.5}
+.choix button span.s{display:block;font-size:12.5px;color:rgba(255,255,255,.56);
+  margin-top:6px;font-family:system-ui,sans-serif;line-height:1.5}
+.choix button .cle{display:inline-block;margin-top:9px;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;padding:4px 10px;border-radius:12px;
+  background:rgba(140,224,168,.16);color:#8ce0a8}
+.choix button.ferme{opacity:.46;cursor:default;border-style:dashed}
+.choix button.ferme .cle{background:rgba(224,138,106,.16);color:#e08a6a}
+.choix button.ferme b{color:rgba(255,255,255,.62)}
+
+/* ================= la fin ================= */
+.fin{position:fixed;inset:0;z-index:12;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:18px;padding:34px;
+  background:rgba(6,12,22,.94);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  opacity:0;pointer-events:none;transition:opacity .6s}
+.fin.on{opacity:1;pointer-events:auto}
+.fin .t{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#f0c46a}
+.fin .g{font-size:58px;font-weight:700;line-height:1;color:#ffd894;
+  text-shadow:0 0 50px rgba(255,200,120,.3)}
+.fin .p{font-size:14.5px;line-height:1.85;color:rgba(255,255,255,.76);text-align:center;
+  max-width:320px;font-family:system-ui,sans-serif}
+.fin .plus{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin-top:4px}
+.fin .plus span{font-size:12px;padding:8px 14px;border-radius:20px;
+  background:rgba(140,224,168,.14);color:#8ce0a8;border:1px solid rgba(140,224,168,.26)}
+.fin .caisse{display:flex;align-items:center;gap:12px;margin-top:6px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);
+  border-radius:10px;padding:14px 16px;max-width:320px}
+.fin .caisse .ic{flex:0 0 36px;height:36px;border-radius:8px;
+  background:rgba(201,163,116,.18);display:flex;align-items:center;justify-content:center}
+.fin .caisse .ic svg{width:19px;height:19px;stroke:#c9a374;fill:none;stroke-width:1.7}
+.fin .caisse .tx b{display:block;font-size:13.5px;color:#fff}
+.fin .caisse .tx span{display:block;font-size:11.5px;color:rgba(255,255,255,.5);
+  margin-top:3px;font-family:system-ui,sans-serif;line-height:1.5}
+.fin button{margin-top:10px;padding:17px 40px;border:0;border-radius:9px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:15px;font-weight:700;letter-spacing:.08em}
+
+/* ================= le décor ================= */
+.linge{animation:flotte 9s ease-in-out infinite}
+@keyframes flotte{0%,100%{transform:skewX(-2.4deg)}50%{transform:skewX(2.4deg)}}
+.platane{animation:souffle 15s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes souffle{0%,100%{transform:rotate(-.26deg)}50%{transform:rotate(.26deg)}}
+.lampe{animation:veilleuse 6s ease-in-out infinite}
+@keyframes veilleuse{0%,100%{opacity:.86}48%{opacity:1}}
+.etoile{animation:scint 4.4s ease-in-out infinite}
+.e1{animation-duration:6s;animation-delay:-1.4s}
+.e2{animation-duration:3.4s;animation-delay:-2.6s}
+@keyframes scint{0%,100%{opacity:.18}50%{opacity:.62}}
+.pnj{animation:attend 6.4s ease-in-out infinite}
+@keyframes attend{0%,100%{transform:translateY(0)}50%{transform:translateY(-.7px)}}
+.clope{animation:braise 4.2s ease-in-out infinite}
+@keyframes braise{0%,100%{opacity:.5}18%{opacity:1}30%{opacity:.6}}
+.fumee{animation:monte 7s ease-in-out infinite}
+@keyframes monte{0%{opacity:.22;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(3px,-9px) scale(1.7)}}
+.signe{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style></style>
+</head>
+<body>
+
+<div id="rue"></div>
+
+<div class="qui" id="qui"><b id="q-n">La maison</b><span id="q-q">Derrière la Seu</span></div>
+
+<div class="dit">
+  <div class="lignes" id="lignes"></div>
+  <div class="choix" id="choix"></div>
+</div>
+
+<div class="avert" id="avert">
+  <span class="ic"><svg viewBox="0 0 24 24">
+    <path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>
+  </svg></span>
+  <h1>La ruelle</h1>
+  <p>Tu portes une lettre qui ne t'appartient pas. <b>Ce que tu obtiendras
+     dépend de ce que tu dis.</b></p>
+  <p class="petit">Núria n'a pas demandé l'argent. Elle a demandé une réponse.</p>
+  <button id="a-ok">J'ai compris</button>
+</div>
+
+<div class="fin" id="fin">
+  <p class="t" id="f-t">Tu redescends la ruelle</p>
+  <p class="g" id="f-g">—</p>
+  <p class="p" id="f-p">—</p>
+  <div class="caisse" id="f-caisse"></div>
+  <div class="plus" id="f-plus"></div>
+  <button id="f-b">Continuer</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js"></script>
+<script>
+
+/* ============================================================
+   LA RUELLE — pierre dorée, ombre fraîche, une porte
+   ============================================================ */
+const W = 480, F = 727, OEIL = 1.7, HZ = 250;
+const px = (m,d) => m*F/d, sol = d => HZ + OEIL*F/d, pX = (X,d) => 240 + X*F/d;
+const rnd = s => { const x = Math.sin(s*127.1)*43758.5; return x - Math.floor(x); };
+const rnd2 = (a,b) => { const x = Math.sin(a*127.1+b*311.7)*43758.5; return x - Math.floor(x); };
+function hx(c){ return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]; }
+function ch(a){ return '#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join(''); }
+function mel(a,b,k){ const A=hx(a),B=hx(b); return ch([0,1,2].map(i=>A[i]+(B[i]-A[i])*k)); }
+const OR = '#ffd8a0', OMB = '#4a4258';
+const clair = (c,k) => mel(c, OR, k===undefined?.3:k);
+const sombre = (c,k) => mel(c, OMB, k===undefined?.3:k);
+const loin = (c,d) => mel(c, mel('#e0d0b4', OR, .4), Math.min(.4, Math.pow(d/40,.85)));
+
+let HAUT=-200, BAS=900;
+function cadrer(l,h){
+  const t = W*h/l;
+  HAUT = HZ - t*.5; BAS = HAUT + t;
+  return { y:HAUT, h:t };
+}
+
+function ruelle(){
+  let s = `<defs>
+    <linearGradient id="r-ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a90c4"/><stop offset="60%" stop-color="#8ab8d4"/>
+      <stop offset="100%" stop-color="#cdd8d4"/></linearGradient>
+    <linearGradient id="r-sol" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a89880"/><stop offset="100%" stop-color="#6d6050"/></linearGradient>
+  </defs>`;
+  /* le bout de ciel, tout en haut entre les murs */
+  s += `<rect x="0" y="${HAUT}" width="${W}" height="${(sol(40)-HAUT).toFixed(1)}"
+    fill="url(#r-ciel)"/>`;
+  /* le sol qui monte */
+  s += `<rect x="0" y="${sol(40).toFixed(1)}" width="${W}"
+    height="${(BAS-sol(40)+8).toFixed(1)}" fill="url(#r-sol)"/>`;
+  /* les pavés */
+  let d = 40, i = 0;
+  while (d > 2.6 && i < 60){
+    const d2 = d/1.075, y1 = sol(d), y2 = sol(d2);
+    if (y1 > BAS) break;
+    if (y2-y1 > .6)
+      for (let c = -9; c <= 9; c++){
+        const t = rnd2(i, c+20);
+        const xa = pX(c*.55+(i%2)*.27, d), xb = pX((c+1)*.55+(i%2)*.27, d);
+        const xa2 = pX(c*.55+(i%2)*.27, d2), xb2 = pX((c+1)*.55+(i%2)*.27, d2);
+        if (xb < -30 && xb2 < -30) continue;
+        if (xa > W+30 && xa2 > W+30) continue;
+        s += `<path d="M${xa.toFixed(1)} ${y1.toFixed(1)} L${xb.toFixed(1)} ${y1.toFixed(1)}
+          L${xb2.toFixed(1)} ${y2.toFixed(1)} L${xa2.toFixed(1)} ${y2.toFixed(1)} Z"
+          fill="${loin(t>.6?'#b0a088':t>.3?'#9a8a72':'#8a7c66', d)}"
+          opacity="${(.5+t*.4).toFixed(2)}"/>`;
+      }
+    d = d2; i++;
+  }
+  /* les deux murs, qui se resserrent */
+  [[-1,0],[1,5]].forEach(([cote,g])=>{
+    const P = [[34,2.6],[20,2.7],[12,2.9],[7,3.2],[4.2,3.8],[2.8,4.6]];
+    let dd = '';
+    P.forEach(([p,X],k)=>{
+      dd += (k?'L':'M') + pX(cote*X,p).toFixed(1) + ' ' + (sol(p)-px(9,p)).toFixed(1) + ' ';
+    });
+    for(let k=P.length-1;k>=0;k--)
+      dd += 'L'+pX(cote*P[k][1],P[k][0]).toFixed(1)+' '+sol(P[k][0]).toFixed(1)+' ';
+    s += `<path d="${dd}Z" fill="${cote<0 ? clair('#e8d4ac',.24) : sombre('#c4b090',.26)}"/>`;
+    /* les pierres */
+    for (let k = 0; k < 34; k++){
+      const p = 3 + rnd(g*7+k)*30, X = cote*(2.7 + rnd(g*3+k)*1.4);
+      const h = rnd(g*11+k)*8;
+      const x = pX(X,p), y = sol(p)-px(h,p);
+      if (x < -40 || x > W+40) continue;
+      s += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}"
+        width="${px(.8,p).toFixed(1)}" height="${px(.36,p).toFixed(1)}" rx="1"
+        fill="${loin(rnd(k)>.5?'#f0dcb4':'#c4b090', p)}" opacity=".34"/>`;
+    }
+    /* une ou deux fenêtres à volets */
+    [[16,5.5],[8,4.4]].forEach(([p,h],q)=>{
+      const x = pX(cote*2.7, p), y = sol(p)-px(h,p), m = u => px(u,p);
+      if (x < -30 || x > W+30) return;
+      s += `<rect x="${(x-m(.5)).toFixed(1)}" y="${y.toFixed(1)}" width="${m(1).toFixed(1)}"
+        height="${m(1.4).toFixed(1)}" fill="${sombre('#3a3444',.24)}"/>`;
+      s += `<path d="M${(x-m(.6)).toFixed(1)} ${y.toFixed(1)} h${m(.28).toFixed(1)}
+        v${m(1.4).toFixed(1)} h${(-m(.28)).toFixed(1)} z
+        M${(x+m(.32)).toFixed(1)} ${y.toFixed(1)} h${m(.28).toFixed(1)}
+        v${m(1.4).toFixed(1)} h${(-m(.28)).toFixed(1)} z"
+        fill="${loin('#5a7a6a', p)}"/>`;
+    });
+  });
+  /* la porte, au fond : c'est elle qu'on regarde */
+  const dp = 13, yp = sol(dp), mp = u => px(u,dp), xp2 = pX(0, dp);
+  s += `<path d="M${(xp2-mp(1.4)).toFixed(1)} ${yp.toFixed(1)} v${(-mp(3.6)).toFixed(1)}
+    a${mp(1.4).toFixed(1)} ${mp(1.5).toFixed(1)} 0 0 1 ${mp(2.8).toFixed(1)} 0
+    v${mp(3.6).toFixed(1)} z" fill="${loin('#c9b494', dp)}"/>`;
+  s += `<path d="M${(xp2-mp(1.1)).toFixed(1)} ${yp.toFixed(1)} v${(-mp(3.4)).toFixed(1)}
+    a${mp(1.1).toFixed(1)} ${mp(1.2).toFixed(1)} 0 0 1 ${mp(2.2).toFixed(1)} 0
+    v${mp(3.4).toFixed(1)} z" fill="${sombre('#5a4028', .2)}"/>`;
+  for (let k = 1; k < 4; k++)
+    s += `<path d="M${(xp2-mp(1.1)+mp(k*.55)).toFixed(1)} ${yp.toFixed(1)}
+      v${(-mp(3.3)).toFixed(1)}" stroke="${sombre('#3a2818',.2)}" stroke-width="1" opacity=".6"/>`;
+  s += `<circle cx="${(xp2+mp(.7)).toFixed(1)}" cy="${(yp-mp(1.8)).toFixed(1)}"
+    r="${mp(.13).toFixed(1)}" fill="${clair('#a8863a',.3)}"/>`;
+  /* la marche */
+  s += `<path d="M${(xp2-mp(1.7)).toFixed(1)} ${yp.toFixed(1)} h${mp(3.4).toFixed(1)}
+    v${mp(.22).toFixed(1)} h${(-mp(3.4)).toFixed(1)} z" fill="${clair('#b0a088',.2)}"/>`;
+  /* du linge tendu, très haut */
+  for (let k = 0; k < 3; k++){
+    const p = 9 + k*7, y = sol(p) - px(7.4, p);
+    s += `<path d="M${pX(-2.8,p).toFixed(1)} ${y.toFixed(1)}
+      Q240 ${(y+px(.4,p)).toFixed(1)} ${pX(2.8,p).toFixed(1)} ${y.toFixed(1)}"
+      stroke="${loin('#6d6050',p)}" stroke-width=".8" fill="none"/>`;
+    for (let q = 0; q < 4; q++){
+      const x = pX(-2 + q*1.3, p), m = u => px(u,p);
+      s += `<g class="linge"><path d="M${x.toFixed(1)} ${(y+m(.2)).toFixed(1)}
+        h${m(.7).toFixed(1)} v${m(1.4).toFixed(1)} h${(-m(.7)).toFixed(1)} z"
+        fill="${loin(['#e8e2d4','#d4dce0','#e0d4c4','#cdd4c8'][q%4], p)}" opacity=".8"/></g>`;
+    }
+  }
+  return s;
+}
+/* ============================================================
+   LE FRÈRE D'ARDIT — la maison derrière la cathédrale
+   ============================================================ */
+const SCENE_A = {
+
+  debut: {
+    dit: ["La maison est dans une ruelle qui monte, derrière la Seu. "
+        + "Pas de plaque, pas d'enseigne. Tu frappes.",
+        "Un homme ouvre. Il a le visage d'Ardit — le même nez, les mêmes yeux — "
+        + "mais dix ans de plus et beaucoup moins de graisse.",
+        "« Oui ? »"],
+    lire: { instinct: 2,
+      texte: "Il tient la porte à moitié fermée, le pied derrière. "
+           + "Il fait ça depuis un moment, avec tout le monde." },
+    choix: [
+      { t: "« Je cherche Ardit Bonaventura. »",
+        s: "Aller droit au but.", vers: 'direct' },
+      { t: "« C'est vous, le frère ? »",
+        s: "Lui montrer que tu sais déjà.", vers: 'frere' },
+      { t: "Montrer la lettre sans rien dire.",
+        s: "Le cachet parlera pour toi.",
+        besoin: { sang_froid: 2 }, vers: 'lettre' }
+    ]
+  },
+
+  direct: {
+    dit: ["Le nom lui fait quelque chose. Il ne le cache pas très bien.",
+        "« Il n'est pas là. »",
+        "Ce n'est pas « je ne le connais pas ». C'est « il n'est pas là »."],
+    choix: [
+      { t: "« Il n'est pas là maintenant, ou il n'est plus là ? »",
+        s: "Il a dit quelque chose sans le vouloir.",
+        besoin: { discussion: 2 }, vers: 'coince' },
+      { t: "« Je peux attendre. »", s: "S'installer sur la marche.",
+        besoin: { sang_froid: 3 }, vers: 'attendre' },
+      { t: "« Je viens de Barcelone. De la part de Núria. »",
+        s: "Donner le nom.", vers: 'nom' }
+    ]
+  },
+
+  frere: {
+    dit: ["« Je suis son frère, oui. »",
+        "Il ne bouge pas de l'embrasure.",
+        "« Et vous, vous êtes qui ? »"],
+    choix: [
+      { t: "« Quelqu'un qui porte une lettre. »", s: "", vers: 'lettre' },
+      { t: "« Je viens de Barcelone. De la part de Núria. »",
+        s: "Donner le nom.", vers: 'nom' }
+    ]
+  },
+
+  nom: {
+    dit: ["Il ferme les yeux une seconde. Quand il les rouvre, la porte s'ouvre "
+        + "un peu plus.",
+        "« Núria. »",
+        "« Entrez. »"],
+    gain: { lien: 4 },
+    choix: [{ t: "Entrer.", s: "", vers: 'dedans' }]
+  },
+
+  coince: {
+    dit: ["Il te regarde. Il sait qu'il s'est trompé.",
+        "« ... Entrez. »"],
+    gain: { lien: 6 },
+    choix: [{ t: "Entrer.", s: "", vers: 'dedans' }]
+  },
+
+  attendre: {
+    dit: ["Tu t'assois sur la marche et tu ne dis plus rien.",
+        "Il referme. Tu restes.",
+        "Au bout de vingt minutes, la porte se rouvre.",
+        "« Bon. Entrez. »"],
+    gain: { lien: 8 },
+    choix: [{ t: "Entrer.", s: "", vers: 'dedans' }]
+  },
+
+  lettre: {
+    dit: ["Tu sors la lettre et tu la tiens à hauteur de son regard. Le cachet est intact.",
+        "Il le reconnaît tout de suite.",
+        "« Ah. »",
+        "Il s'écarte de la porte."],
+    gain: { lien: 5 },
+    choix: [{ t: "Entrer.", s: "", vers: 'dedans' }]
+  },
+
+  /* ---------- dedans ---------- */
+  dedans: {
+    dit: ["La pièce sent la cire et la maladie. Il y a un lit contre le mur du fond.",
+        "Dans le lit, il y a Ardit.",
+        "Il est maigre à faire peur. Il tourne la tête vers toi sans se lever.",
+        "« Vous venez pour l'argent. »",
+        "Ce n'est pas une question, et il ne s'excuse pas."],
+    lire: { instinct: 3,
+      texte: "Ce n'est pas récent. Il est comme ça depuis des mois — "
+           + "depuis à peu près le moment où il a cessé d'aller à la taverne." },
+    choix: [
+      { t: "Poser la lettre sur le lit.", s: "Faire ce qu'on t'a demandé, rien de plus.",
+        vers: 'poser' },
+      { t: "« Je viens pour savoir ce que vous répondez. »",
+        s: "Núria n'a pas demandé l'argent. Elle a demandé une réponse.",
+        vers: 'reponse' },
+      { t: "« Elle ne sait pas. »", s: "Il faut bien que quelqu'un le dise.",
+        besoin: { discussion: 3 }, vers: 'elle_sait_pas' }
+    ]
+  },
+
+  poser: {
+    dit: ["Tu poses la lettre sur la couverture. Il ne la prend pas tout de suite.",
+        "« Merci. »",
+        "Son frère te raccompagne sans un mot."],
+    fin: 'muet'
+  },
+
+  reponse: {
+    dit: ["Il met longtemps à répondre.",
+        "« Dites-lui que j'ai honte. »",
+        "Un temps.",
+        "« Non. Dites-lui que je n'ai pas voulu qu'elle me voie comme ça. "
+        + "C'est différent, et c'est pire. »",
+        "Il tourne la tête vers le mur.",
+        "« Elle comprendra la différence. »"],
+    gain: { lien: 10 },
+    fin: 'honte'
+  },
+
+  elle_sait_pas: {
+    dit: ["« Elle ne sait pas quoi ? »",
+        "« Que vous êtes malade. Elle croit que vous vous en foutez. »",
+        "Il te regarde longtemps. Puis il se met à rire, et le rire tourne en toux.",
+        "Son frère fait un pas en avant. Ardit lève la main : ça va.",
+        "« Six mois que je me demande ce qu'elle pense. »",
+        "« Dites-lui de venir. »"],
+    gain: { lien: 16 },
+    fin: 'venir'
+  }
+};
+
+/* ce qu'il te donne selon ce que tu as obtenu */
+const FINS_A = {
+  muet:  { txt: "Tu redescends la ruelle. Tu as fait ce qu'on t'a demandé, "
+              + "et rien de plus.", euros: 0, rep: 0, xp: 20 },
+  honte: { txt: "Le frère te rattrape dans l'escalier. Il te met des pièces "
+              + "dans la main sans compter.", euros: 90, rep: 4, xp: 35 },
+  venir: { txt: "Le frère te serre le bras à la porte. « Vous ne savez pas "
+              + "ce que vous venez de faire. »", euros: 140, rep: 10, xp: 50 }
+};
+
+
+const NOMS = { instinct:'Instinct', sang_froid:'Sang-froid', discussion:'Discussion',
+               negociation:'Négociation', chance:'Chance' };
+let MOI = { instinct:0, sang_froid:0, discussion:0, negociation:0, chance:0 };
+let issue = null, fini = false, monteNiveau = false;
+
+function dessiner(){
+  const v = cadrer(innerWidth, innerHeight);
+  document.getElementById('rue').innerHTML =
+    '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
+    + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+    + ruelle() + '</svg>';
+}
+dessiner();
+
+const assez = b => !b || Object.entries(b).every(([k, v]) => (MOI[k] || 0) >= v);
+
+function jouer(cle){
+  const E = SCENE_A[cle];
+  if (!E) return;
+  const L = document.getElementById('lignes'), C = document.getElementById('choix');
+  L.innerHTML = ''; C.innerHTML = '';
+  /* on est dedans à partir de là */
+  if (cle === 'dedans'){
+    document.getElementById('q-n').textContent = 'Ardit';
+    document.getElementById('q-q').textContent = 'Marchand de tissu';
+  }
+  E.dit.forEach((t, i) => {
+    const p = document.createElement('p');
+    if (t.trim().startsWith('«')) p.className = 'parle';
+    p.textContent = t;
+    p.style.animationDelay = (i * .5) + 's';
+    L.appendChild(p);
+  });
+  let n = E.dit.length;
+  if (E.lire){
+    const [k, v] = Object.entries(E.lire)[0];
+    if (k !== 'texte' && assez({ [k]: v })){
+      const p = document.createElement('p');
+      p.className = 'souffle';
+      p.innerHTML = '<em>Ton instinct</em>' + E.lire.texte;
+      p.style.animationDelay = (n * .5) + 's';
+      L.appendChild(p); n++;
+    }
+  }
+  document.querySelector('.dit').scrollTop = 0;
+
+  if (E.fin){ terminer(E.fin, n); return; }
+
+  C.style.animationDelay = (n * .5 + .3) + 's';
+  E.choix.forEach(c => {
+    const ok = assez(c.besoin);
+    const b = document.createElement('button');
+    if (!ok) b.className = 'ferme';
+    let h = '<b>' + c.t + '</b>';
+    if (c.s) h += '<span class="s">' + c.s + '</span>';
+    if (c.besoin){
+      const [k, v] = Object.entries(c.besoin)[0];
+      h += '<span class="cle">' + NOMS[k] + ' ' + v
+        + (ok ? '' : ' — tu as ' + (MOI[k] || 0)) + '</span>';
+    }
+    b.innerHTML = h;
+    if (ok) b.onclick = () => jouer(c.vers);
+    C.appendChild(b);
+  });
+}
+
+async function terminer(quoi, n){
+  if (fini) return; fini = true;
+  issue = quoi;
+  const F = FINS_A[quoi];
+  const r = await BD.agir('conclure_ardit', { p_issue: quoi });
+  monteNiveau = !!(r.niveau && r.niveau.monte);
+
+  document.getElementById('f-t').textContent =
+    quoi === 'muet' ? 'Tu redescends la ruelle' : 'Il te rattrape à la porte';
+  document.getElementById('f-g').textContent =
+    (r.ok ? r.euros : F.euros) + ' €';
+  document.getElementById('f-p').textContent = F.txt;
+  const P = [];
+  if (r.ok && r.reputation) P.push('+' + r.reputation + ' réputation');
+  if (r.ok && r.xp) P.push('+' + r.xp + " points d'expérience");
+  P.push('Núria attend ta réponse');
+  if (monteNiveau) P.push('Tu changes de niveau');
+  document.getElementById('f-plus').innerHTML =
+    P.map(t => '<span>' + t + '</span>').join('');
+  document.getElementById('f-b').textContent =
+    monteNiveau ? 'Voir ton niveau' : 'Redescendre au port';
+  setTimeout(() => document.getElementById('fin').classList.add('on'), n * 500 + 700);
+}
+
+document.getElementById('a-ok').onclick = () => {
+  document.getElementById('avert').classList.add('parti');
+  document.getElementById('qui').classList.add('on');
+  setTimeout(() => jouer('debut'), 300);
+};
+document.getElementById('f-b').onclick = () => location.href =
+  (monteNiveau ? 'niveau.html' : 'palma.html');
+
+(async () => {
+  let d;
+  try {
+    d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+  } catch(e){ return; }
+  if (d.parti_le || d.port !== 'palma'){ location.href = 'jeu.html'; return; }
+  if (!(d.sacoche || []).some(o => o.k === 'lettre')){ location.href = 'palma.html'; return; }
+  const c = d.competences || {};
+  MOI = { instinct:+d.instinct||0, sang_froid:+d.sang_froid||0, chance:+d.chance||0,
+          discussion:+c.discussion||0, negociation:+c.negociation||0 };
+})();
+
+let t = null;
+addEventListener('resize', () => { clearTimeout(t); t = setTimeout(dessiner, 200); });
+</script>
+</body>
+</html>
