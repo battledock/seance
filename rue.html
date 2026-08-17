@@ -1446,7 +1446,11 @@ document.getElementById('k-fer').onclick = () => basculerContrats(false);
 
 /* on peut toucher le type qui attend */
 document.getElementById('rue').style.cursor = 'default';
+let MIQUEL_VU = null;   /* null tant qu'on ne sait pas encore */
 function poserMiquel(vecue){
+  if (vecue !== undefined) MIQUEL_VU = vecue;
+  else if (MIQUEL_VU === null) return;
+  vecue = MIQUEL_VU;
   const svg = document.querySelector('#rue svg');
   const g = svg && svg.querySelector('.pnj');
   if (!g) return;
@@ -1515,7 +1519,10 @@ function poserMiquel(vecue){
 })();
 
 let t = null;
-addEventListener('resize', () => { clearTimeout(t); t = setTimeout(dessiner, 200); });
+addEventListener('resize', () => {
+  clearTimeout(t);
+  t = setTimeout(() => { dessiner(); poserMiquel(); }, 200);
+});
 </script>
 </body>
 </html>
