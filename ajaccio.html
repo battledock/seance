@@ -214,10 +214,112 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
 @keyframes respire{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
 .n3{animation-duration:170s}
 
+.av{position:fixed;z-index:10;
+  top:calc(env(safe-area-inset-top) + 14px);left:14px;
+  width:56px;height:56px;border-radius:6px;overflow:hidden;
+  background:#dfe8ee;border:2px solid rgba(255,255,255,.82);
+  box-shadow:0 3px 14px rgba(8,20,32,.42),inset 0 0 0 1px rgba(20,40,60,.14);
+  cursor:pointer;transition:transform .13s}
+.av:active{transform:scale(.96)}
+.av{opacity:0;transition:opacity .5s}
+.av.pret{opacity:1}
+.av svg{display:block;width:100%;height:100%}
+
+.menu{position:fixed;z-index:21;
+  top:calc(env(safe-area-inset-top) + 78px);left:14px;width:266px;
+  background:rgba(20,34,50,.9);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,.3);border-radius:8px;
+  box-shadow:0 10px 34px rgba(6,16,28,.56);
+  overflow:hidden;transform-origin:24px 0;
+  opacity:0;transform:scale(.9) translateY(-8px);pointer-events:none;
+  transition:opacity .22s,transform .24s cubic-bezier(.2,.9,.3,1)}
+.menu.on{opacity:1;transform:none;pointer-events:auto}
+
+/* l'entête : le portrait en grand */
+.menu .tete{display:flex;align-items:center;gap:12px;padding:14px 15px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
+.menu .tete .por{flex:0 0 50px;height:50px;border-radius:5px;overflow:hidden;
+  border:1.6px solid rgba(255,255,255,.34);background:#dfe8ee}
+.menu .tete .por svg{display:block;width:100%;height:100%}
+.menu .tete .id{flex:1;min-width:0}
+.menu .tete .id b{display:block;font-size:15px;color:#fff;font-weight:700;
+  letter-spacing:.04em}
+.menu .tete .id span{display:block;font-size:8.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(255,255,255,.52);margin-top:3px}
+
+
+/* les lignes du menu */
+.menu ul{list-style:none}
+.menu li button{width:100%;display:flex;align-items:center;gap:11px;
+  padding:12px 15px;background:none;border:0;cursor:pointer;text-align:left;
+  color:rgba(255,255,255,.92);font-family:'Courier Prime',monospace;font-size:12.5px;
+  border-bottom:1px solid rgba(255,255,255,.07);transition:background .14s}
+.menu li:last-child button{border-bottom:0}
+.menu li button:active{background:rgba(255,255,255,.1)}
+.menu li button svg{flex:0 0 17px;height:17px;stroke:#f0c46a;fill:none;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.menu li button .tx{flex:1}
+.menu li button .tx b{display:block;font-weight:400;letter-spacing:.03em}
+.menu li button .tx span{display:block;font-size:9.5px;color:rgba(255,255,255,.46);
+  margin-top:1.5px;font-family:system-ui,sans-serif}
+.menu li button .fl{flex:0 0 auto;color:rgba(255,255,255,.3);font-size:14px}
+.menu li button:disabled{opacity:.36;cursor:default}
+.menu li button.sortie{color:#f0a88a}
+.menu li button.sortie svg{stroke:#f0a88a}
+
+.av{cursor:pointer}
+.av.ouvert{border-color:rgba(240,196,106,.9)}
+
+.barre{position:fixed;z-index:10;
+  top:calc(env(safe-area-inset-top) + 14px);left:82px;right:14px;
+  height:56px;border-radius:6px;overflow:hidden;
+  background:rgba(18,34,52,.42);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:2px solid rgba(255,255,255,.34);
+  box-shadow:0 3px 14px rgba(8,20,32,.34);
+  display:flex;align-items:stretch;
+  opacity:0;transition:opacity .5s}
+.barre.pret{opacity:1}
+
+/* la caisse, à gauche, la plus lisible */
+.barre .sous{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
+  justify-content:center;padding:0 11px;border-right:1px solid rgba(255,255,255,.16)}
+.barre .sous .lb{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.56);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barre .sous .vl{font-size:16px;font-weight:700;color:#ffd894;line-height:1.15;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barre .sous .vl.pop{animation:pop .55s ease-out}
+@keyframes pop{0%{transform:scale(1.14);color:#a8e0b8}100%{transform:none}}
+
+/* les jauges, à droite */
+.barre .jauges{flex:0 0 auto;display:flex;flex-direction:column;
+  justify-content:center;gap:5px;padding:0 11px;min-width:104px}
+.jg{display:flex;align-items:center;gap:6px}
+.jg .ic{flex:0 0 11px;height:11px}
+.jg .ba{flex:1;height:5px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+.jg .ba i{display:block;height:100%;border-radius:3px;transition:width .6s}
+.jg .nb{flex:0 0 auto;font-size:8px;color:rgba(255,255,255,.66);min-width:22px;text-align:right}
+
+.av .nm{position:absolute;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,transparent,rgba(10,22,34,.82));
+  color:#fff;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  text-align:center;padding:5px 2px 2.4px;font-weight:700}
+
+
 </style>
 </head>
 <body>
 
+<div class="av" id="av"></div>
+<nav class="menu" id="menu">
+  <div class="tete">
+    <span class="por" id="m-por"></span>
+    <span class="id"><b id="m-nom">—</b><span id="m-sous">Docker</span></span>
+  </div>
+  <ul id="m-liste"></ul>
+</nav>
 <div id="sc"></div>
 
 <div class="rid" id="rid">
@@ -248,7 +350,6 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
 <div id="eti"></div>
 <div class="fi" id="fi"></div>
 
-<div class="bas" id="bas"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js"></script>
@@ -665,11 +766,36 @@ function ciel(){
     s += `</g>`;
   }
 
-  /* le soleil : un disque net, posé sur la ligne */
-  s += `<circle cx="${SX}" cy="${(yh-2).toFixed(0)}" r="34" fill="#ffb870"
-    filter="url(#s-flou2)" opacity=".7"/>`;
-  s += `<circle cx="${SX}" cy="${(yh-2).toFixed(0)}" r="21" fill="#fff6e4"
-    filter="url(#s-flou3)"/>`;
+  /* ---- le soleil ----
+     Il touche l'horizon : la réfraction l'aplatit et le rougit par le bas. */
+  const cy = yh - 8, R = 26;
+  /* la couronne : trois halos concentriques, du plus large au plus dense */
+  s += `<ellipse cx="${SX}" cy="${cy.toFixed(0)}" rx="${(R*3.4).toFixed(0)}"
+    ry="${(R*2.8).toFixed(0)}" fill="#ff8a4a" opacity=".14" filter="url(#s-flou)"/>`;
+  s += `<ellipse cx="${SX}" cy="${cy.toFixed(0)}" rx="${(R*1.9).toFixed(0)}"
+    ry="${(R*1.6).toFixed(0)}" fill="#ffb268" opacity=".28" filter="url(#s-flou2)"/>`;
+  /* le disque, écrasé par la réfraction */
+  s += `<defs><linearGradient id="s-sol" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%"  stop-color="#fffaf0"/>
+    <stop offset="42%" stop-color="#ffeec8"/>
+    <stop offset="76%" stop-color="#ffd08a"/>
+    <stop offset="100%" stop-color="#ffa055"/></linearGradient>
+    <clipPath id="s-coupe"><rect x="${SX-R*1.4}" y="${(cy-R*1.4).toFixed(0)}"
+      width="${(R*2.8).toFixed(0)}" height="${(yh-cy+R*1.4).toFixed(0)}"/></clipPath>
+  </defs>`;
+  s += `<g clip-path="url(#s-coupe)">`;
+  s += `<ellipse cx="${SX}" cy="${cy.toFixed(0)}" rx="${R}" ry="${(R*.86).toFixed(1)}"
+    fill="url(#s-sol)"/>`;
+  /* la bande sombre que fait l'air chaud juste au-dessus de l'eau */
+  s += `<ellipse cx="${SX}" cy="${(cy+R*.52).toFixed(1)}" rx="${(R*1.02).toFixed(0)}"
+    ry="${(R*.07).toFixed(1)}" fill="#e88a52" opacity=".44"/>`;
+  s += `<ellipse cx="${SX}" cy="${(cy+R*.74).toFixed(1)}" rx="${(R*.86).toFixed(0)}"
+    ry="${(R*.05).toFixed(1)}" fill="#d97a4a" opacity=".34"/>`;
+  s += `</g>`;
+  /* le liséré du haut, le plus brillant */
+  s += `<path d="M${(SX-R*.86).toFixed(0)} ${(cy-R*.4).toFixed(1)}
+    a${R} ${(R*.86).toFixed(1)} 0 0 1 ${(R*1.72).toFixed(0)} 0"
+    stroke="#fffdf6" stroke-width="2" fill="none" opacity=".8"/>`;
   return s;
 }
 
@@ -925,13 +1051,7 @@ function proue(marque){
     s += `<ellipse cx="0" cy="${(-k*5).toFixed(0)}" rx="${(26-k*3).toFixed(0)}"
       ry="${(7-k*.8).toFixed(1)}" fill="none" stroke="#4a3428" stroke-width="5"/>`;
   s += `</g>`;
-  /* ton pavillon, planté à l'arrière droit */
-  if (marque){
-    s += `<path d="M404 ${(BAS-282).toFixed(0)} v-118" stroke="#2a1a24"
-      stroke-width="4.4"/>`;
-    s += `<path class="pavillon" d="M404 ${(BAS-400).toFixed(0)}
-      q22 6 44 0 q-22 14 -44 20 z" fill="${marque}" opacity=".9"/>`;
-  }
+
   return s + `</g>`;
 }
 
@@ -947,14 +1067,11 @@ function ajaccio(MOI2){
   /* quatre îlots dispersés, qui laissent respirer le couchant */
   /* on vise directement la position à l'écran */
   const oX = (xEcran, d) => (xEcran - 240) * d / F;
-  s += ilot(1800, oX(408, 1800), 74, 150, 3, false);   /* au fond, derrière le soleil */
+  s += ilot(1800, oX(452, 1800), 74, 150, 3, false);   /* au fond, derrière le soleil */
   s += ilot(1150, oX(96, 1150), 62, 120, 7, false);    /* au fond à gauche */
-  s += ilot(700,  oX(356, 700), 54, 96, 11, false);    /* il mord le bord du soleil */
+  s += ilot(700,  oX(392, 700), 54, 96, 11, false);    /* il mord le bord du soleil */
   s += ilot(430,  oX(150, 430), 42, 76, 5, true);      /* le plus proche, à gauche */
-  /* le disque, repassé par-dessus : rien ne doit l'éteindre tout à fait */
-  const yh2 = sol(1e9);
-  s += `<circle cx="${SX}" cy="${(yh2-2).toFixed(0)}" r="19" fill="#fff6e4"
-    filter="url(#s-flou3)" opacity=".9"/>`;
+
   s += proue(marque);
   /* la pénombre */
   s += `<defs><radialGradient id="s-vig" cx="0.6" cy="0.4" r="0.82">
@@ -1152,6 +1269,86 @@ async function chercherLesAutres(){
   return AUTRES.length;
 }
 
+const ICONES = {
+  contrats:'<path d="M4 8h16v12H4zM4 8l2.5-4h11L20 8M9.5 12h5"/>',
+  fiche:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  barque:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>',
+  livret:'<path d="M6 3h12v18H6zM9 8h6M9 12h6M9 16h3"/>',
+  gens:'<path d="M8 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2 21c0-4 3-6 6-6s6 2 6 6M17 8a2.6 2.6 0 1 0 0-5M16 15c3 0 6 1.6 6 5.4"/>',
+  chantier:'<path d="M3 20h18M6 20V9l6-4 6 4v11M9 20v-6h6v6"/>',
+  reglages:'<path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1A1.7 1.7 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1z"/>',
+  sortie:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  /* la sacoche : une besace à rabat */
+  quetes:'<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2'
+    + 'M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2M9 12l2 2 4-4"/>',
+  sacoche:'<path d="M5 9h14l1.4 10.2a1.6 1.6 0 0 1-1.6 1.8H5.2a1.6 1.6 0 0 1-1.6-1.8z'
+    + 'M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9M9.5 13h5"/>',
+  /* le classement : trois barres et une couronne */
+  classement:'<path d="M4 21V11M12 21V4M20 21v-6M2 21h20"/>'
+};
+
+/* le matricule : on le dérive de l'identifiant, il ne change jamais */
+function matricule(d){
+  const src = String((d && d.id) || (d && d.pseudo) || '');
+  let h = 0;
+  for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) >>> 0;
+  const L = 'ABCDEFGHJKLMNPRSTUVWXYZ';
+  return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
+}
+
+function poserMenu(d){
+  const el = document.getElementById('m-liste');
+  if (!el) return;
+  const p = PALIERS_B[Math.max(0, (d.barque || 1) - 1)];
+
+  const L = [
+    { k:'contrats', n:'Le chargement', s:"Ce que la Corse t'envoie", ouvert:true,
+      f:() => { basculerMenu(false); basculerContrats(true, MOI); } },
+    { k:'barque', n:'Reprendre la mer',
+      s:'Deux jours jusqu\'à Marseille', ouvert:true,
+      f:() => location.href = 'voyager.html' },
+    { k:'quetes', n:'Tes affaires en cours',
+      s: (d.quetes || []).filter(q => q.etat !== 'finie').length
+         ? (d.quetes || []).filter(q => q.etat !== 'finie').length + ' à finir'
+         : 'Rien pour l\'instant',
+      ouvert:true, f:() => location.href = 'jeu.html' },
+    { k:'gens', n:'La ville', s:'Personne ne te connaît encore', ouvert:false },
+    { k:'chantier', n:'La citadelle', s:'On n\'y monte pas', ouvert:false },
+    { k:'fiche', n:'Ta fiche', s:'Ce que tu sais faire', ouvert:true,
+      f:() => location.href = 'jeu.html' }
+  ];
+
+  el.innerHTML = L.map((m, i) =>
+    '<li><button data-i="' + i + '"' + (m.ouvert ? '' : ' disabled')
+    + (m.sortie ? ' class="sortie"' : '') + '>'
+    + '<svg viewBox="0 0 24 24">' + ICONES[m.k] + '</svg>'
+    + '<span class="tx"><b>' + m.n + '</b>'
+    + (m.s ? '<span>' + m.s + '</span>' : '') + '</span>'
+    + (m.ouvert && !m.sortie ? '<span class="fl">›</span>' : '')
+    + '</button></li>').join('');
+
+  el.querySelectorAll('[data-i]').forEach(b => {
+    const m = L[+b.dataset.i];
+    if (m.f) b.onclick = m.f;
+  });
+
+  /* l'entête et les compteurs */
+  document.getElementById('m-por').innerHTML = BD.avatarSVG(d);
+  document.getElementById('m-nom').textContent = d.pseudo || 'Sans nom';
+  document.getElementById('m-sous').textContent = 'Docker — matricule ' + matricule(d);
+}
+
+let menuOuvert = false;
+function basculerMenu(forcer){
+  menuOuvert = forcer === undefined ? !menuOuvert : forcer;
+  const m = document.getElementById('menu');
+  const v = document.getElementById('voile');
+  const a = document.getElementById('av');
+  if (m) m.classList.toggle('on', menuOuvert);
+  if (v) v.classList.toggle('on', menuOuvert || ctOuvert);
+  if (a) a.classList.toggle('ouvert', menuOuvert);
+}
+
 let MOI = null;
 let chargesCt = false;
 
@@ -1239,11 +1436,11 @@ let ctOuvert = false;
 function basculerContrats(o, d){
   ctOuvert = o === undefined ? !ctOuvert : o;
   document.getElementById('ct').classList.toggle('on', ctOuvert);
-  document.getElementById('voile').classList.toggle('on', ctOuvert);
+  document.getElementById('voile').classList.toggle('on', ctOuvert || menuOuvert);
   if (ctOuvert && d) poserContrats(d);
 }
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
-document.getElementById('voile').onclick = () => basculerContrats(false);
+document.getElementById('voile').onclick = () => { basculerContrats(false); basculerMenu(false); };
 
 const ICO = {
   frere:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
@@ -1272,6 +1469,13 @@ const LIEUX = [
   document.getElementById('eu').textContent =
     Number(d.euros || 0).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
 
+  /* l'avatar, en haut à gauche */
+  const av = document.getElementById('av');
+  av.innerHTML = BD.avatarSVG(d)
+    + ((d && d.pseudo) ? '<span class="nm">' + d.pseudo + '</span>' : '');
+  av.classList.add('pret');
+  av.onclick = () => basculerMenu();
+  poserMenu(d);
   MOI = { barque: d.barque || 1,
     couleur: ((COULEURS.find(c => c.k === ((d.affaire||{}).couleur)) || {}).c) };
   decor();
@@ -1294,25 +1498,20 @@ const LIEUX = [
   /* le chargement s'ouvre quand il te confie son tissu */
   LIEUX[1].n = 'Le chargement';
   LIEUX[1].ouvert = true;
-  document.getElementById('bas').innerHTML = LIEUX.map(L =>
-    '<button class="' + (L.ouvert ? 'vif' : '') + '" data-k="' + L.k + '"'
-    + (L.ouvert ? '' : ' disabled') + '>'
-    + '<svg viewBox="0 0 24 24">' + ICO[L.k] + '</svg>'
-    + '<span>' + L.n + '</span></button>').join('');
 
-  document.querySelectorAll('[data-k="barque"]').forEach(b =>
-    b.onclick = () => location.href = 'voyager.html');
 
-  document.querySelectorAll('[data-k="marche"]').forEach(b =>
-    b.onclick = () => basculerContrats(true, d));
 
 
   /* le rideau se lève */
   setTimeout(() => {
-    document.getElementById('rid').classList.add('parti');
-    document.getElementById('tete').classList.add('on');
-    document.getElementById('dit').classList.add('on');
-    document.getElementById('bas').classList.add('on');
+    ['rid'].forEach(k => {
+      const e = document.getElementById(k);
+      if (e) e.classList.add('parti');
+    });
+    ['dit', 'av'].forEach(k => {
+      const e = document.getElementById(k);
+      if (e) e.classList.add('on');
+    });
   }, 1600);
 })();
 
