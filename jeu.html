@@ -790,6 +790,7 @@ html{font-size:calc(16px * var(--txt, 1))}
 .amarre.a2{animation-duration:5.6s;animation-delay:-3.4s}
 .amarre.a3{animation-duration:8.6s;animation-delay:-1.2s}
 
+@keyframes bat{0%,100%{opacity:.4}50%{opacity:1}}
 </style>
 </head>
 <body>
@@ -3626,6 +3627,26 @@ function poserAvatar(d){
     poserBas(d);
     MOI = d;
     chercherLesAutres().then(n => { if (n) dessiner(); });
+    /* un gamin t'attend sur le quai, si tu as la boussole */
+    if ((d.niveau || 1) >= 5
+        && (d.sacoche || []).some(o => o.k === 'boussole')
+        && !(d.quetes || []).some(q => q.k === 'titou')){
+      const b2 = document.createElement('button');
+      b2.id = 'titou';
+      b2.innerHTML = '<span class="pt"></span>Un gamin te fait signe';
+      b2.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);'
+        + 'bottom:calc(env(safe-area-inset-bottom) + 92px);z-index:9;'
+        + 'padding:12px 20px;border:1.5px solid rgba(240,196,106,.7);border-radius:22px;'
+        + 'background:rgba(52,44,26,.82);backdrop-filter:blur(12px);'
+        + '-webkit-backdrop-filter:blur(12px);color:#f0c46a;cursor:pointer;'
+        + "font-family:'Courier Prime',monospace;font-size:12.5px;font-weight:700;"
+        + 'box-shadow:0 6px 24px rgba(6,16,28,.5);display:flex;align-items:center;gap:9px';
+      b2.querySelector('.pt').style.cssText =
+        'width:7px;height:7px;border-radius:50%;background:#f0c46a;'
+        + 'animation:bat 1.4s ease-in-out infinite';
+      b2.onclick = () => location.href = 'titou.html';
+      document.body.appendChild(b2);
+    }
     lireReglages();
     /* le troisième bouton devient ton anse, chez toi */
     const bm = document.getElementById('b-mar');
