@@ -1073,9 +1073,9 @@ function quai(){
   const yq = sol(46);          /* le bord du quai, à quarante-six mètres */
   let s = `<defs>
     <linearGradient id="q-pierre" x1="0.2" y1="0" x2="0.8" y2="1">
-      <stop offset="0%"   stop-color="#6a5464"/>
-      <stop offset="34%"  stop-color="#544458"/>
-      <stop offset="100%" stop-color="#332a3e"/></linearGradient>
+      <stop offset="0%"   stop-color="#c9a888"/>
+      <stop offset="30%"  stop-color="#b08c72"/>
+      <stop offset="100%" stop-color="#7a5e52"/></linearGradient>
   </defs>`;
 
   /* la masse du quai */
@@ -1083,10 +1083,13 @@ function quai(){
     height="${(BAS-yq+16).toFixed(1)}" fill="url(#q-pierre)"/>`;
 
   /* le bord, qui capte le dernier rayon */
-  s += `<path d="M0 ${yq.toFixed(1)} h${W}" stroke="#c98a72" stroke-width="2.6"
-    opacity=".7"/>`;
-  s += `<path d="M0 ${(yq+3).toFixed(1)} h${W}" stroke="#1a1430" stroke-width="4"
-    opacity=".5"/>`;
+  /* le mur de quai qui plonge dans l'eau, en ombre */
+  s += `<path d="M0 ${(yq-9).toFixed(1)} h${W} v10 h${-W} z" fill="#3a2a38"/>`;
+  /* l'arête du quai, éclairée par le couchant */
+  s += `<path d="M0 ${yq.toFixed(1)} h${W}" stroke="#ffc890" stroke-width="3"
+    opacity=".8"/>`;
+  s += `<path d="M0 ${(yq-9).toFixed(1)} h${W}" stroke="#1a1430" stroke-width="2"
+    opacity=".6"/>`;
 
   /* les dalles, en perspective — de plus en plus grandes vers nous */
   let d = 46, i = 0;
@@ -1104,13 +1107,13 @@ function quai(){
         /* la pierre prend un peu du couchant sur sa face */
         const cx = (xa + xb) / 2;
         const chaud = Math.max(0, 1 - Math.abs(cx - SX) / 300) * .3;
-        const base = t > .62 ? '#6e5a6a' : t > .3 ? '#5c4a5e' : '#4c3c50';
+        const base = t > .62 ? '#d4b494' : t > .3 ? '#bc9a7c' : '#a48468';
         s += `<path d="M${xa.toFixed(1)} ${y1.toFixed(1)} L${xb.toFixed(1)} ${y1.toFixed(1)}
           L${xb2.toFixed(1)} ${y2.toFixed(1)} L${xa2.toFixed(1)} ${y2.toFixed(1)} Z"
           fill="${mel(base, '#e0906a', chaud)}"
           opacity="${(.42 + t * .46).toFixed(2)}"/>`;
         s += `<path d="M${xa2.toFixed(1)} ${y2.toFixed(1)} L${xa.toFixed(1)} ${y1.toFixed(1)}"
-          stroke="#241c34" stroke-width=".8" opacity=".3"/>`;
+          stroke="#6a5040" stroke-width=".8" opacity=".34"/>`;
       }
     }
     d = d2; i++;
@@ -1118,8 +1121,8 @@ function quai(){
 
   /* l'ombre du soir qui gagne le quai depuis le bas */
   s += `<defs><linearGradient id="q-soir" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#241a34" stop-opacity="0"/>
-    <stop offset="100%" stop-color="#1a1228" stop-opacity=".62"/></linearGradient></defs>`;
+    <stop offset="0%" stop-color="#3a2438" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#2a1a30" stop-opacity=".34"/></linearGradient></defs>`;
   s += `<rect x="0" y="${yq.toFixed(1)}" width="${W}"
     height="${(BAS-yq+16).toFixed(1)}" fill="url(#q-soir)"/>`;
   return s;
