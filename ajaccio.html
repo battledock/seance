@@ -1067,54 +1067,9 @@ function eau(){
 }
 
 /* ============================================================
-   LA PROUE — le premier plan qui encadre tout
-   ============================================================ */
-function proue(marque){
-  const yb = BAS - 108;
-  let s = `<g class="proue">`;
-  /* le bordé, vu de l'intérieur : une courbe qui monte des deux côtés */
-  s += `<path d="M-40 ${yb.toFixed(0)}
-    C${-20} ${(BAS-220).toFixed(0)} ${100} ${(BAS-306).toFixed(0)}
-     ${240} ${(BAS-322).toFixed(0)}
-    C${380} ${(BAS-306).toFixed(0)} ${500} ${(BAS-220).toFixed(0)}
-     ${W+40} ${yb.toFixed(0)} Z" fill="#1a1024"/>`;
-  /* le liston, qui capte le dernier rayon */
-  s += `<path d="M-40 ${yb.toFixed(0)}
-    C${-20} ${(BAS-220).toFixed(0)} ${100} ${(BAS-306).toFixed(0)}
-     ${240} ${(BAS-322).toFixed(0)}
-    C${380} ${(BAS-306).toFixed(0)} ${500} ${(BAS-220).toFixed(0)}
-     ${W+40} ${yb.toFixed(0)}"
-    stroke="#8a4a3a" stroke-width="7" fill="none"/>`;
-  s += `<path d="M-40 ${(yb-4).toFixed(0)}
-    C${-20} ${(BAS-224).toFixed(0)} ${100} ${(BAS-310).toFixed(0)}
-     ${240} ${(BAS-326).toFixed(0)}
-    C${380} ${(BAS-310).toFixed(0)} ${500} ${(BAS-224).toFixed(0)}
-     ${W+40} ${(yb-4).toFixed(0)}"
-    stroke="#e0985e" stroke-width="2.4" fill="none" opacity=".62"/>`;
-  /* les membrures : à l'intérieur de la coque, sous le liston */
-  for (let k = -3; k <= 3; k++){
-    const x = 240 + k * 78;
-    /* la hauteur du bordé à cet endroit, suivant la courbe */
-    const t = Math.abs(k) / 3;
-    const haut = BAS - 322 + t * t * 130;
-    s += `<path d="M${x} ${(BAS+40).toFixed(0)} V${(haut + 14).toFixed(0)}"
-      stroke="#2a1a30" stroke-width="4" opacity=".55"/>`;
-  }
-  /* un cordage lové sur le bord */
-  s += `<g transform="translate(78,${(BAS-278).toFixed(0)})">`;
-  for (let k = 0; k < 3; k++)
-    s += `<ellipse cx="0" cy="${(-k*5).toFixed(0)}" rx="${(26-k*3).toFixed(0)}"
-      ry="${(7-k*.8).toFixed(1)}" fill="none" stroke="#4a3428" stroke-width="5"/>`;
-  s += `</g>`;
-
-  return s + `</g>`;
-}
-
-/* ============================================================
    LA SCÈNE
    ============================================================ */
 function ajaccio(MOI2){
-  const marque = (MOI2 && MOI2.couleur) || '#c9503a';
   let s = ciel();
   s += cote();
   s += eau();
@@ -1127,7 +1082,6 @@ function ajaccio(MOI2){
   s += ilot(700,  oX(392, 700), 54, 96, 11, false);    /* il mord le bord du soleil */
   s += ilot(430,  oX(150, 430), 42, 76, 5, true);      /* le plus proche, à gauche */
 
-  s += proue(marque);
   /* la pénombre */
   s += `<defs><radialGradient id="s-vig" cx="0.6" cy="0.4" r="0.82">
     <stop offset="40%" stop-color="#181638" stop-opacity="0"/>
