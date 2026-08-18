@@ -308,11 +308,68 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
   text-align:center;padding:5px 2px 2.4px;font-weight:700}
 
 
+.barre{position:fixed;z-index:10;
+  top:calc(env(safe-area-inset-top) + 14px);left:82px;right:14px;
+  height:56px;border-radius:6px;overflow:hidden;
+  background:rgba(18,34,52,.42);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:2px solid rgba(255,255,255,.34);
+  box-shadow:0 3px 14px rgba(8,20,32,.34);
+  display:flex;align-items:stretch;
+  opacity:0;transition:opacity .5s}
+.barre.pret{opacity:1}
+
+/* la caisse, à gauche, la plus lisible */
+.barre .sous{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
+  justify-content:center;padding:0 11px;border-right:1px solid rgba(255,255,255,.16)}
+.barre .sous .lb{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.56);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barre .sous .vl{font-size:16px;font-weight:700;color:#ffd894;line-height:1.15;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barre .sous .vl.pop{animation:pop .55s ease-out}
+@keyframes pop{0%{transform:scale(1.14);color:#a8e0b8}100%{transform:none}}
+
+/* les jauges, à droite */
+.barre .jauges{flex:0 0 auto;display:flex;flex-direction:column;
+  justify-content:center;gap:5px;padding:0 11px;min-width:104px}
+.jg{display:flex;align-items:center;gap:6px}
+.jg .ic{flex:0 0 11px;height:11px}
+.jg .ba{flex:1;height:5px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+.jg .ba i{display:block;height:100%;border-radius:3px;transition:width .6s}
+.jg .nb{flex:0 0 auto;font-size:8px;color:rgba(255,255,255,.66);min-width:22px;text-align:right}
+
+.av .nm{position:absolute;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,transparent,rgba(10,22,34,.82));
+  color:#fff;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  text-align:center;padding:5px 2px 2.4px;font-weight:700}
+
+
 </style>
 </head>
 <body>
 
 <div class="av" id="av"></div>
+<div class="barre" id="barre">
+  <span class="sous">
+    <span class="lb" id="b-lb">—</span>
+    <span class="vl" id="b-vl">—</span>
+  </span>
+  <span class="jauges">
+    <span class="jg">
+      <svg class="ic" viewBox="0 0 12 12"><path d="M6.6 1L2.4 6.8h2.6L4.6 11l4.4-6h-2.8z"
+        fill="#8ce0a8"/></svg>
+      <span class="ba"><i id="b-nrj" style="background:linear-gradient(90deg,#4faa72,#8ce0a8)"></i></span>
+      <span class="nb" id="b-nrjn">—</span>
+    </span>
+    <span class="jg">
+      <svg class="ic" viewBox="0 0 12 12"><path d="M6 1l1.5 3.2 3.5.5-2.6 2.4.7 3.4L6 8.9 2.9 10.5l.7-3.4L1 4.7l3.5-.5z"
+        fill="#f0c46a"/></svg>
+      <span class="ba"><i id="b-xp" style="background:linear-gradient(90deg,#b8934a,#f0c46a)"></i></span>
+      <span class="nb" id="b-xpn">—</span>
+    </span>
+  </span>
+</div>
+
 <nav class="menu" id="menu">
   <div class="tete">
     <span class="por" id="m-por"></span>
@@ -329,11 +386,9 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
 </div>
 
 <div class="tete" id="tete">
-  <span class="ou"><b>Ajaccio</b><span>La Corse</span></span>
-  <span class="eu" id="eu">—</span>
-</div>
+  </span>
+  </div>
 
-<div class="dit" id="dit"><p id="d-t">—</p></div>
 
 <div class="voile" id="voile"></div>
 
@@ -1296,6 +1351,47 @@ function matricule(d){
   return L[h % 23] + String(h % 10000).padStart(4, '0') + L[((h >>> 7) % 23 + 23) % 23];
 }
 
+function euro(v){ return Number(v||0).toLocaleString('fr-FR',{minimumFractionDigits:2}) + ' €'; }
+
+const XP_PALIER = n => Math.round(60 * Math.pow(n, 1.45));
+
+function poserBarre(d){
+  const el = document.getElementById('barre');
+  if (!el || !d) return;
+
+  const PORTS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
+                  palma:'Palma', ajaccio:'Ajaccio' };
+  /* le lieu en petit, la caisse en grand : rien ne bouge */
+  document.getElementById('b-lb').textContent = PORTS[d.port] || 'En mer';
+  document.getElementById('b-vl').textContent = euro(d.euros);
+
+  /* l'énergie, qui remonte d'un point par minute */
+  const nrj = Number(d.energie ?? 100), maxi = Number(d.energie_max || 100);
+  document.getElementById('b-nrj').style.width =
+    Math.max(0, Math.min(100, nrj / maxi * 100)) + '%';
+  document.getElementById('b-nrjn').textContent = Math.round(nrj);
+  /* on la fait monter à l'écran sans redemander au serveur */
+  clearInterval(window.__nrj);
+  if (nrj < maxi){
+    let v = nrj;
+    window.__nrj = setInterval(() => {
+      v = Math.min(maxi, v + 1);
+      document.getElementById('b-nrj').style.width = (v / maxi * 100) + '%';
+      document.getElementById('b-nrjn').textContent = v;
+      if (v >= maxi) clearInterval(window.__nrj);
+    }, 60000);
+  }
+
+  /* l'expérience vers le palier suivant */
+  const niv = Number(d.niveau || 1), xp = Number(d.xp || 0);
+  const need = XP_PALIER(niv);
+  document.getElementById('b-xp').style.width =
+    Math.max(0, Math.min(100, xp / (d.seuil_xp || need) * 100)) + '%';
+  document.getElementById('b-xpn').textContent = 'nv ' + niv;
+
+  el.classList.add('pret');
+}
+
 function poserMenu(d){
   const el = document.getElementById('m-liste');
   if (!el) return;
@@ -1466,8 +1562,6 @@ const LIEUX = [
   if (d.parti_le){ location.href = 'mer.html'; return; }
   if (d.port !== 'ajaccio'){ location.href = 'jeu.html'; return; }
 
-  document.getElementById('eu').textContent =
-    Number(d.euros || 0).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
 
   /* l'avatar, en haut à gauche */
   const av = document.getElementById('av');
@@ -1475,6 +1569,7 @@ const LIEUX = [
     + ((d && d.pseudo) ? '<span class="nm">' + d.pseudo + '</span>' : '');
   av.classList.add('pret');
   av.onclick = () => basculerMenu();
+  poserBarre(d);
   poserMenu(d);
   MOI = { barque: d.barque || 1,
     couleur: ((COULEURS.find(c => c.k === ((d.affaire||{}).couleur)) || {}).c) };
@@ -1489,9 +1584,6 @@ const LIEUX = [
   /* le frère t'attend si tu as porté la lettre et que tu es niveau 4 */
   const suite = !aLettre && ardit && ardit.etape >= 2 && !pere && (d.niveau || 1) >= 4;
 
-  document.getElementById('d-t').textContent =
-    "Tu passes entre les Sanguinaires au soleil couchant. "
-    + "Le golfe s'ouvre derrière, et la ville est encore loin.";
 
   LIEUX[0].ouvert = false;
   
@@ -1508,7 +1600,7 @@ const LIEUX = [
       const e = document.getElementById(k);
       if (e) e.classList.add('parti');
     });
-    ['dit', 'av'].forEach(k => {
+    ['av'].forEach(k => {
       const e = document.getElementById(k);
       if (e) e.classList.add('on');
     });
