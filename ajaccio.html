@@ -1067,62 +1067,72 @@ function eau(){
 }
 
 /* ============================================================
-   LE QUAI — de la pierre, rien d'autre
+   LE PLANCHER — un ponton de bois, planche par planche
    ============================================================ */
 function quai(){
-  const yq = sol(46);          /* le bord du quai, à quarante-six mètres */
-  let s = `<defs>
-    <linearGradient id="q-pierre" x1="0.2" y1="0" x2="0.8" y2="1">
-      <stop offset="0%"   stop-color="#c9a888"/>
-      <stop offset="30%"  stop-color="#b08c72"/>
-      <stop offset="100%" stop-color="#7a5e52"/></linearGradient>
-  </defs>`;
+  const yq = sol(46);
+  let s = '';
 
-  /* la masse du quai */
+  /* le fond sous les planches : l'eau qu'on devine entre elles */
   s += `<rect x="0" y="${yq.toFixed(1)}" width="${W}"
-    height="${(BAS-yq+16).toFixed(1)}" fill="url(#q-pierre)"/>`;
+    height="${(BAS-yq+16).toFixed(1)}" fill="#241a2a"/>`;
 
-  /* le bord, qui capte le dernier rayon */
-  /* le mur de quai qui plonge dans l'eau, en ombre */
-  s += `<path d="M0 ${(yq-9).toFixed(1)} h${W} v10 h${-W} z" fill="#3a2a38"/>`;
-  /* l'arête du quai, éclairée par le couchant */
-  s += `<path d="M0 ${yq.toFixed(1)} h${W}" stroke="#ffc890" stroke-width="3"
-    opacity=".8"/>`;
-  s += `<path d="M0 ${(yq-9).toFixed(1)} h${W}" stroke="#1a1430" stroke-width="2"
-    opacity=".6"/>`;
+  /* le bord du ponton, en ombre, qui le décolle de l'eau */
+  s += `<path d="M0 ${(yq-8).toFixed(1)} h${W} v9 h${-W} z" fill="#3a2a30"/>`;
 
-  /* les dalles, en perspective — de plus en plus grandes vers nous */
+  /* ---- les planches : elles fuient vers nous ---- */
   let d = 46, i = 0;
-  while (d > 3 && i < 70){
-    const d2 = d / 1.055, y1 = sol(d), y2 = sol(d2);
+  while (d > 2.6 && i < 80){
+    const d2 = d / 1.058;
+    const y1 = sol(d), y2 = sol(d2);
     if (y1 > BAS) break;
-    if (y2 - y1 > 1){
-      const dec = (i % 2) * .5;
-      for (let c = -14; c <= 14; c++){
-        const t = rnd2(i, c + 30);
-        const xa = pX((c + dec) * 3.4, d),  xb = pX((c + 1 + dec) * 3.4, d);
-        const xa2 = pX((c + dec) * 3.4, d2), xb2 = pX((c + 1 + dec) * 3.4, d2);
-        if (xb < -40 && xb2 < -40) continue;
-        if (xa > W + 40 && xa2 > W + 40) continue;
-        /* la pierre prend un peu du couchant sur sa face */
-        const cx = (xa + xb) / 2;
-        const chaud = Math.max(0, 1 - Math.abs(cx - SX) / 300) * .3;
-        const base = t > .62 ? '#d4b494' : t > .3 ? '#bc9a7c' : '#a48468';
-        s += `<path d="M${xa.toFixed(1)} ${y1.toFixed(1)} L${xb.toFixed(1)} ${y1.toFixed(1)}
-          L${xb2.toFixed(1)} ${y2.toFixed(1)} L${xa2.toFixed(1)} ${y2.toFixed(1)} Z"
-          fill="${mel(base, '#e0906a', chaud)}"
-          opacity="${(.42 + t * .46).toFixed(2)}"/>`;
-        s += `<path d="M${xa2.toFixed(1)} ${y2.toFixed(1)} L${xa.toFixed(1)} ${y1.toFixed(1)}"
-          stroke="#6a5040" stroke-width=".8" opacity=".34"/>`;
+    if (y2 - y1 > .9){
+      /* chaque planche a son grain propre, mais stable */
+      const t = rnd(i * 7);
+      /* le bois : chaud, un peu gris d'avoir pris la mer */
+      const base = t > .66 ? '#b08a62' : t > .33 ? '#9a7654' : '#856348';
+      /* celles dans l'axe du soleil prennent sa lumière */
+      const chaud = Math.max(0, 1 - Math.abs(240 - SX) / 400) * .12;
+      s += `<path d="M-20 ${y1.toFixed(1)} h${W+40} v${(y2-y1).toFixed(1)} h${-(W+40)} z"
+        fill="${mel(base, '#e8a878', chaud)}"/>`;
+      /* le joint entre deux planches */
+      s += `<path d="M-20 ${y2.toFixed(1)} h${W+40}" stroke="#4a3628"
+        stroke-width="${Math.max(.8, (y2-y1)*.09).toFixed(1)}" opacity=".54"/>`;
+      /* l'arête éclairée de la planche */
+      s += `<path d="M-20 ${(y1+.6).toFixed(1)} h${W+40}" stroke="#d4a878"
+        stroke-width="${Math.max(.5, (y2-y1)*.05).toFixed(1)}" opacity=".24"/>`;
+
+      /* le fil du bois : quelques veines par planche */
+      const nv = Math.max(2, Math.round((y2-y1) / 3));
+      for (let k = 0; k < nv; k++){
+        const yv = y1 + (y2-y1) * (k + .5) / nv;
+        const x0 = rnd(i * 13 + k) * W;
+        const lg = (30 + rnd(i * 5 + k) * 160) * (1 + i * .04);
+        s += `<path d="M${x0.toFixed(0)} ${yv.toFixed(1)} h${lg.toFixed(0)}"
+          stroke="#6a4e38" stroke-width="${Math.max(.5, (y2-y1)*.045).toFixed(1)}"
+          opacity="${(.14 + rnd(i*3+k) * .2).toFixed(2)}"/>`;
+      }
+
+      /* les têtes de clou, aux extrémités, sur une planche sur deux */
+      if (i % 2 === 0 && y2 - y1 > 3){
+        const r = Math.max(.7, (y2-y1) * .1);
+        [.14, .42, .7, .93].forEach((u, q) => {
+          if (rnd(i * 11 + q) < .35) return;
+          const xc = u * W;
+          s += `<circle cx="${xc.toFixed(0)}" cy="${((y1+y2)/2).toFixed(1)}"
+            r="${r.toFixed(1)}" fill="#4a3a2c" opacity=".6"/>`;
+          s += `<circle cx="${(xc-r*.3).toFixed(0)}" cy="${((y1+y2)/2-r*.3).toFixed(1)}"
+            r="${(r*.4).toFixed(1)}" fill="#c9a888" opacity=".4"/>`;
+        });
       }
     }
     d = d2; i++;
   }
 
-  /* l'ombre du soir qui gagne le quai depuis le bas */
+  /* l'ombre du soir, qui gagne le ponton par le bas */
   s += `<defs><linearGradient id="q-soir" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#3a2438" stop-opacity="0"/>
-    <stop offset="100%" stop-color="#2a1a30" stop-opacity=".34"/></linearGradient></defs>`;
+    <stop offset="0%"  stop-color="#3a2434" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#2a1a2c" stop-opacity=".42"/></linearGradient></defs>`;
   s += `<rect x="0" y="${yq.toFixed(1)}" width="${W}"
     height="${(BAS-yq+16).toFixed(1)}" fill="url(#q-soir)"/>`;
   return s;
