@@ -1070,7 +1070,9 @@ function eau(){
    LE PLANCHER — un ponton de bois, planche par planche
    ============================================================ */
 function quai(){
-  const yq = sol(46);
+  /* on vise une part fixe de la scène, pas une distance :
+     ainsi le plancher reste visible même dans une fenêtre courte */
+  const yq = HAUT + (BAS - HAUT) * .74;
   let s = '';
 
   /* le fond sous les planches : l'eau qu'on devine entre elles */
@@ -1081,12 +1083,11 @@ function quai(){
   s += `<path d="M0 ${(yq-8).toFixed(1)} h${W} v9 h${-W} z" fill="#3a2a30"/>`;
 
   /* ---- les planches : elles fuient vers nous ---- */
-  let d = 46, i = 0;
-  while (d > 2.6 && i < 80){
-    const d2 = d / 1.058;
-    const y1 = sol(d), y2 = sol(d2);
-    if (y1 > BAS) break;
-    if (y2 - y1 > .9){
+  /* la hauteur des planches croît vers nous : perspective simple et sûre */
+  let y1 = yq, ep = (BAS - yq) * .035, i = 0;
+  while (y1 < BAS && i < 40){
+    const y2 = y1 + ep;
+    {
       /* chaque planche a son grain propre, mais stable */
       const t = rnd(i * 7);
       /* le bois : chaud, un peu gris d'avoir pris la mer */
@@ -1126,7 +1127,7 @@ function quai(){
         });
       }
     }
-    d = d2; i++;
+    y1 = y2; ep *= 1.17; i++;
   }
 
   /* l'ombre du soir, qui gagne le ponton par le bas */
