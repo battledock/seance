@@ -816,7 +816,8 @@ document.getElementById('ret').onclick = () => location.href = retour;
   /* on propose tous les ports ouverts, sauf celui où l'on est */
   PORTS = await BD.agir('mes_ports');
   if (!Array.isArray(PORTS)) PORTS = [];
-  const RET = { barcelone:'barcelone.html', palma:'palma.html', anse:'jeu.html' };
+  const RET = { barcelone:'barcelone.html', palma:'palma.html',
+                ajaccio:'ajaccio.html', anse:'jeu.html' };
   retour = RET[d.port] || 'jeu.html';
   /* mes_ports ne renvoie déjà que ce qu'on peut atteindre d'ici */
   const possibles = PORTS;
