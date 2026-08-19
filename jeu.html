@@ -9,8 +9,10 @@
    ============================================================ */
 html,body{margin:0;padding:0;background:#2f5e88;height:100%;overflow:hidden}
 
-#aube{position:fixed;inset:0;z-index:0;transition:opacity .7s ease-out}
-#aube.parti{opacity:0}
+#aube{position:fixed;inset:0;z-index:0}
+/* pas de fondu : le décor est dessous, prêt et identique.
+   On retire simplement l'aube, l'œil ne voit rien passer. */
+#aube.parti{display:none}
 
 /* ---- le ciel, jusqu'à l'horizon ---- */
 #aube .ciel{position:absolute;left:0;right:0;top:0;height:41%;
@@ -103,9 +105,8 @@ html,body{margin:0;padding:0;background:#2f5e88;height:100%;overflow:hidden}
 @keyframes pulse{0%,100%{opacity:.45}50%{opacity:.85}}
 @media (prefers-reduced-motion:reduce){#aube *{animation:none}}
 
-/* le décor arrive en fondu par-dessus l'aube */
-#sc{opacity:0;transition:opacity .55s ease-out}
-#sc.pret{opacity:1}
+/* le décor est peint dessous, à l'abri, et découvert d'un coup */
+#sc{opacity:1}
 
 </style>
 <meta charset="UTF-8">
@@ -3835,11 +3836,11 @@ function dessiner(){
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
     + scene() + barquesDesAutres(40, 11) + '</svg>';
   etiquettes(v);
-  /* le décor est là : on éteint le ciel de secours */
-  const sc = document.getElementById('sc');
-  if (sc) sc.classList.add('pret');
+  /* le décor est calculé : on attend qu'il soit réellement peint
+     avant de retirer l'aube. Sinon on découvrirait du vide. */
   const au = document.getElementById('aube');
-  if (au) au.classList.add('parti');
+  if (au && !au.classList.contains('parti'))
+    requestAnimationFrame(() => requestAnimationFrame(() => au.classList.add('parti')));
 }
 dessiner();
 let t = null;
