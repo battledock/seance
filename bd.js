@@ -19,6 +19,93 @@ const BD = (() => {
 
   let sb = null, session = null, docker = null;
 
+  /* ---------- la maintenance ----------
+     Si elle est active, toutes les pages du jeu s'arrêtent net,
+     sauf pour qui a donné le mot de passe. */
+  const PASSE = 'bd-maintenance-ok';
+
+  async function verifierMaintenance(){
+    /* déjà autorisé pour cette session ? */
+    try { if (sessionStorage.getItem(PASSE) === '1') return false; } catch(e){}
+    let m;
+    try {
+      const c = await client();
+      const { data } = await c.rpc('en_maintenance');
+      m = data;
+    } catch(e){ return false; }        /* en cas de doute, on laisse passer */
+    if (!m || !m.active) return false;
+    montrerMaintenance(m);
+    return true;
+  }
+
+  function montrerMaintenance(m){
+    document.documentElement.innerHTML =
+      '<head><meta charset="UTF-8">'
+      + '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
+      + '<title>Battle Dock</title>'
+      + '<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">'
+      + '<style>'
+      + '*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}'
+      + 'html,body{height:100%;background:#0e1c2e;color:#fff;'
+      + "font-family:'Courier Prime',monospace;overflow:hidden}"
+      + '.m{position:fixed;inset:0;display:flex;flex-direction:column;'
+      + 'align-items:center;justify-content:center;gap:18px;padding:34px;text-align:center}'
+      + '.m .ic{width:54px;height:54px;margin-bottom:6px;opacity:.8}'
+      + '.m .ic svg{width:100%;height:100%;stroke:#f0c46a;fill:none;stroke-width:1.5;'
+      + 'stroke-linecap:round;stroke-linejoin:round}'
+      + '.m h1{font-size:23px;font-weight:700;line-height:1.35;max-width:320px}'
+      + '.m p{font-size:14.5px;color:#f0c46a;font-family:system-ui,sans-serif}'
+      + '.m .pt{display:flex;gap:7px;margin-top:4px}'
+      + '.m .pt i{width:7px;height:7px;border-radius:50%;background:#f0c46a;'
+      + 'animation:bat 1.4s ease-in-out infinite}'
+      + '.m .pt i:nth-child(2){animation-delay:.2s}'
+      + '.m .pt i:nth-child(3){animation-delay:.4s}'
+      + '@keyframes bat{0%,100%{opacity:.25}50%{opacity:1}}'
+      + '.m .cle{margin-top:30px;display:flex;gap:8px;opacity:.5;transition:opacity .3s}'
+      + '.m .cle:focus-within{opacity:1}'
+      + '.m input{width:130px;padding:11px 14px;border-radius:9px;'
+      + 'border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);'
+      + "color:#fff;font-family:'Courier Prime',monospace;font-size:13px;text-align:center}"
+      + '.m input:focus{outline:none;border-color:rgba(240,196,106,.6)}'
+      + '.m button{padding:11px 18px;border:0;border-radius:9px;cursor:pointer;'
+      + 'background:rgba(240,196,106,.9);color:#1c1a16;'
+      + "font-family:'Courier Prime',monospace;font-size:13px;font-weight:700}"
+      + '.m .err{font-size:11.5px;color:#e0785a;height:16px;font-family:system-ui,sans-serif}'
+      + '</style></head><body><div class="m">'
+      + '<span class="ic"><svg viewBox="0 0 24 24">'
+      + '<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>'
+      + '</svg></span>'
+      + '<h1>' + (m.titre || 'Le jeu est en maintenance') + '</h1>'
+      + '<p>' + (m.mot || '') + '</p>'
+      + '<span class="pt"><i></i><i></i><i></i></span>'
+      + '<div class="cle"><input id="m-mdp" type="password" placeholder="code" '
+      + 'autocomplete="off"><button id="m-ok">Entrer</button></div>'
+      + '<p class="err" id="m-err"></p>'
+      + '</div></body>';
+    const essayer = async () => {
+      const v = document.getElementById('m-mdp').value.trim();
+      if (!v) return;
+      try {
+        const c = await client();
+        const { data } = await c.rpc('mdp_maintenance', { p_mdp: v });
+        if (data){
+          try { sessionStorage.setItem(PASSE, '1'); } catch(e){}
+          location.reload();
+        } else {
+          document.getElementById('m-err').textContent = 'Ce code ne convient pas.';
+          document.getElementById('m-mdp').value = '';
+        }
+      } catch(e){
+        document.getElementById('m-err').textContent = 'Impossible de vérifier.';
+      }
+    };
+    document.getElementById('m-ok').onclick = essayer;
+    document.getElementById('m-mdp').onkeydown = e => { if (e.key === 'Enter') essayer(); };
+    document.getElementById('m-mdp').focus();
+  }
+
+
+
   async function client(){
     if (sb) return sb;
     if (!window.supabase){
@@ -43,6 +130,7 @@ const BD = (() => {
 
   /* ---------- fiche du docker ---------- */
   async function charger(){
+    if (await verifierMaintenance()) return new Promise(() => {});
     const c = await client();
     const u = await utilisateur();
     if (!u) return null;
@@ -401,7 +489,8 @@ const BD = (() => {
     return data || { ok:false, pourquoi:'vide' };
   }
 
-  return { client, utilisateur, charger, enregistrer, poser, lire, agir,
+  return {
+    verifierMaintenance, client, utilisateur, charger, enregistrer, poser, lire, agir,
            avancer, garder, deconnexion, avatarDe, avatarSVG, ETAPES, PAGES,
            get docker(){ return docker; } };
 })();
