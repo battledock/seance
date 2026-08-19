@@ -112,7 +112,7 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="bd.js"></script>
+<script src="bd.js?v=2"></script>
 <script>
 /* ============================================================
    LE PORT À L'AUBE — le socle : charte, lumière, matière
@@ -824,9 +824,10 @@ async function arriver(){
       location.href = 'drap.html';
       return;
     }
-    const PAGE = { barcelone:'barcelone.html', palma:'palma.html', anse:'jeu.html' };
+    const PAGE = { barcelone:'barcelone.html', palma:'palma.html',
+                   ajaccio:'ajaccio.html', anse:'jeu.html' };
     const MOT  = { barcelone:'Débarquer à Barcelone', palma:'Débarquer à Palma',
-                   anse:'Rentrer chez toi' };
+                   ajaccio:'Débarquer à Ajaccio', anse:'Rentrer chez toi' };
     let suite = PAGE[r.port] || 'jeu.html';
     let mot = MOT[r.port] || 'Débarquer';
     if (monte){ suite = 'niveau.html'; mot = 'Tu as changé de niveau'; }
