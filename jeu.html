@@ -177,6 +177,38 @@ html,body{margin:0;padding:0;background:#2f5e88;height:100%;overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   .vol,.cargo,.pointu,.aile,.pointu>*{animation:none}}
 
+
+/* ---------- l'entrepôt ---------- */
+.ent li.dep{display:flex;gap:12px;align-items:flex-start;
+  padding:13px 14px;border-radius:11px;margin-bottom:9px;
+  background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.09)}
+.ent li.dep.mien{border-color:rgba(240,196,106,.34);
+  background:rgba(240,196,106,.07)}
+.ent li.dep .qui{flex:0 0 34px;height:34px;border-radius:9px;overflow:hidden;
+  background:rgba(255,255,255,.08);display:flex;align-items:center;
+  justify-content:center;font-size:13px;font-weight:700;color:#f0c46a}
+.ent li.dep .co{flex:1;min-width:0}
+.ent li.dep .co b{display:block;font-size:13.5px;color:#fff}
+.ent li.dep .co .ou{display:block;font-size:11px;color:rgba(255,255,255,.5);
+  margin-top:2px;font-family:system-ui,sans-serif}
+.ent li.dep .co .par{display:block;font-size:10.5px;margin-top:5px;
+  color:rgba(255,255,255,.38);font-family:system-ui,sans-serif}
+.ent li.dep .co .par em{color:#8ce0a8;font-style:normal}
+.ent li.dep .pr{flex:0 0 auto;text-align:right}
+.ent li.dep .pr b{display:block;font-size:14px;color:#f0c46a}
+.ent li.dep .pr button{margin-top:6px;padding:7px 13px;border:0;border-radius:8px;
+  cursor:pointer;background:rgba(240,196,106,.9);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:11.5px;font-weight:700}
+.ent li.dep .pr button:disabled{background:rgba(255,255,255,.1);
+  color:rgba(255,255,255,.3);cursor:default}
+.ent li.titre{display:block;font-size:9px;letter-spacing:.24em;
+  text-transform:uppercase;color:rgba(255,255,255,.42);
+  margin:16px 0 9px;padding:0}
+.ent li.titre:first-child{margin-top:0}
+.ent #e-liste{list-style:none;padding:0;margin:0}
+.ent li.loin{opacity:.6}
+.ent li.loin .pr b{color:rgba(255,255,255,.5);font-size:12px}
+
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
@@ -1005,9 +1037,9 @@ html{font-size:calc(16px * var(--txt, 1))}
     <button id="b-tra">
       <svg viewBox="0 0 24 24"><path d="M8 3h8l2 4v14H6V7zM9 11h6M9 15h6M10 3v4h4V3"/></svg>
       <span id="b-tra-t">Contrats</span></button>
-    <button id="b-mar" disabled>
-      <svg viewBox="0 0 24 24"><path d="M3 21V10l9-6 9 6v11M3 21h18M9 21v-6h6v6"/></svg>
-      <span>Le marché</span></button>
+    <button id="b-ent">
+      <svg viewBox="0 0 24 24"><path d="M3 21V9l9-5 9 5v12M3 21h18M8 21v-7h8v7M8 14h8"/></svg>
+      <span id="b-ent-t">L'entrepôt</span></button>
   </div>
 </div>
 
@@ -1067,6 +1099,16 @@ html{font-size:calc(16px * var(--txt, 1))}
   <p class="cale">Ta cale : <b id="k-cale">—</b></p>
   <ul id="k-liste"><li class="rien">On regarde ce qu'il y a…</li></ul>
   <p class="mot" id="k-mot"></p>
+</section>
+
+<section class="ct ent" id="ent">
+  <div class="haut">
+    <span class="ti"><b>L'entrepôt</b><span>Ce qui attend sur le quai</span></span>
+    <button class="fer" id="e-fer">×</button>
+  </div>
+  <p class="cale">Ta cale : <b id="e-cale">—</b></p>
+  <ul id="e-liste"><li class="rien">On regarde…</li></ul>
+  <p class="mot" id="e-mot"></p>
 </section>
 
 <section class="ch" id="ch">
@@ -3991,8 +4033,108 @@ function posePastilles(P){
   };
   poser('b-tra', P.contrats);
   poser('b-mer', P.mer);
-  poser('b-mar', P.anse);
+  poser('b-ent', P.entrepot);
 }
+
+/* ---------- l'entrepôt ---------- */
+let entOuvert = false;
+
+async function basculerEntrepot(o){
+  entOuvert = o === undefined ? !entOuvert : o;
+  document.getElementById('ent').classList.toggle('on', entOuvert);
+  document.getElementById('voile').classList.toggle('on',
+    entOuvert || ctOuvert || menuOuvert);
+  if (!entOuvert) return;
+  const L = document.getElementById('e-liste');
+  L.innerHTML = '<li class="rien">On regarde…</li>';
+  let r;
+  try { r = await BD.agir('l_entrepot'); } catch(e){ r = null; }
+  if (!r || !r.ok){ L.innerHTML = '<li class="rien">L\'entrepôt est fermé.</li>'; return; }
+
+  document.getElementById('e-cale').textContent =
+    r.place_libre > 0 ? r.place_libre + ' place' + (r.place_libre > 1 ? 's' : '') + ' libre'
+      + (r.place_libre > 1 ? 's' : '') : 'pleine';
+
+  let h = '';
+  const A = r.a_porter || [], T = r.a_toi || [], C = r.ma_cale || [];
+
+  /* ce qu'on porte et qu'on peut laisser ici */
+  if (C.length){
+    h += '<li class="titre">Ce que tu portes</li>';
+    C.forEach(c => {
+      const ici = c.vers === r.port;
+      h += '<li class="dep mien"><span class="qui">▪</span>'
+        + '<span class="co"><b>' + c.nom + '</b>'
+        + '<span class="ou">Pour ' + (OU_NOM[c.vers] || c.vers)
+        + ' — ' + c.kg + ' kg</span>'
+        + '<span class="par">' + (ici ? 'Tu y es : livre-la'
+            : 'Tu peux la laisser ici') + '</span></span>'
+        + '<span class="pr"><b>' + c.paie + ' €</b>'
+        + (ici || !r.peut_deposer ? ''
+            : '<button data-pose="' + c.i + '">Déposer</button>')
+        + '</span></li>';
+    });
+  }
+
+  if (A.length){
+    h += '<li class="titre">À porter</li>';
+    A.forEach(c => {
+      const plein = r.place_libre < c.places;
+      h += '<li class="dep"><span class="qui">' + (c.par||'?')[0].toUpperCase() + '</span>'
+        + '<span class="co"><b>' + c.nom + '</b>'
+        + '<span class="ou">Pour ' + (OU_NOM[c.vers] || c.vers)
+        + ' — ' + c.kg + ' kg</span>'
+        + '<span class="par">Posée par <em>' + c.par + '</em>'
+        + (c.depuis >= 1 ? ' il y a ' + c.depuis + ' h' : ' à l\'instant') + '</span></span>'
+        + '<span class="pr"><b>' + c.pour_toi + ' €</b>'
+        + '<button data-id="' + c.id + '"' + (plein ? ' disabled' : '')
+        + '>' + (plein ? 'Cale pleine' : 'Prendre') + '</button></span></li>';
+    });
+  }
+
+  if (T.length){
+    h += '<li class="titre">Ce que tu as laissé</li>';
+    T.forEach(c => {
+      h += '<li class="dep mien' + (c.ici && !c.prise ? '' : ' loin') + '">'
+        + '<span class="qui">◇</span>'
+        + '<span class="co"><b>' + c.nom + '</b>'
+        + '<span class="ou">À ' + (OU_NOM[c.ou] || c.ou)
+        + ', pour ' + (OU_NOM[c.vers] || c.vers) + '</span>'
+        + '<span class="par">' + (c.prise
+            ? '<em>' + c.par + '</em> s\'en charge'
+            : c.ici ? 'Elle t\'attend ici' : 'Elle attend là-bas') + '</span></span>'
+        + '<span class="pr"><b>' + c.paie + ' €</b>'
+        + (c.ici && !c.prise
+            ? '<button data-id="' + c.id + '">Reprendre</button>' : '')
+        + '</span></li>';
+    });
+  }
+
+  if (!h) h = '<li class="rien">Rien n\'attend sur ce quai.</li>';
+  L.innerHTML = h;
+  document.getElementById('e-mot').textContent = A.length
+    ? 'Celui qui porte touche sa part. L\'autre aussi.'
+    : C.length ? 'Une caisse laissée ici t\'attendra. Ou quelqu\'un la portera.'
+    : '';
+
+  L.querySelectorAll('button[data-id]').forEach(b =>
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = '…';
+      const x = await BD.agir('prendre_depot', { p_id: b.dataset.id });
+      if (x && x.ok) location.reload();
+      else { b.disabled = false; b.textContent = 'Prendre'; }
+    });
+  L.querySelectorAll('button[data-pose]').forEach(b =>
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = '…';
+      const x = await BD.agir('deposer', { p_index: +b.dataset.pose });
+      if (x && x.ok) location.reload();
+      else { b.disabled = false; b.textContent = 'Déposer'; }
+    });
+}
+
+const OU_NOM = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
+                 palma:'Palma', ajaccio:'Ajaccio' };
 
 function poserMenu(d){
   const el = document.getElementById('m-liste');
@@ -4065,6 +4207,9 @@ document.getElementById('f-fer').onclick = () => basculerFiche(false);
 document.getElementById('q-fer').onclick = () => basculerBarque(false);
 document.getElementById('c-fer').onclick = () => basculerClassement(false);
 document.getElementById('t-fer').onclick = () => basculerChantier(false);
+document.getElementById('e-fer').onclick = () => basculerEntrepot(false);
+const bEnt = document.getElementById('b-ent');
+if (bEnt) bEnt.onclick = () => basculerEntrepot(true);
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
 document.getElementById('g-fer').onclick = () => basculerReglages(false);
 document.getElementById('s-fer').onclick = () => basculerSacoche(false);
