@@ -682,6 +682,7 @@ function retourner(d, fiche){
   let ou = d.parti_le ? 'mer.html'
     : d.port === 'barcelone' ? 'barcelone.html'
     : d.port === 'palma' ? 'palma.html'
+    : d.port === 'ajaccio' ? 'ajaccio.html'
     : 'jeu.html';
   /* si Toussaint attend avec la caisse, il passe avant */
   if (ou === 'jeu.html'){
