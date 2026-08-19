@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<style>
+/* Le ciel de Marseille, en dégradé pur. Il est ici, tout en haut,
+   pour que le navigateur puisse peindre l'écran avant d'avoir lu
+   le reste de la page. */
+html,body{margin:0;background:#2f5e88}
+#aube{position:fixed;inset:0;z-index:0;
+  background:linear-gradient(180deg,
+    #1d3a5c 0%, #2f5e88 16%, #5a86a8 34%,
+    #9fb4b8 52%, #d8c49a 68%, #f0d4a0 78%,
+    #7d96a4 79%, #4a6d84 90%, #2f4f68 100%);
+  transition:opacity .6s}
+#aube.parti{opacity:0}
+
+#sc{opacity:0;transition:opacity .5s}
+#sc.pret{opacity:1}
+</style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1c3a68">
@@ -794,6 +810,7 @@ html{font-size:calc(16px * var(--txt, 1))}
 </style>
 </head>
 <body>
+<div id="aube"></div>
 
 <div id="sc"></div>
 <div id="eti"></div>
@@ -3715,6 +3732,11 @@ function dessiner(){
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
     + scene() + barquesDesAutres(40, 11) + '</svg>';
   etiquettes(v);
+  /* le décor est là : on éteint le ciel de secours */
+  const sc = document.getElementById('sc');
+  if (sc) sc.classList.add('pret');
+  const au = document.getElementById('aube');
+  if (au) au.classList.add('parti');
 }
 dessiner();
 let t = null;
