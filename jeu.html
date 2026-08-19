@@ -2,20 +2,111 @@
 <html lang="fr">
 <head>
 <style>
-/* Le ciel de Marseille, en dégradé pur. Il est ici, tout en haut,
-   pour que le navigateur puisse peindre l'écran avant d'avoir lu
-   le reste de la page. */
-html,body{margin:0;background:#2f5e88}
-#aube{position:fixed;inset:0;z-index:0;
-  background:linear-gradient(180deg,
-    #1d3a5c 0%, #2f5e88 16%, #5a86a8 34%,
-    #9fb4b8 52%, #d8c49a 68%, #f0d4a0 78%,
-    #7d96a4 79%, #4a6d84 90%, #2f4f68 100%);
-  transition:opacity .6s}
+/* ============================================================
+   L'AUBE — tout en CSS, zéro JavaScript.
+   Les proportions sont celles du vrai décor : l'horizon à 41 %,
+   le bord du quai à 78 %.
+   ============================================================ */
+html,body{margin:0;padding:0;background:#2f5e88;height:100%;overflow:hidden}
+
+#aube{position:fixed;inset:0;z-index:0;transition:opacity .7s ease-out}
 #aube.parti{opacity:0}
 
-#sc{opacity:0;transition:opacity .5s}
+/* ---- le ciel, jusqu'à l'horizon ---- */
+#aube .ciel{position:absolute;left:0;right:0;top:0;height:41%;
+  background:linear-gradient(180deg,
+    #1d3a5c 0%, #275079 14%, #37699a 30%,
+    #6a94b4 50%, #a8bcbc 66%, #d8c8a0 80%,
+    #f2d8a4 92%, #fbe6b8 100%)}
+
+/* ---- la mer, de l'horizon au quai ---- */
+#aube .mer{position:absolute;left:0;right:0;top:41%;height:37%;
+  background:linear-gradient(180deg,
+    #b8bfae 0%, #7d96a4 4%, #5a7f94 14%,
+    #446b83 36%, #345872 62%, #2a4a63 100%)}
+
+/* ---- la colline de Notre-Dame, derrière l'horizon ---- */
+#aube .colline{position:absolute;left:50%;top:41%;width:230px;height:78px;
+  margin:-78px 0 0 -86px;
+  background:linear-gradient(170deg,rgba(104,110,122,.44),rgba(70,78,94,.56));
+  /* un profil de colline : pente douce à gauche, sommet arrondi, versant à droite */
+  clip-path:polygon(0% 100%, 12% 76%, 26% 52%, 38% 30%, 47% 17%,
+                    53% 15%, 62% 26%, 74% 48%, 88% 74%, 100% 100%)}
+#aube .clocher{position:absolute;left:50%;top:41%;width:3px;height:15px;
+  margin:-93px 0 0 -1px;background:rgba(214,218,224,.5);border-radius:2px}
+#aube .clocher::after{content:"";position:absolute;left:-2.5px;top:-4px;
+  width:8px;height:5px;border-radius:50%;background:rgba(255,216,146,.55)}
+
+/* ---- la ville, une frange basse de part et d'autre ---- */
+#aube .ville{position:absolute;left:0;right:0;top:41%;height:11px;
+  margin-top:-11px;opacity:.26;
+  background:repeating-linear-gradient(90deg,
+    #5a687e 0 3px, transparent 3px 6px, #4e5c74 6px 8px,
+    transparent 8px 13px, #64728a 13px 16px, transparent 16px 21px);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 60%);
+  mask-image:linear-gradient(180deg,transparent,#000 60%)}
+
+/* ---- la ligne d'horizon ---- */
+#aube .horizon{position:absolute;left:0;right:0;top:41%;height:1.5px;
+  background:rgba(255,238,200,.6)}
+
+/* ---- le soleil, posé dessus, décalé comme dans le vrai décor ---- */
+#aube .soleil{position:absolute;left:41%;top:41%;width:34px;height:34px;
+  margin:-17px 0 0 -17px;border-radius:50%;
+  background:radial-gradient(circle,#fffaea 0%,#fff0c8 42%,#ffdc98 72%,#ffcc80 100%);
+  box-shadow:0 0 40px 18px rgba(255,222,156,.36),
+             0 0 120px 60px rgba(255,200,120,.15)}
+
+/* ---- le chemin de lumière, qui s'ouvre vers nous ---- */
+#aube .chemin{position:absolute;left:41%;top:41%;height:37%;width:250px;
+  margin-left:-125px;
+  /* la lumière s'éteint vers les côtés : un simple dégradé horizontal,
+     découpé en éventail. Discret, comme un vrai reflet. */
+  background:linear-gradient(90deg,
+    rgba(255,230,176,0) 0%, rgba(255,230,176,.14) 32%,
+    rgba(255,240,200,.3) 50%, rgba(255,230,176,.14) 68%,
+    rgba(255,230,176,0) 100%);
+  clip-path:polygon(45% 0%, 55% 0%, 100% 100%, 0% 100%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.4) 50%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.4) 50%,transparent 100%);
+  filter:blur(5px);
+  animation:respire 3.2s ease-in-out infinite}
+@keyframes respire{0%,100%{opacity:.62}50%{opacity:.94}}
+
+/* ---- le quai ---- */
+#aube .quai{position:absolute;left:0;right:0;top:78%;bottom:0;
+  background:linear-gradient(180deg,#9e9078 0%,#b6a98c 18%,#c8bb9a 60%,#d2c5a4 100%)}
+#aube .quai::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:rgba(255,238,200,.34)}
+#aube .quai::after{content:"";position:absolute;inset:0;opacity:.24;
+  background:repeating-linear-gradient(180deg,
+    transparent 0 11px, rgba(116,104,84,.6) 11px 12px)}
+
+/* ---- la barre du haut et les boutons ---- */
+#aube .haut{position:absolute;left:14px;right:14px;
+  top:calc(env(safe-area-inset-top) + 14px);height:52px;display:flex;gap:9px}
+#aube .haut i{display:block;height:100%;border-radius:10px;
+  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);
+  animation:pulse 1.9s ease-in-out infinite}
+#aube .haut i:nth-child(1){width:52px}
+#aube .haut i:nth-child(2){flex:1;animation-delay:.16s}
+#aube .haut i:nth-child(3){width:118px;animation-delay:.32s}
+
+#aube .bas{position:absolute;left:14px;right:14px;
+  bottom:calc(env(safe-area-inset-bottom) + 14px);height:62px;display:flex;gap:9px}
+#aube .bas i{display:block;flex:1;border-radius:11px;
+  background:rgba(24,30,38,.16);border:1.5px solid rgba(255,255,255,.1);
+  animation:pulse 1.9s ease-in-out infinite}
+#aube .bas i:nth-child(2){animation-delay:.16s}
+#aube .bas i:nth-child(3){animation-delay:.32s}
+
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:.85}}
+@media (prefers-reduced-motion:reduce){#aube *{animation:none}}
+
+/* le décor arrive en fondu par-dessus l'aube */
+#sc{opacity:0;transition:opacity .55s ease-out}
 #sc.pret{opacity:1}
+
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
@@ -810,7 +901,19 @@ html{font-size:calc(16px * var(--txt, 1))}
 </style>
 </head>
 <body>
-<div id="aube"></div>
+<div id="aube">
+  <span class="ciel"></span>
+  <span class="mer"></span>
+  <span class="colline"></span>
+  <span class="clocher"></span>
+  <span class="ville"></span>
+  <span class="horizon"></span>
+  <span class="soleil"></span>
+  <span class="chemin"></span>
+  <span class="quai"></span>
+  <span class="haut"><i></i><i></i><i></i></span>
+  <span class="bas"><i></i><i></i><i></i></span>
+</div>
 
 <div id="sc"></div>
 <div id="eti"></div>
