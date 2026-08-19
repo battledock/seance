@@ -252,172 +252,6 @@ html,body{margin:0;padding:0;background:#2f5e88;height:100%;overflow:hidden}
    LE HUB — ce qui s'ouvre quand on touche l'avatar
    Il monte par-dessus la rade, qui reste visible derrière.
    ============================================================ */
-/* Le hub monte du bas et laisse voir la rade au-dessus. */
-.hub{position:fixed;inset:0;z-index:40;pointer-events:none}
-.hub::before{content:"";position:absolute;inset:0;opacity:0;
-  transition:opacity .38s;background:rgba(6,16,28,.22)}
-.hub.on{pointer-events:auto}
-.hub.on::before{opacity:1}
-.hub .feu{position:absolute;left:0;right:0;bottom:0;
-  top:calc(env(safe-area-inset-top) + 172px);
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:26px 16px calc(env(safe-area-inset-bottom) + 22px);
-  border-radius:22px 22px 0 0;
-  border-top:1.5px solid rgba(190,224,250,.22);
-  background:
-    radial-gradient(120% 38% at 50% 0%, rgba(96,140,176,.24), transparent 68%),
-    linear-gradient(180deg,#153048 0%,#102438 32%,#0b1a2a 66%,#081420 100%);
-  box-shadow:0 -16px 48px rgba(3,10,18,.62);
-  transform:translateY(100%);
-  transition:transform .42s cubic-bezier(.28,.92,.32,1)}
-.hub.on .feu{transform:none}
-.hub .prise{position:absolute;left:50%;top:10px;margin-left:-21px;z-index:3;
-  width:42px;height:4px;border-radius:3px;background:rgba(200,226,246,.28)}
-
-/* le grain, sur la feuille seulement : pas sur le décor derrière */
-.hub .feu::after{content:"";position:absolute;inset:0;pointer-events:none;
-  opacity:.026;
-  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
-  background-size:3px 3px}
-
-/* ---- le salut ---- */
-.hub .salut{display:flex;align-items:center;gap:13px;margin-bottom:16px;
-  position:relative;z-index:1}
-.hub .salut .av{width:50px;height:50px;border-radius:14px;flex:0 0 50px;
-  overflow:hidden;background:linear-gradient(158deg,#44607e,#22334a);
-  border:1.5px solid rgba(226,182,116,.4);
-  box-shadow:0 4px 14px rgba(3,10,18,.55),
-             inset 0 1px 0 rgba(255,255,255,.14),
-             0 0 0 3px rgba(226,182,116,.07)}
-.hub .salut .av svg{width:100%;height:100%;display:block}
-.hub .salut .q{flex:1;min-width:0}
-.hub .salut .q b{display:block;font-size:17px;color:#fff}
-.hub .salut .q span{display:block;font-size:11px;color:rgba(186,208,226,.52);
-  margin-top:3px;font-family:system-ui,sans-serif}
-.hub .salut .eu{text-align:right;flex:0 0 auto}
-.hub .salut .eu b{display:block;font-size:17px;color:#f2ca7c;
-  text-shadow:0 0 20px rgba(240,196,106,.34)}
-.hub .salut .eu span{display:block;font-size:9px;color:rgba(186,208,226,.4);
-  font-family:system-ui,sans-serif;margin-top:2px;letter-spacing:.06em}
-/* la croix pour refermer */
-.hub .fer{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;
-  z-index:3;width:34px;height:34px;border-radius:11px;border:0;cursor:pointer;
-  background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-size:19px;
-  display:none}
-
-/* ---- les jauges ---- */
-.hub .jau{display:flex;gap:9px;margin-bottom:18px;position:relative;z-index:1}
-.hub .jau .j{flex:1;display:flex;align-items:center;gap:8px;
-  padding:8px 12px;border-radius:11px;
-  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
-  border:1px solid rgba(160,196,226,.12);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.hub .jau em{font-style:normal;font-size:11px;flex:0 0 auto}
-.hub .jau .j:nth-child(1) em{color:#8ce0a8}
-.hub .jau .j:nth-child(2) em{color:#f0c46a}
-.hub .jau .ba{flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,.34);
-  overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
-.hub .jau .ba i{display:block;height:100%;border-radius:4px}
-.hub .jau .n{font-size:10.5px;color:rgba(200,220,236,.6);flex:0 0 auto;
-  min-width:26px;text-align:right}
-
-/* ---- le bonus du jour ---- */
-.hub .cad{width:100%;display:flex;align-items:center;gap:13px;padding:14px 16px;
-  margin-bottom:20px;border-radius:14px;cursor:pointer;position:relative;z-index:1;
-  border:1.5px solid rgba(255,232,178,.75);
-  background:linear-gradient(176deg,#fce2a4 0%,#f0c476 42%,#d69f4a 100%);
-  box-shadow:0 5px 0 rgba(132,88,20,.6), 0 9px 26px rgba(214,159,74,.3),
-             inset 0 1px 0 rgba(255,250,232,.66),
-             inset 0 -2px 6px rgba(150,100,26,.2);
-  font-family:'Courier Prime',monospace;transition:transform .1s, box-shadow .1s}
-.hub .cad:active{transform:translateY(3px);
-  box-shadow:0 2px 0 rgba(132,88,20,.6), 0 3px 10px rgba(214,159,74,.24)}
-.hub .cad .ic{width:34px;height:34px;flex:0 0 34px}
-.hub .cad .ic svg{width:100%;height:100%;stroke:#5a4212;fill:none;stroke-width:1.7;
-  stroke-linecap:round;stroke-linejoin:round}
-.hub .cad .t{flex:1;text-align:left}
-.hub .cad .t b{display:block;font-size:15px;color:#3a2804;font-weight:700;
-  text-shadow:0 1px 0 rgba(255,246,220,.34)}
-.hub .cad .t span{display:block;font-size:10.5px;color:rgba(74,52,10,.7);
-  margin-top:3px;font-family:system-ui,sans-serif}
-.hub .cad .fl{font-size:19px;color:#5a4212}
-.hub .cad.pris{opacity:.45;pointer-events:none}
-
-/* ---- les tuiles ---- */
-.hub .grille{display:grid;grid-template-columns:1fr 1fr;gap:11px;
-  position:relative;z-index:1}
-.hub .tu{position:relative;display:flex;flex-direction:column;
-  align-items:flex-start;gap:9px;padding:16px 15px 15px;border-radius:15px;
-  cursor:pointer;min-height:118px;overflow:hidden;
-  border:1.5px solid rgba(150,190,224,.15);
-  background:linear-gradient(158deg,
-    rgba(52,82,114,.8) 0%, rgba(32,56,84,.86) 46%, rgba(20,38,60,.9) 100%);
-  box-shadow:0 4px 0 rgba(5,16,28,.55), 0 8px 22px rgba(3,10,18,.4),
-             inset 0 1px 0 rgba(190,220,244,.13);
-  font-family:'Courier Prime',monospace;
-  transition:transform .1s, box-shadow .1s}
-.hub .tu:active{transform:translateY(3px);
-  box-shadow:0 1px 0 rgba(5,16,28,.55), 0 2px 8px rgba(3,10,18,.4)}
-.hub .tu .ic{width:32px;height:32px}
-.hub .tu .ic svg{width:100%;height:100%;stroke:rgba(206,228,246,.82);fill:none;
-  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.hub .tu b{font-size:14px;color:#fff;line-height:1.2}
-.hub .tu small{font-size:10px;color:rgba(178,204,226,.5);line-height:1.38;
-  font-family:system-ui,sans-serif}
-/* la tuile principale */
-.hub .tu.prem{border-color:rgba(140,196,238,.34);
-  background:linear-gradient(158deg,
-    rgba(46,96,142,.86) 0%, rgba(30,68,106,.9) 52%, rgba(20,46,74,.92) 100%);
-  box-shadow:0 4px 0 rgba(6,22,40,.6), 0 8px 26px rgba(40,100,150,.2),
-             inset 0 1px 0 rgba(190,226,250,.2)}
-.hub .tu.prem .ic svg{stroke:#a8d4f4}
-.hub .tu.prem small{color:rgba(180,214,240,.62)}
-/* celles qui attendent */
-.hub .tu.vif{border-color:rgba(238,190,110,.42);
-  background:linear-gradient(158deg,
-    rgba(74,66,48,.84) 0%, rgba(48,44,34,.88) 50%, rgba(30,30,26,.9) 100%);
-  box-shadow:0 4px 0 rgba(34,26,10,.6), 0 8px 24px rgba(150,112,42,.13),
-             inset 0 1px 0 rgba(255,224,164,.17)}
-.hub .tu.vif .ic svg{stroke:#f6cf86}
-.hub .tu.vif b{color:#fff6e4}
-.hub .tu.vif small{color:rgba(238,198,126,.72)}
-.hub .tu .nb{position:absolute;top:12px;right:13px;min-width:23px;height:23px;
-  border-radius:12px;display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:#3e2c06;padding:0 7px;
-  background:linear-gradient(176deg,#fde6ae,#e0af58);
-  box-shadow:0 2px 7px rgba(4,12,22,.45), inset 0 1px 0 rgba(255,252,240,.6)}
-/* celles qui ne sont pas encore ouvertes */
-.hub .tu.off{cursor:default;box-shadow:none;
-  background:rgba(140,180,214,.035);
-  border:1.5px dashed rgba(150,190,224,.16)}
-.hub .tu.off .ic svg{stroke:rgba(170,200,224,.28)}
-.hub .tu.off b{color:rgba(190,214,234,.36)}
-.hub .tu.off small{color:rgba(170,200,224,.24)}
-/* la tuile large */
-.hub .tu.large{grid-column:1 / -1;flex-direction:row;align-items:center;gap:15px;
-  min-height:0;padding:16px}
-.hub .tu.large .ic{flex:0 0 34px}
-.hub .tu.large .co{flex:1}
-.hub .tu.large b{display:block;font-size:15px}
-.hub .tu.large small{display:block;margin-top:3px}
-.hub .tu.large .fl{color:rgba(255,255,255,.3);font-size:18px}
-
-.hub .pied{text-align:center;font-size:10px;color:rgba(160,192,218,.3);
-  margin-top:22px;font-family:system-ui,sans-serif;position:relative;z-index:1}
-
-</style>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1c3a68">
-<title>Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none}
-html,body{height:100%;overflow:hidden;background:#1c3a68;
-  font-family:'Courier Prime',monospace}
-#sc{position:fixed;inset:0}
-#sc svg{display:block;width:100%;height:100%}
 
 /* ---------- l'avatar, en haut à gauche ---------- */
 .av{position:fixed;z-index:10;
@@ -1258,25 +1092,6 @@ html{font-size:calc(16px * var(--txt, 1))}
   </div>
 </div>
 
-<div class="hub" id="hub">
-  <div class="feu">
-    <span class="prise"></span>
-    <button class="fer" id="hub-fer">×</button>
-
-
-
-  <button class="cad" id="hub-cad">
-    <span class="ic"><svg viewBox="0 0 24 24">
-      <path d="M4 11h16v10H4zM2 7h20v4H2zM12 7v14M12 7S9.5 3 7.5 4.2 9 7 12 7zM12 7s2.5-4 4.5-2.8S15 7 12 7z"/>
-    </svg></span>
-    <span class="t"><b>Le bonus du jour</b><span>Ta prime de quai t'attend</span></span>
-    <span class="fl">›</span>
-  </button>
-
-  <div class="grille" id="hub-tuiles"></div>
-  <p class="pied" id="hub-pied">Battle Dock — Marseille</p>
-  </div>
-</div>
 
 <div class="voile" id="voile"></div>
 
@@ -4427,95 +4242,12 @@ const OU_NOM = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
 /* ============================================================
    LE HUB — ce qui s'ouvre quand on touche l'avatar
    ============================================================ */
-const TUILES = [
-  { k:'mer', prem:true, large:true, t:'Prendre la mer',
-    s:'Barcelone · Palma · Ajaccio',
-    ic:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>',
-    f:() => location.href = 'voyager.html' },
-  { k:'contrats', t:'Les contrats', s:'Ce qu\'on te propose',
-    ic:'<path d="M8 3h8l2 4v14H6V7zM9 11h6M9 15h6M10 3v4h4V3"/>',
-    f:() => { fermerHub(); basculerContrats(true); } },
-  { k:'entrepot', t:'L\'entrepôt', s:'Ce qui attend sur le quai',
-    ic:'<path d="M3 21V9l9-5 9 5v12M3 21h18M8 21v-7h8v7M8 14h8"/>',
-    f:() => { fermerHub(); basculerEntrepot(true); } },
-  { k:'quetes', t:'Tes affaires', s:'Ce que tu as commencé',
-    ic:'<path d="M9 4h6a1 1 0 011 1v1h2v15H6V6h2V5a1 1 0 011-1zM8 6h8M9.5 13l1.6 1.6L14.5 11"/>',
-    f:() => { fermerHub(); basculerQuetes(true); } },
-  { k:'anse', t:'Ton anse', s:'Tes ateliers',
-    ic:'<path d="M4 20V8l6-4 6 4v12M9 20v-5h4v5M4 20h16"/>',
-    f:() => { fermerHub(); basculerChantier(true); } },
-  { k:'barque', t:'Ta barque', s:'Les avirons',
-    ic:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7z"/>',
-    f:() => { fermerHub(); basculerBarque(true); } },
-  { k:'gens', t:'Les gens', s:'Ce qu\'ils pensent de toi',
-    ic:'<circle cx="9" cy="8" r="3.4"/><path d="M2 20v-1.6A4.4 4.4 0 016.4 14h5.2a4.4 4.4 0 014.4 4.4V20M17 5a3.4 3.4 0 010 6.6"/>',
-    f:() => { fermerHub(); basculerGens(true); } },
-  { k:'sacoche', t:'Ta sacoche', s:'Ce que tu portes',
-    ic:'<path d="M5 8h14l-1 12H6zM9 8V5a3 3 0 016 0v3"/>',
-    f:() => { fermerHub(); basculerSacoche(true); } },
-  { k:'fiche', t:'Ta fiche', s:'Ce que tu sais faire',
-    ic:'<circle cx="12" cy="8" r="4"/><path d="M5 21v-2a5 5 0 015-5h4a5 5 0 015 5v2"/>',
-    f:() => { fermerHub(); basculerFiche(true); } },
-  { k:'classement', t:'Le classement', s:'Qui mène la danse',
-    ic:'<path d="M6 20V10M12 20V4M18 20v-7M3 20h18"/>',
-    f:() => { fermerHub(); basculerClassement(true); } }
-];
 
-let hubOuvert = false, hubEtat = {};
 
-function poserHub(d){
-  /* l'entête est celle de l'écran, en haut : le hub n'a plus la sienne */
-  dessinerTuiles();
-}
 
-function dessinerTuiles(){
-  const E = hubEtat;
-  document.getElementById('hub-tuiles').innerHTML = TUILES.map(t => {
-    const n = E[t.k];
-    const vif = n > 0;
-    const cl = 'tu' + (t.prem ? ' prem' : '') + (t.large ? ' large' : '')
-      + (vif ? ' vif' : '') + (t.off ? ' off' : '');
-    if (t.large)
-      return '<div class="' + cl + '" data-k="' + t.k + '">'
-        + '<span class="ic"><svg viewBox="0 0 24 24">' + t.ic + '</svg></span>'
-        + '<span class="co"><b>' + t.t + '</b><small>' + t.s + '</small></span>'
-        + '<span class="fl">›</span></div>';
-    return '<div class="' + cl + '" data-k="' + t.k + '">'
-      + (vif ? '<span class="nb">' + n + '</span>' : '')
-      + '<span class="ic"><svg viewBox="0 0 24 24">' + t.ic + '</svg></span>'
-      + '<b>' + t.t + '</b><small>' + t.s + '</small></div>';
-  }).join('');
-  document.querySelectorAll('#hub-tuiles [data-k]').forEach(el => {
-    const t = TUILES.find(x => x.k === el.dataset.k);
-    if (t && t.f && !t.off) el.onclick = t.f;
-  });
-}
 
-function ouvrirHub(){
-  hubOuvert = true;
-  document.getElementById('hub').classList.add('on');
-  /* on rafraîchit les compteurs à chaque ouverture */
-  BD.agir('ce_qui_attend').then(r => {
-    if (!r || !r.ok) return;
-    const P = r.pastilles || {};
-    hubEtat = { contrats: P.contrats ? (r.contrats || 1) : 0,
-                entrepot: P.entrepot ? 1 : 0,
-                quetes: P.quetes ? 1 : 0 };
-    dessinerTuiles();
-  }).catch(() => {});
-}
-function fermerHub(){
-  hubOuvert = false;
-  document.getElementById('hub').classList.remove('on');
-}
-document.getElementById('hub-fer').onclick = fermerHub;
-document.getElementById('hub').addEventListener('click', e => {
-  if (e.target.id === 'hub') fermerHub();
-});
-/* on referme en touchant le fond, hors des tuiles */
-document.getElementById('hub').onclick = e => {
-  if (e.target.id === 'hub') fermerHub();
-};
+
+
 
 function poserMenu(d){
   const el = document.getElementById('m-liste');
@@ -4580,7 +4312,10 @@ function basculerMenu(forcer){
   document.getElementById('voile').classList.toggle('on', menuOuvert);
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
-document.getElementById('av').onclick = e => { e.stopPropagation(); ouvrirHub(); };
+document.getElementById('av').onclick = e => {
+  e.stopPropagation();
+  location.href = 'hub.html';
+};
 function toutFermer(){ fermerDemande(); basculerQuetes(false); basculerGens(false); basculerSacoche(false); basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
   basculerBarque(false); basculerFiche(false); basculerMenu(false); }
 document.getElementById('voile').onclick = toutFermer;
@@ -4657,11 +4392,23 @@ function poserAvatar(d){
     poserAvatar(d);
     poserBarre(d);
     poserMenu(d);
-  poserHub(d);
     poserBarque(d);
     poserClassement(d);
     poserChantier(d);
     poserBas(d);
+    /* si on revient du hub avec une intention, on l'exécute */
+    try {
+      const q = sessionStorage.getItem('bd-ouvrir');
+      if (q){
+        sessionStorage.removeItem('bd-ouvrir');
+        const OUVRE = { contrats:() => basculerContrats(true),
+          entrepot:() => basculerEntrepot(true), quetes:() => basculerQuetes(true),
+          anse:() => basculerChantier(true), barque:() => basculerBarque(true),
+          gens:() => basculerGens(true), sacoche:() => basculerSacoche(true),
+          fiche:() => basculerFiche(true), classement:() => basculerClassement(true) };
+        if (OUVRE[q]) setTimeout(OUVRE[q], 240);
+      }
+    } catch(e){}
     auRetour();
     poserAttente();
     MOI = d;
