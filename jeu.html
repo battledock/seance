@@ -209,6 +209,44 @@ html,body{margin:0;padding:0;background:#2f5e88;height:100%;overflow:hidden}
 .ent li.loin{opacity:.6}
 .ent li.loin .pr b{color:rgba(255,255,255,.5);font-size:12px}
 
+
+/* ---------- ce qui s'est passé pendant ton absence ---------- */
+.rev{position:fixed;inset:0;z-index:30;display:flex;align-items:center;
+  justify-content:center;padding:26px;
+  background:rgba(8,18,32,.82);backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;transition:opacity .45s}
+.rev.on{opacity:1;pointer-events:auto}
+.rev .ca{width:100%;max-width:330px;border-radius:16px;overflow:hidden;
+  background:rgba(18,32,50,.96);border:1.5px solid rgba(255,255,255,.14);
+  box-shadow:0 18px 54px rgba(4,12,22,.6);
+  transform:translateY(14px) scale(.97);transition:transform .45s}
+.rev.on .ca{transform:none}
+.rev .h{padding:20px 22px 15px;border-bottom:1px solid rgba(255,255,255,.08)}
+.rev .h .su{font-size:8px;letter-spacing:.3em;text-transform:uppercase;
+  color:#f0c46a}
+.rev .h h2{font-size:19px;font-weight:700;margin-top:6px;color:#fff}
+.rev ul{list-style:none;padding:8px 0;margin:0}
+.rev li{display:flex;align-items:flex-start;gap:12px;padding:11px 22px}
+.rev li .ic{flex:0 0 26px;height:26px;border-radius:8px;display:flex;
+  align-items:center;justify-content:center;font-size:13px;
+  background:rgba(255,255,255,.07)}
+.rev li .tx{flex:1;min-width:0}
+.rev li .tx b{display:block;font-size:13px;color:#fff;font-weight:400}
+.rev li .tx b em{color:#8ce0a8;font-style:normal}
+.rev li .tx span{display:block;font-size:10.5px;color:rgba(255,255,255,.42);
+  margin-top:2px;font-family:system-ui,sans-serif}
+.rev li .eu{flex:0 0 auto;font-size:13.5px;color:#8ce0a8;font-weight:700}
+.rev .tot{padding:14px 22px;border-top:1px solid rgba(255,255,255,.08);
+  display:flex;justify-content:space-between;align-items:baseline}
+.rev .tot span{font-size:11px;color:rgba(255,255,255,.5);
+  font-family:system-ui,sans-serif}
+.rev .tot b{font-size:20px;color:#f0c46a}
+.rev button{width:100%;padding:15px;border:0;cursor:pointer;
+  background:rgba(240,196,106,.92);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:14px;font-weight:700;
+  letter-spacing:.03em}
+
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
@@ -1040,6 +1078,20 @@ html{font-size:calc(16px * var(--txt, 1))}
     <button id="b-ent">
       <svg viewBox="0 0 24 24"><path d="M3 21V9l9-5 9 5v12M3 21h18M8 21v-7h8v7M8 14h8"/></svg>
       <span id="b-ent-t">L'entrepôt</span></button>
+  </div>
+</div>
+
+<div class="rev" id="rev">
+  <div class="ca">
+    <div class="h">
+      <p class="su" id="r-su">—</p>
+      <h2 id="r-t">—</h2>
+    </div>
+    <ul id="r-liste"></ul>
+    <div class="tot" id="r-tot" style="display:none">
+      <span>Versé sur ton compte</span><b id="r-eu">—</b>
+    </div>
+    <button id="r-ok">Reprendre le travail</button>
   </div>
 </div>
 
@@ -3996,6 +4048,57 @@ const OU_ALLER = {
   mer:'mer.html', contrats:null   /* les contrats s'ouvrent sur place */
 };
 
+/* ---------- ce qui s'est passé pendant ton absence ---------- */
+async function auRetour(){
+  let r;
+  try { r = await BD.agir('pendant_ton_absence'); } catch(e){ return; }
+  if (!r || !r.ok || r.rien) return;
+
+  const F = r.faits || [];
+  if (!F.length) return;
+
+  const j = r.jours, h = r.heures;
+  document.getElementById('r-su').textContent =
+    j >= 1 ? 'Tu as été absent ' + j + ' jour' + (j > 1 ? 's' : '')
+           : 'Tu as été absent ' + h + ' heures';
+  document.getElementById('r-t').textContent =
+    j >= 3 ? 'Le port a tourné sans toi'
+    : j >= 1 ? 'Pendant ce temps' : 'À ton retour';
+
+  const ICONES = { porte:'⚓', prise:'◇', repos:'⚡', contrats:'▤' };
+  let h2 = '';
+  F.forEach(f => {
+    let t = '', s2 = '', eu = '';
+    if (f.quoi === 'porte'){
+      t = '<em>' + f.qui + '</em> a porté ta caisse';
+      s2 = f.nom + ' — livrée';
+      eu = '+' + f.euros + ' €';
+    } else if (f.quoi === 'prise'){
+      t = f.combien > 1 ? f.combien + ' de tes caisses sont parties'
+                        : 'Une de tes caisses est partie';
+      s2 = 'Quelqu\'un s\'en charge';
+    } else if (f.quoi === 'repos'){
+      t = 'Tu t\'es reposé';
+      s2 = '+' + f.gagne + ' d\'énergie — tu es à ' + f.total;
+    } else if (f.quoi === 'contrats'){
+      t = 'De nouveaux contrats';
+      s2 = 'Sur le quai, comme chaque jour';
+    }
+    h2 += '<li><span class="ic">' + (ICONES[f.quoi] || '·') + '</span>'
+      + '<span class="tx"><b>' + t + '</b><span>' + s2 + '</span></span>'
+      + (eu ? '<span class="eu">' + eu + '</span>' : '') + '</li>';
+  });
+  document.getElementById('r-liste').innerHTML = h2;
+
+  if (r.euros > 0){
+    document.getElementById('r-tot').style.display = 'flex';
+    document.getElementById('r-eu').textContent = r.euros + ' €';
+  }
+  document.getElementById('rev').classList.add('on');
+}
+document.getElementById('r-ok').onclick = () =>
+  document.getElementById('rev').classList.remove('on');
+
 async function poserAttente(){
   let r;
   try { r = await BD.agir('ce_qui_attend'); } catch(e){ return; }
@@ -4278,6 +4381,7 @@ function poserAvatar(d){
     poserClassement(d);
     poserChantier(d);
     poserBas(d);
+    auRetour();
     poserAttente();
     MOI = d;
     chercherLesAutres().then(n => { if (n) dessiner(); });
