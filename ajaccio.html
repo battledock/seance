@@ -1588,6 +1588,8 @@ const LIEUX = [
     if (!d){ location.href = 'index.html'; return; }
   } catch(e){ return; }
   if (d.parti_le){ location.href = 'mer.html'; return; }
+  if (d.port === 'barcelone'){ location.href = 'barcelone.html'; return; }
+  if (d.port === 'palma'){ location.href = 'palma.html'; return; }
   if (d.port !== 'ajaccio'){ location.href = 'jeu.html'; return; }
 
 
