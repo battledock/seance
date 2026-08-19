@@ -1108,7 +1108,8 @@ async function poserContrats(d, forcer){
       + '</div></li>';
   }).join('');
 
-  const OU = { anse:'chez toi', barcelone:'à Barcelone', palma:'à Palma' };
+  const OU = { anse:'chez toi', barcelone:'à Barcelone', palma:'à Palma',
+               ajaccio:'à Ajaccio' };
   const ou2 = document.getElementById('k-ou');
   if (ou2) ou2.textContent = r.depuis === 'barcelone'
     ? 'Ce que Miquel te confie' : "Ce qu'on te propose aujourd'hui";
@@ -1168,6 +1169,8 @@ const LIEUX = [
     if (!d){ location.href = 'index.html'; return; }
   } catch(e){ return; }
   if (d.parti_le){ location.href = 'mer.html'; return; }
+  if (d.port === 'ajaccio'){ location.href = 'ajaccio.html'; return; }
+  if (d.port === 'barcelone'){ location.href = 'barcelone.html'; return; }
   if (d.port !== 'palma'){ location.href = 'jeu.html'; return; }
 
   document.getElementById('eu').textContent =
