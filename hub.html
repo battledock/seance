@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#102438">
+<title>Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#0a1522;
+  font-family:'Courier Prime',monospace;color:#fff}
+
+/* le fond : l'eau du port */
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(120% 46% at 50% -6%, rgba(96,140,176,.34), transparent 66%),
+    radial-gradient(90% 30% at 50% 2%, rgba(210,168,110,.11), transparent 70%),
+    radial-gradient(80% 50% at 12% 104%, rgba(30,72,108,.34), transparent 62%),
+    linear-gradient(180deg,#153048 0%,#102438 34%,#0b1a2a 68%,#081420 100%)}
+
+.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:calc(env(safe-area-inset-top) + 16px) 16px
+          calc(env(safe-area-inset-bottom) + 22px)}
+.pont::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.026;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+
+/* le retour à la rade */
+.retour{display:flex;align-items:center;gap:8px;margin-bottom:16px;
+  padding:9px 15px;border-radius:22px;cursor:pointer;
+  border:1.5px solid rgba(160,200,230,.2);background:rgba(255,255,255,.06);
+  font-family:'Courier Prime',monospace;font-size:12px;
+  color:rgba(224,238,250,.8)}
+.retour:active{background:rgba(255,255,255,.11)}
+
+
+/* le grain, sur la feuille seulement : pas sur le décor derrière */
+.pont::after{content:"";position:absolute;inset:0;pointer-events:none;
+  opacity:.026;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+
+/* ---- le salut ---- */
+.salut{display:flex;align-items:center;gap:13px;margin-bottom:16px;
+  position:relative;z-index:1}
+.salut .av{width:50px;height:50px;border-radius:14px;flex:0 0 50px;
+  overflow:hidden;background:linear-gradient(158deg,#44607e,#22334a);
+  border:1.5px solid rgba(226,182,116,.4);
+  box-shadow:0 4px 14px rgba(3,10,18,.55),
+             inset 0 1px 0 rgba(255,255,255,.14),
+             0 0 0 3px rgba(226,182,116,.07)}
+.salut .av svg{width:100%;height:100%;display:block}
+.salut .q{flex:1;min-width:0}
+.salut .q b{display:block;font-size:17px;color:#fff}
+.salut .q span{display:block;font-size:11px;color:rgba(186,208,226,.52);
+  margin-top:3px;font-family:system-ui,sans-serif}
+.salut .eu{text-align:right;flex:0 0 auto}
+.salut .eu b{display:block;font-size:17px;color:#f2ca7c;
+  text-shadow:0 0 20px rgba(240,196,106,.34)}
+.salut .eu span{display:block;font-size:9px;color:rgba(186,208,226,.4);
+  font-family:system-ui,sans-serif;margin-top:2px;letter-spacing:.06em}
+/* la croix pour refermer */
+.fer{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;
+  z-index:3;width:34px;height:34px;border-radius:11px;border:0;cursor:pointer;
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-size:19px;
+  display:none}
+
+/* ---- les jauges ---- */
+.jau{display:flex;gap:9px;margin-bottom:18px;position:relative;z-index:1}
+.jau .j{flex:1;display:flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:11px;
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+  border:1px solid rgba(160,196,226,.12);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.jau em{font-style:normal;font-size:11px;flex:0 0 auto}
+.jau .j:nth-child(1) em{color:#8ce0a8}
+.jau .j:nth-child(2) em{color:#f0c46a}
+.jau .ba{flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,.34);
+  overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.jau .ba i{display:block;height:100%;border-radius:4px}
+.jau .n{font-size:10.5px;color:rgba(200,220,236,.6);flex:0 0 auto;
+  min-width:26px;text-align:right}
+
+/* ---- le bonus du jour ---- */
+.cad{width:100%;display:flex;align-items:center;gap:13px;padding:14px 16px;
+  margin-bottom:20px;border-radius:14px;cursor:pointer;position:relative;z-index:1;
+  border:1.5px solid rgba(255,232,178,.75);
+  background:linear-gradient(176deg,#fce2a4 0%,#f0c476 42%,#d69f4a 100%);
+  box-shadow:0 5px 0 rgba(132,88,20,.6), 0 9px 26px rgba(214,159,74,.3),
+             inset 0 1px 0 rgba(255,250,232,.66),
+             inset 0 -2px 6px rgba(150,100,26,.2);
+  font-family:'Courier Prime',monospace;transition:transform .1s, box-shadow .1s}
+.cad:active{transform:translateY(3px);
+  box-shadow:0 2px 0 rgba(132,88,20,.6), 0 3px 10px rgba(214,159,74,.24)}
+.cad .ic{width:34px;height:34px;flex:0 0 34px}
+.cad .ic svg{width:100%;height:100%;stroke:#5a4212;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.cad .t{flex:1;text-align:left}
+.cad .t b{display:block;font-size:15px;color:#3a2804;font-weight:700;
+  text-shadow:0 1px 0 rgba(255,246,220,.34)}
+.cad .t span{display:block;font-size:10.5px;color:rgba(74,52,10,.7);
+  margin-top:3px;font-family:system-ui,sans-serif}
+.cad .fl{font-size:19px;color:#5a4212}
+.cad.pris{opacity:.45;pointer-events:none}
+
+/* ---- les tuiles ---- */
+.grille{display:grid;grid-template-columns:1fr 1fr;gap:11px;
+  position:relative;z-index:1}
+.tu{position:relative;display:flex;flex-direction:column;
+  align-items:flex-start;gap:9px;padding:16px 15px 15px;border-radius:15px;
+  cursor:pointer;min-height:118px;overflow:hidden;
+  border:1.5px solid rgba(150,190,224,.15);
+  background:linear-gradient(158deg,
+    rgba(52,82,114,.8) 0%, rgba(32,56,84,.86) 46%, rgba(20,38,60,.9) 100%);
+  box-shadow:0 4px 0 rgba(5,16,28,.55), 0 8px 22px rgba(3,10,18,.4),
+             inset 0 1px 0 rgba(190,220,244,.13);
+  font-family:'Courier Prime',monospace;
+  transition:transform .1s, box-shadow .1s}
+.tu:active{transform:translateY(3px);
+  box-shadow:0 1px 0 rgba(5,16,28,.55), 0 2px 8px rgba(3,10,18,.4)}
+.tu .ic{width:32px;height:32px}
+.tu .ic svg{width:100%;height:100%;stroke:rgba(206,228,246,.82);fill:none;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tu b{font-size:14px;color:#fff;line-height:1.2}
+.tu small{font-size:10px;color:rgba(178,204,226,.5);line-height:1.38;
+  font-family:system-ui,sans-serif}
+/* la tuile principale */
+.tu.prem{border-color:rgba(140,196,238,.34);
+  background:linear-gradient(158deg,
+    rgba(46,96,142,.86) 0%, rgba(30,68,106,.9) 52%, rgba(20,46,74,.92) 100%);
+  box-shadow:0 4px 0 rgba(6,22,40,.6), 0 8px 26px rgba(40,100,150,.2),
+             inset 0 1px 0 rgba(190,226,250,.2)}
+.tu.prem .ic svg{stroke:#a8d4f4}
+.tu.prem small{color:rgba(180,214,240,.62)}
+/* celles qui attendent */
+.tu.vif{border-color:rgba(238,190,110,.42);
+  background:linear-gradient(158deg,
+    rgba(74,66,48,.84) 0%, rgba(48,44,34,.88) 50%, rgba(30,30,26,.9) 100%);
+  box-shadow:0 4px 0 rgba(34,26,10,.6), 0 8px 24px rgba(150,112,42,.13),
+             inset 0 1px 0 rgba(255,224,164,.17)}
+.tu.vif .ic svg{stroke:#f6cf86}
+.tu.vif b{color:#fff6e4}
+.tu.vif small{color:rgba(238,198,126,.72)}
+.tu .nb{position:absolute;top:12px;right:13px;min-width:23px;height:23px;
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:#3e2c06;padding:0 7px;
+  background:linear-gradient(176deg,#fde6ae,#e0af58);
+  box-shadow:0 2px 7px rgba(4,12,22,.45), inset 0 1px 0 rgba(255,252,240,.6)}
+/* celles qui ne sont pas encore ouvertes */
+.tu.off{cursor:default;box-shadow:none;
+  background:rgba(140,180,214,.035);
+  border:1.5px dashed rgba(150,190,224,.16)}
+.tu.off .ic svg{stroke:rgba(170,200,224,.28)}
+.tu.off b{color:rgba(190,214,234,.36)}
+.tu.off small{color:rgba(170,200,224,.24)}
+/* la tuile large */
+.tu.large{grid-column:1 / -1;flex-direction:row;align-items:center;gap:15px;
+  min-height:0;padding:16px}
+.tu.large .ic{flex:0 0 34px}
+.tu.large .co{flex:1}
+.tu.large b{display:block;font-size:15px}
+.tu.large small{display:block;margin-top:3px}
+.tu.large .fl{color:rgba(255,255,255,.3);font-size:18px}
+
+.pied{text-align:center;font-size:10px;color:rgba(160,192,218,.3);
+  margin-top:22px;font-family:system-ui,sans-serif;position:relative;z-index:1}
+
+</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1c3a68">
+<title>Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#1c3a68;
+  font-family:'Courier Prime',monospace}
+#sc{position:fixed;inset:0}
+#sc svg{display:block;width:100%;height:100%}
+
+</style>
+</head>
+<body>
+
+<div class="pont">
+  <button class="retour" id="retour">‹ La rade</button>
+
+  <div class="salut">
+    <span class="av" id="hub-av"></span>
+    <span class="q"><b id="hub-nom">—</b><span id="hub-ou">—</span></span>
+    <span class="eu"><b id="hub-eu">—</b><span>en caisse</span></span>
+  </div>
+
+  <div class="jau">
+    <span class="j"><em>⚡</em><span class="ba"><i id="hub-nrj" style="width:0%;
+      background:linear-gradient(90deg,#3f8a5e,#8ce0a8)"></i></span>
+      <span class="n" id="hub-nrjn">—</span></span>
+    <span class="j"><em>▦</em><span class="ba"><i id="hub-cale" style="width:0%;
+      background:linear-gradient(90deg,#a87e34,#f0c46a)"></i></span>
+      <span class="n" id="hub-calen">—</span></span>
+  </div>
+
+  <button class="cad" id="cadeau">
+    <span class="ic"><svg viewBox="0 0 24 24">
+      <path d="M4 11h16v10H4zM2 7h20v4H2zM12 7v14M12 7S9.5 3 7.5 4.2 9 7 12 7zM12 7s2.5-4 4.5-2.8S15 7 12 7z"/>
+    </svg></span>
+    <span class="t"><b>Le bonus du jour</b><span>Ta prime de quai t'attend</span></span>
+    <span class="fl">›</span>
+  </button>
+
+  <div class="grille" id="tuiles"></div>
+  <p class="pied" id="pied">Battle Dock — Marseille</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=2"></script>
+<script>
+const PORTS_N = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
+                  palma:'Palma', ajaccio:'Ajaccio' };
+const PALIERS_B = [
+  { n:1,  nom:"La coque nue",        prix:0,      places:1, kg:40,  vit:1.0,
+    d:"Trois bordages et rien d'autre. Elle flotte, c'est déjà ça." },
+  { n:2,  nom:"Le calfatage",        prix:900,    places:1, kg:45,  vit:1.0,
+    d:"Étoupe et goudron dans les coutures. Elle ne prend plus l'eau." },
+  { n:3,  nom:"Le banc de nage",     prix:1400,   places:1, kg:50,  vit:1.1,
+    d:"On peut ramer assis. Ça change tout." },
+  { n:4,  nom:"Les avirons",         prix:2200,   places:2, kg:60,  vit:1.3,
+    d:"Deux avirons de frêne et leurs tolets." },
+  { n:5,  nom:"Le plat-bord",        prix:3400,   places:2, kg:70,  vit:1.3,
+    d:"Un liston tout autour. La coque ne travaille plus." },
+  { n:6,  nom:"Le pontage avant",    prix:5000,   places:3, kg:85,  vit:1.4,
+    d:"Un demi-pont à l'avant. Les caisses restent au sec." },
+  { n:7,  nom:"Le mât de fortune",   prix:7200,   places:3, kg:95,  vit:1.7,
+    d:"Une perche et un bout de toile. Ça tire quand le vent veut bien." },
+  { n:8,  nom:"La voile latine",     prix:10000,  places:4, kg:110, vit:2.2,
+    d:"Antenne et voile triangulaire. La vraie voile d'ici." },
+  { n:9,  nom:"Le safran",           prix:13500,  places:4, kg:120, vit:2.3,
+    d:"Un gouvernail et sa barre. Tu choisis où tu vas." },
+  { n:10, nom:"La quille lestée",    prix:18000,  places:5, kg:140, vit:2.5,
+    d:"Du plomb sous la quille. Elle ne se couche plus." },
+  { n:11, nom:"Le tillac",           prix:23000,  places:6, kg:170, vit:2.6,
+    d:"Un pont continu. On marche dessus sans regarder ses pieds." },
+  { n:12, nom:"La cale fermée",      prix:29000,  places:8, kg:220, vit:2.6,
+    d:"Un panneau, une cale étanche. Le double de marchandise." },
+  { n:13, nom:"Le foc",              prix:36000,  places:8, kg:240, vit:3.1,
+    d:"Un beaupré et un foc. Elle remonte enfin au vent." },
+  { n:14, nom:"Le rouf",             prix:44000,  places:9, kg:270, vit:3.1,
+    d:"Un abri sur le pont. On peut dormir à bord." },
+  { n:15, nom:"Le second mât",       prix:54000,  places:10, kg:310, vit:3.6,
+    d:"Un tapecul à l'arrière. Deux voiles valent mieux qu'une." },
+  { n:16, nom:"Le bordé doublé",     prix:66000,  places:12, kg:380, vit:3.6,
+    d:"Une seconde peau de bois. Elle encaisse le mauvais temps." },
+  { n:17, nom:"Le treuil",           prix:80000,  places:14, kg:450, vit:3.7,
+    d:"Un cabestan pour hisser seul. Plus besoin d'être trois." },
+  { n:18, nom:"La chaloupe",         prix:96000,  places:15, kg:500, vit:3.7,
+    d:"Une annexe sur le pont. On accoste où il n'y a pas de quai." },
+  { n:19, nom:"Le pavillon",         prix:115000, places:16, kg:560, vit:3.8,
+    d:"Tes couleurs en tête de mât. On te reconnaît de loin." },
+  { n:20, nom:"Le grand caboteur",   prix:140000, places:20, kg:700, vit:4.2,
+    d:"Coque doublée, trois voiles, un nom peint sur l'étrave. Ce n'est plus une barque." }
+];
+
+function euro(v){
+  return Number(v || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' €';
+}
+
+/* chaque tuile renvoie vers la rade, en demandant d'y ouvrir un panneau */
+function aller(quoi){
+  try { sessionStorage.setItem('bd-ouvrir', quoi); } catch(e){}
+  location.href = 'jeu.html';
+}
+
+const TUILES = [
+  { k:'mer', prem:true, large:true, t:'Prendre la mer',
+    s:'Barcelone · Palma · Ajaccio',
+    ic:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>',
+    f:() => location.href = 'voyager.html' },
+  { k:'contrats', t:'Les contrats', s:'Ce qu\'on te propose',
+    ic:'<path d="M8 3h8l2 4v14H6V7zM9 11h6M9 15h6M10 3v4h4V3"/>',
+    f:() => aller('contrats') },
+  { k:'entrepot', t:'L\'entrepôt', s:'Ce qui attend sur le quai',
+    ic:'<path d="M3 21V9l9-5 9 5v12M3 21h18M8 21v-7h8v7M8 14h8"/>',
+    f:() => aller('entrepot') },
+  { k:'quetes', t:'Tes affaires', s:'Ce que tu as commencé',
+    ic:'<path d="M9 4h6a1 1 0 011 1v1h2v15H6V6h2V5a1 1 0 011-1zM8 6h8M9.5 13l1.6 1.6L14.5 11"/>',
+    f:() => aller('quetes') },
+  { k:'anse', t:'Ton anse', s:'Tes ateliers',
+    ic:'<path d="M4 20V8l6-4 6 4v12M9 20v-5h4v5M4 20h16"/>',
+    f:() => aller('anse') },
+  { k:'barque', t:'Ta barque', s:'Les avirons',
+    ic:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7z"/>',
+    f:() => aller('barque') },
+  { k:'gens', t:'Les gens', s:'Ce qu\'ils pensent de toi',
+    ic:'<circle cx="9" cy="8" r="3.4"/><path d="M2 20v-1.6A4.4 4.4 0 016.4 14h5.2a4.4 4.4 0 014.4 4.4V20M17 5a3.4 3.4 0 010 6.6"/>',
+    f:() => aller('gens') },
+  { k:'sacoche', t:'Ta sacoche', s:'Ce que tu portes',
+    ic:'<path d="M5 8h14l-1 12H6zM9 8V5a3 3 0 016 0v3"/>',
+    f:() => aller('sacoche') },
+  { k:'fiche', t:'Ta fiche', s:'Ce que tu sais faire',
+    ic:'<circle cx="12" cy="8" r="4"/><path d="M5 21v-2a5 5 0 015-5h4a5 5 0 015 5v2"/>',
+    f:() => aller('fiche') },
+  { k:'classement', t:'Le classement', s:'Qui mène la danse',
+    ic:'<path d="M6 20V10M12 20V4M18 20v-7M3 20h18"/>',
+    f:() => aller('classement') }
+];
+
+let hubEtat = {};
+
+function dessinerTuiles(){
+  const E = hubEtat;
+  document.getElementById('tuiles').innerHTML = TUILES.map(t => {
+    const n = E[t.k];
+    const vif = n > 0;
+    const cl = 'tu' + (t.prem ? ' prem' : '') + (t.large ? ' large' : '')
+      + (vif ? ' vif' : '') + (t.off ? ' off' : '');
+    if (t.large)
+      return '<div class="' + cl + '" data-k="' + t.k + '">'
+        + '<span class="ic"><svg viewBox="0 0 24 24">' + t.ic + '</svg></span>'
+        + '<span class="co"><b>' + t.t + '</b><small>' + t.s + '</small></span>'
+        + '<span class="fl">›</span></div>';
+    return '<div class="' + cl + '" data-k="' + t.k + '">'
+      + (vif ? '<span class="nb">' + n + '</span>' : '')
+      + '<span class="ic"><svg viewBox="0 0 24 24">' + t.ic + '</svg></span>'
+      + '<b>' + t.t + '</b><small>' + t.s + '</small></div>';
+  }).join('');
+  document.querySelectorAll('#tuiles [data-k]').forEach(el => {
+    const t = TUILES.find(x => x.k === el.dataset.k);
+    if (t && t.f && !t.off) el.onclick = t.f;
+  });
+}
+
+document.getElementById('retour').onclick = () => location.href = 'jeu.html';
+
+(async () => {
+  try {
+    const d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+
+    document.getElementById('hub-av').innerHTML = BD.avatarSVG(d);
+    document.getElementById('hub-nom').textContent = d.pseudo || '';
+    document.getElementById('hub-ou').textContent =
+      (PORTS_N[d.port] || 'En mer') + ' · niveau ' + (d.niveau || 1);
+    document.getElementById('hub-eu').textContent = euro(d.euros);
+
+    const nrj = Number(d.energie ?? 100), nmax = Number(d.energie_max || 100);
+    document.getElementById('hub-nrj').style.width =
+      Math.min(100, nrj / nmax * 100).toFixed(0) + '%';
+    document.getElementById('hub-nrjn').textContent = Math.round(nrj);
+
+    const pal = PALIERS_B[Math.max(0, (d.barque || 1) - 1)];
+    const p = (pal ? pal.places : 1) + (d.cale_bonus || 0);
+    const occ = (d.cale || []).reduce((n, e) => n + (+e.places || 1), 0);
+    document.getElementById('hub-cale').style.width =
+      (p ? occ / p * 100 : 0).toFixed(0) + '%';
+    document.getElementById('hub-calen').textContent = occ + '/' + p;
+
+    dessinerTuiles();
+
+    /* les compteurs */
+    const r = await BD.agir('ce_qui_attend');
+    if (r && r.ok){
+      const P = r.pastilles || {};
+      hubEtat = { contrats: P.contrats ? (r.contrats || 1) : 0,
+                  entrepot: P.entrepot ? 1 : 0,
+                  quetes: P.quetes ? 1 : 0 };
+      dessinerTuiles();
+    }
+  } catch(e){
+    console.warn(e);
+    dessinerTuiles();
+  }
+})();
+</script>
+</body>
+</html>
