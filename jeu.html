@@ -666,9 +666,9 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
   text-align:center;padding:5px 2px 2.4px;font-weight:700}
 
 /* ---------- le ciel ---------- */
-.nuages g{animation:derive 260s linear infinite}
+.nuages{animation:derive 260s linear infinite}
 @keyframes derive{to{transform:translateX(680px)}}
-.etoile{animation:scint 4s ease-in-out infinite}
+.etoiles{animation:scint 4s ease-in-out infinite}
 .e1{animation-duration:5.6s;animation-delay:-1.4s}
 .e2{animation-duration:3.2s;animation-delay:-2.6s}
 .e3{animation-duration:6.8s;animation-delay:-.7s}
@@ -1122,12 +1122,18 @@ function ciel(){
   }
   s += `</g>`;
 
-  /* quelques étoiles qui s'éteignent, tout en haut */
-  for (let i = 0; i < 22; i++){
-    const y = HAUT + rnd(i*17+9) * 160;
-    s += `<circle class="etoile e${i%4}" cx="${(rnd(i*19+2)*W).toFixed(0)}" cy="${y.toFixed(0)}"
-      r="${(.5 + rnd(i*23+7)*.7).toFixed(2)}" fill="#fff"
-      opacity="${(.5 * (1 - (y - HAUT) / 200)).toFixed(2)}"/>`;
+  /* quelques étoiles qui s'éteignent, tout en haut.
+     Quatre groupes animés, pas vingt-deux. */
+  {
+    const ET = ['', '', '', ''];
+    for (let i = 0; i < 22; i++){
+      const y = HAUT + rnd(i*17+9) * 160;
+      const r = .5 + rnd(i*23+7)*.7;
+      const x = rnd(i*19+2) * W;
+      ET[i % 4] += `M${(x-r).toFixed(1)} ${y.toFixed(1)}a${r.toFixed(2)} ${r.toFixed(2)} 0 1 0 ${(r*2).toFixed(2)} 0a${r.toFixed(2)} ${r.toFixed(2)} 0 1 0 ${(-r*2).toFixed(2)} 0`;
+    }
+    ET.forEach((p, n) => { if (p) s += `<path class="etoiles e${n}" d="${p}"
+      fill="#fff" opacity=".3"/>`; });
   }
 
   /* le disque, posé juste au-dessus de l'horizon */
@@ -1168,19 +1174,24 @@ function eau(){
     });
   s += `</g>`;
 
-  /* les paillettes : de plus en plus grandes en approchant */
-  for (let i = 0; i < 240; i++){
-    const t = Math.pow(rnd(i*3+1), .7);
-    const y = yh + 2 + t * (yb - yh - 4);
-    const etal = 16 + t * 138;
-    const x = SOLEIL.x + (rnd(i*7+2) - .5) * 2 * etal;
-    const w = (1.2 + t * 15) * (.35 + rnd(i*11+3) * 1.05);
-    const h = Math.max(.5, (.4 + t * 1.9) * (.5 + rnd(i*13+4)));
-    const op = (.24 + rnd(i*17+5) * .58) * Math.pow(Math.max(0, 1 - Math.abs(x - SOLEIL.x) / (etal * 1.1)), 1.5);
-    if (op <= .04) continue;
-    s += `<rect class="paill p${i%6}" x="${(x-w/2).toFixed(1)}" y="${y.toFixed(1)}"
-      width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="${(h/2).toFixed(1)}"
-      fill="${i % 5 ? '#ffe9b4' : '#fffdf0'}" opacity="${op.toFixed(2)}"/>`;
+  /* les paillettes : on les rassemble en six groupes, chacun animé une fois.
+     Six animations au lieu de deux cent quarante. */
+  {
+    const grp = ['', '', '', '', '', ''];
+    for (let i = 0; i < 200; i++){
+      const t = Math.pow(rnd(i*3+1), .7);
+      const y = yh + 2 + t * (yb - yh - 4);
+      const etal = 16 + t * 138;
+      const x = SOLEIL.x + (rnd(i*7+2) - .5) * 2 * etal;
+      const w = (1.2 + t * 15) * (.35 + rnd(i*11+3) * 1.05);
+      const h = Math.max(.5, (.4 + t * 1.9) * (.5 + rnd(i*13+4)));
+      const op = (.24 + rnd(i*17+5) * .58)
+        * Math.pow(Math.max(0, 1 - Math.abs(x - SOLEIL.x) / (etal * 1.1)), 1.5);
+      if (op <= .06) continue;
+      grp[i % 6] += `M${(x-w/2).toFixed(1)} ${y.toFixed(1)}h${w.toFixed(1)}v${h.toFixed(1)}h${(-w).toFixed(1)}z`;
+    }
+    grp.forEach((p, n) => { if (p) s += `<path class="paill p${n}" d="${p}"
+      fill="#ffe9b4" opacity=".5"/>`; });
   }
 
   /* la houle : des traits qui s'espacent en approchant */
@@ -1307,7 +1318,7 @@ function marseilleFond(){
     /* le bâti : dense au pied, il se raréfie en montant */
     const dm = 1250, hm = px(6.4, dm);
     const M = [];
-    for (let i = 0; i < 420; i++){
+    for (let i = 0; i < 190; i++){
       const x = xg - 212 + rnd(i*5+2) * 432;
       const k = Math.max(0, 1 - Math.abs(x - xg) / 214);
       /* l'exposant tasse tout vers le bas */
@@ -1317,18 +1328,21 @@ function marseilleFond(){
     }
     /* on peint du haut vers le bas : les proches masquent les lointaines */
     M.sort((a, b) => a[1] - b[1]);
+    /* on regroupe les immeubles par teinte : quelques tracés au lieu de 840
+       rectangles. L'œil ne voit pas la différence, le navigateur si. */
+    const murs = ['', '', '', ''], toits = ['', '', '', ''];
     M.forEach(([x, ys, i]) => {
       const kk = Math.max(0, 1 - Math.abs(x - SOLEIL.x) / 300);
       const w = hm * (1.5 + rnd(i*3+1) * 1.4), h = hm * (.8 + rnd(i*7+5) * .8);
-      s += `<rect x="${x.toFixed(1)}" y="${(ys-h).toFixed(1)}" width="${w.toFixed(1)}"
-        height="${h.toFixed(1)}" fill="${mel('#4e5c74', '#e8b88c', .22 + kk*.44)}"
-        opacity="${(.62+rnd(i+7)*.34).toFixed(2)}"/>`;
-      /* le toit de tuiles, qui prend le matin */
-      s += `<rect x="${(x-hm*.09).toFixed(1)}" y="${(ys-h).toFixed(1)}"
-        width="${(w+hm*.18).toFixed(1)}" height="${(hm*.19).toFixed(1)}"
-        fill="${mel('#7d6a62','#ffc890', .26 + kk*.5)}"
-        opacity="${(.5+rnd(i+9)*.36).toFixed(2)}"/>`;
+      /* quatre niveaux de lumière suffisent à donner la profondeur */
+      const n = Math.min(3, Math.floor(kk * 4));
+      murs[n] += `M${x.toFixed(1)} ${(ys-h).toFixed(1)}h${w.toFixed(1)}v${h.toFixed(1)}h${(-w).toFixed(1)}z`;
+      toits[n] += `M${(x-hm*.09).toFixed(1)} ${(ys-h).toFixed(1)}h${(w+hm*.18).toFixed(1)}v${(hm*.19).toFixed(1)}h${(-(w+hm*.18)).toFixed(1)}z`;
     });
+    murs.forEach((p, n) => { if (p) s += `<path d="${p}"
+      fill="${mel('#4e5c74', '#e8b88c', .22 + (n/3)*.44)}" opacity=".82"/>`; });
+    toits.forEach((p, n) => { if (p) s += `<path d="${p}"
+      fill="${mel('#7d6a62','#ffc890', .26 + (n/3)*.5)}" opacity=".7"/>`; });
     s += `</g>`;
   }
 
@@ -2154,6 +2168,7 @@ function pave(){
   /* --- le pavage : chaque pavé est un vrai carré posé au sol --- */
   const PAVE = .26;                       /* un pavé fait 26 cm de côté */
   let dr = D_BORD, i = 0;
+  const PAV = ['', '', '', '', ''];
   while (dr > 11.4 && i < 40){
     const dr2 = dr - PAVE;
     const y1 = projY(dr) + (i === 0 ? hm * 1.9 : 0), y2 = projY(dr2);
@@ -2172,19 +2187,24 @@ function pave(){
       if (xb1 < -30 && xb2 < -30) continue;
       if (xa1 > W + 30 && xa2 > W + 30) continue;
       const t = rnd2(i, c + 60);
-      s += `<path d="M${xa1.toFixed(1)} ${y1.toFixed(1)} L${xb1.toFixed(1)} ${y1.toFixed(1)}
-        L${xb2.toFixed(1)} ${y2.toFixed(1)} L${xa2.toFixed(1)} ${y2.toFixed(1)} Z"
-        fill="${t > .72 ? '#e2d6b8' : t > .48 ? '#d0c4a4' : t > .24 ? '#bfb192' : '#b2a586'}"
-        opacity="${(.7+t*.28).toFixed(2)}"/>`;
+      /* on accumule dans quatre tracés selon la teinte, au lieu d'un
+         élément par pavé : trois mille formes deviennent cinq. */
+      const n2 = t > .72 ? 0 : t > .48 ? 1 : t > .24 ? 2 : 3;
+      PAV[n2] += `M${xa1.toFixed(1)} ${y1.toFixed(1)}L${xb1.toFixed(1)} ${y1.toFixed(1)}`
+        + `L${xb2.toFixed(1)} ${y2.toFixed(1)}L${xa2.toFixed(1)} ${y2.toFixed(1)}Z`;
       /* l'arête du haut, qui prend le rasant */
       if (y2 - y1 > 3)
-        s += `<path d="M${xa1.toFixed(1)} ${y1.toFixed(1)} L${xb1.toFixed(1)} ${y1.toFixed(1)}
-          L${(xb1 + (xb2-xb1)*.24).toFixed(1)} ${(y1 + (y2-y1)*.24).toFixed(1)}
-          L${(xa1 + (xa2-xa1)*.24).toFixed(1)} ${(y1 + (y2-y1)*.24).toFixed(1)} Z"
-          fill="#ffeec8" opacity="${(.16+t*.16).toFixed(2)}"/>`;
+        PAV[4] += `M${xa1.toFixed(1)} ${y1.toFixed(1)}L${xb1.toFixed(1)} ${y1.toFixed(1)}`
+          + `L${(xb1 + (xb2-xb1)*.24).toFixed(1)} ${(y1 + (y2-y1)*.24).toFixed(1)}`
+          + `L${(xa1 + (xa2-xa1)*.24).toFixed(1)} ${(y1 + (y2-y1)*.24).toFixed(1)}Z`;
     }
     dr = dr2; i++;
   }
+  /* on pose les cinq tracés d'un coup */
+  ['#e2d6b8', '#d0c4a4', '#bfb192', '#b2a586'].forEach((c, n2) => {
+    if (PAV[n2]) s += `<path d="${PAV[n2]}" fill="${c}" opacity=".84"/>`;
+  });
+  if (PAV[4]) s += `<path d="${PAV[4]}" fill="#ffeec8" opacity=".24"/>`;
 
   /* --- les rails de portique, enfoncés dans le pavage --- */
   /* deux rails écartés de 6 m, qui fuient vers l'horizon */
