@@ -108,6 +108,41 @@ html,body{margin:0;padding:0;background:#2f5e88;height:100%;overflow:hidden}
 /* le décor est peint dessous, à l'abri, et découvert d'un coup */
 #sc{opacity:1}
 
+
+/* ---------- ce qui t'attend ---------- */
+.att{position:fixed;left:14px;right:14px;z-index:7;
+  top:calc(env(safe-area-inset-top) + 76px);
+  display:flex;align-items:center;gap:11px;padding:11px 15px;
+  border-radius:12px;cursor:pointer;
+  background:rgba(14,26,42,.62);border:1.5px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 5px 22px rgba(6,16,28,.34);
+  opacity:0;transform:translateY(-8px);
+  transition:opacity .5s .4s,transform .5s .4s,background .2s}
+.att.on{opacity:1;transform:none}
+.att:active{background:rgba(20,36,56,.78)}
+.att .pt{width:8px;height:8px;border-radius:50%;flex:0 0 8px;background:#8ce0a8}
+.att.presse .pt{background:#f0a060;animation:bat 1.5s ease-in-out infinite}
+.att.quete .pt{background:#f0c46a;animation:bat 1.5s ease-in-out infinite}
+.att.occasion .pt{background:#8ce0a8;animation:bat 2.2s ease-in-out infinite}
+.att .tx{flex:1;min-width:0}
+.att .tx b{display:block;font-size:13.5px;font-weight:700;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.att .tx span{display:block;font-size:11px;color:rgba(255,255,255,.55);
+  margin-top:2px;font-family:system-ui,sans-serif}
+.att .fl{flex:0 0 auto;color:rgba(255,255,255,.34);font-size:15px}
+.att.calme{border-color:rgba(255,255,255,.1)}
+.att.calme .tx b{color:rgba(255,255,255,.72);font-weight:400}
+.att.calme .fl{display:none}
+.att.calme .pt{background:rgba(255,255,255,.3)}
+
+/* la pastille sur les boutons du bas */
+.bas button{position:relative}
+.bas button .neuf{position:absolute;top:7px;right:9px;width:8px;height:8px;
+  border-radius:50%;background:#f0c46a;
+  box-shadow:0 0 0 2px rgba(14,26,42,.8);
+  animation:bat 1.8s ease-in-out infinite}
+
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
@@ -921,6 +956,12 @@ html{font-size:calc(16px * var(--txt, 1))}
 <div class="fi" id="fi"></div>
 
 <div class="av" id="av"></div>
+
+<div class="att" id="att">
+  <span class="pt"></span>
+  <span class="tx"><b id="at-t">—</b><span id="at-s">—</span></span>
+  <span class="fl">›</span>
+</div>
 
 <div class="bas" id="bas">
   <div class="trois">
@@ -3751,6 +3792,52 @@ const ICONES = {
   classement:'<path d="M4 21V11M12 21V4M20 21v-6M2 21h20"/>'
 };
 
+/* ---------- ce qui t'attend, en une ligne ---------- */
+const OU_ALLER = {
+  taverne:'taverne.html', ardit:'ardit.html', voyager:'voyager.html',
+  mer:'mer.html', contrats:null   /* les contrats s'ouvrent sur place */
+};
+
+async function poserAttente(){
+  let r;
+  try { r = await BD.agir('ce_qui_attend'); } catch(e){ return; }
+  if (!r || !r.ok) return;
+  const u = r.urgent, el = document.getElementById('att');
+  if (!el) return;
+  /* rien à dire : on retire le bandeau de la page */
+  if (!u){ el.remove(); posePastilles(r.pastilles); return; }
+  document.getElementById('at-t').textContent = u.t;
+  document.getElementById('at-s').textContent = u.s;
+  el.className = 'att ' + (u.ton || 'calme');
+  if (u.ou){
+    el.onclick = () => {
+      if (u.ou === 'contrats'){ basculerContrats(true); return; }
+      const p = OU_ALLER[u.ou];
+      if (p) location.href = p;
+    };
+  } else el.onclick = null;
+  requestAnimationFrame(() => el.classList.add('on'));
+
+  posePastilles(r.pastilles);
+}
+
+function posePastilles(P){
+  P = P || {};
+  const poser = (id, oui) => {
+    const b = document.getElementById(id);
+    if (!b) return;
+    const v = b.querySelector('.neuf');
+    if (oui && !v){
+      const n = document.createElement('span');
+      n.className = 'neuf';
+      b.appendChild(n);
+    } else if (!oui && v) v.remove();
+  };
+  poser('b-tra', P.contrats);
+  poser('b-mer', P.mer);
+  poser('b-mar', P.anse);
+}
+
 function poserMenu(d){
   const el = document.getElementById('m-liste');
   if (!el) return;
@@ -3890,6 +3977,7 @@ function poserAvatar(d){
     poserClassement(d);
     poserChantier(d);
     poserBas(d);
+    poserAttente();
     MOI = d;
     chercherLesAutres().then(n => { if (n) dessiner(); });
     /* un gamin t'attend sur le quai, si tu as la boussole */
