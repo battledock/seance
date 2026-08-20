@@ -6,7 +6,7 @@
 <style>
 /* Cet écran est le tout premier élément de la page : le navigateur peut
    le peindre avant même d'avoir lu le reste du style et le script. */
-html,body{margin:0;height:100%;overflow:hidden;background:#061420}
+html,body{margin:0;height:100%;overflow:hidden;background:#081a2e}
 /* ============================================================
    L'ÉCRAN DE CHARGEMENT
    Il couvre tout, le temps que le décor se construise.
@@ -15,16 +15,18 @@ html,body{margin:0;height:100%;overflow:hidden;background:#061420}
 #chg{position:fixed;inset:0;z-index:60;overflow:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   --haut:#081a2e; --coeur:#1a4a6c; --bas:#061420; --or:#f0c46a;
+  /* le fond est opaque DÈS LA PREMIÈRE IMAGE : rien ne doit
+     transparaître pendant que la page se construit dessous */
+  background:linear-gradient(180deg, var(--haut) 0%, var(--haut) 22%,
+    color-mix(in srgb, var(--coeur) 34%, var(--bas)) 58%, var(--bas) 100%);
   transition:opacity .55s ease-out}
 #chg.parti{opacity:0;pointer-events:none}
 #chg::before{content:"";position:absolute;inset:0;
   background:
     radial-gradient(96% 62% at 50% 42%, var(--coeur), transparent 72%),
-    radial-gradient(70% 40% at 50% 34%, rgba(255,255,255,.06), transparent 68%),
-    linear-gradient(180deg, var(--haut) 0%, var(--haut) 22%,
-      color-mix(in srgb, var(--coeur) 34%, var(--bas)) 58%, var(--bas) 100%);
-  animation:chgLueur 2.4s ease-out both}
-@keyframes chgLueur{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
+    radial-gradient(70% 40% at 50% 34%, rgba(255,255,255,.06), transparent 68%);
+  animation:chgLueur 2.2s ease-out both}
+@keyframes chgLueur{from{opacity:.4;transform:scale(1.05)}to{opacity:1;transform:none}}
 #chg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.03;
   background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
   background-size:3px 3px}
