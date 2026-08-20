@@ -1226,17 +1226,32 @@ let SOLEIL = { x: 196, y: 200, r: 15 };
 /* ---------- les dégradés, selon l'heure ---------- */
 /* Un filtre unique qui reteinte tout le décor selon l'heure.
    Plus sûr que de reprendre les cent vingt-six couleurs à la main. */
-function filtreHeure(){
+/* Autrefois un filtre de couleur : il forçait le navigateur à rasteriser
+   tout le décor hors écran avant de le peindre, ce qui le faisait
+   apparaître par bandes. Remplacé par un simple voile posé dessus. */
+function voileHeure(){
   const t = H.teinte || { sombre:0, bleu:0, chaud:0 };
   if (!t.sombre && !t.bleu && !t.chaud) return '';
-  const g = 1 - t.sombre;                       /* le gain général */
-  const r = g * (1 - t.bleu * .5 + t.chaud * .3);
-  const v = g * (1 - t.bleu * .12 + t.chaud * .04);
-  const b = g * (1 + t.bleu * .42 - t.chaud * .28);
-  return '<filter id="b-heure" color-interpolation-filters="sRGB">'
-    + '<feColorMatrix type="matrix" values="'
-    + r + ' 0 0 0 0  0 ' + v + ' 0 0 0  0 0 ' + b + ' 0 0  0 0 0 1 0"/>'
-    + '</filter>';
+  let s2 = '';
+  /* assombrir : un voile noir translucide */
+  if (t.sombre > 0)
+    s2 += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(0)}"
+      fill="#050a12" opacity="${(t.sombre * .58).toFixed(2)}"/>`;
+  /* bleuir ou chauffer : un voile de couleur, en mode « lumière douce » */
+  if (t.bleu > 0)
+    s2 += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(0)}"
+      fill="#5a86c4" opacity="${(t.bleu * .34).toFixed(2)}"
+      style="mix-blend-mode:overlay"/>`;
+  if (t.chaud > 0)
+    s2 += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(0)}"
+      fill="#ff9a4a" opacity="${(t.chaud * .42).toFixed(2)}"
+      style="mix-blend-mode:overlay"/>`;
+  /* éclaircir, à midi et le matin */
+  if (t.sombre < 0)
+    s2 += `<rect x="0" y="${HAUT}" width="${W}" height="${(BAS-HAUT).toFixed(0)}"
+      fill="#ffffff" opacity="${(-t.sombre * .5).toFixed(2)}"
+      style="mix-blend-mode:soft-light"/>`;
+  return s2;
 }
 
 function degradeDisque(){
@@ -1350,7 +1365,6 @@ function defs(){
   ${degradeCiel()}
 
   ${degradeHalo()}
-  ${filtreHeure()}
 
   ${degradeDisque()}
 
@@ -2679,6 +2693,8 @@ function pave(){
   });
   s += `</g>`;
   s += mouettes();
+  /* le voile de l'heure, par-dessus tout */
+  s += voileHeure();
   return s;
 }
 
@@ -2903,8 +2919,7 @@ async function chercherLesAutres(){
 function scene(){
   /* le ciel et l'eau ont déjà les couleurs de l'heure.
      Tout le reste passe dans le filtre qui les accorde. */
-  const F = (H.teinte && (H.teinte.sombre || H.teinte.bleu || H.teinte.chaud))
-    ? ' filter="url(#b-heure)"' : '';
+  const F = '';   /* plus de filtre : le voile est posé à la fin */
   let s = defs() + ciel();
   s += `<g${F}>` + marseilleFond() + `</g>`;
   s += eau();
@@ -2934,6 +2949,8 @@ function scene(){
     fill="url(#b-vig)"/>`;
   s += `</g>`;
   s += mouettes();
+  /* le voile de l'heure, par-dessus tout */
+  s += voileHeure();
   return s;
 }
 
