@@ -57,6 +57,36 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0c2138}
 #chg.l-ajaccio{--haut:#1a1030;--coeur:#8a4444;--bas:#120a1c;--or:#ff9a5a}
 #chg.l-mer{--haut:#04121e;--coeur:#124260;--bas:#020a12;--or:#8ec4e0}
 #chg.h-nuit{--haut:#050b16;--coeur:#1c3358;--bas:#03060c;--or:#9ab0d8}
+
+/* ---------- le grand bouton du bas ---------- */
+.partir{position:fixed;left:16px;right:16px;z-index:12;
+  bottom:calc(env(safe-area-inset-bottom) + 22px);
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:17px 22px;border-radius:15px;cursor:pointer;
+  border:1.5px solid rgba(255,232,178,.72);
+  background:linear-gradient(176deg,#fce2a4 0%,#f0c476 44%,#d69f4a 100%);
+  box-shadow:0 5px 0 rgba(132,88,20,.6),
+             0 10px 28px rgba(6,16,28,.45),
+             inset 0 1px 0 rgba(255,250,232,.62);
+  font-family:'Courier Prime',monospace;
+  opacity:0;transition:opacity .5s, transform .1s, box-shadow .1s;
+  pointer-events:none}
+.partir.pret{opacity:1;pointer-events:auto}
+.partir:active{transform:translateY(3px);
+  box-shadow:0 2px 0 rgba(132,88,20,.6), 0 4px 12px rgba(6,16,28,.4),
+             inset 0 1px 0 rgba(255,250,232,.62)}
+.partir svg{width:24px;height:24px;flex:0 0 24px;stroke:#5a4212;fill:none;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.partir b{font-size:15.5px;font-weight:700;color:#3a2804;letter-spacing:.02em;
+  text-shadow:0 1px 0 rgba(255,246,220,.34)}
+/* sans bateau, il mène au chantier : plus sobre */
+.partir.gris{border-color:rgba(180,200,220,.34);
+  background:linear-gradient(176deg,rgba(48,70,96,.9),rgba(26,44,66,.94));
+  box-shadow:0 5px 0 rgba(6,18,32,.55), 0 10px 26px rgba(4,12,22,.4),
+             inset 0 1px 0 rgba(190,220,244,.16)}
+.partir.gris svg{stroke:#a8c8e4}
+.partir.gris b{color:#e4eef8;text-shadow:none}
+
 </style>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
@@ -1004,6 +1034,13 @@ html{font-size:calc(16px * var(--txt, 1))}
   </div>
 </div>
 
+
+<button class="partir" id="partir">
+  <svg viewBox="0 0 24 24">
+    <path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>
+  </svg>
+  <b id="partir-t">Prendre la mer</b>
+</button>
 
 <div class="voile" id="voile"></div>
 
@@ -4301,8 +4338,19 @@ addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
 
 /* ---------- la barre du bas ---------- */
 function poserBas(d){
-  /* les boutons du bas ont disparu : tout passe par le hub.
-     Il reste à découvrir la barre du haut et l'avatar. */
+  /* un seul bouton en bas : prendre la mer. Le reste est dans le hub. */
+  const b = document.getElementById('partir');
+  if (b){
+    const aBateau = Number(d.barque || 0) > 0;
+    b.classList.toggle('gris', !aBateau);
+    document.getElementById('partir-t').textContent =
+      aBateau ? 'Prendre la mer' : "Il te faut un bateau";
+    b.onclick = () => {
+      if (aBateau) location.href = 'voyager.html';
+      else basculerChantier(true);
+    };
+    b.classList.add('pret');
+  }
   ['barre', 'av'].forEach(k => {
     const x = document.getElementById(k);
     if (x) x.classList.add('pret');
