@@ -1309,6 +1309,9 @@ html{font-size:calc(16px * var(--txt, 1))}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
+/* l'instant à partir duquel on a le droit de retirer l'écran de chargement */
+const CHG_NE_PAS_AVANT = Date.now() + 900;
+
 /* ============================================================
    LE PORT À L'AUBE — le socle : charte, lumière, matière
    ============================================================ */
@@ -4540,12 +4543,13 @@ function poserAvatar(d){
     /* hors ligne ou pas connecté : on laisse le carré vide plutôt que de planter */
     console.warn('avatar indisponible', e);
   }
+  /* tout est en place : on peut découvrir la page */
+  retirerChargement();
 })();
 
 
 /* ---------- la scène ---------- */
 /* ---------- l'écran de chargement ---------- */
-const CHG_NE_PAS_AVANT = Date.now() + 900;   /* on le montre au moins ce temps */
 const CHG_MOTS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
                    palma:'Palma', ajaccio:'Ajaccio' };
 const CHG_HEURE = { nuit:'la nuit sur la rade', aube:'le jour se lève',
@@ -4568,8 +4572,12 @@ function retirerChargement(){
   if (!el || el.classList.contains('parti')) return;
   const reste = Math.max(0, CHG_NE_PAS_AVANT - Date.now());
   setTimeout(() => {
-    el.classList.add('parti');
-    setTimeout(() => el.remove(), 700);
+    /* on attend deux images de plus : le temps que tout soit
+       réellement peint, pas seulement calculé */
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.classList.add('parti');
+      setTimeout(() => el.remove(), 700);
+    }));
   }, reste);
 }
 
@@ -4584,10 +4592,7 @@ function dessiner(){
      avant de retirer l'aube. Sinon on découvrirait du vide. */
   const au = document.getElementById('aube');
   if (au && !au.classList.contains('parti'))
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      au.classList.add('parti');
-      retirerChargement();
-    }));
+    requestAnimationFrame(() => requestAnimationFrame(() => au.classList.add('parti')));
 }
 dessiner();
 let t = null;
