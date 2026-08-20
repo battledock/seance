@@ -3074,8 +3074,12 @@ function poserBarre(d){
 
   /* l'énergie, qui remonte d'un point par minute */
   const nrj = Number(d.energie ?? 100), maxi = Number(d.energie_max || 100);
-  document.getElementById('b-nrj').style.width =
-    Math.max(0, Math.min(100, nrj / maxi * 100)) + '%';
+  const jn = document.getElementById('b-nrj');
+  jn.style.width = Math.max(0, Math.min(100, nrj / maxi * 100)) + '%';
+  /* au-delà du maximum, la jauge passe à l'or : on comprend le débordement */
+  jn.style.background = nrj > maxi
+    ? 'linear-gradient(90deg,#c9962e,#ffd68c)'
+    : 'linear-gradient(90deg,#4faa72,#8ce0a8)';
   document.getElementById('b-nrjn').textContent = Math.round(nrj);
   /* on la fait monter à l'écran sans redemander au serveur */
   clearInterval(window.__nrj);
