@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Le classement — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
+  color:#fff;background:#08131f}
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(130% 40% at 50% -8%, rgba(110,156,192,.28), transparent 64%),
+    radial-gradient(80% 24% at 20% 0%, rgba(226,178,116,.08), transparent 70%),
+    linear-gradient(180deg,#14304a 0%,#0f2436 32%,#0a1928 66%,#071320 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 34px)}
+
+/* ---------- l'entête ---------- */
+.tete{position:relative;z-index:3;margin:0 -15px 20px;
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 16px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(24,52,80,.72),rgba(12,30,50,.5));
+  border-bottom:1px solid rgba(160,200,230,.12)}
+.tete::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,178,116,.34) 24%,
+    rgba(226,178,116,.34) 76%,transparent)}
+.tete .h1{display:flex;align-items:flex-start;gap:13px}
+.tete .co{flex:1;min-width:0}
+.tete b{display:block;font-size:20px}
+.tete .co span{display:block;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(206,228,246,.6);margin-top:5px}
+.retour{flex:0 0 auto;display:flex;align-items:center;gap:7px;
+  padding:9px 14px;border-radius:22px;cursor:pointer;
+  border:1.5px solid rgba(180,214,240,.24);background:rgba(255,255,255,.07);
+  font-family:'Courier Prime',monospace;font-size:11.5px;color:#e4f0fa}
+.retour:active{background:rgba(255,255,255,.13)}
+
+/* ---------- le podium ---------- */
+.pod{display:flex;align-items:flex-end;gap:9px;margin-bottom:24px}
+.mar{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:14px 8px 12px;border-radius:14px;position:relative;overflow:hidden;
+  background:linear-gradient(158deg,rgba(48,76,108,.7),rgba(20,42,66,.82));
+  border:1.5px solid rgba(150,190,224,.16)}
+.mar .av{width:46px;height:46px;border-radius:13px;overflow:hidden;
+  background:#22334a;border:1.5px solid rgba(190,220,244,.2)}
+.mar .av svg{width:100%;height:100%;display:block}
+.mar .nm{font-size:12px;color:#fff;max-width:100%;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.mar .eu{font-size:11.5px;color:#f0c46a;font-weight:700}
+.mar .rg{position:absolute;top:8px;left:9px;width:20px;height:20px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#0c1a2a;background:rgba(190,220,244,.7)}
+/* le premier : plus haut, doré */
+.mar.un{padding-top:20px;padding-bottom:16px;
+  background:linear-gradient(158deg,rgba(96,76,34,.86),rgba(48,38,16,.92));
+  border-color:rgba(240,196,106,.44);
+  box-shadow:0 5px 0 rgba(32,24,6,.6), 0 10px 28px rgba(180,132,50,.18)}
+.mar.un .av{width:56px;height:56px;border-radius:15px;
+  border-color:rgba(240,196,106,.5)}
+.mar.un .nm{font-size:13.5px;color:#fff6e4}
+.mar.un .rg{background:linear-gradient(176deg,#fde6ae,#e0af58);
+  box-shadow:0 2px 7px rgba(4,12,22,.4)}
+/* une couronne au-dessus du premier */
+.mar.un .cr{position:absolute;top:4px;right:9px;width:18px;height:18px}
+.mar.un .cr svg{width:100%;height:100%;stroke:#ffd68c;fill:none;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.mar.deux{padding-bottom:12px}
+.mar.trois{padding-bottom:9px}
+
+/* ---------- le reste du classement ---------- */
+.sec{display:flex;align-items:center;gap:11px;
+  font-size:8.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(206,228,246,.5);margin:0 0 11px}
+.sec::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(160,200,230,.13),transparent)}
+.bloc{border-radius:15px;overflow:hidden;
+  background:linear-gradient(158deg,rgba(255,255,255,.05),rgba(255,255,255,.025));
+  border:1px solid rgba(160,200,230,.1)}
+.lg{display:flex;align-items:center;gap:13px;padding:13px 15px;
+  border-bottom:1px solid rgba(160,200,230,.07)}
+.lg:last-child{border-bottom:0}
+.lg .rg{flex:0 0 24px;font-size:12px;color:rgba(190,218,240,.5);text-align:center}
+.lg .av{width:36px;height:36px;border-radius:10px;flex:0 0 36px;overflow:hidden;
+  background:#22334a;border:1px solid rgba(190,220,244,.14)}
+.lg .av svg{width:100%;height:100%;display:block}
+.lg .co{flex:1;min-width:0}
+.lg .co b{display:block;font-size:14px;color:#fff;font-weight:400}
+.lg .co span{display:block;font-size:10.5px;color:rgba(198,222,242,.56);
+  margin-top:3px;font-family:system-ui,sans-serif}
+.lg .eu{flex:0 0 auto;font-size:13.5px;color:#f0c46a;font-weight:700}
+/* toi, dans la liste */
+.lg.moi{background:rgba(240,196,106,.09);
+  box-shadow:inset 3px 0 0 rgba(240,196,106,.6)}
+.lg.moi .co b{color:#ffe9b4}
+
+.rien{text-align:center;padding:50px 20px;font-size:13px;
+  color:rgba(198,222,242,.5);font-family:system-ui,sans-serif}
+.pied{text-align:center;font-size:9.5px;color:rgba(180,208,232,.4);
+  margin-top:22px;font-family:system-ui,sans-serif;letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<div class="pont">
+  <div class="tete">
+    <div class="h1">
+      <span class="co"><b>Le classement</b>
+        <span id="c-sous">Qui mène la danse</span></span>
+      <button class="retour" id="retour">‹ Retour</button>
+    </div>
+  </div>
+
+  <div id="podium"></div>
+  <div id="suite"></div>
+  <p class="pied">Battle Dock — Marseille</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=2"></script>
+<script>
+const PORTS = { anse:'à son anse', marseille:'à Marseille', barcelone:'à Barcelone',
+                palma:'à Palma', ajaccio:'à Ajaccio' };
+const COURONNE = '<svg viewBox="0 0 24 24">'
+  + '<path d="M4 17.5 3 7l5 4 4-6 4 6 5-4-1 10.5z"/><path d="M4 20h16"/></svg>';
+
+function euro(v){
+  return Math.round(Number(v || 0)).toLocaleString('fr-FR') + ' €';
+}
+
+(async () => {
+  try {
+    const moi = await BD.charger();
+    if (!moi){ location.href = 'index.html'; return; }
+
+    const c = await BD.client();
+    const { data } = await c.from('classement').select('*').order('rang').limit(50);
+    const L = data || [];
+
+    if (!L.length){
+      document.getElementById('suite').innerHTML =
+        '<p class="rien">Le classement n\'a pas répondu.</p>';
+      return;
+    }
+
+    /* où en es-tu ? */
+    const rangMoi = (L.find(x => x.id === moi.id) || {}).rang;
+    document.getElementById('c-sous').textContent = rangMoi
+      ? 'Tu es ' + rangMoi + (rangMoi === 1 ? 'er' : 'e') + ' sur ' + L.length
+      : L.length + ' dockers';
+
+    /* le podium : les trois premiers, le premier au milieu */
+    const T = L.slice(0, 3);
+    if (T.length >= 3){
+      const ordre = [T[1], T[0], T[2]];
+      const cl = ['deux', 'un', 'trois'];
+      document.getElementById('podium').innerHTML = '<div class="pod">'
+        + ordre.map((x, i) =>
+          '<div class="mar ' + cl[i] + '">'
+          + '<span class="rg">' + x.rang + '</span>'
+          + (cl[i] === 'un' ? '<span class="cr">' + COURONNE + '</span>' : '')
+          + '<span class="av">' + BD.avatarSVG(x) + '</span>'
+          + '<span class="nm">' + x.pseudo + '</span>'
+          + '<span class="eu">' + euro(x.euros) + '</span>'
+          + '</div>').join('') + '</div>';
+    }
+
+    /* le reste */
+    const R = T.length >= 3 ? L.slice(3) : L;
+    if (R.length){
+      document.getElementById('suite').innerHTML =
+        '<p class="sec">' + (T.length >= 3 ? 'Et les autres' : 'Le classement') + '</p>'
+        + '<div class="bloc">' + R.map(x =>
+          '<div class="lg' + (x.id === moi.id ? ' moi' : '') + '">'
+          + '<span class="rg">' + x.rang + '</span>'
+          + '<span class="av">' + BD.avatarSVG(x) + '</span>'
+          + '<span class="co"><b>' + x.pseudo + '</b>'
+          + '<span>Niveau ' + x.niveau + ' · ' + (PORTS[x.port] || 'en mer') + '</span></span>'
+          + '<span class="eu">' + euro(x.euros) + '</span>'
+          + '</div>').join('') + '</div>';
+    }
+
+    /* les avatars du podium doivent remplir leur cadre */
+    document.querySelectorAll('.av svg').forEach(s =>
+      s.setAttribute('preserveAspectRatio', 'xMidYMid slice'));
+
+  } catch(e){
+    console.warn(e);
+    document.getElementById('suite').innerHTML =
+      '<p class="rien">Le classement n\'a pas répondu.</p>';
+  }
+})();
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+</script>
+</body>
+</html>
