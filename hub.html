@@ -474,8 +474,11 @@ document.getElementById('ouv-ok').onclick = () => {
     document.getElementById('hub-eu').textContent = euro(d.euros);
 
     const nrj = Number(d.energie ?? 100), nmax = Number(d.energie_max || 100);
-    document.getElementById('hub-nrj').style.width =
-      Math.min(100, nrj / nmax * 100).toFixed(0) + '%';
+    const jn = document.getElementById('hub-nrj');
+    jn.style.width = Math.min(100, nrj / nmax * 100).toFixed(0) + '%';
+    jn.style.background = nrj > nmax
+      ? 'linear-gradient(90deg,#c9962e,#ffd68c)'
+      : 'linear-gradient(90deg,#3f8a5e,#8ce0a8)';
     document.getElementById('hub-nrjn').textContent = Math.round(nrj);
 
 
