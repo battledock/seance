@@ -164,6 +164,69 @@ body::before{content:"";position:fixed;inset:0;z-index:0;
   margin-top:22px;font-family:system-ui,sans-serif;position:relative;z-index:1}
 
 
+/* ---------- les contrats ---------- */
+const OU_NOM = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
+                 palma:'Palma', ajaccio:'Ajaccio' };
+
+async function ouvrirContrats(){
+  const p = document.getElementById('ctr');
+  p.classList.add('on');
+  const L = document.getElementById('ctr-liste');
+  L.innerHTML = '<li class="rien">On regarde ce qu\'il y a…</li>';
+
+  let r;
+  try { r = await BD.agir('contrats_du_jour'); } catch(e){ r = null; }
+  if (!r || !r.ok){
+    L.innerHTML = '<li class="rien">Rien à charger pour l\'instant.</li>';
+    return;
+  }
+
+  const C = r.contrats || [];
+  const libre = r.places || 0;
+  document.getElementById('ctr-cale').textContent =
+    libre > 0 ? libre + (libre > 1 ? ' places libres' : ' place libre') : 'pleine';
+  document.getElementById('ctr-s').textContent =
+    'Pour ' + (OU_NOM[r.vers] || r.vers) + ', au départ de ' + (OU_NOM[r.depuis] || r.depuis);
+
+  if (!C.length){
+    L.innerHTML = '<li class="rien">Le quai est vide aujourd\'hui.</li>';
+    return;
+  }
+
+  L.innerHTML = C.map(c => {
+    const pris = c.etat !== 'propose';
+    const trop = c.places > libre;
+    /* la demande dit si le prix est bon */
+    let et = '';
+    if (c.demande >= .85) et = '<span class="et dem">On en manque là-bas</span>';
+    else if (c.demande <= .7) et = '<span class="et mal">Le marché est mou</span>';
+    return '<li class="ct' + (pris ? ' pris' : '') + '">'
+      + '<span class="l1"><b>' + c.nom + '</b>'
+      + '<span class="pr">' + c.paie + ' €</span></span>'
+      + (c.note ? '<p class="no">' + c.note + '</p>' : '')
+      + '<span class="l2">'
+      + '<span class="et">' + c.kg + ' kg</span>'
+      + '<span class="et">' + c.places + (c.places > 1 ? ' places' : ' place') + '</span>'
+      + et
+      + (pris ? '<span class="fait">Dans ta cale</span>'
+              : '<button data-id="' + c.id + '"' + (trop ? ' disabled' : '') + '>'
+                + (trop ? 'Trop gros' : 'Charger') + '</button>')
+      + '</span></li>';
+  }).join('') + '<p class="mot">Les contrats changent chaque jour.</p>';
+
+  L.querySelectorAll('button[data-id]').forEach(b =>
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = '…';
+      try {
+        const x = await BD.agir('prendre_contrat', { p_id: b.dataset.id });
+        if (x && (x.ok || x.pris)) { ouvrirContrats(); return; }
+      } catch(e){}
+      b.disabled = false; b.textContent = 'Charger';
+    });
+}
+document.getElementById('ctr-fer').onclick = () =>
+  document.getElementById('ctr').classList.remove('on');
+
 /* ---------- le cadeau du jour ---------- */
 .cad{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;
   width:100%;padding:21px 18px;margin-bottom:20px;border-radius:18px;
@@ -234,6 +297,72 @@ body::before{content:"";position:fixed;inset:0;z-index:0;
   cursor:pointer;background:rgba(255,255,255,.1);color:#fff;
   font-family:'Courier Prime',monospace;font-size:14px;font-weight:700}
 
+
+/* ---------- les contrats, dans le hub ---------- */
+.pan{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#153048 0%,#102438 32%,#0b1a2a 68%,#081420 100%);
+  transform:translateY(100%);transition:transform .42s cubic-bezier(.28,.92,.32,1)}
+.pan.on{transform:none}
+.pan .hd{flex:0 0 auto;padding:calc(env(safe-area-inset-top) + 18px) 16px 14px;
+  display:flex;align-items:flex-start;gap:12px;
+  border-bottom:1px solid rgba(160,200,230,.12)}
+.pan .hd .ti{flex:1;min-width:0}
+.pan .hd .ti b{display:block;font-size:19px;color:#fff}
+.pan .hd .ti span{display:block;font-size:10.5px;color:rgba(186,212,234,.5);
+  margin-top:3px;font-family:system-ui,sans-serif}
+.pan .fer{flex:0 0 auto;width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid rgba(180,214,240,.3);background:rgba(255,255,255,.1);
+  color:#e4f0fa;font-size:20px;line-height:1;cursor:pointer;padding:0;
+  font-family:'Courier Prime',monospace}
+.pan .fer:active{background:rgba(255,255,255,.18)}
+.pan .cale{flex:0 0 auto;padding:12px 16px;font-size:11.5px;
+  color:rgba(190,214,234,.6);font-family:system-ui,sans-serif;
+  border-bottom:1px solid rgba(160,200,230,.08)}
+.pan .cale b{color:#f0c46a;font-family:'Courier Prime',monospace}
+.pan .liste{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:14px 16px calc(env(safe-area-inset-bottom) + 22px);list-style:none}
+
+/* une offre */
+.ct{position:relative;margin-bottom:12px;padding:15px 16px;border-radius:14px;
+  overflow:hidden;
+  background:linear-gradient(158deg,rgba(52,82,114,.72),rgba(24,44,68,.82));
+  border:1.5px solid rgba(150,190,224,.16);
+  box-shadow:0 3px 0 rgba(5,16,28,.5), inset 0 1px 0 rgba(190,220,244,.1)}
+.ct .l1{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}
+.ct .l1 b{flex:1;font-size:15px;color:#fff;font-weight:400}
+.ct .l1 .pr{font-size:17px;color:#f0c46a;font-weight:700;
+  text-shadow:0 0 18px rgba(240,196,106,.3)}
+.ct .no{font-size:11.5px;color:rgba(190,214,234,.52);line-height:1.45;
+  font-family:system-ui,sans-serif;margin-bottom:11px}
+.ct .l2{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.ct .et{padding:4px 9px;border-radius:9px;font-size:10px;white-space:nowrap;
+  flex:0 0 auto;
+  background:rgba(255,255,255,.07);color:rgba(206,228,246,.7);
+  border:1px solid rgba(160,200,230,.14)}
+.ct .et.dem{background:rgba(140,224,168,.13);color:#8ce0a8;
+  border-color:rgba(140,224,168,.24)}
+.ct .et.mal{background:rgba(232,138,106,.13);color:#e8a06a;
+  border-color:rgba(232,138,106,.24)}
+.ct button{margin-left:auto;padding:10px 18px;border-radius:11px;cursor:pointer;
+  border:1.5px solid rgba(255,232,178,.7);
+  background:linear-gradient(176deg,#fadfa0,#dda martin);
+  background:linear-gradient(176deg,#fadfa0,#d9a44e);
+  box-shadow:0 3px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6);
+  font-family:'Courier Prime',monospace;font-size:12.5px;font-weight:700;
+  color:#3a2804;transition:transform .1s, box-shadow .1s}
+.ct button:active{transform:translateY(2px);
+  box-shadow:0 1px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6)}
+.ct button:disabled{opacity:.4;cursor:default;box-shadow:none;transform:none}
+/* pris */
+.ct.pris{opacity:.5}
+.ct.pris .pr{color:rgba(200,224,244,.5);text-shadow:none}
+.ct .fait{margin-left:auto;font-size:11.5px;color:#8ce0a8}
+.pan .rien{text-align:center;padding:44px 20px;font-size:13px;
+  color:rgba(186,212,234,.45);font-family:system-ui,sans-serif}
+.pan .mot{text-align:center;font-size:10.5px;color:rgba(170,200,224,.34);
+  padding:8px 20px 0;font-family:system-ui,sans-serif}
+
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
@@ -280,6 +409,16 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
   </button>
 
   <div class="grille" id="tuiles"></div>
+
+<section class="pan" id="ctr">
+  <div class="hd">
+    <span class="ti"><b>Les contrats</b>
+      <span id="ctr-s">Ce qu'on te propose aujourd'hui</span></span>
+    <button class="fer" id="ctr-fer">×</button>
+  </div>
+  <p class="cale">Ta cale : <b id="ctr-cale">—</b></p>
+  <ul class="liste" id="ctr-liste"></ul>
+</section>
 
 <div class="ouv" id="ouv">
   <div class="ca">
@@ -352,13 +491,9 @@ function aller(quoi){
 }
 
 const TUILES = [
-  { k:'mer', prem:true, large:true, t:'Prendre la mer',
-    s:'Barcelone · Palma · Ajaccio',
-    ic:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>',
-    f:() => location.href = 'voyager.html' },
   { k:'contrats', t:'Les contrats', s:'Ce qu\'on te propose',
     ic:'<path d="M8 3h8l2 4v14H6V7zM9 11h6M9 15h6M10 3v4h4V3"/>',
-    f:() => aller('contrats') },
+    f:() => ouvrirContrats() },
   { k:'entrepot', t:'L\'entrepôt', s:'Ce qui attend sur le quai',
     ic:'<path d="M3 21V9l9-5 9 5v12M3 21h18M8 21v-7h8v7M8 14h8"/>',
     f:() => aller('entrepot') },
@@ -409,6 +544,69 @@ function dessinerTuiles(){
     if (t && t.f && !t.off) el.onclick = t.f;
   });
 }
+
+/* ---------- les contrats ---------- */
+const OU_NOM = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
+                 palma:'Palma', ajaccio:'Ajaccio' };
+
+async function ouvrirContrats(){
+  const p = document.getElementById('ctr');
+  p.classList.add('on');
+  const L = document.getElementById('ctr-liste');
+  L.innerHTML = '<li class="rien">On regarde ce qu\'il y a…</li>';
+
+  let r;
+  try { r = await BD.agir('contrats_du_jour'); } catch(e){ r = null; }
+  if (!r || !r.ok){
+    L.innerHTML = '<li class="rien">Rien à charger pour l\'instant.</li>';
+    return;
+  }
+
+  const C = r.contrats || [];
+  const libre = r.places || 0;
+  document.getElementById('ctr-cale').textContent =
+    libre > 0 ? libre + (libre > 1 ? ' places libres' : ' place libre') : 'pleine';
+  document.getElementById('ctr-s').textContent =
+    'Pour ' + (OU_NOM[r.vers] || r.vers) + ', au départ de ' + (OU_NOM[r.depuis] || r.depuis);
+
+  if (!C.length){
+    L.innerHTML = '<li class="rien">Le quai est vide aujourd\'hui.</li>';
+    return;
+  }
+
+  L.innerHTML = C.map(c => {
+    const pris = c.etat !== 'propose';
+    const trop = c.places > libre;
+    /* la demande dit si le prix est bon */
+    let et = '';
+    if (c.demande >= .85) et = '<span class="et dem">On en manque là-bas</span>';
+    else if (c.demande <= .7) et = '<span class="et mal">Le marché est mou</span>';
+    return '<li class="ct' + (pris ? ' pris' : '') + '">'
+      + '<span class="l1"><b>' + c.nom + '</b>'
+      + '<span class="pr">' + c.paie + ' €</span></span>'
+      + (c.note ? '<p class="no">' + c.note + '</p>' : '')
+      + '<span class="l2">'
+      + '<span class="et">' + c.kg + ' kg</span>'
+      + '<span class="et">' + c.places + (c.places > 1 ? ' places' : ' place') + '</span>'
+      + et
+      + (pris ? '<span class="fait">Dans ta cale</span>'
+              : '<button data-id="' + c.id + '"' + (trop ? ' disabled' : '') + '>'
+                + (trop ? 'Trop gros' : 'Charger') + '</button>')
+      + '</span></li>';
+  }).join('') + '<p class="mot">Les contrats changent chaque jour.</p>';
+
+  L.querySelectorAll('button[data-id]').forEach(b =>
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = '…';
+      try {
+        const x = await BD.agir('prendre_contrat', { p_id: b.dataset.id });
+        if (x && (x.ok || x.pris)) { ouvrirContrats(); return; }
+      } catch(e){}
+      b.disabled = false; b.textContent = 'Charger';
+    });
+}
+document.getElementById('ctr-fer').onclick = () =>
+  document.getElementById('ctr').classList.remove('on');
 
 /* ---------- le cadeau du jour ---------- */
 const EMOJI = { euros:'💰', energie:'⚡', xp:'📖' };
