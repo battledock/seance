@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Cormorant+Garamond:wght@300&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    L'AUBE — tout en CSS, zéro JavaScript.
@@ -1039,9 +1039,71 @@ html{font-size:calc(16px * var(--txt, 1))}
 .amarre.a3{animation-duration:8.6s;animation-delay:-1.2s}
 
 @keyframes bat{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ============================================================
+   L'ÉCRAN DE CHARGEMENT
+   Il couvre tout, le temps que le décor se construise.
+   Quatre teintes suffisent à donner son identité à un lieu.
+   ============================================================ */
+#chg{position:fixed;inset:0;z-index:60;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  --haut:#081a2e; --coeur:#1a4a6c; --bas:#061420; --or:#f0c46a;
+  transition:opacity .55s ease-out}
+#chg.parti{opacity:0;pointer-events:none}
+#chg::before{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(96% 62% at 50% 42%, var(--coeur), transparent 72%),
+    radial-gradient(70% 40% at 50% 34%, rgba(255,255,255,.06), transparent 68%),
+    linear-gradient(180deg, var(--haut) 0%, var(--haut) 22%,
+      color-mix(in srgb, var(--coeur) 34%, var(--bas)) 58%, var(--bas) 100%);
+  animation:chgLueur 2.4s ease-out both}
+@keyframes chgLueur{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
+#chg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.03;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+#chg .nom{position:relative;z-index:2;
+  font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;
+  letter-spacing:.22em;text-indent:.22em;color:#f8f2e6;
+  text-shadow:0 2px 30px rgba(0,0,0,.44);opacity:0;
+  animation:chgNom 1.5s .3s cubic-bezier(.2,.9,.28,1) both}
+@keyframes chgNom{from{opacity:0;transform:translateY(14px) scale(1.03);
+  letter-spacing:.34em}to{opacity:1;transform:none;letter-spacing:.22em}}
+#chg .tr{position:relative;z-index:2;width:56px;height:1px;margin:20px 0 18px;
+  background:var(--or);opacity:.6;transform:scaleX(0);
+  animation:chgOuvre 1.1s .9s cubic-bezier(.2,.9,.28,1) both}
+@keyframes chgOuvre{to{transform:none}}
+#chg .sous{position:relative;z-index:2;font-size:9px;letter-spacing:.34em;
+  text-transform:uppercase;color:rgba(255,255,255,.42);opacity:0;
+  animation:chgVenu 1.2s 1.1s ease-out both}
+@keyframes chgVenu{to{opacity:1}}
+#chg .pts{position:absolute;bottom:15%;z-index:2;display:flex;gap:8px;opacity:0;
+  background:none;border:0;padding:0;box-shadow:none;
+  animation:chgVenu 1s 1.45s ease-out both}
+#chg .pts i{width:5px;height:5px;border-radius:50%;background:var(--or);
+  border:0;box-shadow:none;
+  animation:chgBat 1.4s ease-in-out infinite}
+#chg .pts i:nth-child(2){animation-delay:.2s}
+#chg .pts i:nth-child(3){animation-delay:.4s}
+@keyframes chgBat{0%,100%{opacity:.2;transform:scale(.75)}
+  50%{opacity:.95;transform:none}}
+/* les palettes */
+#chg.l-anse,#chg.l-marseille{--haut:#081a2e;--coeur:#1a4a6c;--bas:#061420;--or:#f0c46a}
+#chg.l-barcelone{--haut:#1c0f22;--coeur:#7a3a52;--bas:#140a18;--or:#f0a46a}
+#chg.l-palma{--haut:#0e2226;--coeur:#1d6270;--bas:#08181c;--or:#f4d89a}
+#chg.l-ajaccio{--haut:#1a1030;--coeur:#8a4444;--bas:#120a1c;--or:#ff9a5a}
+#chg.l-mer{--haut:#04121e;--coeur:#0e3652;--bas:#020a12;--or:#8ec4e0}
+#chg.h-nuit{--haut:#04070e;--coeur:#101f38;--bas:#020509;--or:#9ab0d8}
+
 </style>
 </head>
 <body>
+<div id="chg" class="l-anse">
+  <p class="nom" id="chg-nom">Marseille</p>
+  <span class="tr"></span>
+  <p class="sous" id="chg-sous">Le port</p>
+  <span class="pts"><i></i><i></i><i></i></span>
+</div>
+
 <div id="aube">
   <span class="ciel"></span>
   <span class="mer"></span>
@@ -4402,6 +4464,7 @@ function poserAvatar(d){
     poserBarque(d);
     poserClassement(d);
     poserChantier(d);
+    habillerChargement(d);
     poserBas(d);
     /* si on revient du hub avec une intention, on l'exécute */
     try {
@@ -4481,6 +4544,35 @@ function poserAvatar(d){
 
 
 /* ---------- la scène ---------- */
+/* ---------- l'écran de chargement ---------- */
+const CHG_NE_PAS_AVANT = Date.now() + 900;   /* on le montre au moins ce temps */
+const CHG_MOTS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
+                   palma:'Palma', ajaccio:'Ajaccio' };
+const CHG_HEURE = { nuit:'la nuit sur la rade', aube:'le jour se lève',
+                    matin:'le matin', midi:"l'après-midi", soir:'au couchant' };
+
+function habillerChargement(d){
+  const el = document.getElementById('chg');
+  if (!el || !d) return;
+  const ou = d.parti_le ? 'mer' : (d.port || 'anse');
+  el.className = 'l-' + ou + (MOMENT === 'nuit' ? ' h-nuit' : '');
+  document.getElementById('chg-nom').textContent =
+    d.parti_le ? 'En mer' : (CHG_MOTS[ou] || 'Marseille');
+  document.getElementById('chg-sous').textContent =
+    d.parti_le ? 'Cap sur ' + (CHG_MOTS[d.cap] || d.cap)
+               : (CHG_HEURE[MOMENT] || 'le port');
+}
+
+function retirerChargement(){
+  const el = document.getElementById('chg');
+  if (!el || el.classList.contains('parti')) return;
+  const reste = Math.max(0, CHG_NE_PAS_AVANT - Date.now());
+  setTimeout(() => {
+    el.classList.add('parti');
+    setTimeout(() => el.remove(), 700);
+  }, reste);
+}
+
 function dessiner(){
   const v = cadrer(innerWidth, innerHeight);
   document.getElementById('sc').innerHTML =
@@ -4492,7 +4584,10 @@ function dessiner(){
      avant de retirer l'aube. Sinon on découvrirait du vide. */
   const au = document.getElementById('aube');
   if (au && !au.classList.contains('parti'))
-    requestAnimationFrame(() => requestAnimationFrame(() => au.classList.add('parti')));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      au.classList.add('parti');
+      retirerChargement();
+    }));
 }
 dessiner();
 let t = null;
