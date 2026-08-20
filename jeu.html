@@ -100,11 +100,6 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
 .att.calme .pt{background:rgba(255,255,255,.3)}
 
 /* la pastille sur les boutons du bas */
-.bas button{position:relative}
-.bas button .neuf{position:absolute;top:7px;right:9px;width:8px;height:8px;
-  border-radius:50%;background:#f0c46a;
-  box-shadow:0 0 0 2px rgba(14,26,42,.8);
-  animation:bat 1.8s ease-in-out infinite}
 
 
 /* ---------- ce qui vit sur la rade ---------- */
@@ -913,30 +908,6 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
 
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
 
-/* ================= la barre du bas ================= */
-.bas{position:fixed;left:0;right:0;bottom:0;z-index:12;
-  padding:0 14px calc(env(safe-area-inset-bottom) + 14px);
-  opacity:0;transition:opacity .5s;pointer-events:none}
-.bas.pret{opacity:1;pointer-events:auto}
-.bas .trois{display:flex;gap:6px}
-.bas .trois button{flex:1;min-width:0;display:flex;flex-direction:column;
-  align-items:center;gap:5px;
-  padding:11px 2px;border:2px solid rgba(255,255,255,.26);border-radius:8px;
-  background:rgba(18,34,52,.5);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 4px 16px rgba(8,20,32,.36);cursor:pointer;
-  font-family:'Courier Prime',monospace;transition:transform .11s}
-.bas .trois button:active{transform:scale(.96)}
-.bas .trois button:disabled{opacity:.4;cursor:default}
-.bas .trois button.vif{border-color:rgba(240,196,106,.7);background:rgba(48,42,26,.56)}
-.bas .trois svg{width:20px;height:20px;flex:0 0 20px;stroke:rgba(255,255,255,.66);fill:none;
-  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.bas .trois button.vif svg{stroke:#f0c46a}
-.bas .trois span{font-size:9.5px;color:rgba(255,255,255,.66);letter-spacing:.02em;
-  text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;
-  text-overflow:ellipsis;max-width:100%}
-.bas .trois button.vif span{color:#f0c46a;font-weight:700}
-
 /* ================= ce que les réglages changent ================= */
 html.sans-anim *{animation:none !important;transition:none !important}
 /* le décor animé : on garde la scène, on enlève ce qui bouge et ce qui coûte cher */
@@ -1018,22 +989,6 @@ html{font-size:calc(16px * var(--txt, 1))}
   <span class="fl">›</span>
 </div>
 
-<div class="bas" id="bas">
-  <div class="trois">
-    <button id="b-mer" class="vif">
-      <svg viewBox="0 0 24 24"><path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/></svg>
-      <span id="b-mer-t">La mer</span></button>
-    <button id="b-tra">
-      <svg viewBox="0 0 24 24"><path d="M8 3h8l2 4v14H6V7zM9 11h6M9 15h6M10 3v4h4V3"/></svg>
-      <span id="b-tra-t">Contrats</span></button>
-    <button id="b-ent">
-      <svg viewBox="0 0 24 24"><path d="M3 21V9l9-5 9 5v12M3 21h18M8 21v-7h8v7M8 14h8"/></svg>
-      <span id="b-ent-t">L'entrepôt</span></button>
-    <button id="b-qu">
-      <svg viewBox="0 0 24 24"><path d="M9 4h6a1 1 0 011 1v1h2v15H6V6h2V5a1 1 0 011-1zM8 6h8M9.5 12l1.6 1.6L14.5 10"/></svg>
-      <span id="b-qu-t">Tes affaires</span></button>
-  </div>
-</div>
 
 <div class="rev" id="rev">
   <div class="ca">
@@ -4147,10 +4102,6 @@ function posePastilles(P){
       b.appendChild(n);
     } else if (!oui && v) v.remove();
   };
-  poser('b-tra', P.contrats);
-  poser('b-mer', P.mer);
-  poser('b-ent', P.entrepot);
-  poser('b-qu', P.quetes);
 }
 
 /* ---------- l'entrepôt ---------- */
@@ -4339,10 +4290,6 @@ document.getElementById('q-fer').onclick = () => basculerBarque(false);
 document.getElementById('c-fer').onclick = () => basculerClassement(false);
 document.getElementById('t-fer').onclick = () => basculerChantier(false);
 document.getElementById('e-fer').onclick = () => basculerEntrepot(false);
-const bEnt = document.getElementById('b-ent');
-if (bEnt) bEnt.onclick = () => basculerEntrepot(true);
-const bQu = document.getElementById('b-qu');
-if (bQu) bQu.onclick = () => basculerQuetes(true);
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
 document.getElementById('g-fer').onclick = () => basculerReglages(false);
 document.getElementById('s-fer').onclick = () => basculerSacoche(false);
@@ -4354,32 +4301,9 @@ addEventListener('keydown', e => { if (e.key === 'Escape') toutFermer(); });
 
 /* ---------- la barre du bas ---------- */
 function poserBas(d){
-  const el = document.getElementById('bas');
-  if (!el) return;
-  const aBateau = Number(d.barque || 0) > 0;
-  const mer = document.getElementById('b-mer');
-
-  /* sans bateau, on ne prend pas la mer : le bouton mène au chantier */
-  mer.classList.toggle('vif', aBateau);
-  document.getElementById('b-mer-t').textContent = aBateau ? 'La mer' : 'Un bateau';
-  mer.onclick = aBateau
-    ? () => { secousse('touche'); location.href = 'voyager.html'; }
-    : () => basculerChantier(true);
-
-  /* sans bateau, on ne prend pas de contrat : le chantier passe devant */
-  const tra = document.getElementById('b-tra');
-  if (aBateau){
-    tra.classList.remove('vif');
-    document.getElementById('b-tra-t').textContent = 'Contrats';
-    tra.onclick = () => basculerContrats(true, d);
-  } else {
-    tra.classList.add('vif');
-    document.getElementById('b-tra-t').textContent = 'Le chantier';
-    tra.onclick = () => basculerChantier(true);
-  }
-
-  /* tout est prêt : on montre la barre, l'avatar et les boutons */
-  ['barre', 'bas', 'av'].forEach(k => {
+  /* les boutons du bas ont disparu : tout passe par le hub.
+     Il reste à découvrir la barre du haut et l'avatar. */
+  ['barre', 'av'].forEach(k => {
     const x = document.getElementById(k);
     if (x) x.classList.add('pret');
   });
