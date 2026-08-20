@@ -3,174 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<style>
-/* Cet écran est le tout premier élément de la page : le navigateur peut
-   le peindre avant même d'avoir lu le reste du style et le script. */
-html,body{margin:0;height:100%;overflow:hidden;background:#081a2e}
-/* ============================================================
-   L'ÉCRAN DE CHARGEMENT
-   Il couvre tout, le temps que le décor se construise.
-   Quatre teintes suffisent à donner son identité à un lieu.
-   ============================================================ */
-#chg{position:fixed;inset:0;z-index:60;overflow:hidden;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  --haut:#081a2e; --coeur:#1a4a6c; --bas:#061420; --or:#f0c46a;
-  /* le fond est opaque DÈS LA PREMIÈRE IMAGE : rien ne doit
-     transparaître pendant que la page se construit dessous */
-  background:linear-gradient(180deg, var(--haut) 0%, var(--haut) 22%,
-    color-mix(in srgb, var(--coeur) 34%, var(--bas)) 58%, var(--bas) 100%);
-  transition:opacity .55s ease-out}
-#chg.parti{opacity:0;pointer-events:none}
-#chg::before{content:"";position:absolute;inset:0;
-  background:
-    radial-gradient(96% 62% at 50% 42%, var(--coeur), transparent 72%),
-    radial-gradient(70% 40% at 50% 34%, rgba(255,255,255,.06), transparent 68%);
-  animation:chgLueur 2.2s ease-out both}
-@keyframes chgLueur{from{opacity:.4;transform:scale(1.05)}to{opacity:1;transform:none}}
-#chg::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.03;
-  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
-  background-size:3px 3px}
-#chg .nom{position:relative;z-index:2;
-  font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;
-  letter-spacing:.22em;text-indent:.22em;color:#f8f2e6;
-  text-shadow:0 2px 30px rgba(0,0,0,.44);opacity:0;
-  animation:chgNom 1.5s .3s cubic-bezier(.2,.9,.28,1) both}
-@keyframes chgNom{from{opacity:0;transform:translateY(14px) scale(1.03);
-  letter-spacing:.34em}to{opacity:1;transform:none;letter-spacing:.22em}}
-#chg .tr{position:relative;z-index:2;width:56px;height:1px;margin:20px 0 18px;
-  background:var(--or);opacity:.6;transform:scaleX(0);
-  animation:chgOuvre 1.1s .9s cubic-bezier(.2,.9,.28,1) both}
-@keyframes chgOuvre{to{transform:none}}
-#chg .sous{position:relative;z-index:2;font-size:9px;letter-spacing:.34em;
-  text-transform:uppercase;color:rgba(255,255,255,.42);opacity:0;
-  animation:chgVenu 1.2s 1.1s ease-out both}
-@keyframes chgVenu{to{opacity:1}}
-#chg .pts{position:absolute;bottom:15%;z-index:2;display:flex;gap:8px;opacity:0;
-  background:none;border:0;padding:0;box-shadow:none;
-  animation:chgVenu 1s 1.45s ease-out both}
-#chg .pts i{width:5px;height:5px;border-radius:50%;background:var(--or);
-  border:0;box-shadow:none;
-  animation:chgBat 1.4s ease-in-out infinite}
-#chg .pts i:nth-child(2){animation-delay:.2s}
-#chg .pts i:nth-child(3){animation-delay:.4s}
-@keyframes chgBat{0%,100%{opacity:.2;transform:scale(.75)}
-  50%{opacity:.95;transform:none}}
-/* les palettes */
-#chg.l-anse,#chg.l-marseille{--haut:#081a2e;--coeur:#1a4a6c;--bas:#061420;--or:#f0c46a}
-#chg.l-barcelone{--haut:#1c0f22;--coeur:#7a3a52;--bas:#140a18;--or:#f0a46a}
-#chg.l-palma{--haut:#0e2226;--coeur:#1d6270;--bas:#08181c;--or:#f4d89a}
-#chg.l-ajaccio{--haut:#1a1030;--coeur:#8a4444;--bas:#120a1c;--or:#ff9a5a}
-#chg.l-mer{--haut:#04121e;--coeur:#0e3652;--bas:#020a12;--or:#8ec4e0}
-#chg.h-nuit{--haut:#04070e;--coeur:#101f38;--bas:#020509;--or:#9ab0d8}
-</style>
 <meta name="theme-color" content="#0e1c2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Cormorant+Garamond:wght@300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   L'AUBE — tout en CSS, zéro JavaScript.
-   Les proportions sont celles du vrai décor : l'horizon à 41 %,
-   le bord du quai à 78 %.
-   ============================================================ */
-html,body{margin:0;padding:0;background:#2f5e88;height:100%;overflow:hidden}
-
-#aube{position:fixed;inset:0;z-index:0}
-/* pas de fondu : le décor est dessous, prêt et identique.
-   On retire simplement l'aube, l'œil ne voit rien passer. */
-#aube.parti{display:none}
-
-/* ---- le ciel, jusqu'à l'horizon ---- */
-#aube .ciel{position:absolute;left:0;right:0;top:0;height:41%;
-  background:linear-gradient(180deg,
-    #1d3a5c 0%, #275079 14%, #37699a 30%,
-    #6a94b4 50%, #a8bcbc 66%, #d8c8a0 80%,
-    #f2d8a4 92%, #fbe6b8 100%)}
-
-/* ---- la mer, de l'horizon au quai ---- */
-#aube .mer{position:absolute;left:0;right:0;top:41%;height:37%;
-  background:linear-gradient(180deg,
-    #b8bfae 0%, #7d96a4 4%, #5a7f94 14%,
-    #446b83 36%, #345872 62%, #2a4a63 100%)}
-
-/* ---- la colline de Notre-Dame, derrière l'horizon ---- */
-#aube .colline{position:absolute;left:50%;top:41%;width:230px;height:78px;
-  margin:-78px 0 0 -86px;
-  background:linear-gradient(170deg,rgba(104,110,122,.44),rgba(70,78,94,.56));
-  /* un profil de colline : pente douce à gauche, sommet arrondi, versant à droite */
-  clip-path:polygon(0% 100%, 12% 76%, 26% 52%, 38% 30%, 47% 17%,
-                    53% 15%, 62% 26%, 74% 48%, 88% 74%, 100% 100%)}
-#aube .clocher{position:absolute;left:50%;top:41%;width:3px;height:15px;
-  margin:-93px 0 0 -1px;background:rgba(214,218,224,.5);border-radius:2px}
-#aube .clocher::after{content:"";position:absolute;left:-2.5px;top:-4px;
-  width:8px;height:5px;border-radius:50%;background:rgba(255,216,146,.55)}
-
-/* ---- la ville, une frange basse de part et d'autre ---- */
-#aube .ville{position:absolute;left:0;right:0;top:41%;height:11px;
-  margin-top:-11px;opacity:.26;
-  background:repeating-linear-gradient(90deg,
-    #5a687e 0 3px, transparent 3px 6px, #4e5c74 6px 8px,
-    transparent 8px 13px, #64728a 13px 16px, transparent 16px 21px);
-  -webkit-mask-image:linear-gradient(180deg,transparent,#000 60%);
-  mask-image:linear-gradient(180deg,transparent,#000 60%)}
-
-/* ---- la ligne d'horizon ---- */
-#aube .horizon{position:absolute;left:0;right:0;top:41%;height:1.5px;
-  background:rgba(255,238,200,.6)}
-
-/* ---- le soleil, posé dessus, décalé comme dans le vrai décor ---- */
-#aube .soleil{position:absolute;left:41%;top:41%;width:34px;height:34px;
-  margin:-17px 0 0 -17px;border-radius:50%;
-  background:radial-gradient(circle,#fffaea 0%,#fff0c8 42%,#ffdc98 72%,#ffcc80 100%);
-  box-shadow:0 0 40px 18px rgba(255,222,156,.36),
-             0 0 120px 60px rgba(255,200,120,.15)}
-
-/* ---- le chemin de lumière, qui s'ouvre vers nous ---- */
-#aube .chemin{position:absolute;left:41%;top:41%;height:37%;width:250px;
-  margin-left:-125px;
-  /* la lumière s'éteint vers les côtés : un simple dégradé horizontal,
-     découpé en éventail. Discret, comme un vrai reflet. */
-  background:linear-gradient(90deg,
-    rgba(255,230,176,0) 0%, rgba(255,230,176,.14) 32%,
-    rgba(255,240,200,.3) 50%, rgba(255,230,176,.14) 68%,
-    rgba(255,230,176,0) 100%);
-  clip-path:polygon(45% 0%, 55% 0%, 100% 100%, 0% 100%);
-  -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.4) 50%,transparent 100%);
-  mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.4) 50%,transparent 100%);
-  filter:blur(5px);
-  animation:respire 3.2s ease-in-out infinite}
-@keyframes respire{0%,100%{opacity:.62}50%{opacity:.94}}
-
-/* ---- le quai ---- */
-#aube .quai{position:absolute;left:0;right:0;top:78%;bottom:0;
-  background:linear-gradient(180deg,#9e9078 0%,#b6a98c 18%,#c8bb9a 60%,#d2c5a4 100%)}
-#aube .quai::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;
-  background:rgba(255,238,200,.34)}
-#aube .quai::after{content:"";position:absolute;inset:0;opacity:.24;
-  background:repeating-linear-gradient(180deg,
-    transparent 0 11px, rgba(116,104,84,.6) 11px 12px)}
-
-/* ---- la barre du haut et les boutons ---- */
-#aube .haut{position:absolute;left:14px;right:14px;
-  top:calc(env(safe-area-inset-top) + 14px);height:52px;display:flex;gap:9px}
-#aube .haut i{display:block;height:100%;border-radius:10px;
-  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);
-  animation:pulse 1.9s ease-in-out infinite}
-#aube .haut i:nth-child(1){width:52px}
-#aube .haut i:nth-child(2){flex:1;animation-delay:.16s}
-#aube .haut i:nth-child(3){width:118px;animation-delay:.32s}
-
-#aube .bas{position:absolute;left:14px;right:14px;
-  bottom:calc(env(safe-area-inset-bottom) + 14px);height:62px;display:flex;gap:9px}
-#aube .bas i{display:block;flex:1;border-radius:11px;
-  background:rgba(24,30,38,.16);border:1.5px solid rgba(255,255,255,.1);
-  animation:pulse 1.9s ease-in-out infinite}
-#aube .bas i:nth-child(2){animation-delay:.16s}
-#aube .bas i:nth-child(3){animation-delay:.32s}
-
-@keyframes pulse{0%,100%{opacity:.45}50%{opacity:.85}}
-@media (prefers-reduced-motion:reduce){#aube *{animation:none}}
 
 /* le décor est peint dessous, à l'abri, et découvert d'un coup */
 #sc{opacity:1}
@@ -1099,30 +937,9 @@ html{font-size:calc(16px * var(--txt, 1))}
 .amarre.a3{animation-duration:8.6s;animation-delay:-1.2s}
 
 @keyframes bat{0%,100%{opacity:.4}50%{opacity:1}}
-
-
 </style>
 </head>
 <body>
-<div id="chg" class="l-anse">
-  <p class="nom" id="chg-nom">Marseille</p>
-  <span class="tr"></span>
-  <p class="sous" id="chg-sous">Le port</p>
-  <span class="pts"><i></i><i></i><i></i></span>
-</div>
-<div id="aube">
-  <span class="ciel"></span>
-  <span class="mer"></span>
-  <span class="colline"></span>
-  <span class="clocher"></span>
-  <span class="ville"></span>
-  <span class="horizon"></span>
-  <span class="soleil"></span>
-  <span class="chemin"></span>
-  <span class="quai"></span>
-  <span class="haut"><i></i><i></i><i></i></span>
-  <span class="bas"><i></i><i></i><i></i></span>
-</div>
 
 <div id="sc"></div>
 <div id="eti"></div>
@@ -1315,9 +1132,6 @@ html{font-size:calc(16px * var(--txt, 1))}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
-/* l'instant à partir duquel on a le droit de retirer l'écran de chargement */
-const CHG_NE_PAS_AVANT = Date.now() + 900;
-
 /* ============================================================
    LE PORT À L'AUBE — le socle : charte, lumière, matière
    ============================================================ */
@@ -3166,7 +2980,6 @@ function poserBarre(d){
     Math.max(0, Math.min(100, xp / (d.seuil_xp || need) * 100)) + '%';
   document.getElementById('b-xpn').textContent = 'nv ' + niv;
 
-  el.classList.add('pret');
 }
 
 /* le matricule : on le dérive de l'identifiant, il ne change jamais */
@@ -4441,7 +4254,11 @@ function poserBas(d){
     tra.onclick = () => basculerChantier(true);
   }
 
-  el.classList.add('pret');
+  /* tout est prêt : on montre la barre, l'avatar et les boutons */
+  ['barre', 'bas', 'av'].forEach(k => {
+    const x = document.getElementById(k);
+    if (x) x.classList.add('pret');
+  });
 }
 
 function poserAvatar(d){
@@ -4450,7 +4267,6 @@ function poserAvatar(d){
   const nom = (d && d.pseudo) || '';
   el.innerHTML = BD.avatarSVG(d)
     + (nom ? '<span class="nm">' + nom + '</span>' : '');
-  el.classList.add('pret');
 }
 
 (async () => {
@@ -4473,7 +4289,6 @@ function poserAvatar(d){
     poserBarque(d);
     poserClassement(d);
     poserChantier(d);
-    habillerChargement(d);
     poserBas(d);
     /* si on revient du hub avec une intention, on l'exécute */
     try {
@@ -4549,44 +4364,10 @@ function poserAvatar(d){
     /* hors ligne ou pas connecté : on laisse le carré vide plutôt que de planter */
     console.warn('avatar indisponible', e);
   }
-  /* tout est en place : on peut découvrir la page */
-  retirerChargement();
 })();
 
 
 /* ---------- la scène ---------- */
-/* ---------- l'écran de chargement ---------- */
-const CHG_MOTS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
-                   palma:'Palma', ajaccio:'Ajaccio' };
-const CHG_HEURE = { nuit:'la nuit sur la rade', aube:'le jour se lève',
-                    matin:'le matin', midi:"l'après-midi", soir:'au couchant' };
-
-function habillerChargement(d){
-  const el = document.getElementById('chg');
-  if (!el || !d) return;
-  const ou = d.parti_le ? 'mer' : (d.port || 'anse');
-  el.className = 'l-' + ou + (MOMENT === 'nuit' ? ' h-nuit' : '');
-  document.getElementById('chg-nom').textContent =
-    d.parti_le ? 'En mer' : (CHG_MOTS[ou] || 'Marseille');
-  document.getElementById('chg-sous').textContent =
-    d.parti_le ? 'Cap sur ' + (CHG_MOTS[d.cap] || d.cap)
-               : (CHG_HEURE[MOMENT] || 'le port');
-}
-
-function retirerChargement(){
-  const el = document.getElementById('chg');
-  if (!el || el.classList.contains('parti')) return;
-  const reste = Math.max(0, CHG_NE_PAS_AVANT - Date.now());
-  setTimeout(() => {
-    /* on attend deux images de plus : le temps que tout soit
-       réellement peint, pas seulement calculé */
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      el.classList.add('parti');
-      setTimeout(() => el.remove(), 700);
-    }));
-  }, reste);
-}
-
 function dessiner(){
   const v = cadrer(innerWidth, innerHeight);
   document.getElementById('sc').innerHTML =
@@ -4596,9 +4377,6 @@ function dessiner(){
   etiquettes(v);
   /* le décor est calculé : on attend qu'il soit réellement peint
      avant de retirer l'aube. Sinon on découvrirait du vide. */
-  const au = document.getElementById('aube');
-  if (au && !au.classList.contains('parti'))
-    requestAnimationFrame(() => requestAnimationFrame(() => au.classList.add('parti')));
 }
 dessiner();
 let t = null;
