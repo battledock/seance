@@ -605,58 +605,6 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
 .ch .fini{padding:22px 16px;text-align:center;font-size:12.5px;color:#f0c46a;
   line-height:1.7}
 
-/* ---------- le classement ---------- */
-.cl{position:fixed;z-index:22;left:14px;right:14px;
-  top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
-  max-height:calc(100vh - env(safe-area-inset-top) - 120px);overflow-y:auto;
-  background:rgba(20,34,50,.94);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border:2px solid rgba(255,255,255,.3);border-radius:8px;
-  box-shadow:0 12px 40px rgba(6,16,28,.6);
-  opacity:0;transform:scale(.94) translateY(10px);pointer-events:none;
-  transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
-.cl.on{opacity:1;transform:none;pointer-events:auto}
-.cl::-webkit-scrollbar{display:none}
-
-.cl .haut{display:flex;align-items:center;padding:14px 15px;
-  border-bottom:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
-.cl .haut b{flex:1;font-size:15px;color:#fff;font-weight:700;letter-spacing:.04em}
-.cl .haut .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.5);
-  font-size:22px;line-height:1;padding:3px 2px}
-
-.cl ul{list-style:none;padding:6px 8px 12px}
-.cl li{display:flex;align-items:center;gap:10px;padding:8px;border-radius:5px}
-.cl li.moi{background:rgba(240,196,106,.13);
-  box-shadow:inset 0 0 0 1px rgba(240,196,106,.3)}
-
-.cl .rg{flex:0 0 24px;height:24px;border-radius:4px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;
-  background:rgba(255,255,255,.1);color:rgba(255,255,255,.55)}
-.cl .rg.or{background:#f0c46a;color:#22201c}
-.cl .rg.ar{background:#c8cdd4;color:#22201c}
-.cl .rg.br{background:#c08a5c;color:#22201c}
-
-.cl .por{flex:0 0 30px;height:30px;border-radius:4px;overflow:hidden;
-  background:#dfe8ee;border:1px solid rgba(255,255,255,.3)}
-.cl .por svg{display:block;width:100%;height:100%}
-
-.cl .id{flex:1;min-width:0}
-.cl .id b{display:block;font-size:12.5px;color:#fff;font-weight:700;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cl .id span{display:block;font-size:9.5px;color:rgba(255,255,255,.44);margin-top:2px;
-  font-family:system-ui,sans-serif}
-
-.cl .ch{flex:0 0 auto;text-align:right}
-.cl .ch em{display:block;font-style:normal;font-size:12px;font-weight:700;
-  color:#ffd894;white-space:nowrap}
-.cl .ch i{display:block;font-style:normal;font-size:8.5px;
-  color:rgba(255,255,255,.4);margin-top:2px}
-
-.cl .rien{padding:26px 16px;text-align:center;font-size:12px;
-  color:rgba(255,255,255,.5);line-height:1.6}
-
 /* ---------- la barque ---------- */
 .bq{position:fixed;z-index:22;left:14px;right:14px;
   top:calc(env(safe-area-inset-top) + 78px);max-width:340px;margin:0 auto;
@@ -1119,11 +1067,6 @@ html{font-size:calc(16px * var(--txt, 1))}
   <p class="dit" id="t-dit">—</p>
   <div class="ouv" id="t-ouv"></div>
   <div class="act" id="t-act"></div>
-</section>
-
-<section class="cl" id="cl">
-  <div class="haut"><b>Le classement</b><button class="fer" id="c-fer">×</button></div>
-  <ul id="c-liste"><li class="rien">On compte les dockers…</li></ul>
 </section>
 
 <section class="bq" id="bq">
@@ -3806,53 +3749,14 @@ function basculerChantier(forcer){
   majVoile();
 }
 
-/* ---------- le classement ---------- */
 const PORTS_N = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
                   alger:'Alger', naples:'Naples' };
 
-async function poserClassement(moi){
-  const el = document.getElementById('c-liste');
-  if (!el) return;
-  let L = [];
-  try {
-    const c = await BD.client();
-    const { data } = await c.from('classement').select('*').order('rang').limit(50);
-    L = data || [];
-  } catch(e){
-    el.innerHTML = '<li class="rien">Le classement n\'a pas répondu.<br>'
-      + 'Réessaie dans un moment.</li>';
-    return;
-  }
-  if (!L.length){
-    el.innerHTML = '<li class="rien">Personne d\'autre sur le quai.<br>'
-      + 'Tu es le premier.</li>';
-    return;
-  }
-  const MED = ['or', 'ar', 'br'];
-  el.innerHTML = L.map(j => {
-    const mien = moi && j.id === moi.id;
-    const p = j.barque ? PALIERS_B[Math.min(19, j.barque - 1)] : null;
-    return '<li' + (mien ? ' class="moi"' : '') + '>'
-      + '<span class="rg ' + (MED[j.rang - 1] || '') + '">' + j.rang + '</span>'
-      + '<span class="por">' + BD.avatarSVG(j) + '</span>'
-      + '<span class="id"><b>' + (j.pseudo || '—') + '</b>'
-      + '<span>' + (PORTS_N[j.port] || 'En mer')
-      + (p ? ' — ' + p.nom.toLowerCase() : ' — sans bateau') + '</span></span>'
-      + '<span class="ch"><em>' + euro(j.euros) + '</em>'
-      + '<i>niveau ' + (j.niveau || 1) + '</i></span></li>';
-  }).join('');
-}
 
-let clOuvert = false;
-function basculerClassement(forcer){
-  clOuvert = forcer === undefined ? !clOuvert : forcer;
-  document.getElementById('cl').classList.toggle('on', clOuvert);
-  majVoile();
-}
 
 function majVoile(){
   document.getElementById('voile').classList.toggle('on',
-    qtOuvert || gnOuvert || saOuvert || rgOuvert || ctOuvert || chOuvert || clOuvert || bqOuverte || ficheOuverte || menuOuvert);
+    qtOuvert || gnOuvert || saOuvert || rgOuvert || ctOuvert || chOuvert || bqOuverte || ficheOuverte || menuOuvert);
 }
 
 /* ---------- la barque ---------- */
@@ -4046,9 +3950,7 @@ const ICONES = {
   quetes:'<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2'
     + 'M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2M9 12l2 2 4-4"/>',
   sacoche:'<path d="M5 9h14l1.4 10.2a1.6 1.6 0 0 1-1.6 1.8H5.2a1.6 1.6 0 0 1-1.6-1.8z'
-    + 'M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9M9.5 13h5"/>',
-  /* le classement : trois barres et une couronne */
-  classement:'<path d="M4 21V11M12 21V4M20 21v-6M2 21h20"/>'
+    + 'M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9M9.5 13h5"/>'
 };
 
 /* ---------- ce qui t'attend, en une ligne ---------- */
@@ -4284,9 +4186,7 @@ function poserMenu(d){
          ? d.sacoche.length + (d.sacoche.length > 1 ? ' objets' : ' objet')
          : 'Vide pour l\'instant',
       ouvert:true, f:() => { basculerMenu(false); basculerSacoche(true); } },
-    { k:'classement', n:'Le classement', s:'Qui mène la danse',    ouvert:true,
-      f:() => { basculerMenu(false); basculerClassement(true); } },
-    { k:'reglages', n:'Réglages',   s:'Animations, texte, vibrations', ouvert:true,
+    { k:'reglages', n:'Réglages', s:'Animations, texte, vibrations', ouvert:true,
       f:() => { basculerMenu(false); basculerReglages(true); } },
     { k:'sortie', n:'Se déconnecter', s:'',                        ouvert:true, sortie:true,
       f:async () => { try { await BD.deconnexion(); } catch(e){} location.href = 'index.html'; } }
@@ -4323,12 +4223,15 @@ document.getElementById('av').onclick = e => {
   e.stopPropagation();
   location.href = 'hub.html?v=3';
 };
-function toutFermer(){ fermerDemande(); basculerQuetes(false); basculerGens(false); basculerSacoche(false); basculerReglages(false); basculerContrats(false); basculerChantier(false); basculerClassement(false);
+
+/* tout refermer d'un coup */
+function toutFermer(){
+  basculerContrats(false); basculerQuetes(false); basculerGens(false);
+  basculerSacoche(false); basculerReglages(false); basculerChantier(false);
   basculerBarque(false); basculerFiche(false); basculerMenu(false); }
 document.getElementById('voile').onclick = toutFermer;
 document.getElementById('f-fer').onclick = () => basculerFiche(false);
 document.getElementById('q-fer').onclick = () => basculerBarque(false);
-document.getElementById('c-fer').onclick = () => basculerClassement(false);
 document.getElementById('t-fer').onclick = () => basculerChantier(false);
 document.getElementById('e-fer').onclick = () => basculerEntrepot(false);
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
@@ -4387,7 +4290,6 @@ function poserAvatar(d){
     poserBarre(d);
     poserMenu(d);
     poserBarque(d);
-    poserClassement(d);
     poserChantier(d);
     habillerChargement(d);
     poserBas(d);
@@ -4400,7 +4302,7 @@ function poserAvatar(d){
           entrepot:() => basculerEntrepot(true), quetes:() => basculerQuetes(true),
           anse:() => basculerChantier(true), barque:() => basculerBarque(true),
           gens:() => basculerGens(true), sacoche:() => basculerSacoche(true),
-          fiche:() => basculerFiche(true), classement:() => basculerClassement(true) };
+          fiche:() => basculerFiche(true) };
         if (OUVRE[q]) setTimeout(OUVRE[q], 240);
       }
     } catch(e){}
