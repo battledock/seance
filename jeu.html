@@ -2,12 +2,69 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<style>
+/* ============================================================
+   L'ÉCRAN DE CHARGEMENT
+   Première chose du fichier : le navigateur peut le peindre
+   avant d'avoir lu le reste. Fond opaque, aucune animation
+   sur le fond lui-même.
+   ============================================================ */
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0c2138}
+#chg{position:fixed;inset:0;z-index:90;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  --haut:#081a2e; --coeur:#1a4a6c; --bas:#061420; --or:#f0c46a;
+  background:linear-gradient(180deg,
+    var(--haut) 0%, var(--haut) 20%,
+    color-mix(in srgb, var(--coeur) 46%, var(--bas)) 46%,
+    color-mix(in srgb, var(--coeur) 20%, var(--bas)) 72%,
+    var(--bas) 100%);
+  transition:opacity .5s ease-out}
+#chg.parti{opacity:0;pointer-events:none}
+/* la lueur du centre : posée par-dessus, elle n'empêche rien */
+#chg .lu{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(94% 58% at 50% 44%,
+    color-mix(in srgb, var(--coeur) 70%, transparent), transparent 74%)}
+#chg .nom{position:relative;z-index:2;
+  font-family:'Cormorant Garamond',Georgia,serif;font-size:44px;font-weight:300;
+  letter-spacing:.22em;text-indent:.22em;color:#f8f2e6;
+  text-shadow:0 2px 28px rgba(0,0,0,.5);opacity:0;
+  animation:chgNom 1.2s .2s cubic-bezier(.2,.9,.28,1) forwards}
+@keyframes chgNom{from{opacity:0;transform:translateY(12px);letter-spacing:.32em}
+  to{opacity:1;transform:none;letter-spacing:.22em}}
+#chg .tr{position:relative;z-index:2;width:54px;height:1px;margin:19px 0 17px;
+  background:var(--or);opacity:0;transform:scaleX(0);
+  animation:chgTr .9s .75s cubic-bezier(.2,.9,.28,1) forwards}
+@keyframes chgTr{to{opacity:.6;transform:none}}
+#chg .sous{position:relative;z-index:2;font-family:'Courier Prime',monospace;
+  font-size:9px;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(255,255,255,.44);opacity:0;
+  animation:chgIn .9s .95s ease-out forwards}
+@keyframes chgIn{to{opacity:1}}
+#chg .pts{position:absolute;bottom:15%;z-index:2;display:flex;gap:8px;
+  opacity:0;background:none;border:0;padding:0;box-shadow:none;
+  animation:chgIn .8s 1.25s ease-out forwards}
+#chg .pts i{width:5px;height:5px;border-radius:50%;background:var(--or);
+  border:0;box-shadow:none;font-style:normal;
+  animation:chgBat 1.4s ease-in-out infinite}
+#chg .pts i:nth-child(2){animation-delay:.2s}
+#chg .pts i:nth-child(3){animation-delay:.4s}
+@keyframes chgBat{0%,100%{opacity:.2;transform:scale(.75)}
+  50%{opacity:.95;transform:none}}
+/* les palettes, une par lieu */
+#chg.l-anse,#chg.l-marseille{--haut:#081a2e;--coeur:#1e5478;--bas:#061420;--or:#f0c46a}
+#chg.l-barcelone{--haut:#1c0f22;--coeur:#7a3a52;--bas:#140a18;--or:#f0a46a}
+#chg.l-palma{--haut:#0e2226;--coeur:#1d6270;--bas:#08181c;--or:#f4d89a}
+#chg.l-ajaccio{--haut:#1a1030;--coeur:#8a4444;--bas:#120a1c;--or:#ff9a5a}
+#chg.l-mer{--haut:#04121e;--coeur:#124260;--bas:#020a12;--or:#8ec4e0}
+#chg.h-nuit{--haut:#050b16;--coeur:#1c3358;--bas:#03060c;--or:#9ab0d8}
+</style>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0e1c2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Cormorant+Garamond:wght@300&display=swap" rel="stylesheet">
 <style>
 /* la base de la page : pas de marge, et un fond qui ne soit jamais blanc */
 *{margin:0;padding:0;box-sizing:border-box}
@@ -941,6 +998,13 @@ html{font-size:calc(16px * var(--txt, 1))}
 </style>
 </head>
 <body>
+<div id="chg" class="l-anse">
+  <span class="lu"></span>
+  <p class="nom" id="chg-nom">Marseille</p>
+  <span class="tr"></span>
+  <p class="sous" id="chg-sous">Le port</p>
+  <span class="pts"><i></i><i></i><i></i></span>
+</div>
 
 <div id="sc"></div>
 <div id="eti"></div>
@@ -1133,6 +1197,48 @@ html{font-size:calc(16px * var(--txt, 1))}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
+/* ---------- l'écran de chargement ----------
+   Une seule règle : il couvre l'écran jusqu'à ce que TOUT soit
+   en place, et au moins huit dixièmes de seconde. */
+/* on compte depuis le début de la navigation, pas depuis la lecture
+   du script : sinon le délai est déjà écoulé quand on arrive ici */
+const CHG_MINIMUM = 800;
+function chgEcoule(){
+  try { return performance.now(); } catch(e){ return CHG_MINIMUM; }
+}
+
+function habillerChargement(d){
+  const el = document.getElementById('chg');
+  if (!el || !d) return;
+  const NOMS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
+                 palma:'Palma', ajaccio:'Ajaccio' };
+  const HEURES = { nuit:'la nuit sur la rade', aube:'le jour se lève',
+                   matin:'le matin', midi:"l'après-midi", soir:'au couchant' };
+  const ou = d.parti_le ? 'mer' : (d.port || 'anse');
+  el.className = 'l-' + ou + (typeof MOMENT !== 'undefined' && MOMENT === 'nuit'
+    ? ' h-nuit' : '');
+  document.getElementById('chg-nom').textContent =
+    d.parti_le ? 'En mer' : (NOMS[ou] || 'Marseille');
+  document.getElementById('chg-sous').textContent =
+    d.parti_le ? 'Cap sur ' + (NOMS[d.cap] || d.cap)
+      : (typeof MOMENT !== 'undefined' ? (HEURES[MOMENT] || 'le port') : 'le port');
+}
+
+function retirerChargement(){
+  const el = document.getElementById('chg');
+  if (!el || el.classList.contains('parti')) return;
+  const reste = Math.max(0, CHG_MINIMUM - chgEcoule());
+  setTimeout(() => {
+    /* deux images de plus : le temps que le décor soit réellement peint */
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.classList.add('parti');
+      setTimeout(() => el.remove(), 650);
+    }));
+  }, reste);
+}
+/* filet de sécurité : si quelque chose échoue, on ne reste pas bloqué */
+setTimeout(retirerChargement, 6000);
+
 /* ============================================================
    LE PORT À L'AUBE — le socle : charte, lumière, matière
    ============================================================ */
@@ -4307,6 +4413,7 @@ function poserAvatar(d){
     poserBarque(d);
     poserClassement(d);
     poserChantier(d);
+    habillerChargement(d);
     poserBas(d);
     /* si on revient du hub avec une intention, on l'exécute */
     try {
@@ -4382,6 +4489,8 @@ function poserAvatar(d){
     /* hors ligne ou pas connecté : on laisse le carré vide plutôt que de planter */
     console.warn('avatar indisponible', e);
   }
+  /* tout est en place : on découvre la rade */
+  retirerChargement();
 })();
 
 
