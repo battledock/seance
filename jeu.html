@@ -1202,7 +1202,7 @@ html{font-size:calc(16px * var(--txt, 1))}
    en place, et au moins huit dixièmes de seconde. */
 /* on compte depuis le début de la navigation, pas depuis la lecture
    du script : sinon le délai est déjà écoulé quand on arrive ici */
-const CHG_MINIMUM = 800;
+const CHG_MINIMUM = 3000;
 function chgEcoule(){
   try { return performance.now(); } catch(e){ return CHG_MINIMUM; }
 }
@@ -1237,7 +1237,7 @@ function retirerChargement(){
   }, reste);
 }
 /* filet de sécurité : si quelque chose échoue, on ne reste pas bloqué */
-setTimeout(retirerChargement, 6000);
+setTimeout(retirerChargement, 8000);
 
 /* ============================================================
    LE PORT À L'AUBE — le socle : charte, lumière, matière
