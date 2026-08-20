@@ -16,10 +16,12 @@ html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
   color:#fff;background:#08131f}
 /* le fond : l'eau du bassin, avec une lueur au levant */
 body::before{content:"";position:fixed;inset:0;z-index:0;
+  /* le bleu du bassin, éclairci vers le haut comme un ciel de matin */
   background:
-    radial-gradient(130% 40% at 50% -8%, rgba(110,156,192,.28), transparent 64%),
-    radial-gradient(80% 24% at 20% 0%, rgba(226,178,116,.08), transparent 70%),
-    linear-gradient(180deg,#14304a 0%,#0f2436 32%,#0a1928 66%,#071320 100%)}
+    radial-gradient(120% 34% at 50% -4%, rgba(214,234,250,.34), transparent 62%),
+    radial-gradient(130% 44% at 50% -8%, rgba(130,180,220,.3), transparent 66%),
+    linear-gradient(180deg,#3a6b96 0%,#245579 22%,#143a5a 52%,
+      #0b2338 78%,#071624 100%)}
 body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   opacity:.025;
   background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
