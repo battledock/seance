@@ -2,403 +2,181 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,maximum-scale=1.0,user-scalable=no">
-<meta name="theme-color" content="#102438">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
 <style>
+
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
-html,body{height:100%;overflow:hidden;background:#0a1522;
-  font-family:'Courier Prime',monospace;color:#fff}
-
-/* le fond : l'eau du port */
+html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
+  color:#fff;background:#08131f}
+/* le fond : l'eau du bassin, avec une lueur au levant */
 body::before{content:"";position:fixed;inset:0;z-index:0;
   background:
-    radial-gradient(120% 46% at 50% -6%, rgba(96,140,176,.34), transparent 66%),
-    radial-gradient(90% 30% at 50% 2%, rgba(210,168,110,.11), transparent 70%),
-    radial-gradient(80% 50% at 12% 104%, rgba(30,72,108,.34), transparent 62%),
-    linear-gradient(180deg,#153048 0%,#102438 34%,#0b1a2a 68%,#081420 100%)}
-
+    radial-gradient(130% 40% at 50% -8%, rgba(110,156,192,.28), transparent 64%),
+    radial-gradient(80% 24% at 20% 0%, rgba(226,178,116,.08), transparent 70%),
+    linear-gradient(180deg,#14304a 0%,#0f2436 32%,#0a1928 66%,#071320 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
 .pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
   -webkit-overflow-scrolling:touch;
-  padding:calc(env(safe-area-inset-top) + 16px) 16px
-          calc(env(safe-area-inset-bottom) + 22px)}
-.pont::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.026;
-  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
-  background-size:3px 3px}
+  padding:0 15px calc(env(safe-area-inset-bottom) + 34px)}
 
+/* ============================================================
+   L'ENTÊTE — une carte, pas une ligne
+   ============================================================ */
+.tete{position:relative;margin:0 -15px 18px;padding:calc(env(safe-area-inset-top) + 20px) 18px 17px;
+  overflow:hidden;
+  background:linear-gradient(180deg,rgba(24,52,80,.72),rgba(12,30,50,.5));
+  border-bottom:1px solid rgba(160,200,230,.12)}
+/* un filet doré sous l'entête */
+.tete::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,178,116,.34) 24%,
+    rgba(226,178,116,.34) 76%,transparent)}
+.tete .h1{display:flex;align-items:center;gap:14px}
+.tete .av{width:54px;height:54px;border-radius:15px;flex:0 0 54px;overflow:hidden;
+  background:linear-gradient(158deg,#456280,#22334a);
+  border:1.5px solid rgba(226,182,116,.42);
+  box-shadow:0 4px 16px rgba(3,10,18,.6), 0 0 0 4px rgba(226,182,116,.06)}
+.tete .q{flex:1;min-width:0}
+.tete .q b{display:block;font-size:19px;letter-spacing:.01em}
+.tete .q span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(206,228,246,.62);margin-top:4px}
+.tete .eu{text-align:right;flex:0 0 auto}
+.tete .eu b{display:block;font-family:'Cormorant Garamond',serif;font-size:26px;
+  font-weight:400;color:#f4cf8a;line-height:1;
+  text-shadow:0 0 24px rgba(240,196,106,.3)}
+.tete .eu span{display:block;font-size:8.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(206,228,246,.52);margin-top:5px}
+/* la jauge, intégrée à l'entête */
+.tete .jau{display:flex;align-items:center;gap:10px;margin-top:15px}
+.tete .jau em{font-style:normal;font-size:12px;color:#8ce0a8}
+.tete .jau .ba{flex:1;height:7px;border-radius:5px;background:rgba(0,0,0,.4);
+  overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.5)}
+.tete .jau .ba i{display:block;height:100%;width:67%;border-radius:5px;
+  background:linear-gradient(90deg,#357a52,#8ce0a8 80%,#b0f0c8);
+  box-shadow:0 0 12px rgba(140,224,168,.4)}
+.tete .jau .n{font-size:12.5px;color:rgba(236,248,255,.9);min-width:30px;
+  text-align:right}
 
-
-/* le grain, sur la feuille seulement : pas sur le décor derrière */
-.pont::after{content:"";position:absolute;inset:0;pointer-events:none;
-  opacity:.026;
-  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
-  background-size:3px 3px}
-
-/* ---- le salut ---- */
-.salut{display:flex;align-items:center;gap:13px;margin-bottom:16px;
-  position:relative;z-index:1}
-.salut .av{width:50px;height:50px;border-radius:14px;flex:0 0 50px;
-  overflow:hidden;background:linear-gradient(158deg,#44607e,#22334a);
-  border:1.5px solid rgba(226,182,116,.4);
-  box-shadow:0 4px 14px rgba(3,10,18,.55),
-             inset 0 1px 0 rgba(255,255,255,.14),
-             0 0 0 3px rgba(226,182,116,.07)}
-/* l'avatar remplit tout le cadre : on recadre au lieu de laisser des bords */
-.salut .av svg{width:100%;height:100%;display:block;
-  object-fit:cover;transform:scale(1.02)}
-.salut .q{flex:1;min-width:0}
-.salut .q b{display:block;font-size:17px;color:#fff}
-.salut .q span{display:block;font-size:11px;color:rgba(186,208,226,.52);
-  margin-top:3px;font-family:system-ui,sans-serif}
-.salut .eu{text-align:right;flex:0 0 auto}
-.salut .eu b{display:block;font-size:17px;color:#f2ca7c;
-  text-shadow:0 0 20px rgba(240,196,106,.34)}
-.salut .eu span{display:block;font-size:9px;color:rgba(186,208,226,.4);
-  font-family:system-ui,sans-serif;margin-top:2px;letter-spacing:.06em}
-/* la croix pour refermer */
-.fer{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:16px;
-  z-index:3;width:34px;height:34px;border-radius:11px;border:0;cursor:pointer;
-  background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-size:19px;
-  display:none}
-
-/* ---- les jauges ---- */
-.jau{display:flex;gap:9px;margin-bottom:18px;position:relative;z-index:1}
-.jau .j{flex:1;display:flex;align-items:center;gap:8px;
-  padding:8px 12px;border-radius:11px;
-  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
-  border:1px solid rgba(160,196,226,.12);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.jau em{font-style:normal;font-size:11px;flex:0 0 auto}
-.jau .j:nth-child(1) em{color:#8ce0a8}
-.jau .j:nth-child(2) em{color:#f0c46a}
-.jau .ba{flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,.34);
-  overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
-.jau .ba i{display:block;height:100%;border-radius:4px}
-.jau .n{font-size:10.5px;color:rgba(200,220,236,.6);flex:0 0 auto;
-  min-width:26px;text-align:right}
-
-/* ---- le bonus du jour ---- */
-.cad{width:100%;display:flex;align-items:center;gap:13px;padding:14px 16px;
-  margin-bottom:20px;border-radius:14px;cursor:pointer;position:relative;z-index:1;
-  border:1.5px solid rgba(255,232,178,.75);
-  background:linear-gradient(176deg,#fce2a4 0%,#f0c476 42%,#d69f4a 100%);
-  box-shadow:0 5px 0 rgba(132,88,20,.6), 0 9px 26px rgba(214,159,74,.3),
-             inset 0 1px 0 rgba(255,250,232,.66),
-             inset 0 -2px 6px rgba(150,100,26,.2);
-  font-family:'Courier Prime',monospace;transition:transform .1s, box-shadow .1s}
-.cad:active{transform:translateY(3px);
-  box-shadow:0 2px 0 rgba(132,88,20,.6), 0 3px 10px rgba(214,159,74,.24)}
-.cad .ic{width:34px;height:34px;flex:0 0 34px}
-.cad .ic svg{width:100%;height:100%;stroke:#5a4212;fill:none;stroke-width:1.7;
-  stroke-linecap:round;stroke-linejoin:round}
-.cad .t{flex:1;text-align:left}
-.cad .t b{display:block;font-size:15px;color:#3a2804;font-weight:700;
-  text-shadow:0 1px 0 rgba(255,246,220,.34)}
-.cad .t span{display:block;font-size:10.5px;color:rgba(74,52,10,.7);
-  margin-top:3px;font-family:system-ui,sans-serif}
-.cad .fl{font-size:19px;color:#5a4212}
-.cad.pris{opacity:.45;pointer-events:none}
-
-/* ---- les tuiles ---- */
-.grille{display:grid;grid-template-columns:1fr 1fr;gap:11px;
-  position:relative;z-index:1}
-.tu{position:relative;display:flex;flex-direction:column;
-  align-items:flex-start;gap:9px;padding:16px 15px 15px;border-radius:15px;
-  cursor:pointer;min-height:118px;overflow:hidden;
-  border:1.5px solid rgba(150,190,224,.15);
-  background:linear-gradient(158deg,
-    rgba(52,82,114,.8) 0%, rgba(32,56,84,.86) 46%, rgba(20,38,60,.9) 100%);
-  box-shadow:0 4px 0 rgba(5,16,28,.55), 0 8px 22px rgba(3,10,18,.4),
-             inset 0 1px 0 rgba(190,220,244,.13);
+/* ============================================================
+   LE CADEAU
+   ============================================================ */
+.cad{position:relative;display:flex;align-items:center;gap:15px;width:100%;
+  padding:17px 18px;margin-bottom:22px;border-radius:17px;
+  cursor:pointer;overflow:hidden;
+  border:1.5px solid rgba(255,190,186,.4);
+  background:linear-gradient(150deg,#c04b60 0%,#93304a 50%,#68203a 100%);
+  box-shadow:0 5px 0 rgba(54,12,26,.62), 0 12px 32px rgba(140,36,60,.3),
+             inset 0 1px 0 rgba(255,216,212,.26);
   font-family:'Courier Prime',monospace;
   transition:transform .1s, box-shadow .1s}
-.tu:active{transform:translateY(3px);
-  box-shadow:0 1px 0 rgba(5,16,28,.55), 0 2px 8px rgba(3,10,18,.4)}
-.tu .ic{width:32px;height:32px}
-.tu .ic svg{width:100%;height:100%;stroke:rgba(206,228,246,.82);fill:none;
-  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.tu b{font-size:14px;color:#fff;line-height:1.2}
-.tu small{font-size:10px;color:rgba(178,204,226,.5);line-height:1.38;
+.cad:active{transform:translateY(3px);
+  box-shadow:0 2px 0 rgba(54,12,26,.62), 0 5px 14px rgba(140,36,60,.26)}
+.cad i{position:absolute;width:6px;height:10px;border-radius:2px;top:-13px;
+  animation:tombe 3.6s linear infinite}
+.cad i:nth-child(1){left:16%;background:#ffd68c}
+.cad i:nth-child(2){left:34%;background:#9ce8b8;animation-delay:.7s}
+.cad i:nth-child(3){left:58%;background:#fff0e0;animation-delay:1.4s}
+.cad i:nth-child(4){left:79%;background:#b4d8f8;animation-delay:.4s}
+.cad i:nth-child(5){left:46%;background:#ffd68c;animation-delay:2.1s}
+@keyframes tombe{0%{transform:translateY(0) rotate(0);opacity:0}
+  16%{opacity:1}84%{opacity:1}
+  100%{transform:translateY(96px) rotate(400deg);opacity:0}}
+.cad .ic{position:relative;z-index:2;width:40px;height:40px;flex:0 0 40px;
+  animation:bouge 2.8s cubic-bezier(.36,.07,.19,.97) infinite;
+  transform-origin:50% 90%}
+@keyframes bouge{0%,74%,100%{transform:rotate(0)}
+  78%{transform:rotate(-8deg)}82%{transform:rotate(7deg)}
+  86%{transform:rotate(-4deg)}90%{transform:rotate(0)}}
+.cad .ic svg{width:100%;height:100%;stroke:#ffe0a8;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.cad .t{position:relative;z-index:2;flex:1;text-align:left}
+.cad .t b{display:block;font-size:15px;color:#fff;white-space:nowrap}
+.cad .t span{display:block;font-size:11px;color:rgba(255,232,228,.82);
+  margin-top:3px;font-family:system-ui,sans-serif}
+.cad .sr{position:relative;z-index:2;flex:0 0 auto;padding:5px 9px;
+  border-radius:12px;font-size:9.5px;white-space:nowrap;color:#ffe0b4;
+  background:rgba(255,226,190,.18);border:1px solid rgba(255,226,190,.3)}
+
+/* ============================================================
+   LES TROIS GRANDES — ce qui compte aujourd'hui
+   ============================================================ */
+.pri{position:relative;display:flex;align-items:center;gap:16px;width:100%;
+  padding:17px 18px;margin-bottom:10px;border-radius:16px;cursor:pointer;
+  overflow:hidden;font-family:'Courier Prime',monospace;
+  transition:transform .1s, box-shadow .1s}
+.pri:active{transform:translateY(3px)}
+/* un liséré vertical à gauche, qui dit la famille */
+.pri::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.pri .ic{width:38px;height:38px;flex:0 0 38px}
+.pri .ic svg{width:100%;height:100%;fill:none;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.pri .co{flex:1;text-align:left;min-width:0}
+.pri b{display:block;font-size:16px;color:#fff}
+.pri small{display:block;font-size:11.5px;margin-top:4px;
   font-family:system-ui,sans-serif}
-/* la tuile principale */
-.tu.prem{border-color:rgba(140,196,238,.34);
-  background:linear-gradient(158deg,
-    rgba(46,96,142,.86) 0%, rgba(30,68,106,.9) 52%, rgba(20,46,74,.92) 100%);
-  box-shadow:0 4px 0 rgba(6,22,40,.6), 0 8px 26px rgba(40,100,150,.2),
-             inset 0 1px 0 rgba(190,226,250,.2)}
-.tu.prem .ic svg{stroke:#a8d4f4}
-.tu.prem small{color:rgba(180,214,240,.62)}
-/* celles qui attendent */
-.tu.vif{border-color:rgba(238,190,110,.42);
-  background:linear-gradient(158deg,
-    rgba(74,66,48,.84) 0%, rgba(48,44,34,.88) 50%, rgba(30,30,26,.9) 100%);
-  box-shadow:0 4px 0 rgba(34,26,10,.6), 0 8px 24px rgba(150,112,42,.13),
-             inset 0 1px 0 rgba(255,224,164,.17)}
-.tu.vif .ic svg{stroke:#f6cf86}
-.tu.vif b{color:#fff6e4}
-.tu.vif small{color:rgba(238,198,126,.72)}
-.tu .nb{position:absolute;top:12px;right:13px;min-width:23px;height:23px;
-  border-radius:12px;display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:#3e2c06;padding:0 7px;
+.pri .nb{flex:0 0 auto;min-width:27px;height:27px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;padding:0 8px;
+  font-size:13px;font-weight:700;color:#3e2c06;
   background:linear-gradient(176deg,#fde6ae,#e0af58);
-  box-shadow:0 2px 7px rgba(4,12,22,.45), inset 0 1px 0 rgba(255,252,240,.6)}
-/* celles qui ne sont pas encore ouvertes */
-.tu.off{cursor:default;box-shadow:none;
-  background:rgba(140,180,214,.035);
-  border:1.5px dashed rgba(150,190,224,.16)}
-.tu.off .ic svg{stroke:rgba(170,200,224,.28)}
-.tu.off b{color:rgba(190,214,234,.36)}
-.tu.off small{color:rgba(170,200,224,.24)}
-/* la tuile large */
-.tu.large{grid-column:1 / -1;flex-direction:row;align-items:center;gap:15px;
-  min-height:0;padding:16px}
-.tu.large .ic{flex:0 0 34px}
-.tu.large .co{flex:1}
-.tu.large b{display:block;font-size:15px}
-.tu.large small{display:block;margin-top:3px}
-.tu.large .fl{color:rgba(255,255,255,.3);font-size:18px}
+  box-shadow:0 2px 8px rgba(4,12,22,.4), inset 0 1px 0 rgba(255,252,240,.6)}
 
-.pied{text-align:center;font-size:10px;color:rgba(160,192,218,.3);
-  margin-top:22px;font-family:system-ui,sans-serif;position:relative;z-index:1}
+.p-bleu{border:1.5px solid rgba(130,190,236,.28);
+  background:linear-gradient(150deg,rgba(40,90,138,.84),rgba(18,44,74,.9));
+  box-shadow:0 5px 0 rgba(5,20,38,.6), inset 0 1px 0 rgba(180,220,250,.16)}
+.p-bleu::before{background:linear-gradient(180deg,#7cc0f0,rgba(124,192,240,.2))}
+.p-bleu .ic svg{stroke:#b4dcfa}
+.p-bleu small{color:rgba(214,236,254,.72)}
+.p-vert{border:1.5px solid rgba(150,196,124,.26);
+  background:linear-gradient(150deg,rgba(54,82,42,.84),rgba(26,44,22,.9));
+  box-shadow:0 5px 0 rgba(12,24,8,.6), inset 0 1px 0 rgba(200,230,170,.15)}
+.p-vert::before{background:linear-gradient(180deg,#a8d488,rgba(168,212,136,.2))}
+.p-vert .ic svg{stroke:#cceaa8}
+.p-vert small{color:rgba(216,238,192,.72)}
 
-
-/* ---------- les contrats ---------- */
-const OU_NOM = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
-                 palma:'Palma', ajaccio:'Ajaccio' };
-
-async function ouvrirContrats(){
-  const p = document.getElementById('ctr');
-  p.classList.add('on');
-  const L = document.getElementById('ctr-liste');
-  L.innerHTML = '<li class="rien">On regarde ce qu\'il y a…</li>';
-
-  let r;
-  try { r = await BD.agir('contrats_du_jour'); } catch(e){ r = null; }
-  if (!r || !r.ok){
-    L.innerHTML = '<li class="rien">Rien à charger pour l\'instant.</li>';
-    return;
-  }
-
-  const C = r.contrats || [];
-  const libre = r.places || 0;
-  document.getElementById('ctr-cale').textContent =
-    libre > 0 ? libre + (libre > 1 ? ' places libres' : ' place libre') : 'pleine';
-  document.getElementById('ctr-s').textContent =
-    'Pour ' + (OU_NOM[r.vers] || r.vers) + ', au départ de ' + (OU_NOM[r.depuis] || r.depuis);
-
-  if (!C.length){
-    L.innerHTML = '<li class="rien">Le quai est vide aujourd\'hui.</li>';
-    return;
-  }
-
-  L.innerHTML = C.map(c => {
-    const pris = c.etat !== 'propose';
-    const trop = c.places > libre;
-    /* la demande dit si le prix est bon */
-    let et = '';
-    if (c.demande >= .85) et = '<span class="et dem">On en manque là-bas</span>';
-    else if (c.demande <= .7) et = '<span class="et mal">Le marché est mou</span>';
-    return '<li class="ct' + (pris ? ' pris' : '') + '">'
-      + '<span class="l1"><b>' + c.nom + '</b>'
-      + '<span class="pr">' + c.paie + ' €</span></span>'
-      + (c.note ? '<p class="no">' + c.note + '</p>' : '')
-      + '<span class="l2">'
-      + '<span class="et">' + c.kg + ' kg</span>'
-      + '<span class="et">' + c.places + (c.places > 1 ? ' places' : ' place') + '</span>'
-      + et
-      + (pris ? '<span class="fait">Dans ta cale</span>'
-              : '<button data-id="' + c.id + '"' + (trop ? ' disabled' : '') + '>'
-                + (trop ? 'Trop gros' : 'Charger') + '</button>')
-      + '</span></li>';
-  }).join('') + '<p class="mot">Les contrats changent chaque jour.</p>';
-
-  L.querySelectorAll('button[data-id]').forEach(b =>
-    b.onclick = async () => {
-      b.disabled = true; b.textContent = '…';
-      try {
-        const x = await BD.agir('prendre_contrat', { p_id: b.dataset.id });
-        if (x && (x.ok || x.pris)) { ouvrirContrats(); return; }
-      } catch(e){}
-      b.disabled = false; b.textContent = 'Charger';
-    });
-}
-document.getElementById('ctr-fer').onclick = () =>
-  document.getElementById('ctr').classList.remove('on');
-
-/* ---------- l'entrepôt ---------- */
-async function ouvrirEntrepot(){
-  const p = document.getElementById('ent');
-  p.classList.add('on');
-  const L = document.getElementById('ent-liste');
-  L.innerHTML = '<li class="rien">On regarde le quai…</li>';
-
-  let r;
-  try { r = await BD.agir('l_entrepot'); } catch(e){ r = null; }
-  if (!r || !r.ok){
-    L.innerHTML = '<li class="rien">Rien à voir ici pour l\'instant.</li>';
-    return;
-  }
-
-  const libre = r.place_libre || 0;
-  document.getElementById('ent-cale').textContent =
-    libre > 0 ? libre + (libre > 1 ? ' places libres' : ' place libre') : 'pleine';
-  document.getElementById('ent-s').textContent =
-    (OU_NOM[r.port] || r.port) + (r.depots_restants
-      ? ' — tu peux encore laisser ' + r.depots_restants + ' caisse'
-        + (r.depots_restants > 1 ? 's' : '') : '');
-
-  const C = r.ma_cale || [], A = r.a_porter || [], T = r.a_toi || [];
-  let h = '';
-
-  /* ce qu'on porte, et qu'on peut laisser ici */
-  if (C.length){
-    h += '<li class="sect">Ce que tu portes</li>';
-    C.forEach(c => {
-      const ici = c.vers === r.port;
-      h += '<li class="dp mien"><span class="qui">▪</span>'
-        + '<span class="co"><b>' + c.nom + '</b>'
-        + '<span class="ou">Pour ' + (OU_NOM[c.vers] || c.vers) + ' — ' + c.kg + ' kg</span>'
-        + '<span class="par">' + (ici ? 'Tu y es : va la livrer'
-            : 'Tu peux la laisser ici') + '</span></span>'
-        + '<span class="pr"><b>' + c.paie + ' €</b>'
-        + (ici || !r.peut_deposer ? ''
-            : '<button data-pose="' + c.i + '">Déposer</button>')
-        + '</span></li>';
-    });
-  }
-
-  /* ce qui attend, posé par d'autres */
-  if (A.length){
-    h += '<li class="sect">À porter</li>';
-    A.forEach(a => {
-      const trop = a.places > libre;
-      const dep = a.depuis < 1 ? "à l'instant"
-        : a.depuis < 24 ? 'il y a ' + a.depuis + ' h'
-        : 'il y a ' + Math.round(a.depuis / 24) + ' j';
-      h += '<li class="dp"><span class="qui">' + (a.par || '?')[0].toUpperCase() + '</span>'
-        + '<span class="co"><b>' + a.nom + '</b>'
-        + '<span class="ou">Pour ' + (OU_NOM[a.vers] || a.vers) + ' — ' + a.kg + ' kg</span>'
-        + '<span class="par">Posée par <em>' + a.par + '</em> ' + dep + '</span></span>'
-        + '<span class="pr"><b>' + a.pour_toi + ' €</b>'
-        + '<button data-id="' + a.id + '"' + (trop ? ' disabled' : '') + '>'
-        + (trop ? 'Trop gros' : 'Prendre') + '</button></span></li>';
-    });
-  }
-
-  /* ce qu'on a laissé, ici ou ailleurs */
-  if (T.length){
-    h += '<li class="sect">Ce que tu as laissé</li>';
-    T.forEach(t => {
-      h += '<li class="dp mien' + (t.ici ? '' : ' loin') + '">'
-        + '<span class="qui">◇</span>'
-        + '<span class="co"><b>' + t.nom + '</b>'
-        + '<span class="ou">' + (t.ici ? 'Ici même' : 'À ' + (OU_NOM[t.ou] || t.ou))
-        + ', pour ' + (OU_NOM[t.vers] || t.vers) + '</span>'
-        + '<span class="par">' + (t.prise
-            ? '<em>' + t.par + "</em> s'en charge" : 'Personne ne l\'a prise encore')
-        + '</span></span>'
-        + '<span class="pr"><b>' + t.paie + ' €</b></span></li>';
-    });
-  }
-
-  L.innerHTML = h || '<li class="rien">Rien n\'attend sur ce quai.</li>';
-
-  L.querySelectorAll('button[data-id]').forEach(b =>
-    b.onclick = async () => {
-      b.disabled = true; b.textContent = '…';
-      try {
-        const x = await BD.agir('prendre_depot', { p_id: b.dataset.id });
-        if (x && x.ok){ ouvrirEntrepot(); return; }
-      } catch(e){}
-      b.disabled = false; b.textContent = 'Prendre';
-    });
-  L.querySelectorAll('button[data-pose]').forEach(b =>
-    b.onclick = async () => {
-      b.disabled = true; b.textContent = '…';
-      try {
-        const x = await BD.agir('deposer', { p_index: +b.dataset.pose });
-        if (x && x.ok){ ouvrirEntrepot(); return; }
-      } catch(e){}
-      b.disabled = false; b.textContent = 'Déposer';
-    });
-}
-document.getElementById('ent-fer').onclick = () =>
-  document.getElementById('ent').classList.remove('on');
-
-/* ---------- le cadeau du jour ---------- */
-.cad{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;
-  width:100%;padding:21px 18px;margin-bottom:20px;border-radius:18px;
-  cursor:pointer;overflow:hidden;border:1.5px solid rgba(255,196,190,.44);
-  background:linear-gradient(158deg,#b8455a 0%,#8e2f48 52%,#6a2038 100%);
-  box-shadow:0 5px 0 rgba(58,14,28,.6), 0 10px 28px rgba(120,30,52,.34),
-             inset 0 1px 0 rgba(255,214,210,.24);
-  font-family:'Courier Prime',monospace;
-  transition:transform .1s, box-shadow .1s}
-.cad:active{transform:translateY(3px);
-  box-shadow:0 2px 0 rgba(58,14,28,.6), 0 4px 12px rgba(120,30,52,.3)}
-/* les confettis qui tombent */
-.cad .cf{position:absolute;width:7px;height:11px;border-radius:2px;top:-14px;
-  animation:cfTombe 3.4s linear infinite}
-.cad .cf:nth-of-type(1){left:12%;background:#ffd68c;animation-delay:0s}
-.cad .cf:nth-of-type(2){left:26%;background:#9ce8b8;animation-delay:.5s}
-.cad .cf:nth-of-type(3){left:41%;background:#fff0e0;animation-delay:1.1s}
-.cad .cf:nth-of-type(4){left:58%;background:#ffd68c;animation-delay:.3s}
-.cad .cf:nth-of-type(5){left:72%;background:#b4d8f8;animation-delay:1.6s}
-.cad .cf:nth-of-type(6){left:87%;background:#9ce8b8;animation-delay:.9s}
-@keyframes cfTombe{0%{transform:translateY(0) rotate(0);opacity:0}
-  12%{opacity:1}86%{opacity:1}
-  100%{transform:translateY(120px) rotate(420deg);opacity:0}}
-.cad .ic{position:relative;z-index:2;width:44px;height:44px}
-.cad .ic svg{width:100%;height:100%;stroke:#ffd68c;fill:none;stroke-width:1.7;
-  stroke-linecap:round;stroke-linejoin:round}
-.cad b{position:relative;z-index:2;font-size:16px;color:#fff}
-.cad span{position:relative;z-index:2;font-size:11px;color:rgba(255,222,220,.66);
+/* ============================================================
+   LE RESTE — une liste sobre
+   ============================================================ */
+.sec{display:flex;align-items:center;gap:11px;
+  font-size:8.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(206,228,246,.5);margin:24px 0 11px}
+.sec::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(160,200,230,.13),transparent)}
+.bloc{border-radius:15px;overflow:hidden;
+  background:linear-gradient(158deg,rgba(255,255,255,.05),rgba(255,255,255,.025));
+  border:1px solid rgba(160,200,230,.1)}
+.li{display:flex;align-items:center;gap:14px;width:100%;padding:15px 16px;
+  border:0;background:none;cursor:pointer;font-family:'Courier Prime',monospace;
+  border-bottom:1px solid rgba(160,200,230,.07);transition:background .15s}
+.li:last-child{border-bottom:0}
+.li:active{background:rgba(255,255,255,.05)}
+.li .ic{width:24px;height:24px;flex:0 0 24px}
+.li .ic svg{width:100%;height:100%;fill:none;stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round;stroke:rgba(212,234,252,.8)}
+.li .co{flex:1;text-align:left}
+.li b{display:block;font-size:14px;color:#fff;font-weight:400}
+.li small{display:block;font-size:10.5px;color:rgba(198,222,242,.58);margin-top:3px;
   font-family:system-ui,sans-serif}
-.cad .sr{position:relative;z-index:2;margin-top:4px;padding:4px 11px;
-  border-radius:12px;font-size:10px;color:#ffe0b4;
-  background:rgba(255,226,190,.16);border:1px solid rgba(255,226,190,.3)}
-/* déjà pris : éteint, sans confettis */
-.cad.pris{cursor:default;border-color:rgba(160,200,224,.14);
-  background:rgba(255,255,255,.04);box-shadow:none}
-.cad.pris .cf{display:none}
-.cad.pris .ic svg{stroke:rgba(200,224,244,.32)}
-.cad.pris b{color:rgba(214,232,246,.55);font-weight:400}
-.cad.pris span{color:rgba(170,200,224,.4)}
-.cad.pris:active{transform:none}
+.li .fl{color:rgba(190,218,240,.42);font-size:15px}
+/* la famille se lit à la teinte de l'icône */
+.li.f-anse .ic svg{stroke:#f0cba0}
+.li.f-toi .ic svg{stroke:#c6e4a4}
+.li.f-gens .ic svg{stroke:#d4bcf0}
 
-/* ---------- ce qu'il y avait dedans ---------- */
-.ouv{position:fixed;inset:0;z-index:70;display:flex;align-items:center;
-  justify-content:center;padding:26px;
-  background:rgba(6,16,28,.82);backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  opacity:0;pointer-events:none;transition:opacity .4s}
-.ouv.on{opacity:1;pointer-events:auto}
-.ouv .ca{width:100%;max-width:310px;border-radius:18px;overflow:hidden;
-  text-align:center;padding:32px 24px 0;
-  background:linear-gradient(158deg,#b8455a 0%,#7e2a42 100%);
-  border:1.5px solid rgba(255,206,200,.24);
-  box-shadow:0 18px 54px rgba(4,12,22,.6);
-  transform:scale(.9);transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
-.ouv.on .ca{transform:none}
-.ouv .em{font-size:44px;line-height:1;margin-bottom:14px;
-  animation:ouvSaut .7s cubic-bezier(.3,1.6,.5,1) both}
-@keyframes ouvSaut{from{transform:scale(.3) rotate(-18deg);opacity:0}
-  to{transform:none;opacity:1}}
-.ouv .gain{font-size:27px;font-weight:700;color:#ffe9b4;
-  text-shadow:0 0 26px rgba(255,214,140,.4)}
-.ouv .mot{font-size:12px;color:rgba(255,224,222,.7);margin-top:9px;
-  font-family:system-ui,sans-serif}
-.ouv .sr2{display:inline-block;margin-top:16px;padding:5px 13px;border-radius:13px;
-  font-size:11px;color:#ffd68c;background:rgba(255,214,140,.14);
-  border:1px solid rgba(255,214,140,.28)}
-.ouv button{width:calc(100% + 48px);margin:24px -24px 0;padding:16px;border:0;
-  cursor:pointer;background:rgba(255,255,255,.1);color:#fff;
-  font-family:'Courier Prime',monospace;font-size:14px;font-weight:700}
+.pied{text-align:center;font-size:9.5px;color:rgba(180,208,232,.4);
+  margin-top:24px;font-family:system-ui,sans-serif;letter-spacing:.06em}
 
 
-/* ---------- les contrats, dans le hub ---------- */
+/* ============================================================
+   LES PANNEAUX — contrats, entrepôt, ce qu'il y avait dedans
+   ============================================================ */
 .pan{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;
   background:linear-gradient(180deg,#153048 0%,#102438 32%,#0b1a2a 68%,#081420 100%);
   transform:translateY(100%);transition:transform .42s cubic-bezier(.28,.92,.32,1)}
@@ -422,13 +200,16 @@ document.getElementById('ent-fer').onclick = () =>
 .pan .cale b{color:#f0c46a;font-family:'Courier Prime',monospace}
 .pan .liste{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:14px 16px calc(env(safe-area-inset-bottom) + 22px);list-style:none}
-
-/* une offre */
+.pan .sect{display:block;font-size:8.5px;letter-spacing:.26em;
+  text-transform:uppercase;color:rgba(180,210,234,.38);
+  margin:20px 0 10px;padding:0}
+.pan .sect:first-child{margin-top:2px}
 .ct{position:relative;margin-bottom:12px;padding:15px 16px;border-radius:14px;
   overflow:hidden;
   background:linear-gradient(158deg,rgba(52,82,114,.72),rgba(24,44,68,.82));
   border:1.5px solid rgba(150,190,224,.16);
   box-shadow:0 3px 0 rgba(5,16,28,.5), inset 0 1px 0 rgba(190,220,244,.1)}
+.ct .l1{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}
 .ct .l1{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}
 .ct .l1 b{flex:1;font-size:15px;color:#fff;font-weight:400}
 .ct .l1 .pr{font-size:17px;color:#f0c46a;font-weight:700;
@@ -454,7 +235,6 @@ document.getElementById('ent-fer').onclick = () =>
 .ct button:active{transform:translateY(2px);
   box-shadow:0 1px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6)}
 .ct button:disabled{opacity:.4;cursor:default;box-shadow:none;transform:none}
-/* pris */
 .ct.pris{opacity:.5}
 .ct.pris .pr{color:rgba(200,224,244,.5);text-shadow:none}
 .ct .fait{margin-left:auto;font-size:11.5px;color:#8ce0a8}
@@ -462,19 +242,16 @@ document.getElementById('ent-fer').onclick = () =>
   color:rgba(186,212,234,.45);font-family:system-ui,sans-serif}
 .pan .mot{text-align:center;font-size:10.5px;color:rgba(170,200,224,.34);
   padding:8px 20px 0;font-family:system-ui,sans-serif}
-
-
-/* ---------- l'entrepôt ---------- */
-.pan .sect{display:block;font-size:8.5px;letter-spacing:.26em;
-  text-transform:uppercase;color:rgba(180,210,234,.38);
-  margin:20px 0 10px;padding:0}
-.pan .sect:first-child{margin-top:2px}
 .dp{position:relative;display:flex;align-items:flex-start;gap:12px;
   margin-bottom:11px;padding:14px 15px;border-radius:14px;
   background:linear-gradient(158deg,rgba(52,82,114,.7),rgba(24,44,68,.8));
   border:1.5px solid rgba(150,190,224,.16);
   box-shadow:0 3px 0 rgba(5,16,28,.5), inset 0 1px 0 rgba(190,220,244,.1)}
 /* l'initiale de celui qui a posé */
+.dp .qui{flex:0 0 36px;height:36px;border-radius:11px;display:flex;
+  align-items:center;justify-content:center;font-size:14px;font-weight:700;
+  color:#f0c46a;background:rgba(240,196,106,.13);
+  border:1px solid rgba(240,196,106,.24)}
 .dp .qui{flex:0 0 36px;height:36px;border-radius:11px;display:flex;
   align-items:center;justify-content:center;font-size:14px;font-weight:700;
   color:#f0c46a;background:rgba(240,196,106,.13);
@@ -500,56 +277,65 @@ document.getElementById('ent-fer').onclick = () =>
 .dp .pr button:active{transform:translateY(2px);
   box-shadow:0 1px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6)}
 .dp .pr button:disabled{opacity:.4;cursor:default;box-shadow:none;transform:none}
-/* ce qu'on a laissé ailleurs */
 .dp.loin{opacity:.62}
 .dp.loin .pr b{color:rgba(200,224,244,.5);font-size:13.5px;text-shadow:none}
-
-</style>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#1c3a68">
-<title>Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none}
-html,body{height:100%;overflow:hidden;background:#1c3a68;
-  font-family:'Courier Prime',monospace}
-#sc{position:fixed;inset:0}
-#sc svg{display:block;width:100%;height:100%}
-
+.ouv{position:fixed;inset:0;z-index:70;display:flex;align-items:center;
+  justify-content:center;padding:26px;
+  background:rgba(6,16,28,.82);backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  opacity:0;pointer-events:none;transition:opacity .4s}
+.ouv.on{opacity:1;pointer-events:auto}
+.ouv.on{opacity:1;pointer-events:auto}
+.ouv.on .ca{transform:none}
+.ouv .ca{width:100%;max-width:310px;border-radius:18px;overflow:hidden;
+  text-align:center;padding:32px 24px 0;
+  background:linear-gradient(158deg,#b8455a 0%,#7e2a42 100%);
+  border:1.5px solid rgba(255,206,200,.24);
+  box-shadow:0 18px 54px rgba(4,12,22,.6);
+  transform:scale(.9);transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.ouv .em{font-size:44px;line-height:1;margin-bottom:14px;
+  animation:ouvSaut .7s cubic-bezier(.3,1.6,.5,1) both}
+.ouv .gain{font-size:27px;font-weight:700;color:#ffe9b4;
+  text-shadow:0 0 26px rgba(255,214,140,.4)}
+.ouv .mot{font-size:12px;color:rgba(255,224,222,.7);margin-top:9px;
+  font-family:system-ui,sans-serif}
+.ouv .sr2{display:inline-block;margin-top:16px;padding:5px 13px;border-radius:13px;
+  font-size:11px;color:#ffd68c;background:rgba(255,214,140,.14);
+  border:1px solid rgba(255,214,140,.28)}
+.ouv button{width:calc(100% + 48px);margin:24px -24px 0;padding:16px;border:0;
+  cursor:pointer;background:rgba(255,255,255,.1);color:#fff;
+  font-family:'Courier Prime',monospace;font-size:14px;font-weight:700}
+@keyframes ouvSaut{from{transform:scale(.3) rotate(-18deg);opacity:0}
 </style>
 </head>
 <body>
 
 <div class="pont">
-  <div class="salut">
-    <span class="av" id="hub-av"></span>
-    <span class="q"><b id="hub-nom">—</b><span id="hub-ou">—</span></span>
-    <span class="eu"><b id="hub-eu">—</b><span>en caisse</span></span>
-  </div>
 
-  <div class="jau">
-    <span class="j">
-      <em>⚡</em>
-      <span class="lb">Ton énergie</span>
-      <span class="ba"><i id="hub-nrj" style="width:0%;
-        background:linear-gradient(90deg,#3f8a5e,#8ce0a8)"></i></span>
-      <span class="n" id="hub-nrjn">—</span></span>
+  <div class="tete">
+    <div class="h1">
+      <span class="av" id="hub-av"></span>
+      <span class="q"><b id="hub-nom">—</b><span id="hub-ou">—</span></span>
+      <span class="eu"><b id="hub-eu">—</b><span>en caisse</span></span>
+    </div>
+    <div class="jau"><em>⚡</em>
+      <span class="ba"><i id="hub-nrj" style="width:0%"></i></span>
+      <span class="n" id="hub-nrjn">—</span></div>
   </div>
 
   <button class="cad" id="cadeau">
-    <span class="cf"></span><span class="cf"></span><span class="cf"></span>
-    <span class="cf"></span><span class="cf"></span><span class="cf"></span>
+    <i></i><i></i><i></i><i></i><i></i>
     <span class="ic"><svg viewBox="0 0 24 24">
-      <path d="M4 11h16v10H4zM2 7h20v4H2zM12 7v14M12 7S9.5 3 7.5 4.2 9 7 12 7zM12 7s2.5-4 4.5-2.8S15 7 12 7z"/>
+      <path d="M4.5 11.5h15v8.5a.9.9 0 0 1-.9.9H5.4a.9.9 0 0 1-.9-.9z"/><path d="M3 7.8h18v3.7H3z"/><path d="M12 7.8v13.1"/><path d="M12 7.8C10.4 5 9.2 3.6 7.9 4.3S9 7.8 12 7.8z"/><path d="M12 7.8c1.6-2.8 2.8-4.2 4.1-3.5S15 7.8 12 7.8z"/>
     </svg></span>
-    <b id="cad-t">Le cadeau du jour</b>
-    <span id="cad-s">Ouvre-le, on ne sait jamais</span>
+    <span class="t"><b id="cad-t">Le cadeau du jour</b>
+      <span id="cad-s">Ouvre-le, on ne sait jamais</span></span>
     <span class="sr" id="cad-sr" style="display:none"></span>
   </button>
 
-  <div class="grille" id="tuiles"></div>
+  <div id="tuiles"></div>
+  <p class="pied">Battle Dock — Marseille</p>
+</div>
 
 <section class="pan" id="ctr">
   <div class="hd">
@@ -580,10 +366,7 @@ html,body{height:100%;overflow:hidden;background:#1c3a68;
     <button id="ouv-ok">Bien</button>
   </div>
 </div>
-  <p class="pied" id="pied">Battle Dock — Marseille</p>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
 const PORTS_N = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
@@ -642,32 +425,46 @@ function aller(quoi){
 }
 
 const TUILES = [
-  { k:'contrats', t:'Les contrats', s:'Ce qu\'on te propose',
-    ic:'<path d="M8 3h8l2 4v14H6V7zM9 11h6M9 15h6M10 3v4h4V3"/>',
+  { k:'contrats', gd:1, fam:'bleu', t:'Les contrats', s:'Ce qu\'on te propose',
+    ic:'<path d="M6.5 8.5 12 3l5.5 5.5V20a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1z"/>'
+      +'<circle cx="12" cy="7.5" r="1.2"/><path d="M9.5 13h5M9.5 16.5h5"/>',
     f:() => ouvrirContrats() },
-  { k:'entrepot', t:'L\'entrepôt', s:'Ce qui attend sur le quai',
-    ic:'<path d="M3 21V9l9-5 9 5v12M3 21h18M8 21v-7h8v7M8 14h8"/>',
+  { k:'entrepot', gd:1, fam:'bleu', t:'L\'entrepôt', s:'Ce qui attend sur le quai',
+    ic:'<path d="M3.5 20.5V9.8L12 4.5l8.5 5.3v10.7M2.5 20.5h19"/>'
+      +'<path d="M9 20.5v-6h6v6M9 17h6"/>',
     f:() => ouvrirEntrepot() },
-  { k:'quetes', t:'Tes affaires', s:'Ce que tu as commencé',
-    ic:'<path d="M9 4h6a1 1 0 011 1v1h2v15H6V6h2V5a1 1 0 011-1zM8 6h8M9.5 13l1.6 1.6L14.5 11"/>',
+  { k:'quetes', gd:1, fam:'vert', t:'Tes affaires', s:'Ce que tu as commencé',
+    ic:'<path d="M6.5 4.5h11a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-14a1 1 0 0 1 1-1z"/>'
+      +'<path d="M9 4.5v16"/><path d="M11.5 12.5l1.6 1.6 3-3.4"/>',
     f:() => aller('quetes') },
-  { k:'anse', t:'Ton anse', s:'Tes ateliers',
-    ic:'<path d="M4 20V8l6-4 6 4v12M9 20v-5h4v5M4 20h16"/>',
+  { k:'anse', fam:'anse', t:'Ton anse', s:'Tes ateliers',
+    ic:'<path d="M4 20V10l8-5.5 8 5.5v10M2.5 20h19"/>'
+      +'<path d="M10 20v-5.5h4V20"/><path d="M8 11.5h2.5"/>',
     f:() => aller('anse') },
-  { k:'barque', t:'Ta barque', s:'Les avirons',
-    ic:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7z"/>',
+  { k:'barque', fam:'anse', t:'Ta barque', s:'Les avirons',
+    ic:'<path d="M4 12.8h16l-2 4.3a2.2 2.2 0 0 1-2 1.3H8a2.2 2.2 0 0 1-2-1.3z"/>'
+      +'<path d="M4 12.8q8-1.4 16 0"/>'
+      +'<path d="M9.5 12.8V8.2M9.5 8.2l5.4 2.1-5.4 1.6"/>'
+      +'<path d="M2.5 21q2.4 1.4 4.9 0t4.9 0 4.9 0 4.8 0"/>',
     f:() => aller('barque') },
-  { k:'gens', t:'Les gens', s:'Ce qu\'ils pensent de toi',
-    ic:'<circle cx="9" cy="8" r="3.4"/><path d="M2 20v-1.6A4.4 4.4 0 016.4 14h5.2a4.4 4.4 0 014.4 4.4V20M17 5a3.4 3.4 0 010 6.6"/>',
-    f:() => aller('gens') },
-  { k:'sacoche', t:'Ta sacoche', s:'Ce que tu portes',
-    ic:'<path d="M5 8h14l-1 12H6zM9 8V5a3 3 0 016 0v3"/>',
+  { k:'sacoche', fam:'toi', t:'Ta sacoche', s:'Ce que tu portes',
+    ic:'<path d="M5 9.5h14l-.9 10.2a1 1 0 0 1-1 .8H6.9a1 1 0 0 1-1-.8z"/>'
+      +'<path d="M8.5 9.5V6.8a3.5 3.5 0 0 1 7 0v2.7"/><path d="M9.5 13.5h5"/>',
     f:() => aller('sacoche') },
-  { k:'fiche', t:'Ta fiche', s:'Ce que tu sais faire',
-    ic:'<circle cx="12" cy="8" r="4"/><path d="M5 21v-2a5 5 0 015-5h4a5 5 0 015 5v2"/>',
+  { k:'fiche', fam:'toi', t:'Ta fiche', s:'Ce que tu sais faire',
+    ic:'<circle cx="12" cy="8" r="3.6"/>'
+      +'<path d="M5.5 20.5v-1.4a4.6 4.6 0 0 1 4.6-4.6h3.8a4.6 4.6 0 0 1 4.6 4.6v1.4"/>',
     f:() => aller('fiche') },
-  { k:'classement', t:'Le classement', s:'Qui mène la danse',
-    ic:'<path d="M6 20V10M12 20V4M18 20v-7M3 20h18"/>',
+  { k:'gens', fam:'gens', t:'Les gens', s:'Ce qu\'ils pensent de toi',
+    ic:'<circle cx="9.2" cy="8.2" r="3.2"/>'
+      +'<path d="M3 20v-1.3A4.2 4.2 0 0 1 7.2 14.5h4a4.2 4.2 0 0 1 4.2 4.2V20"/>'
+      +'<path d="M16.4 5.4a3.2 3.2 0 0 1 0 6.2M17.6 14.8a4.2 4.2 0 0 1 3.4 4.1V20"/>',
+    f:() => aller('gens') },
+  { k:'classement', fam:'gens', t:'Le classement', s:'Qui mène la danse',
+    ic:'<path d="M3 20.5h18"/>'
+      +'<path d="M6 20.5v-6.2a.8.8 0 0 1 .8-.8h1.4a.8.8 0 0 1 .8.8v6.2"/>'
+      +'<path d="M11.3 20.5V6.8a.8.8 0 0 1 .8-.8h1.4a.8.8 0 0 1 .8.8v13.7"/>'
+      +'<path d="M16.6 20.5v-4.4a.8.8 0 0 1 .8-.8h1.4a.8.8 0 0 1 .8.8v4.4"/>',
     f:() => aller('classement') }
 ];
 
@@ -675,24 +472,29 @@ let hubEtat = {};
 
 function dessinerTuiles(){
   const E = hubEtat;
-  document.getElementById('tuiles').innerHTML = TUILES.map(t => {
+  const GD = TUILES.filter(t => t.gd), RE = TUILES.filter(t => !t.gd);
+
+  let h = GD.map(t => {
     const n = E[t.k];
-    const vif = n > 0;
-    const cl = 'tu' + (t.prem ? ' prem' : '') + (t.large ? ' large' : '')
-      + (vif ? ' vif' : '') + (t.off ? ' off' : '');
-    if (t.large)
-      return '<div class="' + cl + '" data-k="' + t.k + '">'
-        + '<span class="ic"><svg viewBox="0 0 24 24">' + t.ic + '</svg></span>'
-        + '<span class="co"><b>' + t.t + '</b><small>' + t.s + '</small></span>'
-        + '<span class="fl">›</span></div>';
-    return '<div class="' + cl + '" data-k="' + t.k + '">'
-      + (vif ? '<span class="nb">' + n + '</span>' : '')
+    return '<button class="pri p-' + t.fam + '" data-k="' + t.k + '">'
       + '<span class="ic"><svg viewBox="0 0 24 24">' + t.ic + '</svg></span>'
-      + '<b>' + t.t + '</b><small>' + t.s + '</small></div>';
+      + '<span class="co"><b>' + t.t + '</b><small>' + (t.sv || t.s) + '</small></span>'
+      + (n > 0 ? '<span class="nb">' + n + '</span>' : '')
+      + '</button>';
   }).join('');
+
+  h += '<p class="sec">Le reste</p><div class="bloc">'
+    + RE.map(t =>
+      '<button class="li f-' + t.fam + '" data-k="' + t.k + '">'
+      + '<span class="ic"><svg viewBox="0 0 24 24">' + t.ic + '</svg></span>'
+      + '<span class="co"><b>' + t.t + '</b><small>' + t.s + '</small></span>'
+      + '<span class="fl">›</span></button>').join('')
+    + '</div>';
+
+  document.getElementById('tuiles').innerHTML = h;
   document.querySelectorAll('#tuiles [data-k]').forEach(el => {
     const t = TUILES.find(x => x.k === el.dataset.k);
-    if (t && t.f && !t.off) el.onclick = t.f;
+    if (t && t.f) el.onclick = t.f;
   });
 }
 
