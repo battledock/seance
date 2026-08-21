@@ -73,13 +73,19 @@
     <span class="q"><b>Le chantier</b><span id="c-sous">—</span></span>
     <button class="retour" id="retour">‹ Retour</button>
   </div>
-  <div id="corps"><p class="vide">On pousse la porte…</p></div>
+  <div id="corps" class="attend"></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
+/* le contenu paraît d'un trait, une fois complet */
+function paraitre(){
+  const e = document.getElementById('corps');
+  if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
+}
+
 const PALIERS_B = [
   { n:1,  nom:"La coque nue",        prix:0,      places:1, kg:40,  vit:1.0,
     d:"Trois bordages et rien d'autre. Elle flotte, c'est déjà ça." },
@@ -245,7 +251,7 @@ function dessiner(){
     h += '<p class="dit">« Je ne travaille pas ici. Mon chantier est chez toi, '
       + 'dans ton anse, et nulle part ailleurs. »</p>'
       + '<p class="rien">Reviens à Marseille pour toucher à ta barque.</p>';
-    C.innerHTML = h;
+    C.innerHTML = h; paraitre();
     document.getElementById('c-sous').textContent = 'Fermé — il est à Marseille';
     return;
   }
@@ -267,7 +273,7 @@ function dessiner(){
     h += '<p class="dit">« Je ne peux plus rien faire pour toi. '
       + 'Tu as le plus beau bateau du bassin. »</p>'
       + '<p class="rien">Le chantier est fermé.<br>Va naviguer.</p>';
-    C.innerHTML = h;
+    C.innerHTML = h; paraitre();
     document.getElementById('c-sous').textContent = 'Rien à ajouter';
     return;
   }
@@ -321,7 +327,7 @@ function dessiner(){
           : p.prix === 0 ? 'gratuite' : eur(p.prix)) + '</span></div>').join('')
     + '</div>';
 
-  C.innerHTML = h;
+  C.innerHTML = h; paraitre();
 
   const go = document.getElementById('go');
   if (go && peut) go.onclick = construire;
