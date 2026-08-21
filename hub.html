@@ -14,7 +14,7 @@
   display:flex;align-items:center;gap:14px}
 .moi .av{width:58px;height:58px;border-radius:16px;flex:0 0 58px;overflow:hidden;
   background:var(--creme);border:3px solid var(--encre);
-  box-shadow:4px 4px 0 rgba(18,48,63,.9)}
+  }
 .moi .av svg{width:100%;height:100%;display:block}
 .moi .q{flex:1;min-width:0}
 .moi .q b{display:block;font-family:'DM Serif Display',Georgia,serif;
@@ -25,7 +25,7 @@
 
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:13px}
 .ct{position:relative;padding:15px 16px;border-radius:16px;
-  background:var(--creme);border:3px solid var(--encre);box-shadow:var(--ombre)}
+  background:var(--creme);border:3px solid var(--encre);}
 .ct b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:28px;
   line-height:1;color:var(--encre)}
 .ct span{display:block;font-size:10px;font-weight:800;letter-spacing:.16em;
@@ -33,7 +33,7 @@
 .ct .em{position:absolute;top:12px;right:13px;font-size:21px}
 
 .nrj{padding:14px 16px;border-radius:16px;margin-bottom:18px;
-  background:var(--creme);border:3px solid var(--encre);box-shadow:var(--ombre)}
+  background:var(--creme);border:3px solid var(--encre);}
 .nrj .l1{display:flex;justify-content:space-between;align-items:baseline;
   margin-bottom:9px}
 .nrj .l1 span{font-size:10px;font-weight:800;letter-spacing:.16em;
@@ -48,9 +48,9 @@
 .cad{position:relative;display:flex;align-items:center;gap:14px;width:100%;
   padding:17px 18px;margin-bottom:20px;border-radius:18px;cursor:pointer;
   overflow:hidden;text-align:left;
-  background:var(--rouge);border:3px solid var(--encre);box-shadow:var(--ombre);
-  font-family:'Nunito',sans-serif;transition:transform .1s, box-shadow .1s}
-.cad:active{transform:translate(3px,3px);box-shadow:var(--ombre-p)}
+  background:var(--rouge);border:3px solid var(--encre);
+  font-family:'Nunito',sans-serif;transition:background .12s}
+.cad:active{background:var(--creme2)}
 .cad > i{position:absolute;width:8px;height:12px;border-radius:2px;top:-14px;
   animation:tombe 3.4s linear infinite}
 .cad > i:nth-child(1){left:18%;background:#ffd68c}
@@ -74,14 +74,14 @@
 .cad.pris .tx span{color:rgba(18,48,63,.44)}
 .cad.pris .em{opacity:.4}
 .cad.pris > i{display:none}
-.cad.pris:active{transform:none;box-shadow:var(--ombre)}
+.cad.pris:active{transform:none;}
 
 .pri{position:relative;display:flex;align-items:center;gap:15px;width:100%;
   padding:17px 18px;margin-bottom:12px;border-radius:18px;cursor:pointer;
   text-align:left;background:var(--creme);border:3px solid var(--encre);
-  box-shadow:var(--ombre);font-family:'Nunito',sans-serif;
-  transition:transform .1s, box-shadow .1s}
-.pri:active{transform:translate(3px,3px);box-shadow:var(--ombre-p)}
+  font-family:'Nunito',sans-serif;
+  transition:background .12s}
+.pri:active{background:var(--creme2)}
 .pri .em{font-size:29px;flex:0 0 auto}
 .pri .co{flex:1;min-width:0}
 .pri .co b{display:block;font-family:'DM Serif Display',Georgia,serif;
@@ -99,7 +99,7 @@
 .ouv.on{opacity:1;pointer-events:auto}
 .ouv .ca{width:100%;max-width:310px;border-radius:20px;overflow:hidden;
   text-align:center;padding:32px 24px 0;background:var(--creme);
-  border:3px solid var(--encre);box-shadow:7px 7px 0 rgba(18,48,63,.9);
+  border:3px solid var(--encre);
   transform:scale(.88) rotate(-2deg);
   transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
 .ouv.on .ca{transform:none}
