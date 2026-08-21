@@ -49,13 +49,19 @@
     <span class="q"><b>Ton carnet</b><span id="c-sous">—</span></span>
     <button class="retour" id="retour">‹ Retour</button>
   </div>
-  <div id="liste"><p class="vide">On relit tes notes…</p></div>
+  <div id="liste" class="attend"></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
+/* le contenu paraît d'un trait, une fois complet */
+function paraitre(){
+  const e = document.getElementById('liste');
+  if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
+}
+
 /* combien d'étapes compte chaque histoire, pour les points */
 const LONGUEUR = { ardit:3, miquel_2:2, pere:2, titou:2 };
 
@@ -121,11 +127,11 @@ function carte(q, ici){
         + fini.map(q => carte(q, false)).join('');
     }
 
-    L.innerHTML = h;
+    L.innerHTML = h; paraitre();
 
   } catch(e){
     console.warn(e);
-    L.innerHTML = '<p class="rien">Le carnet n\'a pas répondu.</p>';
+    L.innerHTML = '<p class="rien">Le carnet n\'a pas répondu.</p>'; paraitre();
   }
 })();
 
