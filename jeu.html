@@ -2,86 +2,6 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<style>
-/* ============================================================
-   L'ÉCRAN DE CHARGEMENT
-   Première chose du fichier : le navigateur peut le peindre
-   avant d'avoir lu le reste. Fond opaque, aucune animation
-   sur le fond lui-même.
-   ============================================================ */
-html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0c2138}
-#chg{position:fixed;inset:0;z-index:90;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  --haut:#081a2e; --coeur:#1a4a6c; --bas:#061420; --or:#f0c46a;
-  background:linear-gradient(180deg,
-    var(--haut) 0%, var(--haut) 20%,
-    color-mix(in srgb, var(--coeur) 46%, var(--bas)) 46%,
-    color-mix(in srgb, var(--coeur) 20%, var(--bas)) 72%,
-    var(--bas) 100%);
-  transition:opacity .5s ease-out}
-#chg.parti{opacity:0;pointer-events:none}
-/* la lueur du centre : posée par-dessus, elle n'empêche rien */
-#chg .lu{position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(94% 58% at 50% 44%,
-    color-mix(in srgb, var(--coeur) 70%, transparent), transparent 74%)}
-#chg .nom{position:relative;z-index:2;
-  font-family:'Cormorant Garamond',Georgia,serif;font-size:44px;font-weight:300;
-  letter-spacing:.22em;text-indent:.22em;color:#f8f2e6;
-  text-shadow:0 2px 28px rgba(0,0,0,.5);opacity:0;
-  animation:chgNom 1.2s .2s cubic-bezier(.2,.9,.28,1) forwards}
-@keyframes chgNom{from{opacity:0;transform:translateY(12px);letter-spacing:.32em}
-  to{opacity:1;transform:none;letter-spacing:.22em}}
-#chg .tr{position:relative;z-index:2;width:54px;height:1px;margin:19px 0 17px;
-  background:var(--or);opacity:0;transform:scaleX(0);
-  animation:chgTr .9s .75s cubic-bezier(.2,.9,.28,1) forwards}
-@keyframes chgTr{to{opacity:.6;transform:none}}
-#chg .sous{position:relative;z-index:2;font-family:'Courier Prime',monospace;
-  font-size:9px;letter-spacing:.32em;text-transform:uppercase;
-  color:rgba(255,255,255,.44);opacity:0;
-  animation:chgIn .9s .95s ease-out forwards}
-@keyframes chgIn{to{opacity:1}}
-#chg .pts{position:absolute;bottom:15%;z-index:2;display:flex;gap:8px;
-  opacity:0;background:none;border:0;padding:0;box-shadow:none;
-  animation:chgIn .8s 1.25s ease-out forwards}
-#chg .pts i{width:5px;height:5px;border-radius:50%;background:var(--or);
-  border:0;box-shadow:none;font-style:normal;
-  animation:chgBat 1.4s ease-in-out infinite}
-#chg .pts i:nth-child(2){animation-delay:.2s}
-#chg .pts i:nth-child(3){animation-delay:.4s}
-@keyframes chgBat{0%,100%{opacity:.2;transform:scale(.75)}
-  50%{opacity:.95;transform:none}}
-/* les palettes, une par lieu */
-#chg.l-anse,#chg.l-marseille{--haut:#081a2e;--coeur:#1e5478;--bas:#061420;--or:#f0c46a}
-#chg.l-barcelone{--haut:#1c0f22;--coeur:#7a3a52;--bas:#140a18;--or:#f0a46a}
-#chg.l-palma{--haut:#0e2226;--coeur:#1d6270;--bas:#08181c;--or:#f4d89a}
-#chg.l-ajaccio{--haut:#1a1030;--coeur:#8a4444;--bas:#120a1c;--or:#ff9a5a}
-#chg.l-mer{--haut:#04121e;--coeur:#124260;--bas:#020a12;--or:#8ec4e0}
-#chg.h-nuit{--haut:#050b16;--coeur:#1c3358;--bas:#03060c;--or:#9ab0d8}
-
-/* ---------- le grand bouton du bas ---------- */
-.partir{position:fixed;left:16px;right:16px;z-index:12;
-  bottom:calc(env(safe-area-inset-bottom) + 22px);
-  display:flex;align-items:center;justify-content:center;gap:12px;
-  padding:18px 22px;border-radius:16px;cursor:pointer;
-  border:3px solid #12303f;
-  background:#f0a92e;
-  
-  font-family:'Nunito',sans-serif;
-  opacity:0;transition:opacity .5s, transform .1s, box-shadow .1s;
-  pointer-events:none}
-.partir.pret{opacity:1;pointer-events:auto}
-.partir:active{background:var(--creme2)}
-.partir svg{width:26px;height:26px;flex:0 0 26px;stroke:#12303f;fill:none;
-  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.partir b{font-family:'DM Serif Display',Georgia,serif;font-size:20px;
-  color:#12303f;letter-spacing:0}
-/* sans bateau, il mène au chantier : plus sobre */
-.partir.gris{background:#fdf6e6}
-.partir.gris svg{stroke:rgba(18,48,63,.5)}
-.partir.gris b{color:rgba(18,48,63,.6)}
-
-</style>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0e1c2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -148,15 +68,11 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
 @keyframes fumer{0%,100%{opacity:.7;transform:translateX(0)}
   50%{opacity:1;transform:translateX(5px)}}
 
-/* le pointu rentre au port, lentement, en tanguant */
-.pointu{animation:rentre 200s linear infinite;animation-delay:-78s}
 @keyframes rentre{from{transform:translateX(560px)}to{transform:translateX(-260px)}}
-.pointu>*{animation:tangue 5.2s ease-in-out infinite;transform-box:fill-box;
-  transform-origin:50% 90%}
 @keyframes tangue{0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.4deg)}}
 
 @media (prefers-reduced-motion:reduce){
-  .vol,.cargo,.pointu,.aile,.pointu>*{animation:none}}
+  .vol,.cargo,.aile{animation:none}}
 
 
 /* ---------- l'entrepôt ---------- */
@@ -942,14 +858,6 @@ html{font-size:calc(16px * var(--txt, 1))}
 </style>
 </head>
 <body>
-<div id="chg" class="l-anse">
-  <span class="lu"></span>
-  <p class="nom" id="chg-nom">Marseille</p>
-  <span class="tr"></span>
-  <p class="sous" id="chg-sous">Le port</p>
-  <span class="pts"><i></i><i></i><i></i></span>
-</div>
-
 <div id="sc"></div>
 <div id="eti"></div>
 <div class="fi" id="fi"></div>
@@ -1127,48 +1035,6 @@ html{font-size:calc(16px * var(--txt, 1))}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
-/* ---------- l'écran de chargement ----------
-   Une seule règle : il couvre l'écran jusqu'à ce que TOUT soit
-   en place, et au moins huit dixièmes de seconde. */
-/* on compte depuis le début de la navigation, pas depuis la lecture
-   du script : sinon le délai est déjà écoulé quand on arrive ici */
-const CHG_MINIMUM = 3000;
-function chgEcoule(){
-  try { return performance.now(); } catch(e){ return CHG_MINIMUM; }
-}
-
-function habillerChargement(d){
-  const el = document.getElementById('chg');
-  if (!el || !d) return;
-  const NOMS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
-                 palma:'Palma', ajaccio:'Ajaccio' };
-  const HEURES = { nuit:'la nuit sur la rade', aube:'le jour se lève',
-                   matin:'le matin', midi:"l'après-midi", soir:'au couchant' };
-  const ou = d.parti_le ? 'mer' : (d.port || 'anse');
-  el.className = 'l-' + ou + (typeof MOMENT !== 'undefined' && MOMENT === 'nuit'
-    ? ' h-nuit' : '');
-  document.getElementById('chg-nom').textContent =
-    d.parti_le ? 'En mer' : (NOMS[ou] || 'Marseille');
-  document.getElementById('chg-sous').textContent =
-    d.parti_le ? 'Cap sur ' + (NOMS[d.cap] || d.cap)
-      : (typeof MOMENT !== 'undefined' ? (HEURES[MOMENT] || 'le port') : 'le port');
-}
-
-function retirerChargement(){
-  const el = document.getElementById('chg');
-  if (!el || el.classList.contains('parti')) return;
-  const reste = Math.max(0, CHG_MINIMUM - chgEcoule());
-  setTimeout(() => {
-    /* deux images de plus : le temps que le décor soit réellement peint */
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      el.classList.add('parti');
-      setTimeout(() => el.remove(), 650);
-    }));
-  }, reste);
-}
-/* filet de sécurité : si quelque chose échoue, on ne reste pas bloqué */
-setTimeout(retirerChargement, 8000);
-
 /* ============================================================
    LE PORT À L'AUBE — le socle : charte, lumière, matière
    ============================================================ */
@@ -2568,6 +2434,12 @@ function mouettes(){
   return s;
 }
 
+/* la couleur d'un objet lointain, fondue dans le ciel */
+function loinCiel(c, d){
+  const k = Math.min(.72, Math.pow(d / 4000, .6));
+  return mel(c, H.ciel[H.ciel.length - 2], k);
+}
+
 /* ---------- un cargo, très loin, qui traverse l'horizon ---------- */
 function cargo(){
   const d = 1500;
@@ -2603,56 +2475,6 @@ function cargo(){
       opacity="${(.26 - k * .045).toFixed(2)}"/>`;
   s += `</g>`;
   return s + `</g>`;
-}
-
-/* ---------- un pointu qui rentre, entre nous et la ville ---------- */
-function pointu(){
-  const d = 140;
-  const y = sol(d), m = u => px(u, d);
-  const coque = mel('#5e4436', H.lum, H.force * .2);
-  const ombre = mel('#3e2e26', H.ombre, .4);
-  let s = `<g class="pointu">`;
-  /* la coque, avec l'étrave relevée des pointus marseillais */
-  s += `<path d="M${projX(-5.5, d).toFixed(1)} ${(y - m(.5)).toFixed(1)}
-    q${m(1).toFixed(1)} ${m(1.4).toFixed(1)} ${m(4).toFixed(1)} ${m(1.5).toFixed(1)}
-    h${m(3).toFixed(1)}
-    q${m(3.4).toFixed(1)} ${(-m(.1)).toFixed(1)} ${m(4.2).toFixed(1)} ${(-m(1.5)).toFixed(1)}
-    q${(-m(5.4)).toFixed(1)} ${(-m(.9)).toFixed(1)} ${(-m(11.2)).toFixed(1)} 0 z"
-    fill="${coque}"/>`;
-  /* le liston clair */
-  s += `<path d="M${projX(-5.5, d).toFixed(1)} ${(y - m(.5)).toFixed(1)}
-    q${m(5.6).toFixed(1)} ${(-m(.9)).toFixed(1)} ${m(11.2).toFixed(1)} 0"
-    stroke="${mel(coque, H.lum, .4)}" stroke-width="${Math.max(.6, m(.16)).toFixed(1)}"
-    fill="none"/>`;
-  /* le mât et sa voile latine, à demi ferlée */
-  s += `<path d="M${projX(-1, d).toFixed(1)} ${(y - m(.7)).toFixed(1)}
-    v${(-m(7)).toFixed(1)}" stroke="${ombre}"
-    stroke-width="${Math.max(.5, m(.12)).toFixed(1)}"/>`;
-  s += `<path d="M${projX(-1, d).toFixed(1)} ${(y - m(7.4)).toFixed(1)}
-    q${m(3.4).toFixed(1)} ${m(1.8).toFixed(1)} ${m(2.2).toFixed(1)} ${m(5.2).toFixed(1)}
-    q${(-m(1.4)).toFixed(1)} ${(-m(1.2)).toFixed(1)} ${(-m(2.2)).toFixed(1)} ${(-m(5.2)).toFixed(1)} z"
-    fill="${mel('#e8dcc4', H.lum, H.force * .3)}" opacity=".8"/>`;
-  /* son sillage */
-  s += `<ellipse cx="${projX(-2, d).toFixed(1)}" cy="${(y + m(.2)).toFixed(1)}"
-    rx="${m(8).toFixed(1)}" ry="${m(.5).toFixed(1)}"
-    fill="${H.lum}" opacity=".12"/>`;
-  return s + `</g>`;
-}
-
-/* la brume atténue ce qui est loin, dans la couleur du ciel bas */
-function loinCiel(c, d){
-  const k = Math.min(.72, Math.pow(d / 4000, .6));
-  return mel(c, H.ciel[H.ciel.length - 2], k);
-}
-
-
-
-/* le soleil est bas à gauche : tout projette vers la droite et vers nous */
-function ombre(x, y, larg, haut){
-  const lg = haut * 1.9, dx = haut * 2.2;
-  return `<path d="M${x.toFixed(1)} ${y.toFixed(1)} h${larg.toFixed(1)}
-    l${dx.toFixed(1)} ${(lg*.3).toFixed(1)} h${(-larg).toFixed(1)} z"
-    fill="${OMBRE}" opacity=".17"/>`;
 }
 
 /* ---------- le sol ---------- */
@@ -3035,7 +2857,6 @@ function scene(){
   s += `<g${F}>`;
   /* le cargo au loin, sur l'eau, et le pointu qui rentre plus près */
   s += cargo();
-  s += pointu();
 
   /* ta barque, au milieu de l'eau, dans le chemin du soleil */
   s += barque();
@@ -4358,7 +4179,6 @@ function poserAvatar(d){
     poserMenu(d);
     poserBarque(d);
     poserChantier(d);
-    habillerChargement(d);
     poserBas(d);
     /* si on revient du hub avec une intention, on l'exécute */
     try {
@@ -4435,7 +4255,6 @@ function poserAvatar(d){
     console.warn('avatar indisponible', e);
   }
   /* tout est en place : on découvre la rade */
-  retirerChargement();
 })();
 
 
