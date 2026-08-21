@@ -38,13 +38,19 @@
     <span class="q"><b>Ta sacoche</b><span id="s-sous">—</span></span>
     <button class="retour" id="retour">‹ Retour</button>
   </div>
-  <div id="corps"><p class="vide">On regarde dedans…</p></div>
+  <div id="corps" class="attend"></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
+/* le contenu paraît d'un trait, une fois complet */
+function paraitre(){
+  const e = document.getElementById('corps');
+  if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
+}
+
 const GENRES = [
   ['quete',    'Ce qui sert à quelque chose'],
   ['outil',    'Ce qui te sert tous les jours'],
@@ -135,7 +141,7 @@ function objetSVG(k){
     if (!S.length){
       C.innerHTML = '<p class="vide">Ta sacoche est vide.<br>'
         + 'Ce que tu ramasseras en chemin finira là — '
-        + 'ce qu\'on te donne, ce que tu trouves, ce qu\'on t\'oublie.</p>';
+        + 'ce qu\'on te donne, ce que tu trouves, ce qu\'on t\'oublie.</p>'; paraitre();
       return;
     }
 
@@ -170,11 +176,11 @@ function objetSVG(k){
           + '</span></div>').join('');
     }
 
-    C.innerHTML = h;
+    C.innerHTML = h; paraitre();
 
   } catch(e){
     console.warn(e);
-    C.innerHTML = '<p class="vide">La sacoche n\'a pas répondu.</p>';
+    C.innerHTML = '<p class="vide">La sacoche n\'a pas répondu.</p>'; paraitre();
   }
 })();
 
