@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Ta fiche — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
+  color:#fff;background:#08131f}
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(120% 34% at 50% -4%, rgba(214,234,250,.3), transparent 62%),
+    linear-gradient(180deg,#356690 0%,#22527a 22%,#143a5a 52%,#0b2338 78%,#071624 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
+.hd{position:relative;margin:0 -15px 20px;
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 15px;
+  background:linear-gradient(180deg,rgba(24,52,80,.7),rgba(12,30,50,.44));
+  border-bottom:1px solid rgba(160,200,230,.12)}
+.hd::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,178,116,.34) 24%,
+    rgba(226,178,116,.34) 76%,transparent)}
+.hd .l1{display:flex;align-items:flex-start;gap:12px}
+.hd .co{flex:1;min-width:0}
+.hd b{display:block;font-size:19px}
+.hd .co span{display:block;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(206,228,246,.6);margin-top:5px}
+.retour{flex:0 0 auto;padding:9px 14px;border-radius:22px;cursor:pointer;
+  border:1.5px solid rgba(180,214,240,.24);background:rgba(255,255,255,.07);
+  font-family:'Courier Prime',monospace;font-size:11.5px;color:#e4f0fa}
+.retour:active{background:rgba(255,255,255,.13)}
+.sec{display:flex;align-items:center;gap:11px;font-size:8.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(206,228,246,.5);margin:0 0 12px}
+.sec::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(160,200,230,.14),transparent)}
+.sec.plus{margin-top:26px}
+.vide{text-align:center;padding:46px 24px;border-radius:15px;
+  background:rgba(255,255,255,.035);border:1px dashed rgba(160,200,230,.16);
+  font-size:12.5px;color:rgba(198,222,242,.55);line-height:1.65;
+  font-family:system-ui,sans-serif}
+.pied{text-align:center;font-size:9.5px;color:rgba(180,208,232,.4);
+  margin-top:24px;font-family:system-ui,sans-serif;letter-spacing:.06em}
+
+
+/* ---------- qui tu es ---------- */
+.moi{display:flex;align-items:center;gap:15px;padding:16px;margin-bottom:18px;
+  border-radius:16px;
+  background:linear-gradient(158deg,rgba(52,84,118,.72),rgba(22,44,70,.82));
+  border:1.5px solid rgba(150,190,224,.18)}
+.moi .av{flex:0 0 62px;height:62px;border-radius:16px;overflow:hidden;
+  background:#22334a;border:1.5px solid rgba(226,182,116,.4)}
+.moi .av svg{width:100%;height:100%;display:block}
+.moi .co{flex:1;min-width:0}
+.moi .co b{display:block;font-size:19px;color:#fff}
+.moi .co .t{display:block;font-size:11.5px;color:#f0c46a;margin-top:4px}
+.moi .co .ou{display:block;font-size:10.5px;color:rgba(198,222,242,.52);margin-top:4px;
+  font-family:system-ui,sans-serif}
+
+/* le niveau */
+.niv{padding:15px 16px;margin-bottom:20px;border-radius:14px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(160,200,230,.12)}
+.niv .tt{display:flex;justify-content:space-between;font-size:11px;
+  color:rgba(206,228,246,.66);margin-bottom:8px;font-family:system-ui,sans-serif}
+.niv .tt b{color:#fff;font-family:'Courier Prime',monospace;font-weight:400}
+.niv .ba{height:7px;border-radius:5px;background:rgba(0,0,0,.32);overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.niv .ba i{display:block;height:100%;border-radius:5px;
+  background:linear-gradient(90deg,#a87e34,#f0c46a 78%,#ffdc9a);
+  box-shadow:0 0 10px rgba(240,196,106,.36)}
+
+/* les points à placer */
+.pts{display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:18px;
+  border-radius:14px;
+  background:linear-gradient(158deg,rgba(76,64,36,.7),rgba(40,34,20,.8));
+  border:1.5px solid rgba(240,196,106,.34)}
+.pts b{font-size:24px;color:#f4cf8a;line-height:1}
+.pts span{flex:1;font-size:11.5px;color:rgba(232,214,180,.76);
+  font-family:system-ui,sans-serif}
+
+/* une compétence */
+.cmp{display:flex;align-items:center;gap:12px;padding:13px 15px;
+  border-bottom:1px solid rgba(160,200,230,.07)}
+.cmp:last-child{border-bottom:0}
+.cmp .nm{flex:0 0 88px;font-size:12.5px;color:rgba(232,244,254,.9)}
+.cmp .ba{flex:1;display:flex;gap:4px}
+.cmp .ba i{flex:1;height:9px;border-radius:3px;background:rgba(255,255,255,.09)}
+.cmp .ba i.on{background:var(--c);box-shadow:0 0 7px var(--c)}
+.cmp .vl{flex:0 0 18px;text-align:right;font-size:13px;
+  color:rgba(214,234,250,.82)}
+.cmp .plus{flex:0 0 auto;width:28px;height:28px;border-radius:9px;cursor:pointer;
+  border:1.5px solid rgba(255,232,178,.66);
+  background:linear-gradient(176deg,#fadfa0,#d9a44e);
+  font-family:'Courier Prime',monospace;font-size:15px;font-weight:700;color:#3a2804;
+  line-height:1;padding:0}
+.cmp .plus:active{transform:translateY(2px)}
+.cmp .plus:disabled{opacity:.3;cursor:default;transform:none}
+.cmp .rien{flex:0 0 28px}
+.bloc{border-radius:15px;overflow:hidden;
+  background:linear-gradient(158deg,rgba(255,255,255,.05),rgba(255,255,255,.025));
+  border:1px solid rgba(160,200,230,.1)}
+</style>
+</head>
+<body>
+<div class="pont">
+  <div class="hd"><div class="l1">
+    <span class="co"><b>Ta fiche</b><span id="f-sous">—</span></span>
+    <button class="retour" id="retour">‹ Retour</button>
+  </div></div>
+  <div id="corps"><p class="vide">On sort le livret…</p></div>
+  <p class="pied">Battle Dock — Marseille</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=2"></script>
+<script>
+const CMP = [
+  ['force',      'Force',       '#e08a6a'],
+  ['endurance',  'Endurance',   '#8ce0a8'],
+  ['precision_', 'Précision',   '#f0c46a'],
+  ['discussion', 'Discussion',  '#8ab8e0'],
+  ['negociation','Négociation', '#c9a8e0'],
+  ['sang_froid', 'Sang-froid',  '#7fc4d4'],
+  ['instinct',   'Instinct',    '#d4a8c0'],
+  ['chance',     'Chance',      '#f0d078']
+];
+const PORTS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
+                palma:'Palma', ajaccio:'Ajaccio' };
+
+let D = null, occupe = false;
+
+function dessiner(){
+  const d = D;
+  const V = Object.assign({}, d.competences || {},
+    { sang_froid: d.sang_froid, instinct: d.instinct, chance: d.chance });
+  const reste = Number(d.points || 0);
+  const xp = Number(d.xp || 0), seuil = Number(d.seuil_xp || 100);
+
+  document.getElementById('f-sous').textContent =
+    'Niveau ' + (d.niveau || 1) + (d.titre ? ' · ' + d.titre : '');
+
+  let h = '<div class="moi"><span class="av">' + BD.avatarSVG(d) + '</span>'
+    + '<span class="co"><b>' + (d.pseudo || '') + '</b>'
+    + (d.titre ? '<span class="t">' + d.titre + '</span>' : '')
+    + '<span class="ou">' + (d.parti_le ? 'En mer' : (PORTS[d.port] || ''))
+    +   ' · réputation ' + (d.reputation || 0) + '</span></span></div>';
+
+  h += '<div class="niv"><div class="tt"><span>Vers le niveau '
+    + ((d.niveau || 1) + 1) + '</span><b>' + xp + ' / ' + seuil + '</b></div>'
+    + '<div class="ba"><i style="width:'
+    + Math.min(100, xp / seuil * 100).toFixed(0) + '%"></i></div></div>';
+
+  if (reste > 0)
+    h += '<div class="pts"><b>' + reste + '</b><span>'
+      + (reste > 1 ? 'points à placer' : 'point à placer')
+      + ' — touche le plus, à côté de ce que tu veux améliorer.</span></div>';
+
+  h += '<p class="sec">Ce que tu sais faire</p><div class="bloc">'
+    + CMP.map(([k, n, c]) => {
+      const v = Math.max(0, Math.min(8, Number(V[k] ?? 0)));
+      return '<div class="cmp"><span class="nm">' + n + '</span>'
+        + '<span class="ba" style="--c:' + c + '">'
+        + Array.from({length:8}, (_, i) =>
+            '<i class="' + (i < v ? 'on' : '') + '"></i>').join('')
+        + '</span><span class="vl">' + v + '</span>'
+        + (reste > 0 && v < 8
+            ? '<button class="plus" data-k="' + k + '">+</button>'
+            : '<span class="rien"></span>')
+        + '</div>';
+    }).join('') + '</div>';
+
+  document.getElementById('corps').innerHTML = h;
+
+  document.querySelectorAll('.plus').forEach(b =>
+    b.onclick = async () => {
+      if (occupe) return;
+      occupe = true;
+      document.querySelectorAll('.plus').forEach(x => x.disabled = true);
+      try {
+        const r = await BD.agir('placer_point', { p_quoi: b.dataset.k });
+        if (r && r.ok) Object.assign(D, await BD.charger());
+      } catch(e){}
+      occupe = false;
+      dessiner();
+    });
+}
+
+(async () => {
+  try {
+    D = await BD.charger();
+    if (!D){ location.href = 'index.html'; return; }
+    dessiner();
+  } catch(e){
+    console.warn(e);
+    document.getElementById('corps').innerHTML =
+      '<p class="vide">Le livret n\'a pas répondu.</p>';
+  }
+})();
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+</script>
+</body>
+</html>
