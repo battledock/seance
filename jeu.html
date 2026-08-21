@@ -62,30 +62,24 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0c2138}
 .partir{position:fixed;left:16px;right:16px;z-index:12;
   bottom:calc(env(safe-area-inset-bottom) + 22px);
   display:flex;align-items:center;justify-content:center;gap:12px;
-  padding:17px 22px;border-radius:15px;cursor:pointer;
-  border:1.5px solid rgba(255,232,178,.72);
-  background:linear-gradient(176deg,#fce2a4 0%,#f0c476 44%,#d69f4a 100%);
-  box-shadow:0 5px 0 rgba(132,88,20,.6),
-             0 10px 28px rgba(6,16,28,.45),
-             inset 0 1px 0 rgba(255,250,232,.62);
-  font-family:'Courier Prime',monospace;
+  padding:18px 22px;border-radius:16px;cursor:pointer;
+  border:3px solid #12303f;
+  background:#f0a92e;
+  box-shadow:5px 5px 0 rgba(18,48,63,.9);
+  font-family:'Nunito',sans-serif;
   opacity:0;transition:opacity .5s, transform .1s, box-shadow .1s;
   pointer-events:none}
 .partir.pret{opacity:1;pointer-events:auto}
-.partir:active{transform:translateY(3px);
-  box-shadow:0 2px 0 rgba(132,88,20,.6), 0 4px 12px rgba(6,16,28,.4),
-             inset 0 1px 0 rgba(255,250,232,.62)}
-.partir svg{width:24px;height:24px;flex:0 0 24px;stroke:#5a4212;fill:none;
+.partir:active{transform:translate(3px,3px);
+  box-shadow:2px 2px 0 rgba(18,48,63,.9)}
+.partir svg{width:26px;height:26px;flex:0 0 26px;stroke:#12303f;fill:none;
   stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.partir b{font-size:15.5px;font-weight:700;color:#3a2804;letter-spacing:.02em;
-  text-shadow:0 1px 0 rgba(255,246,220,.34)}
+.partir b{font-family:'DM Serif Display',Georgia,serif;font-size:20px;
+  color:#12303f;letter-spacing:0}
 /* sans bateau, il mène au chantier : plus sobre */
-.partir.gris{border-color:rgba(180,200,220,.34);
-  background:linear-gradient(176deg,rgba(48,70,96,.9),rgba(26,44,66,.94));
-  box-shadow:0 5px 0 rgba(6,18,32,.55), 0 10px 26px rgba(4,12,22,.4),
-             inset 0 1px 0 rgba(190,220,244,.16)}
-.partir.gris svg{stroke:#a8c8e4}
-.partir.gris b{color:#e4eef8;text-shadow:none}
+.partir.gris{background:#fdf6e6}
+.partir.gris svg{stroke:rgba(18,48,63,.5)}
+.partir.gris b{color:rgba(18,48,63,.6)}
 
 </style>
 
@@ -94,7 +88,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0c2138}
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Cormorant+Garamond:wght@300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* la base de la page : pas de marge, et un fond qui ne soit jamais blanc */
 *{margin:0;padding:0;box-sizing:border-box}
@@ -807,21 +801,21 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
 
 .barre{position:fixed;z-index:10;
   top:calc(env(safe-area-inset-top) + 14px);left:82px;right:14px;
-  height:56px;border-radius:6px;overflow:hidden;
-  background:rgba(18,34,52,.42);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border:2px solid rgba(255,255,255,.34);
-  box-shadow:0 3px 14px rgba(8,20,32,.34);
+  height:58px;border-radius:16px;overflow:hidden;
+  background:#fdf6e6;
+  border:3px solid #12303f;
+  box-shadow:4px 4px 0 rgba(18,48,63,.9);
   display:flex;align-items:stretch;
   opacity:0;transition:opacity .5s}
 .barre.pret{opacity:1}
 
 /* la caisse, à gauche, la plus lisible */
 .barre .sous{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
-  justify-content:center;padding:0 11px;border-right:1px solid rgba(255,255,255,.16)}
+  justify-content:center;padding:0 12px;border-right:2px solid rgba(18,48,63,.14)}
 .barre .sous .lb{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(255,255,255,.56);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.barre .sous .vl{font-size:16px;font-weight:700;color:#ffd894;line-height:1.15;
+  font-weight:800;color:rgba(18,48,63,.5);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.barre .sous .vl{font-family:'DM Serif Display',Georgia,serif;font-size:19px;color:#12303f;line-height:1.1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .barre .sous .vl.pop{animation:pop .55s ease-out}
 @keyframes pop{0%{transform:scale(1.14);color:#a8e0b8}100%{transform:none}}
@@ -831,14 +825,16 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
   justify-content:center;gap:5px;padding:0 11px;min-width:104px}
 .jg{display:flex;align-items:center;gap:6px}
 .jg .ic{flex:0 0 11px;height:11px}
-.jg .ba{flex:1;height:5px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+.jg .ba{flex:1;height:7px;background:rgba(18,48,63,.12);border-radius:4px;
+  border:1.5px solid rgba(18,48,63,.5);overflow:hidden}
 .jg .ba i{display:block;height:100%;border-radius:3px;transition:width .6s}
-.jg .nb{flex:0 0 auto;font-size:8px;color:rgba(255,255,255,.66);min-width:22px;text-align:right}
+.jg .nb{flex:0 0 auto;font-size:9.5px;font-weight:800;color:rgba(18,48,63,.66);
+  min-width:24px;text-align:right}
 
 .av .nm{position:absolute;left:0;right:0;bottom:0;
-  background:linear-gradient(180deg,transparent,rgba(10,22,34,.82));
-  color:#fff;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
-  text-align:center;padding:5px 2px 2.4px;font-weight:700}
+  background:#12303f;
+  color:#fdf6e6;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  text-align:center;padding:3px 2px 3px;font-weight:800}
 
 /* ---------- le ciel ---------- */
 .nuages{animation:derive 260s linear infinite}
