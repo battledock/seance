@@ -94,13 +94,19 @@
   <div class="cale" id="c-cale" style="display:none">
     <span class="em">⛵</span><span id="c-cale-t">—</span>
   </div>
-  <div id="liste"><p class="rien">On regarde ce qu'il y a…</p></div>
+  <div id="liste" class="attend"></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
+/* le contenu paraît d'un trait, une fois complet */
+function paraitre(){
+  const e = document.getElementById('liste');
+  if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
+}
+
 const OU = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
              palma:'Palma', ajaccio:'Ajaccio' };
 const POURQUOI = {
@@ -139,7 +145,7 @@ async function dessiner(){
 
   if (!r || !r.ok){
     L.innerHTML = '<p class="rien">'
-      + ((r && POURQUOI[r.pourquoi]) || "Rien à charger pour l'instant.") + '</p>';
+      + ((r && POURQUOI[r.pourquoi]) || "Rien à charger pour l'instant.") + '</p>'; paraitre();
     return;
   }
 
@@ -159,7 +165,7 @@ async function dessiner(){
 
   if (!C.length){
     L.innerHTML = '<p class="rien">Le quai est vide aujourd\'hui.<br>'
-      + 'Reviens demain, on aura de quoi charger.</p>';
+      + 'Reviens demain, on aura de quoi charger.</p>'; paraitre();
     return;
   }
 
@@ -169,7 +175,7 @@ async function dessiner(){
     ? libres.reduce((a, b) => b.paie > a.paie ? b : a) : null;
 
   L.innerHTML = C.map(c => {
-    const pris = c.etat !== 'propose';
+    const pris = c.etat !== 'propose'; paraitre();
     const hors = dejaPris && !pris;
     const m = marche(c.pression);
     return '<div class="of' + (pris ? ' pris' : '') + (hors ? ' hors' : '')
