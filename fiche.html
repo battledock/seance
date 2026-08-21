@@ -63,13 +63,19 @@
     <span class="q"><b>Ta fiche</b><span id="f-sous">—</span></span>
     <button class="retour" id="retour">‹ Retour</button>
   </div>
-  <div id="corps"><p class="vide">On sort le livret…</p></div>
+  <div id="corps" class="attend"></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
+/* le contenu paraît d'un trait, une fois complet */
+function paraitre(){
+  const e = document.getElementById('corps');
+  if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
+}
+
 const CMP = [
   ['force',      'Force',       '#e08a6a'],
   ['endurance',  'Endurance',   '#8ce0a8'],
@@ -125,7 +131,7 @@ function dessiner(){
         + '</div>';
     }).join('') + '</div>';
 
-  document.getElementById('corps').innerHTML = h;
+  document.getElementById('corps').innerHTML = h; paraitre();
 
   document.querySelectorAll('.plus').forEach(b =>
     b.onclick = async () => {
