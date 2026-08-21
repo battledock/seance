@@ -483,22 +483,6 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
-<section class="pan" id="ent">
-  <div class="hd">
-    <span class="ti"><b>L'entrepôt</b>
-      <span id="ent-s">Ce qui attend sur le quai</span></span>
-    <button class="fer" id="ent-fer">×</button>
-  </div>
-  <div class="regle">
-    <span class="ic"><svg viewBox="0 0 24 24">
-      <path d="M3.5 20.5V9.8L12 4.5l8.5 5.3v10.7M2.5 20.5h19"/><path d="M9 20.5v-6h6v6"/>
-    </svg></span>
-    <span class="tx">Laisse une caisse ici et elle t'attendra. Un autre docker peut
-      la porter à ta place : il prend <b>40 %</b>, tu gardes <b>60 %</b> sans bouger.</span>
-  </div>
-  <ul class="liste" id="ent-liste"></ul>
-</section>
-
 <div class="ouv" id="ouv">
   <div class="ca">
     <p class="em" id="ouv-em">🎁</p>
@@ -571,10 +555,6 @@ const TUILES = [
     ic:'<path d="M6.5 8.5 12 3l5.5 5.5V20a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1z"/>'
       +'<circle cx="12" cy="7.5" r="1.2"/><path d="M9.5 13h5M9.5 16.5h5"/>',
     f:() => location.href = 'contrats.html' },
-  { k:'entrepot', gd:1, fam:'bleu', t:'L\'entrepôt', s:'Ce qui attend sur le quai',
-    ic:'<path d="M3.5 20.5V9.8L12 4.5l8.5 5.3v10.7M2.5 20.5h19"/>'
-      +'<path d="M9 20.5v-6h6v6M9 17h6"/>',
-    f:() => ouvrirEntrepot() },
   { k:'quetes', gd:1, fam:'vert', t:'Tes affaires', s:'Ce que tu as commencé',
     ic:'<path d="M6.5 4.5h11a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-14a1 1 0 0 1 1-1z"/>'
       +'<path d="M9 4.5v16"/><path d="M11.5 12.5l1.6 1.6 3-3.4"/>',
@@ -646,124 +626,6 @@ const OU_NOM = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
 
 
 /* ---------- l'entrepôt ---------- */
-async function ouvrirEntrepot(){
-  const p = document.getElementById('ent');
-  p.classList.add('on');
-  const L = document.getElementById('ent-liste');
-  L.innerHTML = '<li class="rien">On regarde le quai…</li>';
-
-  let r;
-  try { r = await BD.agir('l_entrepot'); } catch(e){ r = null; }
-  if (!r || !r.ok){
-    L.innerHTML = '<li class="rien">Rien à voir ici pour l\'instant.</li>';
-    return;
-  }
-
-  const libre = r.place_libre || 0;
-  document.getElementById('ent-s').textContent =
-    'Le quai de ' + (OU_NOM[r.port] || r.port);
-
-  const C = r.ma_cale || [], A = r.a_porter || [], T = r.a_toi || [];
-  let h = '';
-
-  /* ce qu'on porte, et qu'on peut laisser ici */
-  if (C.length){
-    h += '<li class="sect">Ce que tu portes</li>';
-    C.forEach(c => {
-      const ici = c.vers === r.port;
-      const peut = !ici && r.peut_deposer;
-      h += '<li class="cs"><div class="in">'
-        + '<div class="l1"><span class="qui mien">▪</span>'
-        + '<span class="co"><b>' + c.nom + '</b>'
-        + '<span class="ou">Pour ' + (OU_NOM[c.vers] || c.vers) + ' — ' + c.kg + ' kg</span>'
-        + '<span class="par">' + (ici ? 'Tu y es : va la livrer'
-            : peut ? 'Tu peux la laisser ici et repartir léger'
-            : 'Tu as déjà trois caisses en dépôt') + '</span></span>'
-        + '<span class="prix">' + c.paie + ' €</span></div>'
-        + '<div class="l2"><span class="et">' + c.places
-        +   (c.places > 1 ? ' places' : ' place') + '</span>'
-        + (peut ? '<button data-pose="' + c.i + '">Déposer</button>' : '')
-        + '</div></div></li>';
-    });
-  }
-
-  /* ce qui attend, posé par d'autres */
-  if (A.length){
-    h += '<li class="sect">À porter</li>';
-    A.forEach(a2 => {
-      const trop = a2.places > libre;
-      const dep = a2.depuis < 1 ? "à l'instant"
-        : a2.depuis < 24 ? 'il y a ' + a2.depuis + ' h'
-        : 'il y a ' + Math.round(a2.depuis / 24) + ' j';
-      /* ce que touche le poseur : le reste de la course */
-      const sien = Math.max(0, Math.round(a2.pour_toi / 0.4 * 0.6));
-      h += '<li class="cs"><div class="in">'
-        + '<div class="l1"><span class="qui">'
-        +   (a2.par || '?')[0].toUpperCase() + '</span>'
-        + '<span class="co"><b>' + a2.nom + '</b>'
-        + '<span class="ou">Pour ' + (OU_NOM[a2.vers] || a2.vers) + ' — ' + a2.kg + ' kg</span>'
-        + '<span class="par">Posée par <em>' + a2.par + '</em> ' + dep + '</span></span>'
-        + '</div>'
-        + '<div class="pg"><div class="ba">'
-        +   '<span class="toi" style="flex:40">' + a2.pour_toi + ' €</span>'
-        +   '<span class="lui" style="flex:60">' + sien + ' € à ' + a2.par + '</span>'
-        + '</div><div class="lg"><span>Pour toi</span><span>Pour lui</span></div></div>'
-        + '<div class="l2"><span class="et">'
-        +   (trop ? 'Ta cale est pleine' : a2.places
-              + (a2.places > 1 ? ' places' : ' place')) + '</span>'
-        + '<button data-id="' + a2.id + '"' + (trop ? ' disabled' : '') + '>Prendre</button>'
-        + '</div></div></li>';
-    });
-  }
-
-  /* ce qu'on a laissé, ici ou ailleurs */
-  if (T.length){
-    h += '<li class="sect">Ce que tu as laissé</li>';
-    T.forEach(t => {
-      h += '<li class="cs' + (t.ici ? '' : ' loin')
-        + (t.prise ? ' attend' : '') + '"><div class="in">'
-        + '<div class="l1"><span class="qui mien">◇</span>'
-        + '<span class="co"><b>' + t.nom + '</b>'
-        + '<span class="ou">' + (t.ici ? 'Ici même' : 'À ' + (OU_NOM[t.ou] || t.ou))
-        +   ', pour ' + (OU_NOM[t.vers] || t.vers) + '</span>'
-        + '<span class="par">' + (t.prise
-            ? '<em>' + t.par + "</em> s'en charge — tu toucheras ta part à la livraison"
-            : "Personne ne l'a prise encore") + '</span></span>'
-        + '<span class="prix">' + t.paie + ' €</span></div>'
-        + '</div></li>';
-    });
-  }
-
-  /* rien du tout : on explique quoi faire */
-  if (!h){
-    h = '<li class="vide">Le quai est vide, et tu ne portes rien.<br>'
-      + 'Prends un contrat, et si tu ne peux pas le livrer toi-même, '
-      + 'laisse la caisse ici.</li>';
-  }
-
-  L.innerHTML = h;
-
-  L.querySelectorAll('button[data-id]').forEach(b2 =>
-    b2.onclick = async () => {
-      b2.disabled = true; b2.textContent = '…';
-      try {
-        const x = await BD.agir('prendre_depot', { p_id: b2.dataset.id });
-        if (x && x.ok){ ouvrirEntrepot(); return; }
-      } catch(e){}
-      b2.disabled = false; b2.textContent = 'Prendre';
-    });
-  L.querySelectorAll('button[data-pose]').forEach(b2 =>
-    b2.onclick = async () => {
-      b2.disabled = true; b2.textContent = '…';
-      try {
-        const x = await BD.agir('deposer', { p_index: +b2.dataset.pose });
-        if (x && x.ok){ ouvrirEntrepot(); return; }
-      } catch(e){}
-      b2.disabled = false; b2.textContent = 'Déposer';
-    });
-}
-document.getElementById('ent-fer').onclick = () =>
-  document.getElementById('ent').classList.remove('on');
 
 /* ---------- le cadeau du jour ---------- */
 const EMOJI = { euros:'💰', energie:'⚡', xp:'📖' };
@@ -845,7 +707,6 @@ document.getElementById('ouv-ok').onclick = () => {
     if (r && r.ok){
       const P = r.pastilles || {};
       hubEtat = { contrats: P.contrats ? (r.contrats || 1) : 0,
-                  entrepot: P.entrepot ? 1 : 0,
                   quetes: P.quetes ? 1 : 0 };
       dessinerTuiles();
     }
