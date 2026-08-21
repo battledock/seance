@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Les contrats — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
+  color:#fff;background:#08131f}
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(120% 34% at 50% -4%, rgba(214,234,250,.3), transparent 62%),
+    linear-gradient(180deg,#356690 0%,#22527a 22%,#143a5a 52%,#0b2338 78%,#071624 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
+
+/* ---------- l'entête ---------- */
+.hd{position:relative;margin:0 -15px 16px;
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 15px;
+  background:linear-gradient(180deg,rgba(24,52,80,.7),rgba(12,30,50,.44));
+  border-bottom:1px solid rgba(160,200,230,.12)}
+.hd::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,178,116,.34) 24%,
+    rgba(226,178,116,.34) 76%,transparent)}
+.hd .l1{display:flex;align-items:flex-start;gap:12px}
+.hd .co{flex:1;min-width:0}
+.hd b{display:block;font-size:19px}
+.hd .co span{display:block;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(206,228,246,.6);margin-top:5px}
+.retour{flex:0 0 auto;padding:9px 14px;border-radius:22px;cursor:pointer;
+  border:1.5px solid rgba(180,214,240,.24);background:rgba(255,255,255,.07);
+  font-family:'Courier Prime',monospace;font-size:11.5px;color:#e4f0fa}
+.retour:active{background:rgba(255,255,255,.13)}
+.route{display:flex;align-items:center;gap:9px;margin-top:13px;
+  font-size:12px;color:rgba(224,240,252,.9)}
+.route .pt{width:8px;height:8px;border-radius:50%;background:#f0c46a;flex:0 0 8px}
+.route .tr{flex:1;height:1px;
+  background:repeating-linear-gradient(90deg,rgba(240,196,106,.5) 0 5px,
+    transparent 5px 10px)}
+.route .ar{color:rgba(240,196,106,.8);font-size:14px}
+
+/* ---------- la cale ---------- */
+.cale{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:18px;
+  border-radius:12px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(160,200,230,.12)}
+.cale .ic{width:20px;height:20px;flex:0 0 20px}
+.cale .ic svg{width:100%;height:100%;stroke:rgba(206,228,246,.7);fill:none;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.cale .tx{flex:1;font-size:11.5px;color:rgba(206,228,246,.72);
+  font-family:system-ui,sans-serif}
+.cale .tx b{color:#f0c46a;font-family:'Courier Prime',monospace}
+
+/* ---------- une offre ---------- */
+.of{position:relative;margin-bottom:13px;border-radius:16px;overflow:hidden;
+  background:linear-gradient(158deg,rgba(52,84,118,.74),rgba(22,44,70,.84));
+  border:1.5px solid rgba(150,190,224,.18);
+  box-shadow:0 4px 0 rgba(5,16,28,.5), inset 0 1px 0 rgba(190,220,244,.1)}
+.of.top{border-color:rgba(240,196,106,.42);
+  box-shadow:0 4px 0 rgba(48,34,8,.55), 0 8px 24px rgba(180,132,50,.14),
+             inset 0 1px 0 rgba(255,222,158,.16)}
+.of .ban{position:absolute;top:0;right:0;padding:4px 12px 5px;
+  border-radius:0 0 0 11px;font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:#3e2c06;z-index:2;
+  background:linear-gradient(176deg,#fde6ae,#e0af58)}
+.of .in{padding:16px 16px 14px}
+.of .l1{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;
+  padding-right:82px}
+.of .l1 b{flex:1;font-size:16px;color:#fff;font-weight:400}
+.of .no{font-size:11.5px;color:rgba(198,222,242,.6);line-height:1.45;
+  font-family:system-ui,sans-serif;margin-bottom:13px}
+.of .prix{display:flex;align-items:baseline;gap:9px;margin-bottom:13px;
+  flex-wrap:wrap}
+.of .prix .gros{font-size:27px;font-weight:700;color:#f0c46a;line-height:1;
+  text-shadow:0 0 22px rgba(240,196,106,.28)}
+.of .prix .cmp{font-size:10.5px;font-family:system-ui,sans-serif}
+.of .prix .cmp.plus{color:#8ce0a8}
+.of .prix .cmp.moins{color:#e8a06a}
+.of .prix .cmp.egal{color:rgba(198,222,242,.5)}
+.mk{margin-bottom:13px}
+.mk .tt{display:flex;justify-content:space-between;gap:10px;font-size:9.5px;
+  color:rgba(190,214,234,.5);margin-bottom:5px;font-family:system-ui,sans-serif}
+.mk .ba{height:5px;border-radius:4px;background:rgba(0,0,0,.3);overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.mk .ba i{display:block;height:100%;border-radius:4px;
+  transition:width .6s cubic-bezier(.3,.9,.3,1)}
+.mk .ba i.bon{background:linear-gradient(90deg,#3f8a5e,#8ce0a8)}
+.mk .ba i.moy{background:linear-gradient(90deg,#a8862e,#f0c46a)}
+.mk .ba i.mal{background:linear-gradient(90deg,#a04a2e,#e8a06a)}
+.mk .mo{font-size:10.5px;margin-top:6px;font-family:system-ui,sans-serif}
+.mk .mo.bon{color:#8ce0a8}
+.mk .mo.moy{color:rgba(206,228,246,.6)}
+.mk .mo.mal{color:#e8a06a}
+.of .l2{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.of .et{padding:5px 10px;border-radius:9px;font-size:10px;white-space:nowrap;
+  flex:0 0 auto;background:rgba(255,255,255,.07);color:rgba(206,228,246,.72);
+  border:1px solid rgba(160,200,230,.14)}
+.of button{margin-left:auto;padding:11px 20px;border-radius:11px;cursor:pointer;
+  border:1.5px solid rgba(255,232,178,.72);
+  background:linear-gradient(176deg,#fadfa0,#d9a44e);
+  box-shadow:0 3px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6);
+  font-family:'Courier Prime',monospace;font-size:13px;font-weight:700;
+  color:#3a2804;transition:transform .1s, box-shadow .1s}
+.of button:active{transform:translateY(2px);
+  box-shadow:0 1px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6)}
+.of.pris{border-color:rgba(140,224,168,.4);
+  background:linear-gradient(158deg,rgba(38,72,56,.78),rgba(18,40,32,.86))}
+.of.pris .prix .gros{color:#8ce0a8;text-shadow:none}
+.of.pris .ban{background:linear-gradient(176deg,#a8e8c0,#5aa87c);color:#123424}
+.of .fait{margin-left:auto;font-size:12px;color:#8ce0a8}
+.of.hors{opacity:.42}
+.of.hors button{display:none}
+
+/* ---------- le mot de la fin ---------- */
+.apprend{margin-top:18px;padding:14px 16px;border-radius:13px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(160,200,230,.1);
+  font-size:11px;color:rgba(190,214,234,.56);line-height:1.55;
+  font-family:system-ui,sans-serif}
+.apprend b{color:rgba(224,240,252,.82);font-family:'Courier Prime',monospace;
+  font-weight:400}
+.rien{text-align:center;padding:44px 22px;font-size:13px;
+  color:rgba(198,222,242,.52);line-height:1.6;font-family:system-ui,sans-serif}
+</style>
+</head>
+<body>
+
+<div class="pont">
+  <div class="hd">
+    <div class="l1">
+      <span class="co"><b>Les contrats</b>
+        <span id="c-sous">Ce qu'on te propose aujourd'hui</span></span>
+      <button class="retour" id="retour">‹ Retour</button>
+    </div>
+    <div class="route" id="c-route"></div>
+  </div>
+
+  <div class="cale" id="c-cale" style="display:none">
+    <span class="ic"><svg viewBox="0 0 24 24">
+      <path d="M4 12.8h16l-2 4.3a2.2 2.2 0 0 1-2 1.3H8a2.2 2.2 0 0 1-2-1.3z"/>
+      <path d="M4 12.8q8-1.4 16 0"/><path d="M9.5 12.8V8.2M9.5 8.2l5.4 2.1-5.4 1.6"/>
+    </svg></span>
+    <span class="tx" id="c-cale-t">—</span>
+  </div>
+
+  <div id="liste"><p class="rien">On regarde ce qu'il y a…</p></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=2"></script>
+<script>
+const OU = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
+             palma:'Palma', ajaccio:'Ajaccio' };
+const POURQUOI = {
+  sans_bateau:"Il te faut une barque avant de charger quoi que ce soit.",
+  pas_connu:"Personne ne te confie encore de marchandise ici.",
+  pas_de_contrats:"On ne charge rien depuis ce port."
+};
+
+/* l'état du marché à destination, d'après ce qui y est déjà arrivé */
+function marche(pression){
+  const p = Number(pression) || 0;
+  return {
+    plein: Math.max(6, Math.round(100 * Math.pow(0.5, p / 6))),
+    ton:   p < 2 ? 'bon' : p < 7 ? 'moy' : 'mal',
+    titre: p < 2 ? 'Ils en manquent' : p < 7 ? 'Correct' : 'Saturé',
+    mot:   p < 1 ? "Personne n'en a livré depuis des jours."
+         : p < 2 ? "Presque rien n'est arrivé récemment."
+         : p < 7 ? "Quelques caisses sont arrivées cette semaine."
+         : "On en a beaucoup livré. Le prix remontera dans trois ou quatre jours."
+  };
+}
+
+/* le prix comparé au cours normal */
+function ecartPrix(demande){
+  const e = Math.round((Number(demande) - 1) * 100);
+  if (e >= 4)  return '<span class="cmp plus">+' + e + ' % sur le prix courant</span>';
+  if (e <= -4) return '<span class="cmp moins">−' + Math.abs(e)
+                    + ' % sur le prix courant</span>';
+  return '<span class="cmp egal">au prix courant</span>';
+}
+
+async function dessiner(){
+  const L = document.getElementById('liste');
+  let r;
+  try { r = await BD.agir('contrats_du_jour'); } catch(e){ r = null; }
+
+  if (!r || !r.ok){
+    L.innerHTML = '<p class="rien">'
+      + ((r && POURQUOI[r.pourquoi]) || "Rien à charger pour l'instant.") + '</p>';
+    return;
+  }
+
+  document.getElementById('c-route').innerHTML =
+    '<span class="pt"></span>' + (OU[r.depuis] || r.depuis)
+    + '<span class="tr"></span><span class="ar">›</span>'
+    + (OU[r.vers] || r.vers);
+
+  const C = r.contrats || [];
+  const dejaPris = C.some(c => c.etat !== 'propose');
+  const cale = document.getElementById('c-cale');
+  cale.style.display = '';
+  document.getElementById('c-cale-t').innerHTML = dejaPris
+    ? "Ta cale est prise. Va livrer avant d'en charger une autre."
+    : 'Ta cale prend <b>' + r.places + ' place' + (r.places > 1 ? 's' : '')
+      + '</b> — une course, un chargement.';
+
+  if (!C.length){
+    L.innerHTML = '<p class="rien">Le quai est vide aujourd\'hui.<br>'
+      + 'Reviens demain, on aura de quoi charger.</p>';
+    return;
+  }
+
+  /* la meilleure offre encore libre, pour le ruban */
+  const libres = C.filter(x => x.etat === 'propose');
+  const mieux = libres.length > 1
+    ? libres.reduce((a, b) => b.paie > a.paie ? b : a) : null;
+
+  L.innerHTML = C.map(c => {
+    const pris = c.etat !== 'propose';
+    const hors = dejaPris && !pris;
+    const m = marche(c.pression);
+    return '<div class="of' + (pris ? ' pris' : '') + (hors ? ' hors' : '')
+      + (c === mieux ? ' top' : '') + '">'
+      + (pris ? '<span class="ban">Dans ta cale</span>'
+         : c === mieux ? '<span class="ban">Le mieux payé</span>' : '')
+      + '<div class="in">'
+      + '<div class="l1"><b>' + c.nom + '</b></div>'
+      + (c.note ? '<p class="no">' + c.note + '</p>' : '')
+      + '<div class="prix"><span class="gros">' + c.paie + ' €</span>'
+      +   ecartPrix(c.demande) + '</div>'
+      + '<div class="mk">'
+      +   '<div class="tt"><span>Le marché à ' + (OU[c.vers] || c.vers) + '</span>'
+      +   '<span>' + m.titre + '</span></div>'
+      +   '<div class="ba"><i class="' + m.ton + '" style="width:' + m.plein + '%"></i></div>'
+      +   '<p class="mo ' + m.ton + '">' + m.mot + '</p>'
+      + '</div>'
+      + '<div class="l2">'
+      +   '<span class="et">' + c.kg + ' kg</span>'
+      +   '<span class="et">Toute ta cale</span>'
+      +   (pris ? '<span class="fait">Chargé</span>'
+           : hors ? '' : '<button data-id="' + c.id + '">Charger</button>')
+      + '</div></div></div>';
+  }).join('')
+  + '<p class="apprend"><b>Le marché bouge.</b> Chaque caisse livrée quelque part y '
+  + 'fait baisser le prix de cette marchandise. Ça remonte en trois ou quatre jours. '
+  + 'Livrer ce dont ils manquent paie mieux.</p>';
+
+  L.querySelectorAll('button[data-id]').forEach(b =>
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = '…';
+      try {
+        const x = await BD.agir('prendre_contrat', { p_id: b.dataset.id });
+        if (x && (x.ok || x.pris)){ dessiner(); return; }
+      } catch(e){}
+      b.disabled = false; b.textContent = 'Charger';
+    });
+}
+
+(async () => {
+  try {
+    const d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+    await dessiner();
+  } catch(e){
+    console.warn(e);
+    document.getElementById('liste').innerHTML =
+      '<p class="rien">Le quai n\'a pas répondu.</p>';
+  }
+})();
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+</script>
+</body>
+</html>
