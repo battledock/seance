@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Le chantier — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
+  color:#fff;background:#08131f}
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(120% 34% at 50% -4%, rgba(226,196,150,.2), transparent 62%),
+    linear-gradient(180deg,#3d6182 0%,#26506f 22%,#173c56 52%,#0d2436 78%,#081722 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
+
+.hd{position:relative;margin:0 -15px 18px;
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 15px;
+  background:linear-gradient(180deg,rgba(46,60,74,.72),rgba(18,34,50,.46));
+  border-bottom:1px solid rgba(200,180,150,.16)}
+.hd::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,178,116,.4) 24%,
+    rgba(226,178,116,.4) 76%,transparent)}
+.hd .l1{display:flex;align-items:flex-start;gap:12px}
+.hd .co{flex:1;min-width:0}
+.hd b{display:block;font-size:19px}
+.hd .co span{display:block;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(226,214,196,.6);margin-top:5px}
+.retour{flex:0 0 auto;padding:9px 14px;border-radius:22px;cursor:pointer;
+  border:1.5px solid rgba(214,196,170,.26);background:rgba(255,255,255,.07);
+  font-family:'Courier Prime',monospace;font-size:11.5px;color:#f0e8dc}
+.retour:active{background:rgba(255,255,255,.13)}
+
+/* ---------- Toussaint ---------- */
+.tous{display:flex;gap:14px;padding:16px;margin-bottom:16px;border-radius:16px;
+  background:linear-gradient(158deg,rgba(74,62,44,.66),rgba(38,32,24,.76));
+  border:1.5px solid rgba(214,180,132,.24)}
+.tous .por{flex:0 0 58px;height:58px;border-radius:14px;overflow:hidden;
+  background:#2c2418;border:1.5px solid rgba(226,190,140,.3)}
+.tous .por svg{width:100%;height:100%;display:block}
+.tous .co{flex:1;min-width:0}
+.tous .co b{display:block;font-size:16px;color:#f6ecdc}
+.tous .co span{display:block;font-size:10px;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(220,196,162,.56);margin-top:4px}
+.dit{margin-bottom:20px;padding:15px 17px;border-radius:14px;
+  background:rgba(255,255,255,.05);border-left:3px solid rgba(226,178,116,.5);
+  font-size:13px;color:rgba(240,232,220,.86);line-height:1.6;font-style:italic}
+
+/* ---------- ta barque, telle qu'elle est ---------- */
+.moi{margin-bottom:20px;padding:16px 17px;border-radius:15px;
+  background:linear-gradient(158deg,rgba(52,84,118,.7),rgba(22,44,70,.8));
+  border:1.5px solid rgba(150,190,224,.18)}
+.moi .tt{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;
+  color:rgba(198,222,242,.44);margin-bottom:9px}
+.moi b{display:block;font-size:17px;color:#fff;margin-bottom:3px}
+.moi .d{font-size:11.5px;color:rgba(198,222,242,.58);line-height:1.5;
+  font-family:system-ui,sans-serif;margin-bottom:13px}
+.trois{display:flex;gap:9px}
+.trois > div{flex:1;text-align:center;padding:10px 6px;border-radius:11px;
+  background:rgba(0,0,0,.2);border:1px solid rgba(160,200,230,.1)}
+.trois .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(190,214,234,.46)}
+.trois .v{font-size:16px;color:#fff;margin-top:5px}
+.trois .v em{font-style:normal;font-size:11px;color:#8ce0a8;margin-left:2px}
+
+/* ---------- ce qu'il peut faire ---------- */
+.sec{display:flex;align-items:center;gap:11px;font-size:8.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(226,214,196,.5);margin:0 0 12px}
+.sec::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(214,190,160,.18),transparent)}
+.suite{border-radius:16px;overflow:hidden;margin-bottom:16px;
+  background:linear-gradient(158deg,rgba(78,64,44,.6),rgba(40,34,24,.72));
+  border:1.5px solid rgba(226,178,116,.3);
+  box-shadow:0 4px 0 rgba(28,22,12,.5), inset 0 1px 0 rgba(255,222,168,.14)}
+.suite .in{padding:17px}
+.suite .l1{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.suite .l1 b{flex:1;font-size:17px;color:#fff6e8;font-weight:400}
+.suite .px{font-size:17px;font-weight:700;white-space:nowrap}
+.suite .px.ok{color:#f4cf8a;text-shadow:0 0 20px rgba(240,196,106,.28)}
+.suite .px.non{color:rgba(226,214,196,.42)}
+.suite .px.gratuit{color:#8ce0a8}
+.suite .d{font-size:12px;color:rgba(232,220,200,.62);line-height:1.55;
+  font-family:system-ui,sans-serif;margin-bottom:15px}
+.suite .go{width:100%;padding:15px;border-radius:12px;cursor:pointer;
+  border:1.5px solid rgba(255,232,178,.72);
+  background:linear-gradient(176deg,#fadfa0,#d9a44e);
+  box-shadow:0 4px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6);
+  font-family:'Courier Prime',monospace;font-size:15px;font-weight:700;color:#3a2804;
+  transition:transform .1s, box-shadow .1s}
+.suite .go:active{transform:translateY(3px);
+  box-shadow:0 1px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6)}
+.suite .go:disabled{opacity:.4;box-shadow:none;transform:none;cursor:default;
+  background:rgba(255,255,255,.08);border-color:rgba(200,180,150,.2);color:#e8e0d0}
+.suite .man{text-align:center;font-size:11px;color:rgba(232,180,140,.72);
+  margin-top:10px;font-family:system-ui,sans-serif}
+
+/* le chemin qui reste */
+.chemin{border-radius:15px;overflow:hidden;
+  background:rgba(255,255,255,.04);border:1px solid rgba(160,200,230,.1)}
+.pal{display:flex;align-items:center;gap:13px;padding:12px 15px;
+  border-bottom:1px solid rgba(160,200,230,.07)}
+.pal:last-child{border-bottom:0}
+.pal .n{flex:0 0 24px;height:24px;border-radius:8px;display:flex;
+  align-items:center;justify-content:center;font-size:11px;
+  background:rgba(255,255,255,.07);color:rgba(198,222,242,.5)}
+.pal.fait .n{background:rgba(140,224,168,.16);color:#8ce0a8}
+.pal .co{flex:1;min-width:0}
+.pal .co b{display:block;font-size:13px;color:rgba(240,248,255,.88);font-weight:400}
+.pal .co span{display:block;font-size:10px;color:rgba(190,214,234,.44);margin-top:2px;
+  font-family:system-ui,sans-serif}
+.pal .px{font-size:11.5px;color:rgba(226,214,196,.5);white-space:nowrap}
+.pal.fait{opacity:.55}
+.pal.fait .px{color:#8ce0a8}
+
+.rien{text-align:center;padding:44px 24px;border-radius:15px;
+  background:rgba(255,255,255,.035);border:1px dashed rgba(200,180,150,.2);
+  font-size:12.5px;color:rgba(226,214,196,.6);line-height:1.65;
+  font-family:system-ui,sans-serif}
+.pied{text-align:center;font-size:9.5px;color:rgba(200,190,175,.4);
+  margin-top:24px;font-family:system-ui,sans-serif;letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<div class="pont">
+  <div class="hd">
+    <div class="l1">
+      <span class="co"><b>Le chantier</b>
+        <span id="c-sous">Chez Toussaint</span></span>
+      <button class="retour" id="retour">‹ Retour</button>
+    </div>
+  </div>
+  <div id="corps"><p class="rien">On pousse la porte…</p></div>
+  <p class="pied">Battle Dock — Marseille</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=2"></script>
+<script>
+const PALIERS_B = [
+  { n:1,  nom:"La coque nue",        prix:0,      places:1, kg:40,  vit:1.0,
+    d:"Trois bordages et rien d'autre. Elle flotte, c'est déjà ça." },
+  { n:2,  nom:"Le calfatage",        prix:900,    places:1, kg:45,  vit:1.0,
+    d:"Étoupe et goudron dans les coutures. Elle ne prend plus l'eau." },
+  { n:3,  nom:"Le banc de nage",     prix:1400,   places:1, kg:50,  vit:1.1,
+    d:"On peut ramer assis. Ça change tout." },
+  { n:4,  nom:"Les avirons",         prix:2200,   places:2, kg:60,  vit:1.3,
+    d:"Deux avirons de frêne et leurs tolets." },
+  { n:5,  nom:"Le plat-bord",        prix:3400,   places:2, kg:70,  vit:1.3,
+    d:"Un liston tout autour. La coque ne travaille plus." },
+  { n:6,  nom:"Le pontage avant",    prix:5000,   places:3, kg:85,  vit:1.4,
+    d:"Un demi-pont à l'avant. Les caisses restent au sec." },
+  { n:7,  nom:"Le mât de fortune",   prix:7200,   places:3, kg:95,  vit:1.7,
+    d:"Une perche et un bout de toile. Ça tire quand le vent veut bien." },
+  { n:8,  nom:"La voile latine",     prix:10000,  places:4, kg:110, vit:2.2,
+    d:"Antenne et voile triangulaire. La vraie voile d'ici." },
+  { n:9,  nom:"Le safran",           prix:13500,  places:4, kg:120, vit:2.3,
+    d:"Un gouvernail et sa barre. Tu choisis où tu vas." },
+  { n:10, nom:"La quille lestée",    prix:18000,  places:5, kg:140, vit:2.5,
+    d:"Du plomb sous la quille. Elle ne se couche plus." },
+  { n:11, nom:"Le tillac",           prix:23000,  places:6, kg:170, vit:2.6,
+    d:"Un pont continu. On marche dessus sans regarder ses pieds." },
+  { n:12, nom:"La cale fermée",      prix:29000,  places:8, kg:220, vit:2.6,
+    d:"Un panneau, une cale étanche. Le double de marchandise." },
+  { n:13, nom:"Le foc",              prix:36000,  places:8, kg:240, vit:3.1,
+    d:"Un beaupré et un foc. Elle remonte enfin au vent." },
+  { n:14, nom:"Le rouf",             prix:44000,  places:9, kg:270, vit:3.1,
+    d:"Un abri sur le pont. On peut dormir à bord." },
+  { n:15, nom:"Le second mât",       prix:54000,  places:10, kg:310, vit:3.6,
+    d:"Un tapecul à l'arrière. Deux voiles valent mieux qu'une." },
+  { n:16, nom:"Le bordé doublé",     prix:66000,  places:12, kg:380, vit:3.6,
+    d:"Une seconde peau de bois. Elle encaisse le mauvais temps." },
+  { n:17, nom:"Le treuil",           prix:80000,  places:14, kg:450, vit:3.7,
+    d:"Un cabestan pour hisser seul. Plus besoin d'être trois." },
+  { n:18, nom:"La chaloupe",         prix:96000,  places:15, kg:500, vit:3.7,
+    d:"Une annexe sur le pont. On accoste où il n'y a pas de quai." },
+  { n:19, nom:"Le pavillon",         prix:115000, places:16, kg:560, vit:3.8,
+    d:"Tes couleurs en tête de mât. On te reconnaît de loin." },
+  { n:20, nom:"Le grand caboteur",   prix:140000, places:20, kg:700, vit:4.2,
+    d:"Coque doublée, trois voiles, un nom peint sur l'étrave. Ce n'est plus une barque." }
+];
+
+function toussaint(){
+  const P = [];
+  const r = (x, y, w, h, c) => P.push([x, y, w, h, c]);
+
+  const FOND = '#c9b89a', FOND2 = '#b6a486';
+  const PEAU = '#d8a06a', PEAU_O = '#bb8350', PEAU_C = '#e8b57c';
+  const POIL = '#eae4d6', POIL_O = '#c8c1b2';
+  const GRIS = '#b8b1a4';
+  const CAP = '#33404f', CAP_C = '#48576a', CAP_V = '#222c38';
+  const TOILE = '#5f6c52', TOILE_C = '#718061', TOILE_O = '#4c5742';
+  const CUIR = '#7d5636', CUIR_C = '#996b42';
+  const OEIL = '#3a2a1c';
+
+  /* --- le fond --- */
+  r(0, 0, 16, 18, FOND);
+  r(0, 13, 16, 5, FOND2);
+
+  /* --- le buste : des épaules larges et tombantes --- */
+  r(1, 15, 14, 3, TOILE);
+  r(2, 14, 12, 1, TOILE);
+  r(3, 13, 10, 1, TOILE);
+  r(1, 15, 5, 3, TOILE_C);             /* le jour vient de la gauche */
+  r(2, 14, 4, 1, TOILE_C);
+  r(11, 15, 4, 3, TOILE_O);            /* et l'ombre à droite */
+  /* le col ouvert sur la peau */
+  r(7, 13, 3, 2, PEAU_O);
+  r(6, 14, 1, 1, TOILE_C);
+  r(10, 14, 1, 1, TOILE_O);
+  /* le tablier de cuir, étroit, avec ses bretelles */
+  r(6, 16, 5, 2, CUIR);
+  r(6, 16, 2, 2, CUIR_C);
+  r(6, 15, 1, 1, CUIR);
+  r(10, 15, 1, 1, CUIR);
+
+  /* --- le cou --- */
+  r(7, 12, 3, 2, PEAU_O);
+  r(7, 12, 1, 2, PEAU);
+
+  /* --- le visage, large et carré --- */
+  r(4, 5, 9, 8, PEAU);
+  r(9, 5, 4, 8, PEAU_O);
+  r(5, 6, 3, 2, PEAU_C);               /* le front au jour */
+
+  /* les oreilles */
+  r(3, 8, 1, 2, PEAU_O);
+  r(13, 8, 1, 2, PEAU_O);
+
+  /* les sourcils, blancs et broussailleux */
+  r(5, 7, 3, 1, POIL);
+  r(9, 7, 3, 1, POIL_O);
+
+  /* les yeux */
+  r(5, 8, 3, 1, '#f2ebe0');
+  r(9, 8, 3, 1, '#e2dacc');
+  r(6, 8, 1, 1, OEIL);
+  r(10, 8, 1, 1, OEIL);
+  /* les cernes du dessous */
+  r(5, 9, 3, 1, PEAU_O);
+  r(9, 9, 3, 1, PEAU_O);
+
+  /* le nez */
+  r(8, 9, 1, 2, PEAU_C);
+  r(8, 10, 1, 1, PEAU_O);
+
+  /* la moustache, deux brins tombants */
+  r(5, 11, 3, 1, POIL);
+  r(9, 11, 3, 1, POIL_O);
+  r(5, 12, 1, 1, POIL_O);
+  r(11, 12, 1, 1, POIL_O);
+  /* la bouche entre les deux */
+  r(8, 11, 1, 1, '#9a5c44');
+
+  /* la barbe, courte, sur le menton */
+  r(6, 12, 5, 1, POIL);
+  r(9, 12, 2, 1, POIL_O);
+
+  /* les cheveux gris qui dépassent */
+  r(3, 6, 1, 3, GRIS);
+  r(13, 6, 1, 3, GRIS);
+
+  /* --- la casquette de marin : plate et large --- */
+  r(4, 3, 9, 2, CAP);                  /* la calotte, basse */
+  r(4, 3, 4, 2, CAP_C);
+  r(5, 2, 7, 1, CAP);
+  r(5, 2, 3, 1, CAP_C);
+  r(3, 4, 1, 1, CAP);
+  r(13, 4, 1, 1, CAP);
+  /* le bandeau */
+  r(3, 5, 11, 1, CAP_V);
+  r(3, 5, 4, 1, '#3a4757');
+  /* la visière, large, qui ombre le front */
+  r(2, 6, 13, 1, CAP_V);
+  r(2, 6, 5, 1, '#3a4757');
+
+  let s = '<svg viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg" '
+    + 'shape-rendering="crispEdges">';
+  P.forEach(([x, y, w, h, c]) =>
+    s += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h
+      + '" fill="' + c + '"/>');
+  return s + '</svg>';
+}
+
+function eur(v){ return Number(v || 0).toLocaleString('fr-FR') + ' €'; }
+
+let D = null, enTravaux = false;
+
+function dessiner(){
+  const d = D;
+  const n = Number(d.barque || 0);
+  const sous = Number(d.euros || 0);
+  const C = document.getElementById('corps');
+
+  /* Toussaint ne travaille que chez toi */
+  const chezToi = !d.port || d.port === 'anse' || d.port === 'marseille';
+
+  let h = '<div class="tous"><span class="por">' + toussaint() + '</span>'
+    + '<span class="co"><b>Toussaint</b><span>Charpentier de marine</span></span></div>';
+
+  if (!chezToi){
+    h += '<p class="dit">« Je ne travaille pas ici. Mon chantier est chez toi, '
+      + 'dans ton anse, et nulle part ailleurs. »</p>'
+      + '<p class="rien">Reviens à Marseille pour toucher à ta barque.</p>';
+    C.innerHTML = h;
+    document.getElementById('c-sous').textContent = 'Fermé — il est à Marseille';
+    return;
+  }
+
+  /* ta barque telle qu'elle est */
+  const A = n ? PALIERS_B[n - 1] : null;
+  if (A){
+    h += '<div class="moi"><p class="tt">Ta barque</p>'
+      + '<b>' + A.nom + '</b><p class="d">' + A.d + '</p>'
+      + '<div class="trois">'
+      +   '<div><p class="k">Cale</p><p class="v">' + A.places + '</p></div>'
+      +   '<div><p class="k">Charge</p><p class="v">' + A.kg + '</p></div>'
+      +   '<div><p class="k">Allure</p><p class="v">' + A.vit.toFixed(1) + '</p></div>'
+      + '</div></div>';
+  }
+
+  /* le bout du chemin */
+  if (n >= PALIERS_B.length){
+    h += '<p class="dit">« Je ne peux plus rien faire pour toi. '
+      + 'Tu as le plus beau bateau du bassin. »</p>'
+      + '<p class="rien">Le chantier est fermé.<br>Va naviguer.</p>';
+    C.innerHTML = h;
+    document.getElementById('c-sous').textContent = 'Rien à ajouter';
+    return;
+  }
+
+  const S = PALIERS_B[n];
+  const gratuit = S.prix === 0;
+  const peut = gratuit || sous >= S.prix;
+
+  h += '<p class="dit">' + (!n
+    ? '« Tu veux un bateau ? Je sors le bois, tu tiens la scie. '
+      + 'La quille je te la fais, le reste tu paieras. »'
+    : peut
+      ? "« Fais voir ta caisse… bon. On peut s'y mettre. »"
+      : '« Reviens quand tu auras de quoi. Le bois ne se coupe pas tout seul. »')
+    + '</p>';
+
+  document.getElementById('c-sous').textContent = n
+    ? 'Palier ' + n + ' sur ' + PALIERS_B.length : 'Tu n\'as pas encore de barque';
+
+  /* ce qu'il peut faire ensuite */
+  h += '<p class="sec">' + (n ? 'La prochaine étape' : 'Ce qu\'il peut faire') + '</p>'
+    + '<div class="suite"><div class="in">'
+    + '<div class="l1"><b>' + S.nom + '</b>'
+    +   '<span class="px ' + (gratuit ? 'gratuit' : peut ? 'ok' : 'non') + '">'
+    +   (gratuit ? 'gratuite' : eur(S.prix)) + '</span></div>'
+    + '<p class="d">' + S.d + '</p>'
+    + '<div class="trois" style="margin-bottom:15px">'
+    +   '<div><p class="k">Cale</p><p class="v">' + S.places
+    +     (A && S.places > A.places ? ' <em>+' + (S.places - A.places) + '</em>' : '')
+    +     '</p></div>'
+    +   '<div><p class="k">Charge</p><p class="v">' + S.kg
+    +     (A && S.kg > A.kg ? ' <em>+' + (S.kg - A.kg) + '</em>' : '') + '</p></div>'
+    +   '<div><p class="k">Allure</p><p class="v">' + S.vit.toFixed(1)
+    +     (A && S.vit > A.vit ? ' <em>+' + (S.vit - A.vit).toFixed(1) + '</em>' : '')
+    +     '</p></div>'
+    + '</div>'
+    + '<button class="go" id="go"' + (peut ? '' : ' disabled') + '>'
+    +   (peut ? (n ? 'Faire les travaux' : 'Construire la coque') : 'Pas assez') + '</button>'
+    + (peut ? '' : '<p class="man">Il te manque ' + eur(S.prix - sous) + '</p>')
+    + '</div></div>';
+
+  /* le chemin, en entier */
+  h += '<p class="sec">Le chemin</p><div class="chemin">'
+    + PALIERS_B.map((p, i) =>
+      '<div class="pal' + (i < n ? ' fait' : '') + '">'
+      + '<span class="n">' + (i < n ? '✓' : (i + 1)) + '</span>'
+      + '<span class="co"><b>' + p.nom + '</b>'
+      + '<span>' + p.places + ' place' + (p.places > 1 ? 's' : '')
+      +   ' · ' + p.kg + ' kg · allure ' + p.vit.toFixed(1) + '</span></span>'
+      + '<span class="px">' + (i < n ? 'faite'
+          : p.prix === 0 ? 'gratuite' : eur(p.prix)) + '</span></div>').join('')
+    + '</div>';
+
+  C.innerHTML = h;
+
+  const go = document.getElementById('go');
+  if (go && peut) go.onclick = construire;
+}
+
+async function construire(){
+  if (enTravaux) return;
+  enTravaux = true;
+  const go = document.getElementById('go');
+  go.disabled = true; go.textContent = 'Toussaint travaille…';
+
+  let r;
+  try { r = await BD.agir('construire_barque'); } catch(e){ r = null; }
+
+  if (r && r.ok){
+    try { Object.assign(D, await BD.charger()); } catch(e){}
+    dessiner();
+    const dit = document.querySelector('.dit');
+    if (dit) dit.innerHTML = '« Voilà. <i>' + r.nom + '</i>. Fais-en bon usage. »';
+  } else {
+    const M = { pas_ici:"Toussaint n'est pas ici.",
+                deja_au_bout:"Il n'y a rien au-dessus.",
+                trop_cher:'Il te manque ' + eur((r && r.manque) || 0) + '.' };
+    go.textContent = 'Pas possible';
+    const man = document.createElement('p');
+    man.className = 'man';
+    man.textContent = (r && M[r.pourquoi]) || 'Réessaie dans un moment.';
+    go.parentElement.appendChild(man);
+  }
+  enTravaux = false;
+}
+
+(async () => {
+  try {
+    D = await BD.charger();
+    if (!D){ location.href = 'index.html'; return; }
+    dessiner();
+  } catch(e){
+    console.warn(e);
+    document.getElementById('corps').innerHTML =
+      '<p class="rien">Le chantier n\'a pas répondu.</p>';
+  }
+})();
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+</script>
+</body>
+</html>
