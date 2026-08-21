@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Les gens — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
+  color:#fff;background:#08131f}
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(120% 34% at 50% -4%, rgba(214,234,250,.3), transparent 62%),
+    linear-gradient(180deg,#356690 0%,#22527a 22%,#143a5a 52%,#0b2338 78%,#071624 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
+.hd{position:relative;margin:0 -15px 20px;
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 15px;
+  background:linear-gradient(180deg,rgba(24,52,80,.7),rgba(12,30,50,.44));
+  border-bottom:1px solid rgba(160,200,230,.12)}
+.hd::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,178,116,.34) 24%,
+    rgba(226,178,116,.34) 76%,transparent)}
+.hd .l1{display:flex;align-items:flex-start;gap:12px}
+.hd .co{flex:1;min-width:0}
+.hd b{display:block;font-size:19px}
+.hd .co span{display:block;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(206,228,246,.6);margin-top:5px}
+.retour{flex:0 0 auto;padding:9px 14px;border-radius:22px;cursor:pointer;
+  border:1.5px solid rgba(180,214,240,.24);background:rgba(255,255,255,.07);
+  font-family:'Courier Prime',monospace;font-size:11.5px;color:#e4f0fa}
+.retour:active{background:rgba(255,255,255,.13)}
+.sec{display:flex;align-items:center;gap:11px;font-size:8.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(206,228,246,.5);margin:0 0 12px}
+.sec::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(160,200,230,.14),transparent)}
+.sec.plus{margin-top:26px}
+.vide{text-align:center;padding:46px 24px;border-radius:15px;
+  background:rgba(255,255,255,.035);border:1px dashed rgba(160,200,230,.16);
+  font-size:12.5px;color:rgba(198,222,242,.55);line-height:1.65;
+  font-family:system-ui,sans-serif}
+.pied{text-align:center;font-size:9.5px;color:rgba(180,208,232,.4);
+  margin-top:24px;font-family:system-ui,sans-serif;letter-spacing:.06em}
+
+/* ---------- une personne ---------- */
+.qui{position:relative;margin-bottom:12px;padding:15px 16px;border-radius:15px;
+  background:linear-gradient(158deg,rgba(52,84,118,.72),rgba(22,44,70,.82));
+  border:1.5px solid rgba(150,190,224,.18);
+  box-shadow:0 4px 0 rgba(5,16,28,.5), inset 0 1px 0 rgba(190,220,244,.1)}
+.qui .l1{display:flex;align-items:flex-start;gap:13px;margin-bottom:12px}
+.qui .ini{flex:0 0 42px;height:42px;border-radius:12px;display:flex;
+  align-items:center;justify-content:center;font-size:17px;font-weight:700}
+.qui .co{flex:1;min-width:0}
+.qui .co b{display:block;font-size:16px;color:#fff;font-weight:400}
+.qui .co .q{display:block;font-size:11px;color:rgba(198,222,242,.58);margin-top:4px;
+  font-family:system-ui,sans-serif}
+.qui .co .ou{display:block;font-size:10px;color:rgba(180,206,230,.44);margin-top:3px;
+  font-family:system-ui,sans-serif}
+/* la jauge du lien */
+.lien{margin-bottom:10px}
+.lien .tt{display:flex;justify-content:space-between;gap:10px;font-size:10px;
+  margin-bottom:5px;font-family:system-ui,sans-serif}
+.lien .tt b{font-weight:400;color:rgba(224,240,252,.86);font-family:'Courier Prime',monospace}
+.lien .tt span{color:rgba(190,214,234,.44)}
+.lien .ba{height:6px;border-radius:4px;background:rgba(0,0,0,.3);overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+.lien .ba i{display:block;height:100%;border-radius:4px;
+  transition:width .7s cubic-bezier(.3,.9,.3,1)}
+.qui .mot{font-size:11.5px;color:rgba(206,228,246,.62);line-height:1.5;
+  font-family:system-ui,sans-serif}
+/* pas encore rencontré */
+.qui.inconnu{opacity:.5;border-style:dashed}
+.qui.inconnu .ini{background:rgba(190,220,244,.07);color:rgba(198,222,242,.4);
+  border:1px solid rgba(160,200,230,.14)}
+.qui.inconnu .mot{font-style:italic}
+/* fâché */
+.qui.trahi{border-color:rgba(184,72,58,.4)}
+.qui.trahi .ini{background:rgba(184,72,58,.16);color:#e0907e;
+  border:1px solid rgba(184,72,58,.3)}
+</style>
+</head>
+<body>
+<div class="pont">
+  <div class="hd"><div class="l1">
+    <span class="co"><b>Les gens</b><span id="g-sous">—</span></span>
+    <button class="retour" id="retour">‹ Retour</button>
+  </div></div>
+  <div id="corps"><p class="vide">On fait le tour du port…</p></div>
+  <p class="pied">Battle Dock — Marseille</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=2"></script>
+<script>
+function couleur(v, trahi){
+  if (trahi || v < 0) return 'linear-gradient(90deg,#8a4a3a,#c9705a)';
+  if (v >= 80) return 'linear-gradient(90deg,#c98a3a,#f0c46a)';
+  if (v >= 50) return 'linear-gradient(90deg,#5aa878,#8ce0a8)';
+  if (v >= 20) return 'linear-gradient(90deg,#4a7a9a,#7fb4d4)';
+  return 'rgba(190,220,244,.3)';
+}
+function teinte(v, trahi){
+  if (trahi || v < 0) return ['rgba(184,72,58,.16)', '#e0907e', 'rgba(184,72,58,.3)'];
+  if (v >= 80) return ['rgba(240,196,106,.16)', '#f0c46a', 'rgba(240,196,106,.3)'];
+  if (v >= 50) return ['rgba(140,224,168,.14)', '#8ce0a8', 'rgba(140,224,168,.26)'];
+  return ['rgba(140,184,224,.14)', '#8ab8e0', 'rgba(140,184,224,.26)'];
+}
+
+(async () => {
+  const C = document.getElementById('corps');
+  try {
+    const d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+
+    let G;
+    try { G = await BD.agir('mes_liens'); } catch(e){ G = null; }
+    if (!Array.isArray(G)) G = [];
+
+    const connus = G.filter(g => g.connu);
+    const autres = G.filter(g => !g.connu);
+    document.getElementById('g-sous').textContent = connus.length
+      ? connus.length + (connus.length > 1 ? ' personnes rencontrées' : ' personne rencontrée')
+      : 'Tu n\'as encore croisé personne';
+
+    function carte(g){
+      const v = Number(g.valeur) || 0;
+      const P = g.palier || {};
+      const [f, c, b] = teinte(v, g.trahi);
+      const pc = Math.max(2, Math.min(100, v < 0 ? Math.abs(v) : v));
+      return '<div class="qui' + (g.connu ? '' : ' inconnu')
+        + (g.trahi ? ' trahi' : '') + '">'
+        + '<div class="l1">'
+        +   '<span class="ini" style="background:' + f + ';color:' + c
+        +     ';border:1px solid ' + b + '">' + g.nom[0] + '</span>'
+        +   '<span class="co"><b>' + g.nom + '</b>'
+        +   '<span class="q">' + g.quoi + '</span>'
+        +   '<span class="ou">' + g.ou
+        +     (g.jours != null ? ' · vu ' + (g.jours < 1 ? "aujourd'hui"
+              : g.jours === 1 ? 'hier' : 'il y a ' + g.jours + ' jours') : '')
+        +   '</span></span>'
+        + '</div>'
+        + (g.connu
+           ? '<div class="lien"><div class="tt"><b>' + (P.nom || '') + '</b>'
+             + '<span>' + (v < 0 ? v : v + ' / 100') + '</span></div>'
+             + '<div class="ba"><i style="width:' + pc + '%;background:'
+             + couleur(v, g.trahi) + '"></i></div></div>'
+             + '<p class="mot">' + (P.mot || '') + '</p>'
+           : '<p class="mot">Tu ne l\'as pas encore rencontré.</p>')
+        + '</div>';
+    }
+
+    let h = '';
+    if (connus.length) h += connus.map(carte).join('');
+    else h += '<p class="vide">Tu n\'as encore croisé personne.<br>'
+      + 'Descends à terre dans les ports — ils sont tous quelque part.</p>';
+    if (autres.length)
+      h += '<p class="sec plus">Ceux que tu n\'as pas croisés</p>'
+        + autres.map(carte).join('');
+    C.innerHTML = h;
+
+  } catch(e){
+    console.warn(e);
+    C.innerHTML = '<p class="vide">Le port n\'a pas répondu.</p>';
+  }
+})();
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+</script>
+</body>
+</html>
