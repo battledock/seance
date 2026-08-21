@@ -483,25 +483,6 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
-<section class="pan" id="ctr">
-  <div class="hd" style="display:block">
-    <div style="display:flex;align-items:flex-start;gap:12px">
-      <span class="ti" style="flex:1"><b>Les contrats</b>
-        <span id="ctr-s">Ce qu'on te propose aujourd'hui</span></span>
-      <button class="fer" id="ctr-fer">×</button>
-    </div>
-    <div class="route" id="ctr-route"></div>
-  </div>
-  <div class="cal2">
-    <span class="ic"><svg viewBox="0 0 24 24">
-      <path d="M4 12.8h16l-2 4.3a2.2 2.2 0 0 1-2 1.3H8a2.2 2.2 0 0 1-2-1.3z"/>
-      <path d="M4 12.8q8-1.4 16 0"/><path d="M9.5 12.8V8.2M9.5 8.2l5.4 2.1-5.4 1.6"/>
-    </svg></span>
-    <span class="tx" id="ctr-cale">—</span>
-  </div>
-  <ul class="liste" id="ctr-liste"></ul>
-</section>
-
 <section class="pan" id="ent">
   <div class="hd">
     <span class="ti"><b>L'entrepôt</b>
@@ -589,7 +570,7 @@ const TUILES = [
   { k:'contrats', gd:1, fam:'bleu', t:'Les contrats', s:'Ce qu\'on te propose',
     ic:'<path d="M6.5 8.5 12 3l5.5 5.5V20a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1z"/>'
       +'<circle cx="12" cy="7.5" r="1.2"/><path d="M9.5 13h5M9.5 16.5h5"/>',
-    f:() => ouvrirContrats() },
+    f:() => location.href = 'contrats.html' },
   { k:'entrepot', gd:1, fam:'bleu', t:'L\'entrepôt', s:'Ce qui attend sur le quai',
     ic:'<path d="M3.5 20.5V9.8L12 4.5l8.5 5.3v10.7M2.5 20.5h19"/>'
       +'<path d="M9 20.5v-6h6v6M9 17h6"/>',
@@ -663,108 +644,6 @@ function dessinerTuiles(){
 const OU_NOM = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
                  palma:'Palma', ajaccio:'Ajaccio' };
 
-async function ouvrirContrats(){
-  const p = document.getElementById('ctr');
-  p.classList.add('on');
-  const L = document.getElementById('ctr-liste');
-  L.innerHTML = '<li class="rien">On regarde ce qu\'il y a…</li>';
-
-  let r;
-  try { r = await BD.agir('contrats_du_jour'); } catch(e){ r = null; }
-  if (!r || !r.ok){
-    const POURQUOI = { sans_bateau:'Il te faut une barque avant de charger quoi que ce soit.',
-      pas_connu:'Personne ne te confie encore de marchandise ici.',
-      pas_de_contrats:'On ne charge rien depuis ce port.' };
-    L.innerHTML = '<li class="rien">'
-      + ((r && POURQUOI[r.pourquoi]) || 'Rien à charger pour l\'instant.') + '</li>';
-    document.getElementById('ctr-route').innerHTML = '';
-    document.getElementById('ctr-cale').textContent = '';
-    return;
-  }
-
-  /* la route, en clair */
-  document.getElementById('ctr-route').innerHTML =
-    '<span class="pt"></span>' + (OU_NOM[r.depuis] || r.depuis)
-    + '<span class="tr"></span><span class="ar">›</span>'
-    + (OU_NOM[r.vers] || r.vers);
-  document.getElementById('ctr-s').textContent = 'Ce qu\'on te propose aujourd\'hui';
-
-  const C = r.contrats || [];
-  const dejaPris = C.some(c => c.etat !== 'propose');
-  document.getElementById('ctr-cale').innerHTML = dejaPris
-    ? 'Ta cale est prise. Va livrer avant d\'en charger une autre.'
-    : 'Ta cale prend <b>' + r.places + ' place' + (r.places > 1 ? 's' : '')
-      + '</b> — une course, un chargement.';
-
-  if (!C.length){
-    L.innerHTML = '<li class="rien">Le quai est vide aujourd\'hui.</li>';
-    return;
-  }
-
-  /* la meilleure offre du jour, pour le ruban */
-  const mieux = C.reduce((a2, b2) => (b2.paie > a2.paie && b2.etat === 'propose') ? b2 : a2,
-                         C.find(x => x.etat === 'propose') || C[0]);
-
-  L.innerHTML = C.map(c => {
-    const pris = c.etat !== 'propose';
-    const hors = dejaPris && !pris;
-
-    /* la demande : 1 = prix courant. En dessous, le marché est mou. */
-    const ecart = Math.round((Number(c.demande) - 1) * 100);
-    const cmp = ecart >= 4
-      ? '<span class="cmp plus">+' + ecart + ' % sur le prix courant</span>'
-      : ecart <= -4
-      ? '<span class="cmp moins">−' + Math.abs(ecart) + ' % sur le prix courant</span>'
-      : '<span class="cmp" style="color:rgba(198,222,242,.5)">au prix courant</span>';
-
-    /* l'état du marché là-bas, d'après ce qui y est déjà arrivé */
-    const pr = Number(c.pression) || 0;
-    const plein = Math.max(6, Math.round(100 * Math.pow(0.5, pr / 6)));
-    const ton = pr < 2 ? 'bon' : pr < 7 ? 'moy' : 'mal';
-    const titre = pr < 2 ? 'Ils en manquent' : pr < 7 ? 'Correct' : 'Saturé';
-    const mot = pr < 1 ? 'Personne n\'en a livré depuis des jours.'
-      : pr < 2 ? 'Presque rien n\'est arrivé récemment.'
-      : pr < 7 ? 'Quelques caisses sont arrivées cette semaine.'
-      : 'On en a beaucoup livré. Le prix remontera dans trois ou quatre jours.';
-
-    return '<li class="of' + (pris ? ' pris' : '') + (hors ? ' hors' : '')
-      + (!pris && !hors && c === mieux && C.length > 1 ? ' top' : '') + '">'
-      + (pris ? '<span class="ban">Dans ta cale</span>'
-         : (!hors && c === mieux && C.length > 1
-            ? '<span class="ban">Le mieux payé</span>' : ''))
-      + '<div class="in">'
-      + '<div class="l1"><b>' + c.nom + '</b></div>'
-      + (c.note ? '<p class="no">' + c.note + '</p>' : '')
-      + '<div class="prix"><span class="gros">' + c.paie + ' €</span>' + cmp + '</div>'
-      + '<div class="mk">'
-      +   '<div class="tt"><span>Le marché à ' + (OU_NOM[c.vers] || c.vers) + '</span>'
-      +   '<span>' + titre + '</span></div>'
-      +   '<div class="ba"><i class="' + ton + '" style="width:' + plein + '%"></i></div>'
-      +   '<p class="mo ' + ton + '">' + mot + '</p>'
-      + '</div>'
-      + '<div class="l2">'
-      +   '<span class="et">' + c.kg + ' kg</span>'
-      +   '<span class="et">Toute ta cale</span>'
-      +   (pris ? '<span class="fait">Chargé</span>'
-           : hors ? '' : '<button data-id="' + c.id + '">Charger</button>')
-      + '</div></div></li>';
-  }).join('')
-  + '<p class="apprend"><b>Le marché bouge.</b> Chaque caisse livrée quelque part y '
-  + 'fait baisser le prix de cette marchandise. Ça remonte en trois ou quatre jours. '
-  + 'Livrer ce dont ils manquent paie mieux.</p>';
-
-  L.querySelectorAll('button[data-id]').forEach(b2 =>
-    b2.onclick = async () => {
-      b2.disabled = true; b2.textContent = '…';
-      try {
-        const x = await BD.agir('prendre_contrat', { p_id: b2.dataset.id });
-        if (x && (x.ok || x.pris)){ ouvrirContrats(); return; }
-      } catch(e){}
-      b2.disabled = false; b2.textContent = 'Charger';
-    });
-}
-document.getElementById('ctr-fer').onclick = () =>
-  document.getElementById('ctr').classList.remove('on');
 
 /* ---------- l'entrepôt ---------- */
 async function ouvrirEntrepot(){
