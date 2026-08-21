@@ -1583,6 +1583,55 @@ function reflet(x, larg, yBase, haut, couleur, force){
    MARSEILLE — le fond, en silhouette contre le matin
    ============================================================ */
 
+
+/* ============================================================
+   REGROUPER LES FORMES
+   Des centaines de rectangles de teintes voisines coûtent cher
+   à peindre. On arrondit la couleur à quelques paliers et on
+   fond tous ceux d'un même palier en un seul tracé. L'œil n'y
+   voit rien, le navigateur travaille dix fois moins.
+   ============================================================ */
+function Tas(){
+  const seaux = new Map();
+  return {
+    /* on range un rectangle dans le seau de sa couleur */
+    rect(x, y, w, h, couleur, opac){
+      if (w <= 0 || h <= 0) return;
+      const cle = couleur + '|' + (opac === undefined ? 1 : opac);
+      let d = seaux.get(cle);
+      if (!d) seaux.set(cle, d = []);
+      d.push('M' + x.toFixed(1) + ' ' + y.toFixed(1)
+        + 'h' + w.toFixed(1) + 'v' + h.toFixed(1) + 'h' + (-w).toFixed(1) + 'z');
+    },
+    /* on range aussi des tracés libres */
+    tracé(d, couleur, opac){
+      const cle = couleur + '|' + (opac === undefined ? 1 : opac);
+      let t = seaux.get(cle);
+      if (!t) seaux.set(cle, t = []);
+      t.push(d);
+    },
+    /* et on rend le tout : un tracé par couleur */
+    rendre(){
+      let out = '';
+      seaux.forEach((d, cle) => {
+        const i = cle.lastIndexOf('|');
+        const c = cle.slice(0, i), o = cle.slice(i + 1);
+        out += '<path d="' + d.join('') + '" fill="' + c + '"'
+          + (o !== '1' ? ' opacity="' + o + '"' : '') + '/>';
+      });
+      return out;
+    }
+  };
+}
+
+/* arrondir une couleur à un palier, pour que les teintes voisines
+   tombent dans le même seau */
+function pal(c, n){
+  const v = hx(c);
+  const p = 256 / (n || 12);
+  return ch(v.map(x => Math.min(255, Math.round(x / p) * p + p / 2)));
+}
+
 function marseilleFond(){
   let s = '';
 
@@ -1651,16 +1700,26 @@ function marseilleFond(){
         q70 ${(-hg*.09).toFixed(1)} 148 ${(-hg*.03).toFixed(1)} q68 ${(hg*.03).toFixed(1)} 138 ${(hg*.1).toFixed(1)}"/>`;
     s += `</g>`;
     /* la pinède accrochée à la pente */
+    /* soixante-deux pins : même teinte, trois opacités, trois tracés */
     const dp2 = 1200, hp2 = px(10, dp2);
+    const rx = hp2*.5, ry = hp2*.24, cp = mel('#3a4a48','#8a8858',.34);
+    const seaux = {};
     for (let i = 0; i < 62; i++){
       const x = xg - 204 + rnd(i*3+2) * 418;
       const k = Math.max(.02, 1 - Math.abs(x - xg) / 208);
       const ys = yg - hg * k * (.1 + rnd(i*7+40) * .78);
       if (ys > yg - 1) continue;
-      s += `<ellipse cx="${x.toFixed(1)}" cy="${ys.toFixed(1)}" rx="${(hp2*.5).toFixed(1)}"
-        ry="${(hp2*.24).toFixed(1)}" fill="${mel('#3a4a48','#8a8858',.34)}"
-        opacity="${(.24+rnd(i+7)*.3).toFixed(2)}"/>`;
+      /* l'opacité arrondie au cinquième : trois seaux au lieu de soixante */
+      const o = (Math.round((.24 + rnd(i+7)*.3) * 5) / 5).toFixed(2);
+      /* une ellipse, écrite en arcs */
+      (seaux[o] = seaux[o] || []).push(
+        'M' + (x-rx).toFixed(1) + ' ' + ys.toFixed(1)
+        + 'a' + rx.toFixed(1) + ' ' + ry.toFixed(1) + ' 0 1 0 ' + (rx*2).toFixed(1) + ' 0'
+        + 'a' + rx.toFixed(1) + ' ' + ry.toFixed(1) + ' 0 1 0 ' + (-rx*2).toFixed(1) + ' 0z');
     }
+    Object.keys(seaux).forEach(o =>
+      s += '<path d="' + seaux[o].join('') + '" fill="' + cp
+        + '" opacity="' + o + '"/>');
     /* les maisons accrochées, qui montent jusqu'à mi-pente */
     /* le bâti : dense au pied, il se raréfie en montant */
     const dm = 1250, hm = px(6.4, dm);
@@ -1871,29 +1930,34 @@ function marseilleFond(){
   }
 
   /* ---------- la ville, étalée au pied, sur deux plans ---------- */
-  [[2400, .62, 3], [1500, 1, 4]].forEach(([d, opac, base]) => {
-    const y = sol(d), he = px(3.4, d);
-    let x = -10, g = base * 97;
-    while (x < 492){
-      const larg = he * (1.05 + rnd(g) * 1.7);
-      /* la ville monte vers la colline */
-      const relief = Math.max(0, 1 - Math.abs(x - xg) / 300);
-      const et = base + Math.round(rnd(g+9) * 5 + relief * 5);
-      const h = he * et;
-      const kk = Math.max(0, 1 - Math.abs(x + larg/2 - SOLEIL.x) / 300);
-      const c = mel('#4a566c', '#c99878', kk * .52);
-      s += `<rect x="${x.toFixed(1)}" y="${(y-h).toFixed(1)}" width="${larg.toFixed(1)}"
-        height="${h.toFixed(1)}" fill="${c}" opacity="${opac}"/>`;
-      s += `<rect x="${(x-larg*.04).toFixed(1)}" y="${(y-h).toFixed(1)}"
-        width="${(larg*1.08).toFixed(1)}" height="${(he*.14).toFixed(1)}"
-        fill="${mel('#8e94a4','#ffd8a0', .34 + kk*.5)}" opacity="${(opac*.9).toFixed(2)}"/>`;
-      if (rnd(g*13+3) > .82)
-        s += `<rect x="${(x+larg*.3).toFixed(1)}" y="${(y-h*.62).toFixed(1)}"
-          width="${(he*.16).toFixed(1)}" height="${(he*.24).toFixed(1)}"
-          fill="#ffc87e" opacity="${(.6*opac).toFixed(2)}"/>`;
-      x += larg + he * .03; g++;
-    }
-  });
+  /* Les deux plans de la ville. Chaque immeuble a sa nuance selon
+     sa distance au soleil ; on arrondit à douze paliers pour que
+     tout tienne en une poignée de tracés au lieu de sept cents. */
+  {
+    const tas = Tas();
+    [[2400, .62, 3], [1500, 1, 4]].forEach(([d, opac, base]) => {
+      const y = sol(d), he = px(3.4, d);
+      let x = -10, g = base * 97;
+      while (x < 492){
+        const larg = he * (1.05 + rnd(g) * 1.7);
+        const relief = Math.max(0, 1 - Math.abs(x - xg) / 300);
+        const et = base + Math.round(rnd(g+9) * 5 + relief * 5);
+        const h = he * et;
+        const kk = Math.max(0, 1 - Math.abs(x + larg/2 - SOLEIL.x) / 300);
+        /* le corps */
+        tas.rect(x, y - h, larg, h, pal(mel('#4a566c', '#c99878', kk * .52), 12), opac);
+        /* le toit, qui déborde un peu */
+        tas.rect(x - larg*.04, y - h, larg*1.08, he*.14,
+          pal(mel('#8e94a4','#ffd8a0', .34 + kk*.5), 12), +(opac*.9).toFixed(2));
+        /* une fenêtre allumée, de loin en loin */
+        if (rnd(g*13+3) > .82)
+          tas.rect(x + larg*.3, y - h*.62, he*.16, he*.24,
+            '#ffc87e', +(.6*opac).toFixed(2));
+        x += larg + he * .03; g++;
+      }
+    });
+    s += tas.rendre();
+  }
   /* les clochers, sur le plan proche */
   {
     const d = 1500, y = sol(d);
@@ -2619,11 +2683,15 @@ function pave(){
       stroke="${sombre('#a89478', .2)}" stroke-width="1.4" opacity=".55"/>`;
   }
   /* l'usure : des éclats sur l'arête */
-  for (let i = 0; i < 16; i++){
-    const x = rnd(i*7+3) * W, w = 3 + rnd(i*11+5) * 9;
-    s += `<rect x="${x.toFixed(1)}" y="${yb.toFixed(1)}" width="${w.toFixed(1)}"
-      height="${(hm*.3).toFixed(1)}" fill="${sombre('#b8a488', .18)}"
-      opacity="${(.2+rnd(i+2)*.3).toFixed(2)}"/>`;
+  {
+    /* les éclats : même teinte, on les fond en un tracé par opacité */
+    const t = Tas(), c = sombre('#b8a488', .18);
+    for (let i = 0; i < 16; i++){
+      const x = rnd(i*7+3) * W, w = 3 + rnd(i*11+5) * 9;
+      /* on arrondit l'opacité au dixième : trois seaux au lieu de seize */
+      t.rect(x, yb, w, hm*.3, c, +(Math.round((.2+rnd(i+2)*.3)*10)/10).toFixed(2));
+    }
+    s += t.rendre();
   }
   /* la trace mouillée du ressac */
   s += `<rect x="0" y="${(yb+hm).toFixed(1)}" width="${W}" height="${(hm*.9).toFixed(1)}"
@@ -2699,16 +2767,20 @@ function pave(){
     });
 
   /* --- l'herbe qui pousse entre les pavés --- */
-  for (let j = 0; j < 34; j++){
-    const dd = 12.4 + rnd(j*5+2) * 8.4;
-    const y = projY(dd), x = projX((rnd(j*7+3) - .5) * 13, dd), h = px(.16, dd);
-    if (y > BAS || x < -20 || x > W + 20) continue;
-    s += `<g stroke="${sombre('#7d8a5c', .2)}" stroke-width="${(h*.14).toFixed(2)}"
-      fill="none" stroke-linecap="round" opacity=".5">`;
-    for (let k = 0; k < 4; k++)
-      s += `<path d="M${x.toFixed(1)} ${y.toFixed(1)} q${((k-1.5)*h*.3).toFixed(1)} ${(-h*.6).toFixed(1)}
-        ${((k-1.5)*h*.6).toFixed(1)} ${(-h*(.7+rnd(j+k)*.5)).toFixed(1)}"/>`;
-    s += `</g>`;
+  {
+    /* trente-quatre touffes de quatre brins : un seul tracé au total */
+    let d = '';
+    for (let j = 0; j < 34; j++){
+      const dd = 12.4 + rnd(j*5+2) * 8.4;
+      const y = projY(dd), x = projX((rnd(j*7+3) - .5) * 13, dd), h = px(.16, dd);
+      if (y > BAS || x < -20 || x > W + 20) continue;
+      for (let k = 0; k < 4; k++)
+        d += 'M' + x.toFixed(1) + ' ' + y.toFixed(1)
+          + 'q' + ((k-1.5)*h*.3).toFixed(1) + ' ' + (-h*.6).toFixed(1)
+          + ' ' + ((k-1.5)*h*.62).toFixed(1) + ' ' + (-h).toFixed(1);
+    }
+    s += '<path d="' + d + '" fill="none" stroke="' + sombre('#7d8a5c', .2)
+      + '" stroke-width=".9" stroke-linecap="round" opacity=".5"/>';
   }
 
   /* --- les grandes ombres venues du hors-champ --- */
