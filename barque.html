@@ -3,119 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0f2436">
+<meta name="theme-color" content="#f5a53a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Ta barque — Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chaud.css?v=1">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none}
-html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
-  color:#fff;background:#08131f}
-body::before{content:"";position:fixed;inset:0;z-index:0;
-  background:
-    radial-gradient(120% 34% at 50% -4%, rgba(214,234,250,.3), transparent 62%),
-    linear-gradient(180deg,#356690 0%,#22527a 22%,#143a5a 52%,#0b2338 78%,#071624 100%)}
-.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
-
-.hd{position:relative;margin:0 -15px 18px;
-  padding:calc(env(safe-area-inset-top) + 18px) 18px 15px;
-  background:linear-gradient(180deg,rgba(24,52,80,.7),rgba(12,30,50,.44));
-  border-bottom:1px solid rgba(160,200,230,.12)}
-.hd::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(226,178,116,.34) 24%,
-    rgba(226,178,116,.34) 76%,transparent)}
-.hd .l1{display:flex;align-items:flex-start;gap:12px}
-.hd .co{flex:1;min-width:0}
-.hd b{display:block;font-size:19px}
-.hd .co span{display:block;font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(206,228,246,.6);margin-top:5px}
-.retour{flex:0 0 auto;padding:9px 14px;border-radius:22px;cursor:pointer;
-  border:1.5px solid rgba(180,214,240,.24);background:rgba(255,255,255,.07);
-  font-family:'Courier Prime',monospace;font-size:11.5px;color:#e4f0fa}
-.retour:active{background:rgba(255,255,255,.13)}
-
-/* ---------- le mouillage, avec la barque dessinée ---------- */
-.vue{position:relative;height:190px;border-radius:16px;overflow:hidden;
+.vue{position:relative;height:200px;border-radius:18px;overflow:hidden;
   margin-bottom:16px;
-  background:linear-gradient(180deg,#3f7ba8 0%,#2a5a82 42%,#1b3f5e 62%,#12304a 100%);
-  border:1.5px solid rgba(150,190,224,.2);
-  box-shadow:0 4px 0 rgba(5,16,28,.5), inset 0 1px 0 rgba(190,220,244,.14)}
-.vue svg{position:absolute;left:0;right:0;bottom:22px;width:100%;height:auto;
+  background:linear-gradient(180deg,#5eb0d4 0%,#3d8fb8 44%,#2a6f96 70%,#1d5578 100%);
+  border:3px solid var(--encre);box-shadow:var(--ombre)}
+.vue svg{position:absolute;left:0;right:0;bottom:26px;width:100%;height:auto;
   display:block}
-.vue .eau{position:absolute;left:0;right:0;bottom:0;height:46px;
-  background:linear-gradient(180deg,rgba(30,72,106,.6),rgba(14,42,66,.9))}
-.vue .eau i{position:absolute;left:0;right:0;height:1px;
-  background:rgba(180,214,240,.12)}
-.vue .pal{position:absolute;top:12px;left:13px;padding:5px 11px;border-radius:12px;
-  font-size:10px;letter-spacing:.06em;color:#3e2c06;z-index:2;
-  background:linear-gradient(176deg,#fde6ae,#e0af58)}
-.vue.vide svg{opacity:.22}
-.vue .attente{position:absolute;left:0;right:0;top:50%;text-align:center;
-  font-size:12px;color:rgba(214,234,250,.6);font-family:system-ui,sans-serif}
-
-/* ---------- son nom et ses chiffres ---------- */
-.nom{margin-bottom:16px}
-.nom b{display:block;font-size:20px;color:#fff;margin-bottom:6px}
-.nom span{display:block;font-size:12.5px;color:rgba(198,222,242,.62);
-  line-height:1.55;font-family:system-ui,sans-serif}
-.trois{display:flex;gap:9px;margin-bottom:20px}
-.trois > div{flex:1;text-align:center;padding:13px 6px;border-radius:12px;
-  background:linear-gradient(158deg,rgba(52,84,118,.7),rgba(22,44,70,.8));
-  border:1px solid rgba(160,200,230,.14)}
-.trois .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(190,214,234,.48)}
-.trois .v{font-size:21px;color:#fff;margin-top:6px}
-.trois .v small{font-size:10px;color:rgba(190,214,234,.5);margin-left:2px}
-
-.sec{display:flex;align-items:center;gap:11px;font-size:8.5px;letter-spacing:.28em;
-  text-transform:uppercase;color:rgba(206,228,246,.5);margin:0 0 12px}
-.sec::after{content:"";flex:1;height:1px;
-  background:linear-gradient(90deg,rgba(160,200,230,.14),transparent)}
-
-/* ---------- ce qui suit ---------- */
-.suite{padding:16px 17px;border-radius:15px;margin-bottom:16px;
-  background:linear-gradient(158deg,rgba(78,64,44,.6),rgba(40,34,24,.72));
-  border:1.5px solid rgba(226,178,116,.3)}
+.vue .eau{position:absolute;left:0;right:0;bottom:0;height:50px;
+  background:linear-gradient(180deg,rgba(20,70,104,.5),rgba(14,48,74,.86))}
+.vue .eau i{position:absolute;left:0;right:0;height:2px;
+  background:rgba(255,255,255,.14)}
+.vue .pal{position:absolute;top:12px;left:13px;padding:6px 13px;border-radius:20px;
+  font-size:11px;font-weight:800;z-index:2;
+  background:var(--or);border:2.5px solid var(--encre)}
+.vue.vide svg{opacity:.28}
+.vue .attente{position:absolute;left:0;right:0;top:48%;text-align:center;
+  font-size:14px;font-weight:800;color:#fffaf0;
+  text-shadow:0 2px 0 rgba(18,48,63,.4)}
+.nom{padding:16px 17px;margin-bottom:14px;border-radius:18px;
+  background:var(--creme);border:3px solid var(--encre);box-shadow:var(--ombre)}
+.nom b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:26px;
+  margin-bottom:6px}
+.nom span{display:block;font-size:13.5px;font-weight:600;
+  color:rgba(18,48,63,.62);line-height:1.5}
+.trois{display:flex;gap:10px;margin-bottom:18px}
+.trois > div{flex:1;text-align:center;padding:15px 6px;border-radius:16px;
+  background:var(--creme);border:3px solid var(--encre);box-shadow:var(--ombre)}
+.trois .k{font-size:9.5px;font-weight:800;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(18,48,63,.48)}
+.trois .v{font-family:'DM Serif Display',Georgia,serif;font-size:28px;margin-top:6px}
+.trois .v small{font-size:11px;font-weight:700;color:rgba(18,48,63,.46);
+  font-family:'Nunito',sans-serif;margin-left:3px}
+.suite{padding:17px;border-radius:18px;margin-bottom:16px;background:#fff8e4;
+  border:3px solid var(--encre);box-shadow:var(--ombre)}
 .suite .l1{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
-.suite .l1 b{flex:1;font-size:16px;color:#fff6e8;font-weight:400}
-.suite .px{font-size:15px;font-weight:700;color:#f4cf8a;white-space:nowrap}
-.suite .d{font-size:11.5px;color:rgba(232,220,200,.6);line-height:1.5;
-  font-family:system-ui,sans-serif;margin-bottom:14px}
-.suite .go{display:block;width:100%;padding:14px;border-radius:12px;cursor:pointer;
-  text-align:center;text-decoration:none;
-  border:1.5px solid rgba(255,232,178,.72);
-  background:linear-gradient(176deg,#fadfa0,#d9a44e);
-  box-shadow:0 4px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6);
-  font-family:'Courier Prime',monospace;font-size:14px;font-weight:700;color:#3a2804}
-.suite .go:active{transform:translateY(3px);
-  box-shadow:0 1px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6)}
-
-.fini{text-align:center;padding:30px 22px;border-radius:15px;margin-bottom:16px;
-  background:rgba(140,224,168,.07);border:1px solid rgba(140,224,168,.2);
-  font-size:12.5px;color:rgba(180,240,208,.76);line-height:1.6;
-  font-family:system-ui,sans-serif}
-.pied{text-align:center;font-size:9.5px;color:rgba(180,208,232,.4);
-  margin-top:24px;font-family:system-ui,sans-serif;letter-spacing:.06em}
+.suite .l1 b{flex:1;font-family:'DM Serif Display',Georgia,serif;font-size:21px}
+.suite .px{font-family:'DM Serif Display',Georgia,serif;font-size:19px;
+  white-space:nowrap}
+.suite .d{font-size:13px;font-weight:600;color:rgba(18,48,63,.6);line-height:1.5;
+  margin-bottom:15px}
+.fini{text-align:center;padding:28px 22px;border-radius:18px;margin-bottom:16px;
+  background:#eaf6ee;border:3px solid var(--encre);box-shadow:var(--ombre);
+  font-size:14px;font-weight:700;color:var(--vert);line-height:1.55}
 </style>
 </head>
 <body>
 
 <div class="pont">
-  <div class="hd">
-    <div class="l1">
-      <span class="co"><b>Ta barque</b><span id="b-sous">—</span></span>
-      <button class="retour" id="retour">‹ Retour</button>
-    </div>
+  <div class="tete">
+    <span class="q"><b>Ta barque</b><span id="b-sous">—</span></span>
+    <button class="retour" id="retour">‹ Retour</button>
   </div>
   <div id="corps"></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
 let uidB = 0;
@@ -493,7 +441,7 @@ function eur(v){ return Number(v || 0).toLocaleString('fr-FR') + ' €'; }
         + '<div class="l1"><b>' + S.nom + '</b>'
         +   '<span class="px">' + (S.prix === 0 ? 'gratuite' : eur(S.prix)) + '</span></div>'
         + '<p class="d">' + S.d + '</p>'
-        + '<a class="go" href="chantier.html">Aller au chantier</a>'
+        + '<a class="gros" href="chantier.html">Aller au chantier</a>'
         + '</div>';
     } else {
       h += '<p class="fini">Tu as le plus beau bateau du bassin.<br>'
