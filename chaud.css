@@ -98,3 +98,12 @@ button.carte:active,a.carte:active{background:var(--creme2)}
 
 /* ---------- les gros chiffres ---------- */
 .chiffre{font-family:'DM Serif Display',Georgia,serif;line-height:1}
+
+/* ============================================================
+   L'ARRIVÉE
+   Le contenu reste invisible tant qu'il n'est pas complet,
+   puis paraît d'un trait. Mieux vaut un fond vide une demi-
+   seconde qu'un texte d'attente qui saute.
+   ============================================================ */
+.attend{opacity:0}
+.venu{opacity:1;transition:opacity .3s ease-out}
