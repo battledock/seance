@@ -1,0 +1,103 @@
+/* ============================================================
+   BATTLE DOCK — la feuille commune
+   Fond chaud, cartes crème, bordures franches, ombres dures.
+   Toutes les pages s'appuient là-dessus.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+:root{
+  --encre:#12303f;
+  --creme:#fdf6e6;
+  --creme2:#f7edd8;
+  --or:#f0a92e;
+  --rouge:#e0533c;
+  --vert:#2f8a5c;
+  --bleu:#2d7ba8;
+  --ombre:5px 5px 0 rgba(18,48,63,.9);
+  --ombre-p:2px 2px 0 rgba(18,48,63,.9);
+}
+html,body{min-height:100%;font-family:'Nunito',system-ui,sans-serif;
+  color:var(--encre);
+  background:linear-gradient(180deg,#f5a53a 0%,#eeb455 16%,#c9b978 38%,
+    #7fa89a 58%,#3f87a6 78%,#2b6f92 100%);
+  background-attachment:fixed}
+.pont{padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
+
+/* ---------- l'entête d'une page ---------- */
+.tete{padding:calc(env(safe-area-inset-top) + 20px) 4px 18px;
+  display:flex;align-items:flex-start;gap:13px}
+.tete .q{flex:1;min-width:0}
+.tete .q b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:26px;line-height:1.05;color:#fffaf0;
+  text-shadow:0 2px 0 rgba(18,48,63,.34)}
+.tete .q span{display:block;font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,250,240,.76);margin-top:5px}
+.retour{flex:0 0 auto;padding:10px 15px;border-radius:14px;cursor:pointer;
+  background:var(--creme);border:2.5px solid var(--encre);
+  box-shadow:3px 3px 0 rgba(18,48,63,.9);
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--encre)}
+.retour:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(18,48,63,.9)}
+
+/* ---------- une carte ---------- */
+.carte{padding:16px 17px;border-radius:18px;margin-bottom:13px;
+  background:var(--creme);border:3px solid var(--encre);box-shadow:var(--ombre)}
+button.carte,a.carte{display:block;width:100%;text-align:left;cursor:pointer;
+  font-family:'Nunito',sans-serif;text-decoration:none;
+  transition:transform .1s, box-shadow .1s}
+button.carte:active,a.carte:active{transform:translate(3px,3px);
+  box-shadow:var(--ombre-p)}
+
+/* ---------- les titres de section ---------- */
+.sec{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,250,240,.82);margin:24px 0 12px 4px;
+  text-shadow:0 1px 0 rgba(18,48,63,.24)}
+.sec:first-child{margin-top:0}
+
+/* ---------- une liste dans un bloc ---------- */
+.bloc{border-radius:18px;overflow:hidden;background:var(--creme);
+  border:3px solid var(--encre);box-shadow:var(--ombre);margin-bottom:14px}
+.li{display:flex;align-items:center;gap:14px;width:100%;padding:15px 16px;
+  border:0;background:none;cursor:pointer;text-align:left;
+  border-bottom:2px solid rgba(18,48,63,.1);font-family:'Nunito',sans-serif}
+.li:last-child{border-bottom:0}
+.li:active{background:var(--creme2)}
+.li .em{font-size:23px;flex:0 0 30px;text-align:center}
+.li .co{flex:1;min-width:0}
+.li .co b{display:block;font-size:16px;font-weight:800;color:var(--encre)}
+.li .co span{display:block;font-size:11.5px;font-weight:600;
+  color:rgba(18,48,63,.5);margin-top:2px}
+.li .fl{font-size:20px;color:rgba(18,48,63,.3);font-weight:800}
+
+/* ---------- les barres de signal ---------- */
+.sig{display:flex;align-items:flex-end;gap:3px;height:22px;flex:0 0 auto}
+.sig i{width:5px;border-radius:2px;background:rgba(18,48,63,.14)}
+.sig i:nth-child(1){height:9px}
+.sig i:nth-child(2){height:13px}
+.sig i:nth-child(3){height:17px}
+.sig i:nth-child(4){height:22px}
+.sig.n1 i:nth-child(-n+1),.sig.n2 i:nth-child(-n+2),
+.sig.n3 i:nth-child(-n+3),.sig.n4 i:nth-child(-n+4){background:var(--or)}
+.sig.vert.n1 i:nth-child(-n+1),.sig.vert.n2 i:nth-child(-n+2),
+.sig.vert.n3 i:nth-child(-n+3),.sig.vert.n4 i:nth-child(-n+4){background:var(--vert)}
+.sig.rouge i{background:rgba(224,83,60,.2)}
+.sig.rouge.n1 i:nth-child(-n+1),.sig.rouge.n2 i:nth-child(-n+2){background:var(--rouge)}
+
+/* ---------- un gros bouton ---------- */
+.gros{display:block;width:100%;padding:16px;border-radius:16px;cursor:pointer;
+  text-align:center;text-decoration:none;
+  background:var(--or);border:3px solid var(--encre);box-shadow:var(--ombre);
+  font-family:'DM Serif Display',Georgia,serif;font-size:19px;color:var(--encre);
+  transition:transform .1s, box-shadow .1s}
+.gros:active{transform:translate(3px,3px);box-shadow:var(--ombre-p)}
+.gros:disabled{opacity:.45;cursor:default;transform:none;box-shadow:var(--ombre);
+  background:rgba(18,48,63,.12)}
+
+/* ---------- les états vides ---------- */
+.vide{text-align:center;padding:40px 24px;border-radius:18px;
+  background:rgba(253,246,230,.7);border:3px dashed rgba(18,48,63,.32);
+  font-size:14px;font-weight:600;color:rgba(18,48,63,.62);line-height:1.6}
+.pied{text-align:center;font-size:11px;font-weight:700;
+  color:rgba(255,250,240,.6);margin-top:26px;letter-spacing:.06em}
+
+/* ---------- les gros chiffres ---------- */
+.chiffre{font-family:'DM Serif Display',Georgia,serif;line-height:1}
