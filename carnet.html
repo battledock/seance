@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Ton carnet — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
+  color:#fff;background:#08131f}
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(120% 34% at 50% -4%, rgba(214,234,250,.3), transparent 62%),
+    linear-gradient(180deg,#356690 0%,#22527a 22%,#143a5a 52%,#0b2338 78%,#071624 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
+
+/* ---------- l'entête ---------- */
+.hd{position:relative;margin:0 -15px 20px;
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 15px;
+  background:linear-gradient(180deg,rgba(24,52,80,.7),rgba(12,30,50,.44));
+  border-bottom:1px solid rgba(160,200,230,.12)}
+.hd::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,178,116,.34) 24%,
+    rgba(226,178,116,.34) 76%,transparent)}
+.hd .l1{display:flex;align-items:flex-start;gap:12px}
+.hd .co{flex:1;min-width:0}
+.hd b{display:block;font-size:19px}
+.hd .co span{display:block;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(206,228,246,.6);margin-top:5px}
+.retour{flex:0 0 auto;padding:9px 14px;border-radius:22px;cursor:pointer;
+  border:1.5px solid rgba(180,214,240,.24);background:rgba(255,255,255,.07);
+  font-family:'Courier Prime',monospace;font-size:11.5px;color:#e4f0fa}
+.retour:active{background:rgba(255,255,255,.13)}
+
+.sec{display:flex;align-items:center;gap:11px;font-size:8.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(206,228,246,.5);margin:0 0 12px}
+.sec::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(160,200,230,.14),transparent)}
+.sec.plus{margin-top:26px}
+
+/* ---------- une histoire ---------- */
+.hi{position:relative;margin-bottom:14px;border-radius:16px;overflow:hidden;
+  background:linear-gradient(158deg,rgba(52,84,118,.74),rgba(22,44,70,.84));
+  border:1.5px solid rgba(150,190,224,.18);
+  box-shadow:0 4px 0 rgba(5,16,28,.5), inset 0 1px 0 rgba(190,220,244,.1)}
+/* un liséré vertical, comme un signet */
+.hi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,#f0c46a,rgba(240,196,106,.2))}
+.hi .in{padding:16px 17px 15px}
+.hi .l1{display:flex;align-items:flex-start;gap:13px;margin-bottom:11px}
+/* la vignette du personnage : son initiale */
+.hi .qui{flex:0 0 42px;height:42px;border-radius:12px;display:flex;
+  align-items:center;justify-content:center;font-size:17px;font-weight:700;
+  color:#f0c46a;background:rgba(240,196,106,.14);
+  border:1px solid rgba(240,196,106,.26)}
+.hi .co{flex:1;min-width:0}
+.hi .co b{display:block;font-size:16px;color:#fff;font-weight:400;line-height:1.25}
+.hi .co .par{display:block;font-size:10.5px;color:rgba(190,214,234,.55);
+  margin-top:5px;font-family:system-ui,sans-serif}
+.hi .co .par em{font-style:normal;color:#8ce0a8}
+.hi .res{font-size:12px;color:rgba(214,234,250,.76);line-height:1.55;
+  font-family:system-ui,sans-serif;margin-bottom:13px}
+/* où ça se passe, et où on en est */
+.hi .l2{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hi .et{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:9px;
+  font-size:10px;white-space:nowrap;background:rgba(255,255,255,.07);
+  color:rgba(206,228,246,.72);border:1px solid rgba(160,200,230,.14)}
+.hi .et .pt{width:6px;height:6px;border-radius:50%;background:#f0c46a}
+/* les étapes, en points */
+.pas{display:flex;gap:5px;margin-left:auto}
+.pas i{width:7px;height:7px;border-radius:50%;background:rgba(190,220,244,.22)}
+.pas i.fait{background:#f0c46a}
+
+/* celle qui attend ici */
+.hi.ici{border-color:rgba(240,196,106,.44);
+  box-shadow:0 4px 0 rgba(48,34,8,.55), 0 8px 24px rgba(180,132,50,.14),
+             inset 0 1px 0 rgba(255,222,158,.16)}
+.hi.ici .ban{position:absolute;top:0;right:0;padding:4px 12px 5px;
+  border-radius:0 0 0 11px;font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:#3e2c06;z-index:2;
+  background:linear-gradient(176deg,#fde6ae,#e0af58)}
+.hi.ici .l1{padding-right:78px}
+
+/* celles qui sont finies */
+.hi.finie{opacity:.6;background:rgba(255,255,255,.04);
+  border-color:rgba(160,200,230,.12);box-shadow:none}
+.hi.finie::before{background:rgba(140,224,168,.4)}
+.hi.finie .qui{color:rgba(140,224,168,.7);background:rgba(140,224,168,.1);
+  border-color:rgba(140,224,168,.2)}
+.hi.finie .in{padding:14px 17px}
+.hi.finie .res{margin-bottom:10px;font-size:11.5px}
+.hi.finie .fin{font-size:10.5px;color:#8ce0a8;font-family:system-ui,sans-serif}
+
+.rien{text-align:center;padding:50px 24px;border-radius:15px;
+  background:rgba(255,255,255,.035);border:1px dashed rgba(160,200,230,.16);
+  font-size:12.5px;color:rgba(198,222,242,.55);line-height:1.65;
+  font-family:system-ui,sans-serif}
+.pied{text-align:center;font-size:9.5px;color:rgba(180,208,232,.4);
+  margin-top:24px;font-family:system-ui,sans-serif;letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<div class="pont">
+  <div class="hd">
+    <div class="l1">
+      <span class="co"><b>Ton carnet</b>
+        <span id="c-sous">Ce que tu as commencé</span></span>
+      <button class="retour" id="retour">‹ Retour</button>
+    </div>
+  </div>
+  <div id="liste"><p class="rien">On relit tes notes…</p></div>
+  <p class="pied">Battle Dock — Marseille</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=2"></script>
+<script>
+/* combien d'étapes compte chaque histoire, pour les points */
+const LONGUEUR = { ardit:3, miquel_2:2, pere:2, titou:2 };
+
+function carte(q, ici){
+  const total = LONGUEUR[q.k] || Math.max(2, q.etape);
+  const finie = q.etat === 'finie';
+  let pas = '';
+  for (let i = 1; i <= total; i++)
+    pas += '<i class="' + (i <= q.etape ? 'fait' : '') + '"></i>';
+
+  return '<div class="hi' + (finie ? ' finie' : '') + (ici ? ' ici' : '') + '">'
+    + (ici ? '<span class="ban">Ça t\'attend ici</span>' : '')
+    + '<div class="in">'
+    + '<div class="l1">'
+    +   '<span class="qui">' + (q.qui || '?')[0].toUpperCase() + '</span>'
+    +   '<span class="co"><b>' + q.nom + '</b>'
+    +   '<span class="par">' + (finie ? 'Avec ' : 'Chez ')
+    +     '<em>' + q.qui + '</em> — ' + q.ou + '</span></span>'
+    + '</div>'
+    + '<p class="res">' + q.resume + '</p>'
+    + '<div class="l2">'
+    +   (finie ? '<span class="fin">✓ Cette histoire est close</span>'
+         : '<span class="et"><span class="pt"></span>Étape ' + q.etape
+           + ' sur ' + total + '</span>')
+    +   (finie ? '' : '<span class="pas">' + pas + '</span>')
+    + '</div></div></div>';
+}
+
+(async () => {
+  const L = document.getElementById('liste');
+  try {
+    const d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+
+    let Q;
+    try { Q = await BD.agir('mes_quetes'); } catch(e){ Q = null; }
+    if (!Array.isArray(Q)) Q = [];
+
+    /* où es-tu ? une histoire qui s'y passe attend peut-être */
+    const PORTS = { anse:'Marseille', marseille:'Marseille',
+                    barcelone:'Barcelone', palma:'Palma', ajaccio:'Ajaccio' };
+    const ici = PORTS[d.port];
+
+    const cours = Q.filter(q => q.etat !== 'finie');
+    const fini  = Q.filter(q => q.etat === 'finie');
+
+    document.getElementById('c-sous').textContent = cours.length
+      ? cours.length + (cours.length > 1 ? ' histoires en cours' : ' histoire en cours')
+      : 'Rien en cours';
+
+    let h = '';
+    if (cours.length){
+      /* celles qui se passent là où tu es viennent en premier */
+      cours.sort((a, b) => (b.ou === ici ? 1 : 0) - (a.ou === ici ? 1 : 0));
+      h += cours.map(q => carte(q, q.ou === ici)).join('');
+    } else {
+      h += '<p class="rien">Tu n\'as rien en cours.<br>'
+        + 'Descends à terre, parle aux gens — ils ont tous quelque chose à te demander.</p>';
+    }
+
+    if (fini.length){
+      h += '<p class="sec plus">Ce qui est derrière toi</p>'
+        + fini.map(q => carte(q, false)).join('');
+    }
+
+    L.innerHTML = h;
+
+  } catch(e){
+    console.warn(e);
+    L.innerHTML = '<p class="rien">Le carnet n\'a pas répondu.</p>';
+  }
+})();
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+</script>
+</body>
+</html>
