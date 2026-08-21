@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Ta sacoche — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
+  color:#fff;background:#08131f}
+body::before{content:"";position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(120% 34% at 50% -4%, rgba(214,234,250,.3), transparent 62%),
+    linear-gradient(180deg,#356690 0%,#22527a 22%,#143a5a 52%,#0b2338 78%,#071624 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
+  background-size:3px 3px}
+.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
+
+.hd{position:relative;margin:0 -15px 20px;
+  padding:calc(env(safe-area-inset-top) + 18px) 18px 15px;
+  background:linear-gradient(180deg,rgba(24,52,80,.7),rgba(12,30,50,.44));
+  border-bottom:1px solid rgba(160,200,230,.12)}
+.hd::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(226,178,116,.34) 24%,
+    rgba(226,178,116,.34) 76%,transparent)}
+.hd .l1{display:flex;align-items:flex-start;gap:12px}
+.hd .co{flex:1;min-width:0}
+.hd b{display:block;font-size:19px}
+.hd .co span{display:block;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(206,228,246,.6);margin-top:5px}
+.retour{flex:0 0 auto;padding:9px 14px;border-radius:22px;cursor:pointer;
+  border:1.5px solid rgba(180,214,240,.24);background:rgba(255,255,255,.07);
+  font-family:'Courier Prime',monospace;font-size:11.5px;color:#e4f0fa}
+.retour:active{background:rgba(255,255,255,.13)}
+
+.sec{display:flex;align-items:center;gap:11px;font-size:8.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(206,228,246,.5);margin:0 0 12px}
+.sec::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(160,200,230,.14),transparent)}
+.sec.plus{margin-top:26px}
+
+/* ---------- un objet ---------- */
+.ob{position:relative;display:flex;gap:14px;margin-bottom:12px;padding:15px 16px;
+  border-radius:15px;
+  background:linear-gradient(158deg,rgba(52,84,118,.72),rgba(22,44,70,.82));
+  border:1.5px solid rgba(150,190,224,.18);
+  box-shadow:0 4px 0 rgba(5,16,28,.5), inset 0 1px 0 rgba(190,220,244,.1)}
+.ob .vi{flex:0 0 52px;height:52px;border-radius:13px;display:flex;
+  align-items:center;justify-content:center;overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.04));
+  border:1px solid rgba(190,220,244,.14)}
+.ob .vi svg{width:34px;height:34px;display:block}
+.ob .tx{flex:1;min-width:0}
+.ob .tx b{display:block;font-size:15.5px;color:#fff;font-weight:400}
+.ob .tx .n{display:block;font-size:11.5px;color:rgba(206,228,246,.66);
+  margin-top:5px;line-height:1.5;font-family:system-ui,sans-serif}
+.ob .tx .d{display:block;font-size:11px;color:rgba(190,214,234,.5);margin-top:6px;
+  line-height:1.5;font-family:system-ui,sans-serif;font-style:italic}
+.ob .tx .ou{display:block;font-size:10px;color:rgba(180,206,230,.42);margin-top:7px;
+  font-family:system-ui,sans-serif}
+.ob .nb{position:absolute;top:13px;right:14px;min-width:23px;height:23px;
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  padding:0 7px;font-size:12px;font-weight:700;color:#3e2c06;
+  background:linear-gradient(176deg,#fde6ae,#e0af58)}
+
+.vide{text-align:center;padding:50px 24px;border-radius:15px;
+  background:rgba(255,255,255,.035);border:1px dashed rgba(160,200,230,.16);
+  font-size:12.5px;color:rgba(198,222,242,.55);line-height:1.65;
+  font-family:system-ui,sans-serif}
+.pied{text-align:center;font-size:9.5px;color:rgba(180,208,232,.4);
+  margin-top:24px;font-family:system-ui,sans-serif;letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<div class="pont">
+  <div class="hd">
+    <div class="l1">
+      <span class="co"><b>Ta sacoche</b><span id="s-sous">—</span></span>
+      <button class="retour" id="retour">‹ Retour</button>
+    </div>
+  </div>
+  <div id="corps"><p class="vide">On regarde dedans…</p></div>
+  <p class="pied">Battle Dock — Marseille</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=2"></script>
+<script>
+const GENRES = [
+  ['quete',    'Ce qui sert à quelque chose'],
+  ['outil',    'Ce qui te sert tous les jours'],
+  ['souvenir', 'Ce que tu gardes'] ];
+
+function objetSVG(k){
+  const O = {
+    cle: `<path d="M17 22a7 7 0 1 0 0-14 7 7 0 0 0 0 14z" fill="none" stroke="#c9a374" stroke-width="3"/>
+      <circle cx="17" cy="15" r="2.6" fill="#3a3028"/>
+      <path d="M24 15h20M40 15v6M35 15v4M44 15v7" stroke="#c9a374" stroke-width="3"
+        stroke-linecap="round"/>
+      <path d="M17 8.4a7 7 0 0 0-6.4 4.2 7 7 0 0 1 9.6 8.6A7 7 0 0 0 17 8.4z"
+        fill="#e0bc8c" opacity=".5"/>`,
+
+    carte: `<path d="M5 8l12-3 13 4 12-3v22l-12 3-13-4-12 3z" fill="#e4d8b8"/>
+      <path d="M5 8l12-3v22l-12 3z" fill="#f0e6cc"/>
+      <path d="M17 5v22M30 9v22" stroke="#c4b490" stroke-width="1"/>
+      <path d="M9 15q6-3 11 1t9-1" stroke="#8a9aa8" stroke-width="1.4" fill="none"/>
+      <path d="M11 21q7-2 12 2" stroke="#8a9aa8" stroke-width="1.2" fill="none"/>
+      <path d="M24 17l3 3M27 17l-3 3" stroke="#8a4a3a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M42 6v22l-2-1V7z" fill="#c4b490"/>
+      <path d="M42 6l-2 1v20l2 1z" fill="#3a3630" opacity=".2"/>`,
+
+    boussole: `<circle cx="24" cy="18" r="14" fill="#a8823c"/>
+      <circle cx="24" cy="18" r="11.6" fill="#e8dcc0"/>
+      <circle cx="24" cy="18" r="11.6" fill="none" stroke="#8a6a30" stroke-width="1"/>
+      <path d="M24 8v3M24 25v3M14 18h3M31 18h3" stroke="#6d5a38" stroke-width="1.4"/>
+      <path d="M24 9l3 8-3 2-3-2z" fill="#b8483a"/>
+      <path d="M24 27l-3-8 3-2 3 2z" fill="#e8e2d4"/>
+      <circle cx="24" cy="18" r="1.6" fill="#6d5a38"/>
+      <path d="M24 4a14 14 0 0 0-9.9 4.1 14 14 0 0 1 19.8 19.8A14 14 0 0 0 24 4z"
+        fill="#e0c088" opacity=".34"/>
+      <path d="M20 4h8v2h-8z" fill="#8a6a30"/>`,
+
+    bague: `<ellipse cx="24" cy="19" rx="10" ry="11" fill="none" stroke="#9a9aa0" stroke-width="3.4"/>
+      <ellipse cx="24" cy="19" rx="10" ry="11" fill="none" stroke="#d0d0d6" stroke-width="1.2"
+        stroke-dasharray="8 20" stroke-dashoffset="14"/>
+      <path d="M19 9q5-3 10 0" stroke="#e4e4e8" stroke-width="1.4" fill="none"/>
+      <ellipse cx="24" cy="19" rx="6.4" ry="7.4" fill="#2a2e36" opacity=".2"/>`,
+
+    lettre: `<path d="M7 10h34v20H7z" fill="#f0e8d4"/>
+      <path d="M7 10h34v20H7z" fill="none" stroke="#c9bda0" stroke-width="1"/>
+      <path d="M7 10l17 11 17-11" fill="none" stroke="#c9bda0" stroke-width="1.4"/>
+      <path d="M7 30l12-9M41 30l-12-9" fill="none" stroke="#dcd2ba" stroke-width="1"/>
+      <circle cx="24" cy="22" r="4.6" fill="#a8433a"/>
+      <circle cx="24" cy="22" r="4.6" fill="none" stroke="#7a2e28" stroke-width=".8"/>
+      <path d="M22 20.4l4 3.2M26 20.4l-4 3.2" stroke="#7a2e28" stroke-width="1"/>`,
+
+    couteau: `<path d="M6 22q10-9 22-10 4-.4 5 1.4t-2 4Q20 22 8 25z" fill="#c4ccd2"/>
+      <path d="M6 22q10-9 22-10 4-.4 5 1.4-12 2-25 11z" fill="#e8eef2"/>
+      <path d="M31 17l11 3.4q2 .6 2 2.2t-2 2.2L31 25z" fill="#6d4a30"/>
+      <path d="M31 17l11 3.4q2 .6 2 2.2l-13-2z" fill="#8a6444"/>
+      <circle cx="36" cy="21.4" r="1" fill="#3a2a1c"/>
+      <circle cx="40" cy="22" r="1" fill="#3a2a1c"/>`,
+
+    medaille: `<circle cx="24" cy="21" r="11" fill="#b4a068"/>
+      <circle cx="24" cy="21" r="9.2" fill="#cdb87e"/>
+      <circle cx="24" cy="21" r="9.2" fill="none" stroke="#9a8850" stroke-width=".8"/>
+      <path d="M24 14v5M21.4 19h5.2M24 19v9" stroke="#7a6a3c" stroke-width="1.6"
+        stroke-linecap="round"/>
+      <path d="M19 27q5 3 10 0" stroke="#7a6a3c" stroke-width="1.2" fill="none"/>
+      <path d="M24 10a11 11 0 0 0-7.8 3.2 11 11 0 0 1 15.6 15.6A11 11 0 0 0 24 10z"
+        fill="#e0cf9a" opacity=".4"/>
+      <path d="M22 10l2-6 2 6z" fill="#8a7a48"/>`,
+
+    carnet: `<path d="M9 7h28q2 0 2 2v22q0 2-2 2H9z" fill="#7a5c3a"/>
+      <path d="M11 7h26v26H11z" fill="#e4d8bc"/>
+      <path d="M11 7h26v26H11z" fill="none" stroke="#c4b494" stroke-width=".8"/>
+      <path d="M15 13h18M15 17h18M15 21h14M15 25h16M15 29h11"
+        stroke="#a89a80" stroke-width="1"/>
+      <path d="M15 17h18" stroke="#8a4a3a" stroke-width="1.2"/>
+      <path d="M9 7h3v26H9z" fill="#5a4028"/>
+      <path d="M37 15h5v6l-2.5-2-2.5 2z" fill="#b8483a"/>`
+  }[k] || '';
+  return '<svg viewBox="0 0 48 40" xmlns="http://www.w3.org/2000/svg">' + O + '</svg>';
+}
+
+(async () => {
+  const C = document.getElementById('corps');
+  try {
+    const d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+
+    const S = d.sacoche || [];
+    document.getElementById('s-sous').textContent = S.length
+      ? S.length + (S.length > 1 ? ' objets' : ' objet') : 'Elle est vide';
+
+    if (!S.length){
+      C.innerHTML = '<p class="vide">Ta sacoche est vide.<br>'
+        + 'Ce que tu ramasseras en chemin finira là — '
+        + 'ce qu\'on te donne, ce que tu trouves, ce qu\'on t\'oublie.</p>';
+      return;
+    }
+
+    let h = '';
+    GENRES.forEach(([g, titre]) => {
+      const L = S.filter(o => o.genre === g);
+      if (!L.length) return;
+      h += '<p class="sec' + (h ? ' plus' : '') + '">' + titre + '</p>';
+      h += L.map(o =>
+        '<div class="ob">'
+        + (o.combien > 1 ? '<span class="nb">' + o.combien + '</span>' : '')
+        + '<span class="vi">' + objetSVG(o.signe) + '</span>'
+        + '<span class="tx"><b>' + o.nom + '</b>'
+        + '<span class="n">' + o.note + '</span>'
+        + (o.detail ? '<span class="d">' + o.detail + '</span>' : '')
+        + (o.d_ou ? '<span class="ou">' + o.d_ou + '.</span>' : '')
+        + '</span></div>').join('');
+    });
+
+    /* ce qui n'entre dans aucun genre */
+    const connus = GENRES.map(x => x[0]);
+    const reste = S.filter(o => connus.indexOf(o.genre) < 0);
+    if (reste.length){
+      h += '<p class="sec plus">Le reste</p>'
+        + reste.map(o =>
+          '<div class="ob">'
+          + (o.combien > 1 ? '<span class="nb">' + o.combien + '</span>' : '')
+          + '<span class="vi">' + objetSVG(o.signe) + '</span>'
+          + '<span class="tx"><b>' + o.nom + '</b>'
+          + '<span class="n">' + o.note + '</span>'
+          + (o.d_ou ? '<span class="ou">' + o.d_ou + '.</span>' : '')
+          + '</span></div>').join('');
+    }
+
+    C.innerHTML = h;
+
+  } catch(e){
+    console.warn(e);
+    C.innerHTML = '<p class="vide">La sacoche n\'a pas répondu.</p>';
+  }
+})();
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+</script>
+</body>
+</html>
