@@ -125,22 +125,22 @@
 
   <div class="moi">
     <span class="av" id="hub-av"></span>
-    <span class="q"><b id="hub-nom">—</b><span id="hub-ou">—</span></span>
+    <span class="q attend" id="q"><b id="hub-nom"></b><span id="hub-ou"></span></span>
   </div>
 
-  <div class="duo">
+  <div class="duo attend" id="duo">
     <div class="ct"><span class="em">💰</span>
       <b id="hub-eu">—</b><span>en caisse</span></div>
     <div class="ct"><span class="em">🧭</span>
       <b id="hub-xp">—</b><span>xp</span></div>
   </div>
 
-  <div class="nrj">
+  <div class="nrj attend" id="nrj">
     <div class="l1"><span>Ton énergie</span><b id="hub-nrjn">—</b></div>
     <div class="ba"><i id="hub-nrj" style="width:0%"></i></div>
   </div>
 
-  <button class="cad" id="cadeau">
+  <button class="cad attend" id="cadeau">
     <i></i><i></i><i></i><i></i>
     <span class="em">🎁</span>
     <span class="tx"><b id="cad-t">Le cadeau du jour</b>
@@ -148,8 +148,8 @@
     <span class="sr" id="cad-sr" style="display:none"></span>
   </button>
 
-  <div id="tuiles"></div>
-  <p class="pied">Battle Dock — Marseille</p>
+  <div id="tuiles" class="attend"></div>
+  <p class="pied attend" id="pied">Battle Dock — Marseille</p>
 </div>
 
 <div class="ouv" id="ouv">
@@ -164,6 +164,14 @@
 
 <script src="bd.js?v=2"></script>
 <script>
+/* rien ne se montre tant que tout n'est pas là */
+function paraitre(){
+  ['q', 'duo', 'nrj', 'cadeau', 'tuiles', 'pied'].forEach(k => {
+    const e = document.getElementById(k);
+    if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
+  });
+}
+
 const PORTS_N = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
                   palma:'Palma', ajaccio:'Ajaccio' };
 const PALIERS_B = [
@@ -351,6 +359,7 @@ document.getElementById('ouv-ok').onclick = () => {
 
     dessinerTuiles();
     poserCadeau();
+    paraitre();
 
     /* les compteurs */
     const r = await BD.agir('ce_qui_attend');
