@@ -65,13 +65,12 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0c2138}
   padding:18px 22px;border-radius:16px;cursor:pointer;
   border:3px solid #12303f;
   background:#f0a92e;
-  box-shadow:5px 5px 0 rgba(18,48,63,.9);
+  
   font-family:'Nunito',sans-serif;
   opacity:0;transition:opacity .5s, transform .1s, box-shadow .1s;
   pointer-events:none}
 .partir.pret{opacity:1;pointer-events:auto}
-.partir:active{transform:translate(3px,3px);
-  box-shadow:2px 2px 0 rgba(18,48,63,.9)}
+.partir:active{background:var(--creme2)}
 .partir svg{width:26px;height:26px;flex:0 0 26px;stroke:#12303f;fill:none;
   stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .partir b{font-family:'DM Serif Display',Georgia,serif;font-size:20px;
@@ -804,7 +803,7 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
   height:58px;border-radius:16px;overflow:hidden;
   background:#fdf6e6;
   border:3px solid #12303f;
-  box-shadow:4px 4px 0 rgba(18,48,63,.9);
+  
   display:flex;align-items:stretch;
   opacity:0;transition:opacity .5s}
 .barre.pret{opacity:1}
