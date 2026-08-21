@@ -45,13 +45,19 @@
     <span class="q"><b>Les gens</b><span id="g-sous">—</span></span>
     <button class="retour" id="retour">‹ Retour</button>
   </div>
-  <div id="corps"><p class="vide">On fait le tour du port…</p></div>
+  <div id="corps" class="attend"></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=2"></script>
 <script>
+/* le contenu paraît d'un trait, une fois complet */
+function paraitre(){
+  const e = document.getElementById('corps');
+  if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
+}
+
 function couleur(v, trahi){
   if (trahi || v < 0) return '#e0533c';
   if (v >= 80) return '#f0a92e';
@@ -116,11 +122,11 @@ function teinte(v, trahi){
     if (autres.length)
       h += '<p class="sec plus">Ceux que tu n\'as pas croisés</p>'
         + autres.map(carte).join('');
-    C.innerHTML = h;
+    C.innerHTML = h; paraitre();
 
   } catch(e){
     console.warn(e);
-    C.innerHTML = '<p class="vide">Le port n\'a pas répondu.</p>';
+    C.innerHTML = '<p class="vide">Le port n\'a pas répondu.</p>'; paraitre();
   }
 })();
 document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
