@@ -3,145 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0f2436">
+<meta name="theme-color" content="#f5a53a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Le chantier — Battle Dock</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chaud.css?v=1">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none}
-html,body{height:100%;overflow:hidden;font-family:'Courier Prime',monospace;
-  color:#fff;background:#08131f}
-body::before{content:"";position:fixed;inset:0;z-index:0;
-  background:
-    radial-gradient(120% 34% at 50% -4%, rgba(226,196,150,.2), transparent 62%),
-    linear-gradient(180deg,#3d6182 0%,#26506f 22%,#173c56 52%,#0d2436 78%,#081722 100%)}
-body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  opacity:.025;
-  background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);
-  background-size:3px 3px}
-.pont{position:fixed;inset:0;z-index:1;overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
-
-.hd{position:relative;margin:0 -15px 18px;
-  padding:calc(env(safe-area-inset-top) + 18px) 18px 15px;
-  background:linear-gradient(180deg,rgba(46,60,74,.72),rgba(18,34,50,.46));
-  border-bottom:1px solid rgba(200,180,150,.16)}
-.hd::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(226,178,116,.4) 24%,
-    rgba(226,178,116,.4) 76%,transparent)}
-.hd .l1{display:flex;align-items:flex-start;gap:12px}
-.hd .co{flex:1;min-width:0}
-.hd b{display:block;font-size:19px}
-.hd .co span{display:block;font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(226,214,196,.6);margin-top:5px}
-.retour{flex:0 0 auto;padding:9px 14px;border-radius:22px;cursor:pointer;
-  border:1.5px solid rgba(214,196,170,.26);background:rgba(255,255,255,.07);
-  font-family:'Courier Prime',monospace;font-size:11.5px;color:#f0e8dc}
-.retour:active{background:rgba(255,255,255,.13)}
-
-/* ---------- Toussaint ---------- */
-.tous{display:flex;gap:14px;padding:16px;margin-bottom:16px;border-radius:16px;
-  background:linear-gradient(158deg,rgba(74,62,44,.66),rgba(38,32,24,.76));
-  border:1.5px solid rgba(214,180,132,.24)}
-.tous .por{flex:0 0 58px;height:58px;border-radius:14px;overflow:hidden;
-  background:#2c2418;border:1.5px solid rgba(226,190,140,.3)}
+.tous{display:flex;gap:15px;padding:16px;margin-bottom:14px;border-radius:18px;
+  background:var(--creme);border:3px solid var(--encre);box-shadow:var(--ombre)}
+.tous .por{flex:0 0 62px;height:62px;border-radius:16px;overflow:hidden;
+  background:var(--creme2);border:2.5px solid var(--encre)}
 .tous .por svg{width:100%;height:100%;display:block}
-.tous .co{flex:1;min-width:0}
-.tous .co b{display:block;font-size:16px;color:#f6ecdc}
-.tous .co span{display:block;font-size:10px;letter-spacing:.13em;
-  text-transform:uppercase;color:rgba(220,196,162,.56);margin-top:4px}
-.dit{margin-bottom:20px;padding:15px 17px;border-radius:14px;
-  background:rgba(255,255,255,.05);border-left:3px solid rgba(226,178,116,.5);
-  font-size:13px;color:rgba(240,232,220,.86);line-height:1.6;font-style:italic}
-
-/* ---------- ta barque, telle qu'elle est ---------- */
-.moi{margin-bottom:20px;padding:16px 17px;border-radius:15px;
-  background:linear-gradient(158deg,rgba(52,84,118,.7),rgba(22,44,70,.8));
-  border:1.5px solid rgba(150,190,224,.18)}
-.moi .tt{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;
-  color:rgba(198,222,242,.44);margin-bottom:9px}
-.moi b{display:block;font-size:17px;color:#fff;margin-bottom:3px}
-.moi .d{font-size:11.5px;color:rgba(198,222,242,.58);line-height:1.5;
-  font-family:system-ui,sans-serif;margin-bottom:13px}
+.tous .co b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px}
+.tous .co span{display:block;font-size:11px;font-weight:800;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(18,48,63,.5);margin-top:5px}
+.dit{padding:16px 18px;margin-bottom:18px;border-radius:16px;
+  background:var(--creme2);border:3px solid var(--encre);box-shadow:var(--ombre);
+  font-size:15px;font-weight:700;font-style:italic;line-height:1.55}
+.moi2{padding:16px 17px;margin-bottom:18px;border-radius:18px;
+  background:var(--creme);border:3px solid var(--encre);box-shadow:var(--ombre)}
+.moi2 .tt{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(18,48,63,.5);margin-bottom:8px}
+.moi2 b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px;
+  margin-bottom:5px}
+.moi2 .d{font-size:13px;font-weight:600;color:rgba(18,48,63,.6);line-height:1.5;
+  margin-bottom:15px}
 .trois{display:flex;gap:9px}
-.trois > div{flex:1;text-align:center;padding:10px 6px;border-radius:11px;
-  background:rgba(0,0,0,.2);border:1px solid rgba(160,200,230,.1)}
-.trois .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(190,214,234,.46)}
-.trois .v{font-size:16px;color:#fff;margin-top:5px}
-.trois .v em{font-style:normal;font-size:11px;color:#8ce0a8;margin-left:2px}
-
-/* ---------- ce qu'il peut faire ---------- */
-.sec{display:flex;align-items:center;gap:11px;font-size:8.5px;letter-spacing:.28em;
-  text-transform:uppercase;color:rgba(226,214,196,.5);margin:0 0 12px}
-.sec::after{content:"";flex:1;height:1px;
-  background:linear-gradient(90deg,rgba(214,190,160,.18),transparent)}
-.suite{border-radius:16px;overflow:hidden;margin-bottom:16px;
-  background:linear-gradient(158deg,rgba(78,64,44,.6),rgba(40,34,24,.72));
-  border:1.5px solid rgba(226,178,116,.3);
-  box-shadow:0 4px 0 rgba(28,22,12,.5), inset 0 1px 0 rgba(255,222,168,.14)}
-.suite .in{padding:17px}
+.trois > div{flex:1;text-align:center;padding:11px 6px;border-radius:12px;
+  background:rgba(18,48,63,.06);border:2px solid rgba(18,48,63,.16)}
+.trois .k{font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(18,48,63,.48)}
+.trois .v{font-family:'DM Serif Display',Georgia,serif;font-size:22px;margin-top:5px}
+.trois .v em{font-style:normal;font-size:12px;color:var(--vert);margin-left:3px;
+  font-family:'Nunito',sans-serif;font-weight:800}
+.suite{padding:17px;border-radius:18px;margin-bottom:16px;
+  background:#fff8e4;border:3px solid var(--encre);box-shadow:var(--ombre)}
 .suite .l1{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
-.suite .l1 b{flex:1;font-size:17px;color:#fff6e8;font-weight:400}
-.suite .px{font-size:17px;font-weight:700;white-space:nowrap}
-.suite .px.ok{color:#f4cf8a;text-shadow:0 0 20px rgba(240,196,106,.28)}
-.suite .px.non{color:rgba(226,214,196,.42)}
-.suite .px.gratuit{color:#8ce0a8}
-.suite .d{font-size:12px;color:rgba(232,220,200,.62);line-height:1.55;
-  font-family:system-ui,sans-serif;margin-bottom:15px}
-.suite .go{width:100%;padding:15px;border-radius:12px;cursor:pointer;
-  border:1.5px solid rgba(255,232,178,.72);
-  background:linear-gradient(176deg,#fadfa0,#d9a44e);
-  box-shadow:0 4px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6);
-  font-family:'Courier Prime',monospace;font-size:15px;font-weight:700;color:#3a2804;
-  transition:transform .1s, box-shadow .1s}
-.suite .go:active{transform:translateY(3px);
-  box-shadow:0 1px 0 rgba(132,88,20,.55), inset 0 1px 0 rgba(255,250,232,.6)}
-.suite .go:disabled{opacity:.4;box-shadow:none;transform:none;cursor:default;
-  background:rgba(255,255,255,.08);border-color:rgba(200,180,150,.2);color:#e8e0d0}
-.suite .man{text-align:center;font-size:11px;color:rgba(232,180,140,.72);
-  margin-top:10px;font-family:system-ui,sans-serif}
-
-/* le chemin qui reste */
-.chemin{border-radius:15px;overflow:hidden;
-  background:rgba(255,255,255,.04);border:1px solid rgba(160,200,230,.1)}
-.pal{display:flex;align-items:center;gap:13px;padding:12px 15px;
-  border-bottom:1px solid rgba(160,200,230,.07)}
+.suite .l1 b{flex:1;font-family:'DM Serif Display',Georgia,serif;font-size:22px}
+.suite .px{font-family:'DM Serif Display',Georgia,serif;font-size:21px;
+  white-space:nowrap}
+.suite .px.non{color:rgba(18,48,63,.4)}
+.suite .px.gratuit{color:var(--vert)}
+.suite .d{font-size:13px;font-weight:600;color:rgba(18,48,63,.6);line-height:1.5;
+  margin-bottom:15px}
+.suite .man{text-align:center;font-size:12.5px;font-weight:800;color:var(--rouge);
+  margin-top:11px}
+.chemin{border-radius:18px;overflow:hidden;background:var(--creme);
+  border:3px solid var(--encre);box-shadow:var(--ombre)}
+.pal{display:flex;align-items:center;gap:13px;padding:13px 15px;
+  border-bottom:2px solid rgba(18,48,63,.09)}
 .pal:last-child{border-bottom:0}
-.pal .n{flex:0 0 24px;height:24px;border-radius:8px;display:flex;
-  align-items:center;justify-content:center;font-size:11px;
-  background:rgba(255,255,255,.07);color:rgba(198,222,242,.5)}
-.pal.fait .n{background:rgba(140,224,168,.16);color:#8ce0a8}
+.pal .n{flex:0 0 28px;height:28px;border-radius:9px;display:flex;
+  align-items:center;justify-content:center;font-size:12px;font-weight:800;
+  background:rgba(18,48,63,.08);border:2px solid rgba(18,48,63,.18)}
+.pal.fait{background:#eaf6ee}
+.pal.fait .n{background:var(--vert);color:#fff;border-color:var(--encre)}
 .pal .co{flex:1;min-width:0}
-.pal .co b{display:block;font-size:13px;color:rgba(240,248,255,.88);font-weight:400}
-.pal .co span{display:block;font-size:10px;color:rgba(190,214,234,.44);margin-top:2px;
-  font-family:system-ui,sans-serif}
-.pal .px{font-size:11.5px;color:rgba(226,214,196,.5);white-space:nowrap}
-.pal.fait{opacity:.55}
-.pal.fait .px{color:#8ce0a8}
-
-.rien{text-align:center;padding:44px 24px;border-radius:15px;
-  background:rgba(255,255,255,.035);border:1px dashed rgba(200,180,150,.2);
-  font-size:12.5px;color:rgba(226,214,196,.6);line-height:1.65;
-  font-family:system-ui,sans-serif}
-.pied{text-align:center;font-size:9.5px;color:rgba(200,190,175,.4);
-  margin-top:24px;font-family:system-ui,sans-serif;letter-spacing:.06em}
+.pal .co b{display:block;font-size:14px;font-weight:800}
+.pal .co span{display:block;font-size:11px;font-weight:600;
+  color:rgba(18,48,63,.46);margin-top:2px}
+.pal .px{font-size:12px;font-weight:800;color:rgba(18,48,63,.5);white-space:nowrap}
+.pal.fait .px{color:var(--vert)}
 </style>
 </head>
 <body>
 
 <div class="pont">
-  <div class="hd">
-    <div class="l1">
-      <span class="co"><b>Le chantier</b>
-        <span id="c-sous">Chez Toussaint</span></span>
-      <button class="retour" id="retour">‹ Retour</button>
-    </div>
+  <div class="tete">
+    <span class="q"><b>Le chantier</b><span id="c-sous">—</span></span>
+    <button class="retour" id="retour">‹ Retour</button>
   </div>
-  <div id="corps"><p class="rien">On pousse la porte…</p></div>
+  <div id="corps"><p class="vide">On pousse la porte…</p></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
@@ -321,7 +253,7 @@ function dessiner(){
   /* ta barque telle qu'elle est */
   const A = n ? PALIERS_B[n - 1] : null;
   if (A){
-    h += '<div class="moi"><p class="tt">Ta barque</p>'
+    h += '<div class="moi2"><p class="tt">Ta barque</p>'
       + '<b>' + A.nom + '</b><p class="d">' + A.d + '</p>'
       + '<div class="trois">'
       +   '<div><p class="k">Cale</p><p class="v">' + A.places + '</p></div>'
@@ -372,7 +304,7 @@ function dessiner(){
     +     (A && S.vit > A.vit ? ' <em>+' + (S.vit - A.vit).toFixed(1) + '</em>' : '')
     +     '</p></div>'
     + '</div>'
-    + '<button class="go" id="go"' + (peut ? '' : ' disabled') + '>'
+    + '<button class="gros" id="go"' + (peut ? '' : ' disabled') + '>'
     +   (peut ? (n ? 'Faire les travaux' : 'Construire la coque') : 'Pas assez') + '</button>'
     + (peut ? '' : '<p class="man">Il te manque ' + eur(S.prix - sous) + '</p>')
     + '</div></div>';
