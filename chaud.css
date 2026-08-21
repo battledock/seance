@@ -13,8 +13,8 @@
   --rouge:#e0533c;
   --vert:#2f8a5c;
   --bleu:#2d7ba8;
-  --ombre:5px 5px 0 rgba(18,48,63,.9);
-  --ombre-p:2px 2px 0 rgba(18,48,63,.9);
+  --ombre:none;
+  --ombre-p:none;
 }
 html,body{min-height:100%;font-family:'Nunito',system-ui,sans-serif;
   color:var(--encre);
@@ -34,9 +34,8 @@ html,body{min-height:100%;font-family:'Nunito',system-ui,sans-serif;
   text-transform:uppercase;color:rgba(255,250,240,.76);margin-top:5px}
 .retour{flex:0 0 auto;padding:10px 15px;border-radius:14px;cursor:pointer;
   background:var(--creme);border:2.5px solid var(--encre);
-  box-shadow:3px 3px 0 rgba(18,48,63,.9);
   font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--encre)}
-.retour:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(18,48,63,.9)}
+.retour:active{background:var(--creme2)}
 
 /* ---------- une carte ---------- */
 .carte{padding:16px 17px;border-radius:18px;margin-bottom:13px;
@@ -44,8 +43,7 @@ html,body{min-height:100%;font-family:'Nunito',system-ui,sans-serif;
 button.carte,a.carte{display:block;width:100%;text-align:left;cursor:pointer;
   font-family:'Nunito',sans-serif;text-decoration:none;
   transition:transform .1s, box-shadow .1s}
-button.carte:active,a.carte:active{transform:translate(3px,3px);
-  box-shadow:var(--ombre-p)}
+button.carte:active,a.carte:active{background:var(--creme2)}
 
 /* ---------- les titres de section ---------- */
 .sec{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
@@ -88,9 +86,8 @@ button.carte:active,a.carte:active{transform:translate(3px,3px);
   background:var(--or);border:3px solid var(--encre);box-shadow:var(--ombre);
   font-family:'DM Serif Display',Georgia,serif;font-size:19px;color:var(--encre);
   transition:transform .1s, box-shadow .1s}
-.gros:active{transform:translate(3px,3px);box-shadow:var(--ombre-p)}
-.gros:disabled{opacity:.45;cursor:default;transform:none;box-shadow:var(--ombre);
-  background:rgba(18,48,63,.12)}
+.gros:active{background:#d9962a}
+.gros:disabled{opacity:.45;cursor:default;background:rgba(18,48,63,.12)}
 
 /* ---------- les états vides ---------- */
 .vide{text-align:center;padding:40px 24px;border-radius:18px;
