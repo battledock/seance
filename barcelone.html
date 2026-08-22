@@ -69,6 +69,22 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 .mien .tx b{display:block;font-size:10.5px;font-weight:700;white-space:nowrap}
 .mien .tx span{display:block;font-size:8px;letter-spacing:.12em;text-transform:uppercase;
   color:rgba(255,255,255,.44);margin-top:2px}
+/* ---------- ton portrait : la porte du menu ----------
+   Même geste qu'à l'anse : on touche le portrait, le hub s'ouvre.
+   La pastille dorée dit que c'en est un. */
+.por{position:relative;flex:0 0 46px;width:46px;height:46px;border-radius:10px;
+  overflow:hidden;cursor:pointer;
+  background:rgba(10,22,36,.42);border:1.5px solid rgba(255,255,255,.2);
+  transition:transform .13s}
+.por:active{transform:scale(.94)}
+.por svg{display:block;width:100%;height:100%}
+.porpt{position:fixed;z-index:5;
+  top:calc(env(safe-area-inset-top) + 8px);left:52px;
+  width:20px;height:20px;border-radius:50%;pointer-events:none;
+  background:#f0c46a;border:2px solid #0a1624;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2px}
+.porpt i{width:9px;height:1.8px;border-radius:1px;background:#0a1624}
+
 .euro{background:rgba(10,22,36,.42);border:1.5px solid rgba(255,255,255,.2);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border-radius:8px;padding:9px 13px;font-size:14px;font-weight:700;color:#ffd894}
@@ -150,6 +166,8 @@ html,body{height:100%;overflow:hidden;background:#0b1a2a;
 <div id="rideau"></div>
 
 <div class="tete">
+  <span class="por fondu d1" id="por"></span>
+  <span class="porpt fondu d1"><i></i><i></i><i></i></span>
   <span class="euro fondu d1" id="euro">—</span>
   <span class="mien fondu d1">
     <span class="vg" id="m-vg"></span>
@@ -1457,6 +1475,13 @@ setInterval(poserLumiere, 60000);
     + "et c'est peut-être ce qu'il y a de mieux.";
   document.getElementById('sous').textContent =
     'Ta barque reste à quai. Elle ne bougera pas sans toi.';
+
+  /* le portrait ouvre le hub, comme à l'anse */
+  const por = document.getElementById('por');
+  por.innerHTML = BD.avatarSVG(d);
+  const sv = por.querySelector('svg');
+  if (sv) sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+  por.onclick = () => location.href = 'hub.html?v=3';
 
   document.getElementById('debarquer').onclick = () => location.href = 'rue.html';
   /* des points en attente : on le dit au lieu de laisser filer */
