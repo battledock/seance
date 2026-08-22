@@ -92,6 +92,8 @@
   display:flex;align-items:center;justify-content:center;padding:0 9px;
   font-family:'DM Serif Display',Georgia,serif;font-size:18px;
   background:var(--or);border:2.5px solid var(--encre)}
+/* une tuile close se voit : plus terne, et elle ne répond pas */
+.pri:disabled,.li:disabled{opacity:.44;cursor:default}
 
 .ouv{position:fixed;inset:0;z-index:70;display:flex;align-items:center;
   justify-content:center;padding:26px;background:rgba(18,48,63,.72);
@@ -275,14 +277,32 @@ function aller(quoi){
   location.href = PAGE_PORT[PORT] || 'jeu.html';
 }
 
+/* ---------- ce que le hub propose, port par port ----------
+   La mise en page ne bouge pas : ce sont les tuiles qui changent.
+   `ici` dit où la tuile existe ; sans `ici`, elle te suit partout.
+   `ferme` la montre en sourdine, `si` la conditionne à ton avancement. */
 const TUILES = [
-  { k:'contrats', gd:1, em:'🏷️', t:'Les contrats', s:'Ce qu\'on te propose',
+  /* ---- ton anse ---- */
+  { k:'contrats', ici:'anse', gd:1, em:'🏷️', t:'Les contrats', s:'Ce qu\'on te propose',
     f:() => location.href = 'contrats.html' },
+  { k:'chantier', ici:'anse', em:'🔨', t:'Le chantier', s:'Toussaint et ta barque',
+    f:() => location.href = 'chantier.html' },
+
+  /* ---- Barcelone ---- */
+  { k:'chargement', ici:'barcelone', gd:1, em:'🏷️', t:'Le chargement',
+    s:'Ce que Miquel te confie', si:'miquel',
+    sinon:'Il faut d\'abord rencontrer quelqu\'un',
+    f:() => location.href = 'contrats.html' },
+  { k:'taverne', ici:'barcelone', em:'🍷', t:'La taverne', s:'On y parle beaucoup',
+    f:() => location.href = 'taverne.html' },
+  { k:'marche', ici:'barcelone', em:'🧺', t:'Le marché', s:'Pas encore ouvert',
+    ferme:1 },
+  { k:'entrepot', ici:'barcelone', em:'🏚️', t:"L'entrepôt", s:'Pas encore ouvert',
+    ferme:1 },
+
+  /* ---- partout ---- */
   { k:'quetes', gd:1, em:'📓', t:'Ton carnet', s:'Les histoires en cours',
     f:() => location.href = 'carnet.html' },
-  { k:'anse', em:'🔨', t:'Le chantier', s:'Toussaint et ta barque',
-    /* Toussaint travaille dans ton anse : ailleurs, il n'y a pas de chantier */
-    ici:'anse', f:() => location.href = 'chantier.html' },
   { k:'barque', em:'⛵', t:'Ta barque', s:'Les avirons',
     f:() => location.href = 'barque.html' },
   { k:'sacoche', em:'🎒', t:'Ta sacoche', s:'Ce que tu portes',
@@ -295,34 +315,47 @@ const TUILES = [
     f:() => location.href = 'classement.html' }
 ];
 
+/* ce que tu as déjà vécu, pour savoir quelles portes sont ouvertes */
+let VECU = [];
+
+
 let hubEtat = {};
+
+/* une tuile est close si le lieu n'existe pas encore,
+   ou si l'histoire ne t'y a pas encore mené */
+function close(t){
+  return !!t.ferme || (t.si && !VECU.includes(t.si));
+}
+function sousTitre(t){
+  if (t.ferme) return t.s;
+  if (t.si && !VECU.includes(t.si)) return t.sinon || t.s;
+  return t.sv || t.s;
+}
 
 function dessinerTuiles(){
   const E = hubEtat;
   const DISPO = TUILES.filter(t => !t.ici || t.ici === PORT);
   const GD = DISPO.filter(t => t.gd), RE = DISPO.filter(t => !t.gd);
 
-  let h = GD.map(t => {
-    const n = E[t.k];
-    return '<button class="pri" data-k="' + t.k + '">'
-      + '<span class="em">' + t.em + '</span>'
-      + '<span class="co"><b>' + t.t + '</b><span>' + (t.sv || t.s) + '</span></span>'
-      + (n > 0 ? '<span class="nb">' + n + '</span>' : '')
-      + '</button>';
-  }).join('');
+  let h = GD.map(t =>
+    '<button class="pri" data-k="' + t.k + '"' + (close(t) ? ' disabled' : '') + '>'
+    + '<span class="em">' + t.em + '</span>'
+    + '<span class="co"><b>' + t.t + '</b><span>' + sousTitre(t) + '</span></span>'
+    + (!close(t) && E[t.k] > 0 ? '<span class="nb">' + E[t.k] + '</span>' : '')
+    + '</button>').join('');
 
   h += '<p class="sec">Le reste</p><div class="bloc">'
     + RE.map(t =>
-      '<button class="li" data-k="' + t.k + '">'
+      '<button class="li" data-k="' + t.k + '"' + (close(t) ? ' disabled' : '') + '>'
       + '<span class="em">' + t.em + '</span>'
-      + '<span class="co"><b>' + t.t + '</b><span>' + t.s + '</span></span>'
-      + '<span class="fl">›</span></button>').join('')
+      + '<span class="co"><b>' + t.t + '</b><span>' + sousTitre(t) + '</span></span>'
+      + '<span class="fl">' + (close(t) ? '' : '›') + '</span></button>').join('')
     + '</div>';
 
   document.getElementById('tuiles').innerHTML = h;
   document.querySelectorAll('#tuiles [data-k]').forEach(el => {
     const t = TUILES.find(x => x.k === el.dataset.k);
-    if (t && t.f) el.onclick = t.f;
+    if (t && t.f && !close(t)) el.onclick = t.f;
   });
 }
 
@@ -396,6 +429,7 @@ document.getElementById('ouv-ok').onclick = () => {
     if (sv) sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
     /* le hub prend la couleur du port où l'on se trouve */
     PORT = d.port || 'anse';
+    VECU = (d.rencontres || []).slice();
     const R = RADE[PORT] || RADE.anse;
     document.querySelector('.rade .tx b').textContent = R.t;
     document.querySelector('.rade .tx span').textContent = R.s;
