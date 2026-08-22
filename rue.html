@@ -282,10 +282,6 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
   </div>
 </section>
 
-<div class="bas">
-  <div class="lieux" id="lieux"></div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=3"></script>
 <script src="heure.js?v=1"></script>
@@ -1322,11 +1318,8 @@ function poserLumiere(){
 poserLumiere();
 setInterval(poserLumiere, 60000);
 
-document.getElementById('lieux').innerHTML = LIEUX.map(L =>
-  '<button class="' + (L.ouvert ? 'vif' : '') + '" data-k="' + L.k + '"'
-  + (L.ouvert ? '' : ' disabled') + '>'
-  + '<svg viewBox="0 0 24 24">' + ICO[L.k] + '</svg>'
-  + '<span>' + L.n + '</span></button>').join('');
+/* les lieux ne sont plus dans une barre ici : ils vivent dans le hub,
+   qu'on ouvre par le portrait. La rue reste un décor, pas un menu. */
 
 let MOI = null;
 let chargesCt = false;
@@ -1428,10 +1421,6 @@ function ouvrirBarque(o){
 document.getElementById('voile').onclick = () => ouvrirBarque(false);
 document.getElementById('q-fer').onclick = () => ouvrirBarque(false);
 addEventListener('keydown', e => { if (e.key === 'Escape') ouvrirBarque(false); });
-document.querySelectorAll('[data-k="bateau"]').forEach(b =>
-  b.onclick = () => ouvrirBarque(true));
-document.querySelectorAll('[data-k="taverne"]').forEach(b =>
-  b.onclick = () => location.href = 'taverne.html');
 
 /* ---------- il traverse la rue et vient te parler ---------- */
 function aborder(){
@@ -1555,13 +1544,16 @@ function poserMiquel(vecue){
   if (vu && !connu){ aborder(); return; }
 
   poserMiquel(vu);
-  /* le chargement n'est ouvert que si Miquel te connaît */
-  const bd2 = document.querySelector('[data-k="docks"]');
-  if (bd2){
-    bd2.disabled = !connu;
-    bd2.classList.toggle('vif', connu);
-    if (connu) bd2.onclick = () => basculerContrats(true, d);
-  }
+
+  /* le hub peut demander qu'on ouvre un panneau en arrivant ici */
+  try {
+    const q = sessionStorage.getItem('bd-ouvrir');
+    if (q){
+      sessionStorage.removeItem('bd-ouvrir');
+      if (q === 'bateau') ouvrirBarque(true);
+      if (q === 'docks' && connu) basculerContrats(true, d);
+    }
+  } catch(e){}
 })();
 
 let t = null;
