@@ -94,6 +94,11 @@
   display:flex;align-items:center;justify-content:center;padding:0 9px;
   font-family:'DM Serif Display',Georgia,serif;font-size:18px;
   background:var(--or);border:2.5px solid var(--encre)}
+/* la même pastille, en plus petit, pour les lignes serrées */
+.nb2{flex:0 0 auto;min-width:26px;height:26px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;padding:0 7px;
+  font-family:'DM Serif Display',Georgia,serif;font-size:14px;color:var(--encre);
+  background:var(--or);border:2.5px solid var(--encre)}
 /* une tuile close se voit : plus terne, et elle ne répond pas */
 .pri:disabled,.li:disabled{opacity:.44;cursor:default}
 
@@ -282,48 +287,64 @@ function aller(quoi){
    La mise en page ne bouge pas : ce sont les tuiles qui changent.
    `ici` dit où la tuile existe ; sans `ici`, elle te suit partout.
    `ferme` la montre en sourdine, `si` la conditionne à ton avancement. */
+/* ---------- ce que le hub propose, port par port ----------
+   `ou` range la tuile dans une famille, `ici` la limite à un port.
+   Les familles sont dans l'ordre où on les traverse : d'abord ce qui
+   demande quelque chose, puis les lieux, puis toi, puis les autres. */
+const FAMILLES = [
+  { k:'attend', t:'Ce qui t\'attend', gd:1 },
+  { k:'lieu',   t:'Le port' },
+  { k:'toi',    t:'Toi' },
+  { k:'autres', t:'Les autres' }
+];
+
 const TUILES = [
-  /* ---- ton anse ---- */
-  { k:'contrats', ici:'anse', gd:1, em:'🏷️', t:'Les contrats', s:'Ce qu\'on te propose',
+  /* ---- Marseille ---- */
+  { k:'contrats', ou:'attend', ici:'anse', em:'🏷️', t:'Les contrats',
+    s:'Ce qu\'on te propose',
     f:() => location.href = 'contrats.html' },
-  { k:'chantier', ici:'anse', em:'🔨', t:'Le chantier', s:'Toussaint et ta barque',
-    f:() => location.href = 'chantier.html' },
-  { k:'fabrique', ici:'anse', em:'🏭', t:'Ta fabrique', s:'Elle produit même en ton absence',
+  { k:'fabrique', ou:'attend', ici:'anse', em:'🏭', t:'Ta fabrique',
+    s:'Elle produit même en ton absence',
     si:'affaire', sinon:'Il faut ouvrir une affaire chez Félix',
     f:() => location.href = 'anse.html' },
+  { k:'chantier', ou:'lieu', ici:'anse', em:'🔨', t:'Le chantier',
+    s:'Toussaint et ta barque',
+    f:() => location.href = 'chantier.html' },
 
   /* ---- Barcelone ---- */
-  { k:'chargement', ici:'barcelone', gd:1, em:'🏷️', t:'Le chargement',
+  { k:'chargement', ou:'attend', ici:'barcelone', em:'🏷️', t:'Le chargement',
     s:'Ce que Miquel te confie', si:'miquel',
     sinon:'Il faut d\'abord rencontrer quelqu\'un',
     f:() => location.href = 'contrats.html' },
-  { k:'taverne', ici:'barcelone', em:'🍷', t:'La taverne', s:'On y parle beaucoup',
+  { k:'taverne', ou:'lieu', ici:'barcelone', em:'🍷', t:'La taverne',
+    s:'On y parle beaucoup',
     f:() => location.href = 'taverne.html' },
-  { k:'marche', ici:'barcelone', em:'🧺', t:'Le marché', s:'Pas encore ouvert',
-    ferme:1 },
-  { k:'entrepot', ici:'barcelone', em:'🏚️', t:"L'entrepôt", s:'Pas encore ouvert',
-    ferme:1 },
+  { k:'marche', ou:'lieu', ici:'barcelone', em:'🧺', t:'Le marché',
+    s:'Pas encore ouvert', ferme:1 },
+  { k:'entrepot', ou:'lieu', ici:'barcelone', em:'🏚️', t:"L'entrepôt",
+    s:'Pas encore ouvert', ferme:1 },
 
   /* ---- partout ---- */
-  { k:'quetes', gd:1, em:'📓', t:'Ton carnet', s:'Les histoires en cours',
+  { k:'quetes', ou:'attend', em:'📓', t:'Ton carnet', s:'Les histoires en cours',
     f:() => location.href = 'carnet.html' },
-  { k:'barque', em:'⛵', t:'Ta barque', s:'Les avirons',
+  { k:'barque', ou:'toi', em:'⛵', t:'Ta barque', s:'Les avirons',
     f:() => location.href = 'barque.html' },
-  { k:'sacoche', em:'🎒', t:'Ta sacoche', s:'Ce que tu portes',
+  { k:'sacoche', ou:'toi', em:'🎒', t:'Ta sacoche', s:'Ce que tu portes',
     f:() => location.href = 'sacoche.html' },
-  { k:'fiche', em:'📋', t:'Ta fiche', s:'Ce que tu sais faire',
+  { k:'fiche', ou:'toi', em:'📋', t:'Ta fiche', s:'Ce que tu sais faire',
     f:() => location.href = 'fiche.html' },
-  { k:'gens', em:'🧑‍🤝‍🧑', t:'Les gens', s:'Ce qu\'ils pensent de toi',
+  { k:'gens', ou:'autres', em:'🧑‍🤝‍🧑', t:'Les gens', s:'Ce qu\'ils pensent de toi',
     f:() => location.href = 'gens.html' },
-  { k:'classement', em:'🏆', t:'Le classement', s:'Qui mène la danse',
+  { k:'classement', ou:'autres', em:'🏆', t:'Le classement', s:'Qui mène la danse',
     f:() => location.href = 'classement.html' }
 ];
+
 
 /* ce que tu as déjà vécu, pour savoir quelles portes sont ouvertes */
 let VECU = [];
 
 
-let hubEtat = {};
+let hubEtat = {}, D = null;
 
 /* une tuile est close si le lieu n'existe pas encore,
    ou si l'histoire ne t'y a pas encore mené */
@@ -339,22 +360,34 @@ function sousTitre(t){
 function dessinerTuiles(){
   const E = hubEtat;
   const DISPO = TUILES.filter(t => !t.ici || t.ici === PORT);
-  const GD = DISPO.filter(t => t.gd), RE = DISPO.filter(t => !t.gd);
+  let h = '';
 
-  let h = GD.map(t =>
-    '<button class="pri" data-k="' + t.k + '"' + (close(t) ? ' disabled' : '') + '>'
-    + '<span class="em">' + t.em + '</span>'
-    + '<span class="co"><b>' + t.t + '</b><span>' + sousTitre(t) + '</span></span>'
-    + (!close(t) && E[t.k] > 0 ? '<span class="nb">' + E[t.k] + '</span>' : '')
-    + '</button>').join('');
+  FAMILLES.forEach(F => {
+    const lot = DISPO.filter(t => t.ou === F.k);
+    if (!lot.length) return;
+    h += '<p class="sec">' + F.t + '</p>';
 
-  h += '<p class="sec">Le reste</p><div class="bloc">'
-    + RE.map(t =>
-      '<button class="li" data-k="' + t.k + '"' + (close(t) ? ' disabled' : '') + '>'
-      + '<span class="em">' + t.em + '</span>'
-      + '<span class="co"><b>' + t.t + '</b><span>' + sousTitre(t) + '</span></span>'
-      + '<span class="fl">' + (close(t) ? '' : '›') + '</span></button>').join('')
-    + '</div>';
+    if (F.gd){
+      /* la première famille est en grandes cartes : ce sont les gestes
+         du jour, ils méritent d'être vus sans qu'on les cherche */
+      h += lot.map(t =>
+        '<button class="pri" data-k="' + t.k + '"' + (close(t) ? ' disabled' : '') + '>'
+        + '<span class="em">' + t.em + '</span>'
+        + '<span class="co"><b>' + t.t + '</b><span>' + sousTitre(t) + '</span></span>'
+        + (!close(t) && E[t.k] ? '<span class="nb">' + E[t.k] + '</span>' : '')
+        + '</button>').join('');
+    } else {
+      /* les autres en lignes serrées : on les consulte, on n'y court pas */
+      h += '<div class="bloc">' + lot.map(t =>
+        '<button class="li" data-k="' + t.k + '"' + (close(t) ? ' disabled' : '') + '>'
+        + '<span class="em">' + t.em + '</span>'
+        + '<span class="co"><b>' + t.t + '</b><span>' + sousTitre(t) + '</span></span>'
+        + (!close(t) && E[t.k]
+            ? '<span class="nb2">' + E[t.k] + '</span>'
+            : '<span class="fl">' + (close(t) ? '' : '›') + '</span>')
+        + '</button>').join('') + '</div>';
+    }
+  });
 
   document.getElementById('tuiles').innerHTML = h;
   document.querySelectorAll('#tuiles [data-k]').forEach(el => {
@@ -425,6 +458,7 @@ document.getElementById('ouv-ok').onclick = () => {
   try {
     const d = await BD.charger();
     if (!d){ location.href = 'index.html'; return; }
+    D = d;
 
     const av = document.getElementById('hub-av');
     av.innerHTML = BD.avatarSVG(d);
@@ -468,6 +502,9 @@ document.getElementById('ouv-ok').onclick = () => {
       const P = r.pastilles || {};
       hubEtat = { contrats: P.contrats ? (r.contrats || 1) : 0,
                   quetes: P.quetes ? 1 : 0 };
+      /* ce que ta fabrique a fait pendant que tu n'étais pas là */
+      const st = Math.floor(Number((((D || {}).affaire || {}).prod || {}).stock || 0));
+      if (st >= 1) hubEtat.fabrique = st;
       dessinerTuiles();
     }
   } catch(e){
