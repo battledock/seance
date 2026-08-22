@@ -1387,7 +1387,7 @@ function poserBarre(d){
   const el = document.getElementById('barre');
   if (!el || !d) return;
 
-  const PORTS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
+  const PORTS = { anse:'Marseille', marseille:'Marseille', barcelone:'Barcelone',
                   palma:'Palma', ajaccio:'Ajaccio' };
   /* le lieu en petit, la caisse en grand : rien ne bouge */
   document.getElementById('b-lb').textContent = PORTS[d.port] || 'En mer';
