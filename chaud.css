@@ -16,11 +16,20 @@
   --ombre:none;
   --ombre-p:none;
 }
+/* Le fond.
+   Avant : un dégradé en `background-attachment:fixed` sur html+body.
+   Sur mobile, ce mode force le navigateur à repeindre le dégradé à chaque
+   image du défilement — d'où le blanc qui apparaît en bas puis se remplit.
+   Maintenant : un calque fixe en ::before, que le GPU compose sans repeindre.
+   Et html garde la couleur du bas, pour qu'on ne voie jamais de blanc. */
+html{background:#2b6f92}
 html,body{min-height:100%;font-family:'Nunito',system-ui,sans-serif;
-  color:var(--encre);
+  color:var(--encre)}
+body{position:relative;background:transparent}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(180deg,#f5a53a 0%,#eeb455 16%,#c9b978 38%,
     #7fa89a 58%,#3f87a6 78%,#2b6f92 100%);
-  background-attachment:fixed}
+  transform:translateZ(0)}
 .pont{padding:0 15px calc(env(safe-area-inset-bottom) + 40px)}
 
 /* ---------- l'entête d'une page ---------- */
