@@ -257,10 +257,22 @@ function euro(v){
   return Number(v || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) + ' €';
 }
 
-/* chaque tuile renvoie vers la rade, en demandant d'y ouvrir un panneau */
+/* Le hub est le même partout : c'est ton menu, pas celui d'un lieu.
+   Seuls le bouton du haut, le chantier et le pied changent selon le port. */
+const PAGE_PORT = { anse:'jeu.html', barcelone:'barcelone.html',
+                    palma:'palma.html', ajaccio:'ajaccio.html' };
+const RADE = {
+  anse:      { t:'Retour à la rade',   s:'Le quai, la barque, la mer devant' },
+  barcelone: { t:'Retour au bassin',   s:'Le môle, les grues, ta barque à quai' },
+  palma:     { t:'Retour au port',     s:'Palma, et ta barque au mouillage' },
+  ajaccio:   { t:'Retour au golfe',    s:'Ajaccio, la montagne dans le dos' }
+};
+let PORT = 'anse';
+
+/* chaque tuile renvoie vers le port où l'on est, en demandant d'y ouvrir un panneau */
 function aller(quoi){
   try { sessionStorage.setItem('bd-ouvrir', quoi); } catch(e){}
-  location.href = 'jeu.html';
+  location.href = PAGE_PORT[PORT] || 'jeu.html';
 }
 
 const TUILES = [
@@ -269,7 +281,8 @@ const TUILES = [
   { k:'quetes', gd:1, em:'📓', t:'Ton carnet', s:'Les histoires en cours',
     f:() => location.href = 'carnet.html' },
   { k:'anse', em:'🔨', t:'Le chantier', s:'Toussaint et ta barque',
-    f:() => location.href = 'chantier.html' },
+    /* Toussaint travaille dans ton anse : ailleurs, il n'y a pas de chantier */
+    ici:'anse', f:() => location.href = 'chantier.html' },
   { k:'barque', em:'⛵', t:'Ta barque', s:'Les avirons',
     f:() => location.href = 'barque.html' },
   { k:'sacoche', em:'🎒', t:'Ta sacoche', s:'Ce que tu portes',
@@ -286,7 +299,8 @@ let hubEtat = {};
 
 function dessinerTuiles(){
   const E = hubEtat;
-  const GD = TUILES.filter(t => t.gd), RE = TUILES.filter(t => !t.gd);
+  const DISPO = TUILES.filter(t => !t.ici || t.ici === PORT);
+  const GD = DISPO.filter(t => t.gd), RE = DISPO.filter(t => !t.gd);
 
   let h = GD.map(t => {
     const n = E[t.k];
@@ -362,7 +376,8 @@ document.getElementById('cadeau').onclick = async () => {
   document.getElementById('ouv').classList.add('on');
   poserCadeau();
 };
-document.getElementById('rade').onclick = () => location.href = 'jeu.html';
+document.getElementById('rade').onclick = () =>
+  location.href = PAGE_PORT[PORT] || 'jeu.html';
 
 document.getElementById('ouv-ok').onclick = () => {
   document.getElementById('ouv').classList.remove('on');
@@ -379,6 +394,14 @@ document.getElementById('ouv-ok').onclick = () => {
     /* on demande au dessin de couvrir le cadre plutôt que de s'y contenir */
     const sv = av.querySelector('svg');
     if (sv) sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+    /* le hub prend la couleur du port où l'on se trouve */
+    PORT = d.port || 'anse';
+    const R = RADE[PORT] || RADE.anse;
+    document.querySelector('.rade .tx b').textContent = R.t;
+    document.querySelector('.rade .tx span').textContent = R.s;
+    document.getElementById('pied').textContent =
+      'Battle Dock — ' + (PORTS_N[PORT] || 'Marseille');
+
     document.getElementById('hub-nom').textContent = d.pseudo || '';
     document.getElementById('hub-ou').textContent =
       (PORTS_N[d.port] || 'En mer') + ' · niveau ' + (d.niveau || 1);
