@@ -42,46 +42,96 @@ const BD = (() => {
     document.documentElement.innerHTML =
       '<head><meta charset="UTF-8">'
       + '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
+      + '<meta name="theme-color" content="#f0a94e">'
       + '<title>Battle Dock</title>'
-      + '<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">'
+      + '<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display'
+      + '&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">'
       + '<style>'
-      + '*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}'
-      + 'html,body{height:100%;background:#0e1c2e;color:#fff;'
-      + "font-family:'Courier Prime',monospace;overflow:hidden}"
-      + '.m{position:fixed;inset:0;display:flex;flex-direction:column;'
-      + 'align-items:center;justify-content:center;gap:18px;padding:34px;text-align:center}'
-      + '.m .ic{width:54px;height:54px;margin-bottom:6px;opacity:.8}'
-      + '.m .ic svg{width:100%;height:100%;stroke:#f0c46a;fill:none;stroke-width:1.5;'
-      + 'stroke-linecap:round;stroke-linejoin:round}'
-      + '.m h1{font-size:23px;font-weight:700;line-height:1.35;max-width:320px}'
-      + '.m p{font-size:14.5px;color:#f0c46a;font-family:system-ui,sans-serif}'
-      + '.m .pt{display:flex;gap:7px;margin-top:4px}'
-      + '.m .pt i{width:7px;height:7px;border-radius:50%;background:#f0c46a;'
-      + 'animation:bat 1.4s ease-in-out infinite}'
-      + '.m .pt i:nth-child(2){animation-delay:.2s}'
-      + '.m .pt i:nth-child(3){animation-delay:.4s}'
-      + '@keyframes bat{0%,100%{opacity:.25}50%{opacity:1}}'
-      + '.m .cle{margin-top:30px;display:flex;gap:8px;opacity:.5;transition:opacity .3s}'
-      + '.m .cle:focus-within{opacity:1}'
-      + '.m input{width:130px;padding:11px 14px;border-radius:9px;'
-      + 'border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);'
-      + "color:#fff;font-family:'Courier Prime',monospace;font-size:13px;text-align:center}"
-      + '.m input:focus{outline:none;border-color:rgba(240,196,106,.6)}'
-      + '.m button{padding:11px 18px;border:0;border-radius:9px;cursor:pointer;'
-      + 'background:rgba(240,196,106,.9);color:#1c1a16;'
-      + "font-family:'Courier Prime',monospace;font-size:13px;font-weight:700}"
-      + '.m .err{font-size:11.5px;color:#e0785a;height:16px;font-family:system-ui,sans-serif}'
-      + '</style></head><body><div class="m">'
-      + '<span class="ic"><svg viewBox="0 0 24 24">'
-      + '<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>'
-      + '</svg></span>'
-      + '<h1>' + (m.titre || 'Le jeu est en maintenance') + '</h1>'
-      + '<p>' + (m.mot || '') + '</p>'
+      /* la même affiche que la traversée : deux aplats, un horizon franc */
+      + '*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;'
+      + '-webkit-user-select:none;user-select:none}'
+      + ':root{--encre:#12303f;--creme:#fdf6e6;--creme2:#f7edd8;--or:#f0a92e}'
+      + "html,body{height:100%;overflow:hidden;background:#2b6f92;color:var(--creme);"
+      + "font-family:'Nunito',system-ui,sans-serif}"
+      + '#ciel{position:fixed;left:0;right:0;top:0;height:58%;z-index:-3;background:#f0a94e}'
+      + '#eau{position:fixed;left:0;right:0;bottom:0;height:42%;z-index:-3;'
+      + 'background:#2b6f92;border-top:4px solid var(--encre)}'
+      /* le disque, arrêté au zénith : le temps ne passe plus */
+      + '#disque{position:fixed;z-index:-2;left:50%;top:22%;width:26vw;max-width:128px;'
+      + 'aspect-ratio:1;border-radius:50%;margin-left:-13vw;transform:translateX(0);'
+      + 'background:#fff0c4;border:4px solid var(--encre)}'
+      + '@media(min-width:492px){#disque{margin-left:-64px}}'
+      /* la houle continue : le port vit même quand on ferme */
+      + '.houle{position:fixed;left:-60%;right:-60%;z-index:-1;height:5px;border-radius:3px;'
+      + 'background:repeating-linear-gradient(90deg,#fdf6e6 0 26px,transparent 26px 62px);'
+      + 'will-change:transform}'
+      + '.h1{bottom:32%;opacity:.16;animation:file 14s linear infinite}'
+      + '.h2{bottom:24%;opacity:.2;height:6px;animation:file 10s linear infinite reverse}'
+      + '.h3{bottom:13%;opacity:.26;height:8px;animation:file 7s linear infinite}'
+      + '@keyframes file{to{transform:translateX(62px)}}'
+      /* la barque, au mouillage */
+      + '#bq{position:fixed;left:50%;bottom:37%;z-index:0;width:118px;margin-left:-59px;'
+      + 'animation:souleve 4.8s ease-in-out infinite;will-change:transform}'
+      + '#bq svg{display:block;width:100%;height:auto;'
+      + 'animation:penche 4.8s ease-in-out infinite;transform-origin:50% 88%}'
+      + '@keyframes souleve{0%,50%,100%{transform:translateY(0)}'
+      + '25%{transform:translateY(-7px)}75%{transform:translateY(5px)}}'
+      + '@keyframes penche{0%{transform:rotate(2.2deg)}25%{transform:rotate(0)}'
+      + '50%{transform:rotate(-2.2deg)}75%{transform:rotate(0)}100%{transform:rotate(2.2deg)}}'
+      /* le mot, écrit à même le ciel */
+      + '.haut{position:fixed;left:24px;right:24px;z-index:3;'
+      + 'top:calc(env(safe-area-inset-top) + 30px)}'
+      + '.haut .su{font-size:10px;font-weight:800;letter-spacing:.28em;'
+      + 'text-transform:uppercase;color:rgba(253,246,230,.68)}'
+      + ".haut h1{font-family:'DM Serif Display',Georgia,serif;font-weight:400;"
+      + 'font-size:clamp(34px,11vw,52px);line-height:1;margin-top:10px;'
+      + 'text-shadow:0 3px 0 rgba(18,48,63,.24)}'
+      /* ce qu'on en dit, à même l'eau */
+      + '.bas{position:fixed;left:24px;right:24px;z-index:4;'
+      + 'bottom:calc(env(safe-area-inset-bottom) + 26px);text-align:center}'
+      + ".bas p{font-family:'DM Serif Display',Georgia,serif;font-size:17px;line-height:1.45;"
+      + 'text-shadow:0 2px 12px rgba(8,24,38,.4)}'
+      + '.bas .pt{display:flex;gap:8px;justify-content:center;margin-top:20px}'
+      + '.bas .pt i{width:9px;height:9px;border-radius:50%;background:var(--creme);'
+      + 'animation:bat 1.5s ease-in-out infinite}'
+      + '.bas .pt i:nth-child(2){animation-delay:.22s}'
+      + '.bas .pt i:nth-child(3){animation-delay:.44s}'
+      + '@keyframes bat{0%,100%{opacity:.24}50%{opacity:1}}'
+      /* la clé, discrète : elle ne se réveille qu'au toucher */
+      + '.cle{display:flex;gap:8px;margin-top:26px;opacity:.42;transition:opacity .3s}'
+      + '.cle:focus-within{opacity:1}'
+      + '.cle input{flex:1;min-width:0;padding:14px;border-radius:15px;text-align:center;'
+      + 'background:var(--creme);border:3px solid var(--encre);color:var(--encre);'
+      + "font-family:'Nunito',sans-serif;font-size:14px;font-weight:700}"
+      + '.cle input:focus{outline:none}'
+      + '.cle input::placeholder{color:rgba(18,48,63,.4);font-weight:800;'
+      + 'letter-spacing:.16em;text-transform:uppercase;font-size:11px}'
+      + '.cle button{flex:0 0 auto;padding:14px 20px;border-radius:15px;cursor:pointer;'
+      + "background:var(--or);border:3px solid var(--encre);color:var(--encre);"
+      + "font-family:'DM Serif Display',Georgia,serif;font-size:17px}"
+      + '.cle button:active{background:#d9962a}'
+      + '.err{font-size:11.5px;font-weight:700;color:#ffd9cc;height:16px;margin-top:11px}'
+      + '@media (prefers-reduced-motion:reduce){*{animation:none!important}}'
+      + '</style></head><body>'
+      + '<div id="ciel"></div><div id="eau"></div><div id="disque"></div>'
+      + '<i class="houle h1"></i><i class="houle h2"></i><i class="houle h3"></i>'
+      /* la barque : voile, tapecul, mât, coque — quatre formes */
+      + '<div id="bq"><svg viewBox="0 0 126 76" xmlns="http://www.w3.org/2000/svg">'
+      + '<path d="M63 6 L100 54 L65 54 Z" fill="#fdf6e6" stroke="#12303f"'
+      + ' stroke-width="4" stroke-linejoin="round"/>'
+      + '<path d="M59 18 L28 54 L59 54 Z" fill="#f0a92e" stroke="#12303f"'
+      + ' stroke-width="4" stroke-linejoin="round"/>'
+      + '<rect x="59" y="4" width="5" height="52" rx="2.5" fill="#12303f"/>'
+      + '<path d="M10 54 q53 22 106 0 l-12 16 q-42 12 -82 0 Z" fill="#12303f"/>'
+      + '</svg></div>'
+      + '<div class="haut"><p class="su">Le port est fermé</p>'
+      + '<h1>' + (m.titre || 'On remet tout en état') + '</h1></div>'
+      + '<div class="bas"><p>' + (m.mot || 'Reviens dans un moment.') + '</p>'
       + '<span class="pt"><i></i><i></i><i></i></span>'
-      + '<div class="cle"><input id="m-mdp" type="password" placeholder="code" '
-      + 'autocomplete="off"><button id="m-ok">Entrer</button></div>'
-      + '<p class="err" id="m-err"></p>'
-      + '</div></body>';
+      + '<div class="cle"><input id="m-mdp" type="password" placeholder="code"'
+      + ' autocomplete="off"><button id="m-ok">Entrer</button></div>'
+      + '<p class="err" id="m-err"></p></div>'
+      + '</body>';
     const essayer = async () => {
       const v = document.getElementById('m-mdp').value.trim();
       if (!v) return;
@@ -101,10 +151,7 @@ const BD = (() => {
     };
     document.getElementById('m-ok').onclick = essayer;
     document.getElementById('m-mdp').onkeydown = e => { if (e.key === 'Enter') essayer(); };
-    document.getElementById('m-mdp').focus();
   }
-
-
 
   async function client(){
     if (sb) return sb;
