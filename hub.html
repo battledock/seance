@@ -44,36 +44,39 @@
   transition:width .6s cubic-bezier(.3,.9,.3,1)}
 .liv .fil i.plein{background:var(--or)}
 
-.cad{position:relative;display:flex;align-items:center;gap:14px;width:100%;
-  padding:17px 18px;margin-bottom:20px;border-radius:18px;cursor:pointer;
-  overflow:hidden;text-align:left;
-  background:var(--rouge);border:3px solid var(--encre);
+/* ---------- le rabat : la dernière page du livret ----------
+   Le cadeau n'a plus sa carte à lui. Il est cousu sous le livret,
+   en rouge franc pour rester le seul point urgent de l'écran. */
+.rab{position:relative;display:flex;align-items:center;gap:12px;width:100%;
+  padding:13px 16px;cursor:pointer;overflow:hidden;text-align:left;
+  background:var(--rouge);border:0;border-top:3px solid var(--encre);
   font-family:'Nunito',sans-serif;transition:background .12s}
-.cad:active{background:var(--creme2)}
-.cad > i{position:absolute;width:8px;height:12px;border-radius:2px;top:-14px;
+.rab:active{background:#c9432e}
+/* les confettis tombent dedans */
+.rab > i{position:absolute;width:7px;height:11px;border-radius:2px;top:-14px;
   animation:tombe 3.4s linear infinite}
-.cad > i:nth-child(1){left:18%;background:#ffd68c}
-.cad > i:nth-child(2){left:38%;background:#a8e8c0;animation-delay:.7s}
-.cad > i:nth-child(3){left:62%;background:#fff6e4;animation-delay:1.4s}
-.cad > i:nth-child(4){left:82%;background:#9cc8f0;animation-delay:.4s}
+.rab > i:nth-child(1){left:18%;background:#ffd68c}
+.rab > i:nth-child(2){left:42%;background:#a8e8c0;animation-delay:.7s}
+.rab > i:nth-child(3){left:64%;background:#fff6e4;animation-delay:1.4s}
+.rab > i:nth-child(4){left:84%;background:#9cc8f0;animation-delay:.4s}
 @keyframes tombe{0%{transform:translateY(0) rotate(0);opacity:0}
   15%{opacity:1}85%{opacity:1}
-  100%{transform:translateY(104px) rotate(400deg);opacity:0}}
-.cad .em{position:relative;z-index:2;font-size:31px;flex:0 0 auto}
-.cad .tx{position:relative;z-index:2;flex:1;min-width:0}
-.cad .tx b{display:block;font-family:'DM Serif Display',Georgia,serif;
-  font-size:20px;color:#fffaf0;line-height:1.1}
-.cad .tx span{display:block;font-size:12px;font-weight:600;
-  color:rgba(255,250,240,.8);margin-top:4px}
-.cad .sr{position:relative;z-index:2;flex:0 0 auto;padding:5px 10px;
-  border-radius:20px;font-size:11px;font-weight:800;color:var(--encre);
+  100%{transform:translateY(76px) rotate(400deg);opacity:0}}
+.rab .em{position:relative;z-index:2;font-size:24px;flex:0 0 auto}
+.rab .tx{position:relative;z-index:2;flex:1;min-width:0}
+.rab .tx b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:17px;color:#fffaf0;line-height:1.15}
+.rab .tx span{display:block;font-size:10.5px;font-weight:700;
+  color:rgba(255,250,240,.8);margin-top:2px}
+.rab .sr{position:relative;z-index:2;flex:0 0 auto;padding:4px 9px;
+  border-radius:20px;font-size:10px;font-weight:800;color:var(--encre);
   background:var(--creme);border:2px solid var(--encre);white-space:nowrap}
-.cad.pris{background:rgba(253,246,230,.55);cursor:default}
-.cad.pris .tx b{color:rgba(18,48,63,.6)}
-.cad.pris .tx span{color:rgba(18,48,63,.44)}
-.cad.pris .em{opacity:.4}
-.cad.pris > i{display:none}
-.cad.pris:active{transform:none;}
+/* une fois pris, le rabat s'éteint et le livret se referme */
+.rab.pris{background:rgba(18,48,63,.07);cursor:default}
+.rab.pris .tx b{color:rgba(18,48,63,.6)}
+.rab.pris .tx span{color:rgba(18,48,63,.44)}
+.rab.pris .em{opacity:.36}
+.rab.pris > i{display:none}
 
 .pri{position:relative;display:flex;align-items:center;gap:15px;width:100%;
   padding:17px 18px;margin-bottom:12px;border-radius:18px;cursor:pointer;
@@ -167,6 +170,13 @@
       <div><b id="hub-nrjn">—</b><span>Énergie</span></div>
     </div>
     <div class="fil"><i id="hub-nrj" style="width:0%"></i></div>
+    <button class="rab" id="cadeau">
+      <i></i><i></i><i></i><i></i>
+      <span class="em">🎁</span>
+      <span class="tx"><b id="cad-t">Le cadeau du jour</b>
+        <span id="cad-s">Ouvre-le, on ne sait jamais</span></span>
+      <span class="sr" id="cad-sr" style="display:none"></span>
+    </button>
   </div>
 
   <button class="rade attend" id="rade">
@@ -175,14 +185,6 @@
     <span class="tx"><b>Retour au port</b>
       <span>Le quai, la barque, la mer devant</span></span>
     <span class="fl">›</span>
-  </button>
-
-  <button class="cad attend" id="cadeau">
-    <i></i><i></i><i></i><i></i>
-    <span class="em">🎁</span>
-    <span class="tx"><b id="cad-t">Le cadeau du jour</b>
-      <span id="cad-s">Ouvre-le, on ne sait jamais</span></span>
-    <span class="sr" id="cad-sr" style="display:none"></span>
   </button>
 
   <div id="tuiles" class="attend"></div>
@@ -203,7 +205,7 @@
 <script>
 /* rien ne se montre tant que tout n'est pas là */
 function paraitre(){
-  ['liv', 'rade', 'cadeau', 'tuiles', 'pied'].forEach(k => {
+  ['liv', 'rade', 'tuiles', 'pied'].forEach(k => {
     const e = document.getElementById(k);
     if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
   });
