@@ -3,109 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#e8a8a0" id="tc">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f5a53a" id="tc">
 <title>Battle Dock — En mer</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   EN MER — la traversée
-   La lumière part de celle du port qu'on quitte et glisse vers
-   celle du port qu'on vise : le ciel fait le voyage avec toi.
-   Aplats, encre franche, bordures de 3px : la manière du hub.
+   EN MER — l'affiche
+   Deux aplats francs séparés d'une ligne d'horizon nette. Le
+   disque traverse le ciel : sa course EST la traversée. Pas de
+   jauge, pas de carte posée par-dessus — le décor dit tout.
    ============================================================ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
 :root{
-  --encre:#12303f; --creme:#fdf6e6; --creme2:#f7edd8;
-  --or:#f0a92e; --vert:#2f8a5c; --rouge:#e0533c;
+  --encre:#12303f; --creme:#fdf6e6; --or:#f0a92e;
+  --ciel:#f0a94e; --eau:#2b6f92; --disque:#fff0c4;
 }
-html,body{height:100%;overflow:hidden;background:#17475c;
-  font-family:'Nunito',system-ui,sans-serif;color:var(--encre)}
+html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
+  background:var(--eau);color:var(--creme)}
 
-/* ---------- le large ---------- */
-#mer{position:fixed;inset:0}
-#mer svg{display:block;width:100%;height:100%}
+/* ---------- le ciel ---------- */
+#ciel{position:fixed;left:0;right:0;top:0;height:62%;z-index:-3;
+  background:var(--ciel)}
+/* ---------- l'eau, et la ligne d'horizon qui les sépare ---------- */
+#eau{position:fixed;left:0;right:0;bottom:0;height:38%;z-index:-3;
+  background:var(--eau);border-top:4px solid var(--encre)}
 
-/* ---------- le cap, en haut ---------- */
-.haut{position:fixed;left:14px;right:14px;z-index:3;
-  top:calc(env(safe-area-inset-top) + 14px);
-  padding:15px 18px 16px;border-radius:20px;text-align:center;
-  background:var(--creme);border:3px solid var(--encre)}
-.haut .cap{font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(18,48,63,.5)}
-.haut .heure{font-family:'DM Serif Display',Georgia,serif;font-size:42px;line-height:1;
-  margin-top:9px;color:var(--encre)}
-.haut .moment{font-size:12px;font-weight:700;color:#c07f14;margin-top:8px}
+/* ---------- les étoiles ---------- */
+#etoiles{position:fixed;left:0;right:0;top:0;height:62%;z-index:-2;opacity:0;
+  pointer-events:none;transition:opacity .5s linear;
+  background-image:
+    radial-gradient(1.7px 1.7px at 11% 20%,#fff6e0 50%,transparent 51%),
+    radial-gradient(1.4px 1.4px at 29% 8%, #fff6e0 50%,transparent 51%),
+    radial-gradient(2.1px 2.1px at 47% 28%,#fff6e0 50%,transparent 51%),
+    radial-gradient(1.4px 1.4px at 63% 12%,#fff6e0 50%,transparent 51%),
+    radial-gradient(1.8px 1.8px at 81% 24%,#fff6e0 50%,transparent 51%),
+    radial-gradient(1.4px 1.4px at 19% 38%,#fff6e0 50%,transparent 51%),
+    radial-gradient(1.7px 1.7px at 55% 44%,#fff6e0 50%,transparent 51%),
+    radial-gradient(1.4px 1.4px at 91% 7%, #fff6e0 50%,transparent 51%),
+    radial-gradient(1.9px 1.9px at 73% 36%,#fff6e0 50%,transparent 51%),
+    radial-gradient(1.4px 1.4px at 36% 52%,#fff6e0 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 6% 48%, #fff6e0 50%,transparent 51%),
+    radial-gradient(1.6px 1.6px at 96% 42%,#fff6e0 50%,transparent 51%)}
 
-/* ---------- l'avancement, en bas ---------- */
-.bas{position:fixed;left:14px;right:14px;z-index:4;
-  bottom:calc(env(safe-area-inset-bottom) + 14px)}
-.suivi{padding:15px 17px;border-radius:20px;margin-bottom:12px;
-  background:var(--creme);border:3px solid var(--encre)}
-/* les deux bouts de la route, et le chemin entre les deux */
-.suivi .bouts{display:flex;justify-content:space-between;align-items:baseline;
-  margin-bottom:11px;gap:12px}
-.suivi .bouts span{font-size:10px;font-weight:800;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(18,48,63,.44);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.suivi .bouts span.la{color:var(--encre)}
-.jauge{position:relative;height:14px;border-radius:8px;background:rgba(18,48,63,.1);
-  border:2px solid var(--encre);overflow:hidden}
-.jauge i{display:block;height:100%;width:0;background:var(--or)}
-.suivi .reste{font-size:12px;font-weight:600;color:rgba(18,48,63,.56);
-  margin-top:10px;text-align:center}
+/* ---------- le disque : sa course dit où tu en es ---------- */
+#disque{position:fixed;z-index:-2;width:26vw;max-width:132px;aspect-ratio:1;
+  border-radius:50%;margin:-13vw 0 0 -13vw;pointer-events:none;
+  background:var(--disque);border:4px solid var(--encre)}
 
-.arriver{width:100%;padding:20px;border-radius:18px;cursor:pointer;
+/* ---------- la houle : trois rangs de tirets ---------- */
+.houle{position:fixed;left:-60%;right:-60%;z-index:-1;height:5px;border-radius:3px;
+  background:repeating-linear-gradient(90deg,#fdf6e6 0 26px,transparent 26px 62px);
+  will-change:transform}
+.h1{bottom:29%;opacity:.16;animation:file 14s linear infinite}
+.h2{bottom:22%;opacity:.2;height:6px;animation:file 10s linear infinite reverse}
+.h3{bottom:12%;opacity:.26;height:8px;animation:file 7s linear infinite}
+@keyframes file{to{transform:translateX(62px)}}
+
+/* ---------- la barque, posée sur l'horizon ---------- */
+#barque{position:fixed;left:50%;bottom:34%;z-index:0;width:126px;margin-left:-63px;
+  animation:souleve 4.8s ease-in-out infinite;will-change:transform}
+#barque svg{display:block;width:100%;height:auto;
+  animation:penche 4.8s ease-in-out infinite;transform-origin:50% 88%}
+@keyframes souleve{0%,50%,100%{transform:translateY(0)}
+  25%{transform:translateY(-8px)}75%{transform:translateY(6px)}}
+@keyframes penche{0%{transform:rotate(2.4deg)}25%{transform:rotate(0)}
+  50%{transform:rotate(-2.4deg)}75%{transform:rotate(0)}100%{transform:rotate(2.4deg)}}
+
+/* ---------- le cap, écrit à même le ciel ---------- */
+.haut{position:fixed;left:24px;right:24px;z-index:3;
+  top:calc(env(safe-area-inset-top) + 26px)}
+.haut .de{font-size:10px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(253,246,230,.68)}
+.haut .nom{font-family:'DM Serif Display',Georgia,serif;
+  font-size:clamp(40px,13vw,64px);line-height:.94;margin-top:9px;
+  color:var(--creme);text-shadow:0 3px 0 rgba(18,48,63,.24)}
+/* le filet, coupé par l'heure du bord */
+.haut .fil{display:flex;align-items:center;gap:12px;margin-top:16px}
+.haut .fil i{flex:1;height:3px;border-radius:2px;background:rgba(253,246,230,.36)}
+.haut .fil span{font-size:11px;font-weight:800;letter-spacing:.2em;
+  color:rgba(253,246,230,.9);white-space:nowrap}
+
+/* ---------- le mot du moment, à même l'eau ---------- */
+.bas{position:fixed;left:24px;right:24px;z-index:4;
+  bottom:calc(env(safe-area-inset-bottom) + 24px);text-align:center}
+.bas .mot{font-family:'DM Serif Display',Georgia,serif;font-size:20px;line-height:1.25;
+  color:var(--creme);text-shadow:0 2px 12px rgba(8,24,38,.4)}
+.bas .reste{font-size:10.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(253,246,230,.6);margin-top:11px}
+
+.arriver{width:100%;margin-top:22px;padding:20px;border-radius:18px;cursor:pointer;
   font-family:'DM Serif Display',Georgia,serif;font-size:22px;color:var(--encre);
-  background:var(--or);border:3px solid var(--encre);
-  opacity:0;transform:translateY(12px);pointer-events:none;
-  transition:opacity .6s,transform .6s cubic-bezier(.2,.8,.3,1),background .12s}
+  background:var(--or);border:4px solid var(--encre);
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity .7s,transform .7s cubic-bezier(.2,.8,.3,1),background .12s}
 .arriver.on{opacity:1;transform:none;pointer-events:auto}
 .arriver:active{background:#d9962a}
 
-/* ---------- ce qui vit sur l'eau ---------- */
-/* la houle soulève la barque : un seul mouvement, vertical */
-.houle{animation:souleve 4.6s ease-in-out infinite;will-change:transform}
-@keyframes souleve{0%{transform:translateY(0)}25%{transform:translateY(-3.4px)}
-  50%{transform:translateY(0)}75%{transform:translateY(2.6px)}
-  100%{transform:translateY(0)}}
-/* la gîte suit la pente de la vague */
-.gite{animation:penche 4.6s ease-in-out infinite;will-change:transform}
-@keyframes penche{0%{transform:rotate(1.7deg)}25%{transform:rotate(0)}
-  50%{transform:rotate(-1.7deg)}75%{transform:rotate(0)}
-  100%{transform:rotate(1.7deg)}}
-/* les rangs de houle glissent, chacun à son pas */
-.r0{animation:g0 19s linear infinite}.r1{animation:g1 26s linear infinite}
-.r2{animation:g0 34s linear infinite}.r3{animation:g1 44s linear infinite}
-.r4{animation:g0 56s linear infinite}
-@keyframes g0{to{transform:translateX(60px)}}
-@keyframes g1{to{transform:translateX(-60px)}}
-/* les mouettes accompagnent le départ */
-.vol0{animation:vole0 38s linear infinite}
-.vol1{animation:vole1 29s linear infinite}
-@keyframes vole0{from{transform:translate(-80px,0)}to{transform:translate(560px,-18px)}}
-@keyframes vole1{from{transform:translate(540px,8px)}to{transform:translate(-90px,-14px)}}
-.aile{animation:battre 1.05s ease-in-out infinite;transform-box:fill-box;
-  transform-origin:50% 100%}
-.a1{animation-duration:.84s;animation-delay:-.3s}
-@keyframes battre{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.34)}}
-/* les étoiles, la nuit */
-.etoile{animation:scint 4s ease-in-out infinite}
-.e1{animation-duration:5.6s;animation-delay:-1.4s}
-.e2{animation-duration:3.2s;animation-delay:-2.6s}
-@keyframes scint{0%,100%{opacity:.18}50%{opacity:.95}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 :focus-visible{outline:3px solid #fffaf0;outline-offset:2px}
 
-/* ---------- l'aube ---------- */
-#charge{position:fixed;inset:0;z-index:90;background:#17475c;
+/* ---------- l'aube, le temps que la page se pose ---------- */
+#charge{position:fixed;inset:0;z-index:90;background:#f0a94e;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
   transition:opacity .45s ease}
 #charge.parti{opacity:0;pointer-events:none}
 #charge .ti{font-family:'DM Serif Display',Georgia,serif;font-size:27px;color:#fffaf0}
 #charge .fl{width:118px;height:3px;border-radius:2px;
-  background:rgba(255,250,240,.24);overflow:hidden}
+  background:rgba(255,250,240,.28);overflow:hidden}
 #charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#fffaf0;
   animation:vague 1.15s ease-in-out infinite}
 @keyframes vague{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
@@ -115,20 +120,32 @@ html,body{height:100%;overflow:hidden;background:#17475c;
 
 <div id="charge"><div class="ti">Battle Dock</div><div class="fl"><i></i></div></div>
 
-<div id="mer"></div>
+<div id="ciel"></div>
+<div id="etoiles"></div>
+<div id="disque"></div>
+<div id="eau"></div>
+<i class="houle h1"></i><i class="houle h2"></i><i class="houle h3"></i>
+
+<div id="barque">
+  <svg viewBox="0 0 126 76" xmlns="http://www.w3.org/2000/svg">
+    <path d="M63 6 L100 54 L65 54 Z" fill="#fdf6e6" stroke="#12303f"
+      stroke-width="4" stroke-linejoin="round"/>
+    <path d="M59 18 L28 54 L59 54 Z" fill="#f0a92e" stroke="#12303f"
+      stroke-width="4" stroke-linejoin="round"/>
+    <rect x="59" y="4" width="5" height="52" rx="2.5" fill="#12303f"/>
+    <path d="M10 54 q53 22 106 0 l-12 16 q-42 12 -82 0 Z" fill="#12303f"/>
+  </svg>
+</div>
 
 <div class="haut">
-  <p class="cap" id="cap">—</p>
-  <p class="heure" id="heure">—</p>
-  <p class="moment" id="moment">—</p>
+  <p class="de" id="de">—</p>
+  <p class="nom" id="nom">—</p>
+  <p class="fil"><i></i><span id="heure">—</span><i></i></p>
 </div>
 
 <div class="bas">
-  <div class="suivi">
-    <div class="bouts"><span id="b-de">—</span><span class="la" id="b-vers">—</span></div>
-    <div class="jauge"><i id="jg"></i></div>
-    <p class="reste" id="reste">—</p>
-  </div>
+  <p class="mot" id="mot">—</p>
+  <p class="reste" id="reste">—</p>
   <button class="arriver" id="arriver">Débarquer</button>
 </div>
 
@@ -136,507 +153,72 @@ html,body{height:100%;overflow:hidden;background:#17475c;
 <script src="bd.js?v=2"></script>
 <script>
 /* ---------- mélanger deux couleurs ---------- */
-function hx(c){ return [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)]; }
-function ch(a){ return '#' + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2,'0')).join(''); }
-function mel(a, b, k){ const A = hx(a), B = hx(b); return ch([0,1,2].map(i => A[i] + (B[i]-A[i]) * k)); }
+const hx = c => [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)];
+const ch = a => '#' + a.map(v => Math.round(v).toString(16).padStart(2,'0')).join('');
+const mel = (a, b, k) => { const A = hx(a), B = hx(b);
+  return ch([0,1,2].map(i => A[i] + (B[i]-A[i]) * k)); };
 
-/* la lumière du matin, pour les faces de la barque */
-const OR = '#ffcf8a', OMBRE = '#2a3f5c';
-const clair  = (c, k) => mel(c, OR, k === undefined ? .34 : k);
-const sombre = (c, k) => mel(c, OMBRE, k === undefined ? .34 : k);
-
-/* ---- palettes ---- */
-const PALIERS_B = [
-  { n:1,  nom:"La coque nue",        prix:0,      places:1, kg:40,  vit:1.0,
-    d:"Trois bordages et rien d'autre. Elle flotte, c'est déjà ça." },
-  { n:2,  nom:"Le calfatage",        prix:900,    places:1, kg:45,  vit:1.0,
-    d:"Étoupe et goudron dans les coutures. Elle ne prend plus l'eau." },
-  { n:3,  nom:"Le banc de nage",     prix:1400,   places:1, kg:50,  vit:1.1,
-    d:"On peut ramer assis. Ça change tout." },
-  { n:4,  nom:"Les avirons",         prix:2200,   places:2, kg:60,  vit:1.3,
-    d:"Deux avirons de frêne et leurs tolets." },
-  { n:5,  nom:"Le plat-bord",        prix:3400,   places:2, kg:70,  vit:1.3,
-    d:"Un liston tout autour. La coque ne travaille plus." },
-  { n:6,  nom:"Le pontage avant",    prix:5000,   places:3, kg:85,  vit:1.4,
-    d:"Un demi-pont à l'avant. Les caisses restent au sec." },
-  { n:7,  nom:"Le mât de fortune",   prix:7200,   places:3, kg:95,  vit:1.7,
-    d:"Une perche et un bout de toile. Ça tire quand le vent veut bien." },
-  { n:8,  nom:"La voile latine",     prix:10000,  places:4, kg:110, vit:2.2,
-    d:"Antenne et voile triangulaire. La vraie voile d'ici." },
-  { n:9,  nom:"Le safran",           prix:13500,  places:4, kg:120, vit:2.3,
-    d:"Un gouvernail et sa barre. Tu choisis où tu vas." },
-  { n:10, nom:"La quille lestée",    prix:18000,  places:5, kg:140, vit:2.5,
-    d:"Du plomb sous la quille. Elle ne se couche plus." },
-  { n:11, nom:"Le tillac",           prix:23000,  places:6, kg:170, vit:2.6,
-    d:"Un pont continu. On marche dessus sans regarder ses pieds." },
-  { n:12, nom:"La cale fermée",      prix:29000,  places:8, kg:220, vit:2.6,
-    d:"Un panneau, une cale étanche. Le double de marchandise." },
-  { n:13, nom:"Le foc",              prix:36000,  places:8, kg:240, vit:3.1,
-    d:"Un beaupré et un foc. Elle remonte enfin au vent." },
-  { n:14, nom:"Le rouf",             prix:44000,  places:9, kg:270, vit:3.1,
-    d:"Un abri sur le pont. On peut dormir à bord." },
-  { n:15, nom:"Le second mât",       prix:54000,  places:10, kg:310, vit:3.6,
-    d:"Un tapecul à l'arrière. Deux voiles valent mieux qu'une." },
-  { n:16, nom:"Le bordé doublé",     prix:66000,  places:12, kg:380, vit:3.6,
-    d:"Une seconde peau de bois. Elle encaisse le mauvais temps." },
-  { n:17, nom:"Le treuil",           prix:80000,  places:14, kg:450, vit:3.7,
-    d:"Un cabestan pour hisser seul. Plus besoin d'être trois." },
-  { n:18, nom:"La chaloupe",         prix:96000,  places:15, kg:500, vit:3.7,
-    d:"Une annexe sur le pont. On accoste où il n'y a pas de quai." },
-  { n:19, nom:"Le pavillon",         prix:115000, places:16, kg:560, vit:3.8,
-    d:"Tes couleurs en tête de mât. On te reconnaît de loin." },
-  { n:20, nom:"Le grand caboteur",   prix:140000, places:20, kg:700, vit:4.2,
-    d:"Coque doublée, trois voiles, un nom peint sur l'étrave. Ce n'est plus une barque." }
-];
-
-/* ---- palettes ---- */
-const BOIS  = ['#b58f60','#c9a374','#a5825c','#96754a','#8a6a42'];
-const CLAIR = '#e4c79c', SOMBRE = '#7a5c38', FOND = '#5c4930';
-let uidB = 0;
-
-function barqueQ(n, route){
-  const P = PALIERS_B[n-1];
-  const L = 76 + n * 5.6;            /* longueur */
-  const H = 15 + n * 0.62;           /* creux du bordé au-dessus de l'eau */
-  const T = 6 + n * 0.34;            /* tirant d'eau */
-  const cx = 150, flot = 122;
-  const x0 = cx - L / 2;
-  const g = v => (x0 + v).toFixed(1);
-  const u = 'b' + (++uidB);
-  let s = '';
-
-  /* ---------- la ligne de sheer : le haut du bordé ---------- */
-  /* étrave relevée à gauche, creux au milieu, poupe relevée à droite */
-  const yEtrave = flot - H * 1.28;
-  const yCreux  = flot - H * 0.92;
-  const yPoupe  = flot - H * 1.12;
-  const sheer = `M${g(0)} ${yEtrave.toFixed(1)}
-    C${g(L*.2)} ${(yEtrave + (yCreux-yEtrave)*.9).toFixed(1)} ${g(L*.36)} ${yCreux.toFixed(1)} ${g(L*.54)} ${yCreux.toFixed(1)}
-    C${g(L*.74)} ${yCreux.toFixed(1)} ${g(L*.9)} ${(yCreux + (yPoupe-yCreux)*.5).toFixed(1)} ${g(L)} ${yPoupe.toFixed(1)}`;
-
-  /* ---------- la coque complète ---------- */
-  const coque = sheer
-    + ` L${g(L*.965)} ${(flot + T*.42).toFixed(1)}`
-    + ` C${g(L*.78)} ${(flot + T).toFixed(1)} ${g(L*.24)} ${(flot + T).toFixed(1)} ${g(L*.055)} ${(flot + T*.3).toFixed(1)}`
-    + ` Z`;
-
-  s += `<defs><clipPath id="${u}"><path d="${coque}"/></clipPath></defs>`;
-
-  /* reflet dans l'eau */
-  s += `<ellipse cx="${cx}" cy="${(flot + T*.7).toFixed(1)}" rx="${(L*.5).toFixed(0)}" ry="4"
-    fill="#0e4a68" opacity=".2"/>`;
-
-  /* la chaloupe (18+), posée en travers du pont */
-  if (n >= 18){
-    s += `<g transform="translate(${g(L*.58)},${(yCreux - 3).toFixed(1)})">
-      <path d="M0 0 q3 8 10 9 h20 q7 -1 10 -9 q-6 3 -13 3 H13 q-7 0 -13 -3 z" fill="#96754a"/>
-      <path d="M-1 -2 q5 4 12 4 h18 q7 0 12 -4 v3 q-5 3 -12 3 H11 q-7 0 -12 -3 z" fill="#c9a374"/></g>`;
-  }
-
-  /* ---------- le corps de la coque ---------- */
-  s += `<path d="${coque}" fill="${BOIS[2]}"/>`;
-
-  /* les bordages : des courbes parallèles au sheer, découpées par la coque */
-  const nb = Math.min(7, 3 + Math.floor(n / 3.4));
-  s += `<g clip-path="url(#${u})">`;
-  for (let i = 0; i < nb; i++){
-    const dy = (H + T) * (i / nb);
-    const c = BOIS[i % BOIS.length];
-    s += `<path d="${sheer}" transform="translate(0,${dy.toFixed(1)})" fill="none"
-      stroke="${c}" stroke-width="${((H + T) / nb * 1.5).toFixed(1)}"/>`;
-  }
-  /* les coutures calfatées (2+) */
-  if (n >= 2){
-    for (let i = 1; i < nb; i++){
-      const dy = (H + T) * (i / nb);
-      s += `<path d="${sheer}" transform="translate(0,${dy.toFixed(1)})" fill="none"
-        stroke="#3a2c1e" stroke-width=".9" opacity=".45"/>`;
-    }
-  }
-  /* les œuvres vives, sous la flottaison */
-  s += `<rect x="0" y="${flot}" width="300" height="60"
-    fill="${n >= 10 ? '#33454f' : '#6d5334'}" opacity="${n >= 10 ? '.9' : '.55'}"/>`;
-  /* le bordé doublé (16+) */
-  if (n >= 16)
-    s += `<path d="${sheer}" transform="translate(0,${(H*.9).toFixed(1)})" fill="none"
-      stroke="#6d5334" stroke-width="2.4" opacity=".7"/>`;
-  s += `</g>`;
-
-  /* ---------- le liston (5+) ---------- */
-  if (n >= 5){
-    s += `<path d="${sheer}" fill="none" stroke="${CLAIR}" stroke-width="${(2.4 + n*.06).toFixed(1)}"
-      stroke-linecap="round"/>`;
-  } else {
-    s += `<path d="${sheer}" fill="none" stroke="${BOIS[0]}" stroke-width="2" stroke-linecap="round"/>`;
-  }
-  /* l'ourlet clair du dessus */
-  s += `<path d="${sheer}" transform="translate(0,-1)" fill="none" stroke="#f0dcb4"
-    stroke-width="1" opacity=".6"/>`;
-
-  /* ---------- l'étrave et l'étambot ---------- */
-  s += `<path d="M${g(0)} ${yEtrave.toFixed(1)} C${g(-2)} ${(yEtrave + H*.7).toFixed(1)}
-    ${g(1)} ${(flot).toFixed(1)} ${g(L*.055)} ${(flot + T*.3).toFixed(1)}"
-    fill="none" stroke="${SOMBRE}" stroke-width="2.6" stroke-linecap="round"/>`;
-  s += `<path d="M${g(L)} ${yPoupe.toFixed(1)} L${g(L*.965)} ${(flot + T*.42).toFixed(1)}"
-    stroke="${SOMBRE}" stroke-width="2.6" stroke-linecap="round" fill="none"/>`;
-
-  /* ---------- l'intérieur, vu par-dessus le bordé ---------- */
-  s += `<path d="${sheer}" transform="translate(0,2.2)" fill="none" stroke="${FOND}"
-    stroke-width="${Math.max(2.2, H*.22).toFixed(1)}"/>`;
-
-  /* ---------- le pont ---------- */
-  const pont = (a, b, coul, clair) => {
-    s += `<path d="${sheer}" transform="translate(0,2)" fill="none" stroke="${coul}"
-      stroke-width="${Math.max(2.4, H*.2).toFixed(1)}"
-      stroke-dasharray="${(L*(b-a)).toFixed(0)} ${L.toFixed(0)}"
-      stroke-dashoffset="${(-L*a).toFixed(0)}"/>`;
-    s += `<path d="${sheer}" transform="translate(0,.6)" fill="none" stroke="${clair}"
-      stroke-width="1.2" stroke-dasharray="${(L*(b-a)).toFixed(0)} ${L.toFixed(0)}"
-      stroke-dashoffset="${(-L*a).toFixed(0)}"/>`;
-  };
-  if (n >= 11)      pont(.03, .95, '#b8946a', '#dfc094');   /* tillac : pont continu */
-  else if (n >= 6)  pont(.04, .34, '#b8946a', '#dfc094');   /* demi-pont avant */
-
-  /* ---------- le banc de nage (3+) ---------- */
-  if (n >= 3 && n < 11)
-    s += `<rect x="${g(L*.4)}" y="${(yCreux + 1.6).toFixed(1)}" width="${(L*.22).toFixed(0)}"
-      height="${Math.max(2, H*.14).toFixed(1)}" rx="1" fill="#8a6a42"/>`;
-
-  /* ---------- les avirons (4+ jusqu'au pont) ---------- */
-  if (n >= 4 && n < 11){
-    [[L*.34, 'av-1'], [L*.62, 'av-2']].forEach(([dx, cl]) => {
-      const ax = +g(dx), ay = yCreux + 1;
-      const dep = (flot + 7) - ay;      /* la pelle plonge sous la flottaison */
-      /* le tolet, point de pivot */
-      s += `<rect x="${(ax-1.4).toFixed(1)}" y="${(ay-3.6).toFixed(1)}" width="2.8" height="4.4"
-        rx="1" fill="#6d5334"/>`;
-      s += `<g class="aviron ${cl}" style="transform-origin:${ax}px ${ay.toFixed(1)}px">`;
-      /* le manche, vers l'intérieur et vers le haut */
-      s += `<path d="M${ax} ${ay.toFixed(1)} l-13 -6" stroke="#96754a"
-        stroke-width="2.2" stroke-linecap="round"/>`;
-      s += `<circle cx="${(ax-13).toFixed(1)}" cy="${(ay-6).toFixed(1)}" r="1.6" fill="#8a6a42"/>`;
-      /* le fût, vers l'extérieur et vers l'eau */
-      s += `<path d="M${ax} ${ay.toFixed(1)} l21 ${dep.toFixed(1)}" stroke="#a5825c"
-        stroke-width="2.4" stroke-linecap="round"/>`;
-      /* la pelle */
-      s += `<path d="M${(ax+19).toFixed(1)} ${(ay+dep-2).toFixed(1)}
-        q5.4 1 7 6 q1.6 5.4 -2 7.4 q-3.8 2 -6.8 -1.6 q-3 -3.6 -1.6 -8.6 z" fill="#c9a374"/>`;
-      s += `<path d="M${(ax+19.6).toFixed(1)} ${(ay+dep-1).toFixed(1)}
-        q4.4 1.4 5.6 5.4" stroke="#dfc094" stroke-width="1.2" fill="none"/>`;
-      s += `</g>`;
-    });
-  }
-
-  /* ---------- le panneau de cale (12+) ---------- */
-  if (n >= 12){
-    s += `<rect x="${g(L*.46)}" y="${(yCreux - 1.4).toFixed(1)}" width="${(L*.15).toFixed(0)}"
-      height="${Math.max(2.6, H*.12).toFixed(1)}" rx="1" fill="#8a6a42" stroke="#6d5334" stroke-width=".8"/>`;
-  }
-
-  /* ---------- le rouf (14+) ---------- */
-  if (n >= 14){
-    const rx = +g(L*.62), ry = yCreux - 1, rh = H*.5, rw = L*.2;
-    s += `<path d="M${rx} ${ry.toFixed(1)} h${rw.toFixed(0)} v-${rh.toFixed(1)} h-${rw.toFixed(0)} z" fill="#c9a374"/>`;
-    s += `<path d="M${(rx-2).toFixed(1)} ${(ry-rh).toFixed(1)} h${(rw+4).toFixed(0)} l-2.4 -3.4 h-${(rw-.8).toFixed(0)} z" fill="#8a4a3a"/>`;
-    s += `<rect x="${(rx+2.6).toFixed(1)}" y="${(ry-rh+2.4).toFixed(1)}" width="${(rw*.26).toFixed(1)}"
-      height="${(rh*.42).toFixed(1)}" fill="#6d8fa4" opacity=".85"/>`;
-    s += `<rect x="${(rx+rw*.56).toFixed(1)}" y="${(ry-rh+2.4).toFixed(1)}" width="${(rw*.26).toFixed(1)}"
-      height="${(rh*.42).toFixed(1)}" fill="#6d8fa4" opacity=".85"/>`;
-  }
-
-  /* ---------- le grand mât (7+) ---------- */
-  const mxP = n >= 13 ? .34 : .46;
-  if (n >= 7){
-    const mx = +g(L * mxP);
-    const pied = yCreux + 1;
-    const mh = n >= 8 ? 46 + n * 2.3 : 32;
-    s += `<path d="M${mx} ${pied.toFixed(1)} v-${mh.toFixed(0)}" stroke="#8a6a42"
-      stroke-width="${(2 + n*.07).toFixed(1)}" stroke-linecap="round"/>`;
-    s += `<path d="M${(mx-.7).toFixed(1)} ${pied.toFixed(1)} v-${mh.toFixed(0)}" stroke="#c9a374"
-      stroke-width=".9" opacity=".7"/>`;
-    const ay = pied - mh;
-
-    if (n === 7){
-      s += `<path class="voile" d="M${mx} ${(ay+5).toFixed(1)} q15 7 20 21 q-13 5 -20 4 z" fill="#ddd2b6"/>`;
-      s += `<path d="M${mx} ${(ay+5).toFixed(1)} q15 7 20 21 q-8 3 -12 3 z" fill="#f0e8d2"/>`;
-    } else {
-      /* la voile latine : antenne inclinée sur toute la hauteur */
-      s += `<path d="M${(mx-20).toFixed(1)} ${(ay + mh*.5).toFixed(1)} L${(mx+34).toFixed(1)} ${(ay-4).toFixed(1)}"
-        stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
-      s += `<path class="voile" d="M${(mx-18).toFixed(1)} ${(ay + mh*.48).toFixed(1)}
-        L${(mx+32).toFixed(1)} ${(ay-3).toFixed(1)}
-        Q${(mx+14).toFixed(1)} ${(ay + mh*.56).toFixed(1)} ${(mx+2).toFixed(1)} ${pied.toFixed(1)} Z" fill="#e4dbc0"/>`;
-      s += `<path d="M${(mx-18).toFixed(1)} ${(ay + mh*.48).toFixed(1)}
-        L${(mx+32).toFixed(1)} ${(ay-3).toFixed(1)}
-        Q${(mx+20).toFixed(1)} ${(ay + mh*.38).toFixed(1)} ${(mx+8).toFixed(1)} ${(ay + mh*.62).toFixed(1)} Z" fill="#f6f0dc"/>`;
-      s += `<g stroke="#c9bfa2" stroke-width=".7" opacity=".65">
-        <path d="M${(mx-6).toFixed(1)} ${(ay+mh*.5).toFixed(1)} L${(mx+9).toFixed(1)} ${(pied-5).toFixed(1)}"/>
-        <path d="M${(mx+9).toFixed(1)} ${(ay+mh*.26).toFixed(1)} L${(mx+15).toFixed(1)} ${(pied-11).toFixed(1)}"/></g>`;
-      s += `<g stroke="#c9b58c" stroke-width=".8" opacity=".75">
-        <path d="M${mx} ${(ay+5).toFixed(1)} L${g(L*.1)} ${(yCreux-1).toFixed(1)}"/>
-        <path d="M${mx} ${(ay+5).toFixed(1)} L${g(L*.86)} ${(yCreux-1).toFixed(1)}"/></g>`;
-    }
-  }
-
-  /* ---------- le foc et son beaupré (13+) ---------- */
-  if (n >= 13){
-    const bx = +g(-8), by = yEtrave - 3;
-    const mx = +g(L*mxP), mh = 46 + n*2.3, ay = yCreux + 1 - mh;
-    s += `<path d="M${g(L*.02)} ${(yEtrave+2).toFixed(1)} L${bx} ${by.toFixed(1)}"
-      stroke="#a5825c" stroke-width="2.2" stroke-linecap="round"/>`;
-    s += `<path class="voile" d="M${bx} ${by.toFixed(1)} L${mx} ${(ay + mh*.2).toFixed(1)}
-      Q${(bx+17).toFixed(1)} ${(ay + mh*.66).toFixed(1)} ${(bx+12).toFixed(1)} ${(yEtrave+4).toFixed(1)} Z"
-      fill="#eee6cc"/>`;
-    s += `<path d="M${bx} ${by.toFixed(1)} L${mx} ${(ay + mh*.2).toFixed(1)}
-      Q${(bx+24).toFixed(1)} ${(ay + mh*.5).toFixed(1)} ${(bx+20).toFixed(1)} ${(ay + mh*.8).toFixed(1)} Z"
-      fill="#f8f2de"/>`;
-  }
-
-  /* ---------- le tapecul (15+) ---------- */
-  if (n >= 15){
-    const mx2 = +g(L*.86), mh2 = 30 + n, pied2 = yCreux + 1;
-    s += `<path d="M${mx2} ${pied2.toFixed(1)} v-${mh2.toFixed(0)}" stroke="#8a6a42"
-      stroke-width="2.2" stroke-linecap="round"/>`;
-    s += `<path d="M${(mx2-12).toFixed(1)} ${(pied2 - mh2*.44).toFixed(1)} L${(mx2+18).toFixed(1)} ${(pied2 - mh2 + 2).toFixed(1)}"
-      stroke="#a5825c" stroke-width="1.9" stroke-linecap="round"/>`;
-    s += `<path class="voile" d="M${(mx2-10).toFixed(1)} ${(pied2 - mh2*.42).toFixed(1)}
-      L${(mx2+16).toFixed(1)} ${(pied2 - mh2 + 3).toFixed(1)}
-      Q${(mx2+5).toFixed(1)} ${(pied2 - mh2*.4).toFixed(1)} ${(mx2+2).toFixed(1)} ${pied2.toFixed(1)} Z"
-      fill="#e4dbc0"/>`;
-  }
-
-  /* ---------- le safran (9+) ---------- */
-  if (n >= 9){
-    s += `<path d="M${g(L*.97)} ${(flot - H*.5).toFixed(1)} q6 4 6 ${(T*1.1).toFixed(1)}
-      q0 ${(T*.5).toFixed(1)} -6 ${(T*.5).toFixed(1)} z" fill="#7a5c38"/>`;
-    s += `<path d="M${g(L*.94)} ${(yPoupe + 2).toFixed(1)} l13 -6" stroke="#a5825c"
-      stroke-width="2" stroke-linecap="round"/>`;
-  }
-
-  /* ---------- le treuil (17+) ---------- */
-  if (n >= 17){
-    const tx = +g(L*.44);
-    s += `<rect x="${(tx-4.4).toFixed(1)}" y="${(yCreux - 6).toFixed(1)}" width="9" height="6" rx="2" fill="#5c6a74"/>`;
-    s += `<circle cx="${tx}" cy="${(yCreux - 3).toFixed(1)}" r="2.2" fill="#8a9299"/>`;
-  }
-
-  /* ---------- le pavillon (19+) ---------- */
-  if (n >= 19){
-    const mx = +g(L * mxP), mh = 46 + n * 2.3, tete = yCreux + 1 - mh;
-    /* la drisse et le petit mât de pavillon */
-    s += `<path d="M${mx} ${tete.toFixed(1)} v-9" stroke="#8a6a42" stroke-width="1.6" stroke-linecap="round"/>`;
-    /* le pavillon, qui claque */
-    s += `<g class="pavillon" style="transform-origin:${mx}px ${(tete-8).toFixed(1)}px">`;
-    s += `<path d="M${mx} ${(tete-9).toFixed(1)} q9 1.6 17 -1.4 q-2 4 0 7.4 q-8 3 -17 1.4 z" fill="#c74a33"/>`;
-    s += `<path d="M${mx} ${(tete-9).toFixed(1)} q9 1.6 17 -1.4 q-1 2 -.6 3.6 q-8 2.4 -16.4 1 z" fill="#e0684a"/>`;
-    s += `</g>`;
-  }
-
-  /* ---------- le nom peint (20) ---------- */
-  if (n >= 20)
-    s += `<text x="${g(L*.1)}" y="${(flot - H*.34).toFixed(1)}" font-family="Bebas Neue,sans-serif"
-      font-size="8.4" letter-spacing="1.2" fill="#f2e6c8" opacity=".85">LA ZIZOUIN</text>`;
-
-  /* ---------- l'eau, selon l'allure ---------- */
-  /* la proue est à gauche : le sillage traîne derrière, donc à droite */
-  if (route){
-    const nv = Math.max(2, Math.round(P.vit * 1.6));
-    for (let i = 0; i < nv; i++)
-      s += `<path class="sillage sl${i % 3}" d="M${g(L + 4 + i*4)} ${(flot + 1 + i*2.6).toFixed(1)}
-        q${(16+i*7).toFixed(0)} 2 ${(30+i*13).toFixed(0)} 0"
-        stroke="#fff" stroke-width="${(1.6 - i*.16).toFixed(2)}" fill="none"
-        opacity="${(.44 - i*.05).toFixed(2)}"/>`;
-    /* la moustache d'étrave, elle, est bien à l'avant */
-    s += `<path class="etrave" d="M${g(-3)} ${(flot - 1).toFixed(1)} q-9 4 -19 3"
-      stroke="#fff" stroke-width="2" fill="none" opacity=".55"/>`;
-    s += `<path class="etrave e2" d="M${g(1)} ${(flot + 2.4).toFixed(1)} q-8 4 -17 3"
-      stroke="#fff" stroke-width="1.4" fill="none" opacity=".36"/>`;
-    /* le remous sous la poupe */
-    s += `<ellipse class="remous" cx="${g(L + 2)}" cy="${(flot + 3).toFixed(1)}" rx="9" ry="2.4"
-      fill="#fff" opacity=".24"/>`;
-  } else {
-    /* au mouillage : la chaîne d'ancre à l'étrave */
-    s += `<path d="M${g(L*.03)} ${(yEtrave + 4).toFixed(1)} q-4 8 -3 16"
-      stroke="#6d6a62" stroke-width="1.4" fill="none" stroke-dasharray="2 1.6"/>`;
-    s += `<path d="M${g(-4)} ${(flot + 2).toFixed(1)} q22 3 40 0"
-      stroke="#fff" stroke-width="1.2" fill="none" opacity=".26"/>`;
-  }
-
-  return s;
-}
-
-
-/* ============================================================
-   LA MER
-   Des aplats et des rangs de houle. Le ciel part de la lumière
-   du port qu'on quitte et arrive dans celle du port qu'on vise :
-   c'est le voyage qui fait passer le temps, pas une horloge.
-   ============================================================ */
-const W = 480, H = 800;
-
-/* la lumière de chaque port — la même que sur l'écran du départ */
+/* la lumière de chaque port : un ciel, une eau, un disque */
 const CIELS = {
-  ajaccio:   { ciel:['#e8a8a0','#c98fa0','#8f8fa8'], eau:['#3f7f92','#2a6070','#17475c'],
-               sol:'#fff0dc', halo:'#ffd4b0', nuit:0,   tc:'#e8a8a0' },
-  barcelone: { ciel:['#f2b04a','#e0813c','#b8734e'], eau:['#3f87a6','#2d6b8c','#1f5a80'],
-               sol:'#fff0c4', halo:'#ffdc94', nuit:0,   tc:'#f2b04a' },
-  palma:     { ciel:['#f6d97a','#e8b45c','#88b8a8'], eau:['#2f92a4','#227384','#14566a'],
-               sol:'#fff8dc', halo:'#ffe8a0', nuit:0,   tc:'#f6d97a' },
-  anse:      { ciel:['#f5a53a','#eeb455','#c9b978'], eau:['#3f87a6','#357a9c','#2b6f92'],
-               sol:'#fff0c4', halo:'#ffdc94', nuit:0,   tc:'#f5a53a' }
+  anse:      { ciel:'#f0a94e', eau:'#2b6f92', sol:'#fff0c4' },
+  barcelone: { ciel:'#e88a44', eau:'#1f5a80', sol:'#fff0c4' },
+  ajaccio:   { ciel:'#dd9aa4', eau:'#2a5f74', sol:'#fff0dc' },
+  palma:     { ciel:'#f2c866', eau:'#188498', sol:'#fff8dc' }
 };
-/* le milieu de traversée : la nuit, quelque part au large */
-const NUIT = { ciel:['#16233f','#22355a','#38506e'], eau:['#224560','#1a3448','#122536'],
-               sol:'#e8eef8', halo:'#b8c8e0', nuit:1, tc:'#16233f' };
+/* le large, au milieu : la nuit */
+const LARGE = { ciel:'#1c2c4a', eau:'#122536', sol:'#e8eef8' };
 
-/* ---------- interpoler entre deux lumières ---------- */
-function entre(a, b, k){
-  const t = (x, y) => x.map((v, i) => mel(v, y[i], k));
-  return { ciel:t(a.ciel, b.ciel), eau:t(a.eau, b.eau),
-           sol:mel(a.sol, b.sol, k), halo:mel(a.halo, b.halo, k),
-           nuit:a.nuit + (b.nuit - a.nuit) * k,
-           tc:mel(a.tc, b.tc, k) };
+const GRAND= { anse:'Ton anse', barcelone:'Barcelone', palma:'Palma', ajaccio:'Ajaccio' };
+const MOT  = { barcelone:'Débarquer à Barcelone', palma:'Débarquer à Palma',
+               ajaccio:'Débarquer à Ajaccio', anse:'Rentrer chez toi' };
+
+let DE = 'anse', VERS = 'barcelone', JOURS = 1;
+
+function moment(p){
+  if (p < 8)  return "Le port s'efface derrière toi";
+  if (p < 24) return "Plus rien que de l'eau";
+  if (p < 42) return 'La lumière baisse';
+  if (p < 58) return JOURS > 1 ? 'Deux nuits à tenir' : 'La nuit, seul à la barre';
+  if (p < 76) return "Le ciel pâlit à l'avant";
+  if (p < 92) return 'Une côte, là-bas';
+  return 'On entre dans le port';
 }
 
-/* la lumière à un instant de la traversée :
-   on quitte le port de départ, on passe par la nuit, on arrive à destination */
-function lumiere(p){
-  const A = CIELS[DE] || CIELS.anse;
-  const B = CIELS[VERS] || CIELS.barcelone;
-  /* une seule nuit : elle occupe le milieu. Deux jours de mer : deux creux,
-     mais on garde une seule courbe pour ne pas embrouiller l'œil. */
-  const k = Math.sin(Math.PI * Math.min(1, Math.max(0, p / 100)));
-  const bord = entre(A, B, Math.min(1, Math.max(0, p / 100)));
-  return entre(bord, NUIT, k * .92);
+function heureDe(p){
+  const h = (8 + JOURS * 24 * p / 100) % 24;
+  return String(Math.floor(h)).padStart(2, '0')
+    + ':' + String(Math.floor((h % 1) * 12) * 5).padStart(2, '0');
 }
 
-/* ---------- la scène, bâtie une seule fois ---------- */
-let REF = null, NIVEAU = 1, avance = 0;
-
-function batir(){
-  let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice"
-    xmlns="http://www.w3.org/2000/svg">`;
-
-  /* le ciel : trois bandes, qu'on repeindra */
-  s += `<rect id="c0" x="0" y="0" width="${W}" height="180"/>`;
-  s += `<rect id="c1" x="0" y="176" width="${W}" height="140"/>`;
-  s += `<rect id="c2" x="0" y="310" width="${W}" height="130"/>`;
-
-  /* les étoiles : elles ne se voient que la nuit */
-  s += '<g id="cieletoiles" opacity="0">';
-  for (let i = 0; i < 46; i++){
-    const a = Math.sin(i * 12.9898) * 43758.5, b = Math.sin(i * 78.233) * 43758.5;
-    const x = (a - Math.floor(a)) * W, y = (b - Math.floor(b)) * 330;
-    const r = 1 + (a - Math.floor(a)) * 1.4;
-    s += `<circle class="etoile e${i % 3}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}"
-      r="${r.toFixed(1)}" fill="#fff6e0"/>`;
-  }
-  s += '</g>';
-
-  /* le disque : soleil le jour, lune la nuit. Il traverse le ciel. */
-  s += `<circle id="halo" cx="240" cy="330" r="54" opacity=".42"/>`;
-  s += `<circle id="disque" cx="240" cy="330" r="26"/>`;
-
-  /* les mouettes : elles n'accompagnent que le début et la fin */
-  s += `<g id="oiseaux" opacity="0">`;
-  [[130, 96, 1.2, 0], [300, 66, .9, 1]].forEach(([x, y, e, n]) =>
-    s += `<g class="vol${n}"><g transform="translate(${x},${y}) scale(${e})">
-      <path class="aile" d="M-10 0 q5 -6 10 0" stroke="#12303f" stroke-width="2.2"
-        fill="none" stroke-linecap="round"/>
-      <path class="aile a1" d="M0 0 q5 -6 10 0" stroke="#12303f" stroke-width="2.2"
-        fill="none" stroke-linecap="round"/></g></g>`);
-  s += '</g>';
-
-  /* l'eau : trois aplats, du plus lointain au plus proche */
-  s += `<rect id="e0" x="0" y="436" width="${W}" height="120"/>`;
-  s += `<rect id="e1" x="0" y="552" width="${W}" height="120"/>`;
-  s += `<rect id="e2" x="0" y="668" width="${W}" height="140"/>`;
-
-  /* le chemin du disque sur l'eau */
-  s += `<path id="chemin" d="M240 436 L330 ${H} L150 ${H} Z" opacity=".2"/>`;
-
-  /* les rangs de houle : des tirets, plus longs en approchant.
-     C'est le motif des cartes du hub, étendu à toute la mer. */
-  const RANGS = [[446,10,3,58],[468,13,3.5,54],[496,17,4,52],[530,22,4.5,50],
-                 [572,28,5,48],[622,36,6,46],[682,46,7,44],[752,58,8,42]];
-  RANGS.forEach(([y, l, h, pas], i) => {
-    s += `<g class="r${i % 5}" opacity="${(0.1 + i * 0.022).toFixed(2)}">`;
-    for (let k = -2; k < 14; k++)
-      s += `<rect x="${k * pas + (i % 2 ? pas / 2 : 0)}" y="${y}" width="${l * 2}"
-        height="${h}" rx="${h / 2}" fill="#fdf6e6"/>`;
-    s += '</g>';
-  });
-
-  /* la barque, au milieu, portée par la houle */
-  s += `<g class="houle" transform="translate(90,536) scale(1.05)">
-    <g class="gite">${barqueQ(NIVEAU, true)}</g></g>`;
-
-  s += '</svg>';
-  document.getElementById('mer').innerHTML = s;
-
-  REF = {
-    c0:document.getElementById('c0'), c1:document.getElementById('c1'),
-    c2:document.getElementById('c2'), e0:document.getElementById('e0'),
-    e1:document.getElementById('e1'), e2:document.getElementById('e2'),
-    halo:document.getElementById('halo'), disque:document.getElementById('disque'),
-    chemin:document.getElementById('chemin'),
-    etoiles:document.getElementById('cieletoiles'),
-    oiseaux:document.getElementById('oiseaux')
-  };
-}
-
-/* ---------- repeindre : on ne touche qu'aux couleurs et au disque ---------- */
+/* ---------- peindre : trois couleurs et une position ---------- */
+const R = document.documentElement.style;
 let dernierTc = '';
-function peindre(){
-  if (!REF) return;
-  const L = lumiere(avance);
+function peindre(p){
+  const A = CIELS[DE] || CIELS.anse, B = CIELS[VERS] || CIELS.barcelone;
+  const t = Math.min(1, Math.max(0, p / 100));
+  const k = Math.sin(Math.PI * t) * .94;      /* à quel point on est au large */
+  const c = mel(mel(A.ciel, B.ciel, t), LARGE.ciel, k);
 
-  REF.c0.setAttribute('fill', L.ciel[0]);
-  REF.c1.setAttribute('fill', L.ciel[1]);
-  REF.c2.setAttribute('fill', L.ciel[2]);
-  REF.e0.setAttribute('fill', L.eau[0]);
-  REF.e1.setAttribute('fill', L.eau[1]);
-  REF.e2.setAttribute('fill', L.eau[2]);
+  R.setProperty('--ciel', c);
+  R.setProperty('--eau',  mel(mel(A.eau, B.eau, t), LARGE.eau, k));
+  R.setProperty('--disque', mel(mel(A.sol, B.sol, t), LARGE.sol, k));
 
-  /* le disque monte et redescend : haut au milieu de la traversée */
-  const t = Math.min(1, Math.max(0, avance / 100));
-  const x = 90 + t * 300;
-  const y = 336 - Math.sin(Math.PI * t) * 232;
-  REF.disque.setAttribute('cx', x.toFixed(1));
-  REF.disque.setAttribute('cy', y.toFixed(1));
-  REF.disque.setAttribute('fill', L.sol);
-  REF.halo.setAttribute('cx', x.toFixed(1));
-  REF.halo.setAttribute('cy', y.toFixed(1));
-  REF.halo.setAttribute('fill', L.halo);
-  REF.chemin.setAttribute('d', `M${x.toFixed(1)} 436 L${(x + 92).toFixed(1)} ${H}
-    L${(x - 92).toFixed(1)} ${H} Z`);
-  REF.chemin.setAttribute('fill', L.halo);
+  /* le disque décrit son arc : c'est lui, la jauge */
+  const d = document.getElementById('disque');
+  d.style.left = (8 + t * 84) + '%';
+  d.style.top  = (60 - Math.sin(Math.PI * t) * 44) + '%';
 
-  /* les étoiles apparaissent au cœur de la nuit */
-  REF.etoiles.setAttribute('opacity', (L.nuit * .9).toFixed(2));
-  /* les mouettes ne suivent qu'à la sortie et à l'entrée du port */
-  const proche = Math.max(0, 1 - Math.min(t, 1 - t) * 5.2);
-  REF.oiseaux.setAttribute('opacity', proche.toFixed(2));
+  document.getElementById('etoiles').style.opacity = (k * .95).toFixed(2);
 
-  if (L.tc !== dernierTc){
-    const m = document.getElementById('tc');
-    if (m) m.setAttribute('content', L.tc);
-    document.documentElement.style.background = L.eau[2];
-    dernierTc = L.tc;
+  if (c !== dernierTc){
+    document.getElementById('tc').setAttribute('content', c);
+    dernierTc = c;
   }
 }
 
 /* ============================================================
    LA TRAVERSÉE
    ============================================================ */
-const NOMS = { anse:'ton anse', barcelone:'Barcelone', palma:'Palma', ajaccio:'Ajaccio' };
-const PAGE = { barcelone:'barcelone.html', palma:'palma.html',
-               ajaccio:'ajaccio.html', anse:'jeu.html' };
-const MOT  = { barcelone:'Débarquer à Barcelone', palma:'Débarquer à Palma',
-               ajaccio:'Débarquer à Ajaccio', anse:'Rentrer chez toi' };
-
-let DE = 'anse', VERS = 'barcelone', JOURS = 1;
-
 let AUBE = false;
 function leverAube(){
   if (AUBE) return;
@@ -650,23 +232,12 @@ function leverAube(){
 }
 setTimeout(leverAube, 6000);
 
-/* ce qu'on dit du moment, selon où l'on en est */
-function moment(p){
-  if (p < 8)  return 'Le port s\u2019efface derrière toi';
-  if (p < 24) return 'Plus rien que de l\u2019eau';
-  if (p < 42) return 'La lumière baisse';
-  if (p < 58) return JOURS > 1 ? 'Deux nuits à tenir' : 'La nuit, seul à la barre';
-  if (p < 76) return 'Le ciel pâlit à l\u2019avant';
-  if (p < 92) return 'Une côte, là-bas';
-  return 'On entre dans le port';
-}
-
-/* l'heure qu'il est à bord : la traversée fait un tour de cadran par jour */
-function heureDe(p){
-  const total = JOURS * 24;
-  const h = (8 + total * p / 100) % 24;
-  const m = Math.floor((h % 1) * 60 / 5) * 5;
-  return String(Math.floor(h)).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+function poser(p){
+  peindre(p);
+  document.getElementById('heure').textContent = heureDe(p);
+  document.getElementById('mot').textContent = moment(p);
+  document.getElementById('reste').textContent = p >= 100 ? 'Tu es arrivé'
+    : 'Encore ' + Math.max(1, Math.round((100 - p) / 100 * JOURS * 24)) + ' h de mer';
 }
 
 (async () => {
@@ -679,17 +250,12 @@ function heureDe(p){
   /* on n'est en mer que si le serveur l'a noté */
   if (!d.parti_le){ location.href = 'jeu.html'; return; }
 
-  NIVEAU = Math.max(1, Math.min(20, Number(d.barque || 1)));
   VERS = d.cap || 'barcelone';
-  /* le port de départ : celui où le serveur nous tient encore */
-  DE = d.port && d.port !== VERS ? d.port : 'anse';
-  JOURS = (VERS === 'palma' || VERS === 'ajaccio' || DE === 'palma' || DE === 'ajaccio') ? 2 : 1;
+  DE = (d.port && d.port !== VERS) ? d.port : 'anse';
+  JOURS = ['palma','ajaccio'].includes(VERS) || ['palma','ajaccio'].includes(DE) ? 2 : 1;
 
-  document.getElementById('cap').textContent = 'Cap sur ' + (NOMS[VERS] || VERS);
-  document.getElementById('b-de').textContent = NOMS[DE] || DE;
-  document.getElementById('b-vers').textContent = NOMS[VERS] || VERS;
-
-  batir();
+  document.getElementById('de').textContent = 'Cap sur';
+  document.getElementById('nom').textContent = GRAND[VERS] || VERS;
 
   /* le temps déjà écoulé compte : on reprend la traversée où elle en est */
   const ecoule = (Date.now() - new Date(d.parti_le).getTime()) / 1000;
@@ -697,26 +263,11 @@ function heureDe(p){
   const duree = 24000;
   const debut = Date.now() - Math.min(duree, ecoule * 1000);
 
-  const jg = document.getElementById('jg');
-  const heure = document.getElementById('heure');
-  const mot = document.getElementById('moment');
-  const reste = document.getElementById('reste');
-
-  let dH = '', dM = '', dR = '', fait = false;
+  let fait = false, avance = 0;
 
   function image(){
     avance = Math.min(100, (Date.now() - debut) / duree * 100);
-    jg.style.width = avance.toFixed(2) + '%';
-    peindre();
-
-    const h = heureDe(avance);
-    if (h !== dH){ heure.textContent = h; dH = h; }
-    const m = moment(avance);
-    if (m !== dM){ mot.textContent = m; dM = m; }
-    const r = avance >= 100 ? 'Tu es arrivé'
-      : 'Encore ' + Math.max(1, Math.round((100 - avance) / 100 * JOURS * 24)) + ' h de mer';
-    if (r !== dR){ reste.textContent = r; dR = r; }
-
+    poser(avance);
     if (avance >= 100 && !fait){ fait = true; arriver(); }
   }
 
@@ -755,6 +306,8 @@ async function arriver(){
   if (r && r.ok){
     /* le premier drap à Barcelone : la planche se joue avant tout le reste */
     if (r.livraison && r.livraison.enchere){ location.href = 'drap.html'; return; }
+    const PAGE = { barcelone:'barcelone.html', palma:'palma.html',
+                   ajaccio:'ajaccio.html', anse:'jeu.html' };
     let suite = PAGE[r.port] || 'jeu.html';
     let m = MOT[r.port] || 'Débarquer';
     if (r.niveau && r.niveau.monte){ suite = 'niveau.html'; m = 'Tu as changé de niveau'; }
