@@ -724,6 +724,44 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
   opacity:0;transition:opacity .5s}
 .barre.pret{opacity:1}
 
+/* ---------- le bouton du bas : prendre la mer ----------
+   Il n'avait plus de style du tout : il tombait dans le flux
+   et disparaissait derrière la rade. On le rend fixe et visible. */
+.partir{position:fixed;z-index:12;
+  left:14px;right:14px;
+  bottom:calc(env(safe-area-inset-bottom) + 16px);
+  height:62px;border-radius:16px;
+  background:#fdf6e6;border:3px solid #12303f;
+  box-shadow:0 6px 22px rgba(6,16,28,.44);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity .5s,transform .5s,background .15s}
+.partir.pret{opacity:1;transform:none;pointer-events:auto}
+.partir:active{background:#f2e7cf;transform:translateY(2px)}
+.partir svg{width:24px;height:24px;flex:0 0 24px;
+  fill:none;stroke:#12303f;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.partir b{font-family:'DM Serif Display',Georgia,serif;font-weight:400;
+  font-size:19px;color:#12303f;letter-spacing:.01em}
+/* pas encore de bateau : le bouton reste, mais il est éteint */
+.partir.gris{background:#e8e2d4;border-color:rgba(18,48,63,.5)}
+.partir.gris svg{stroke:rgba(18,48,63,.4)}
+.partir.gris b{color:rgba(18,48,63,.5);font-size:17px}
+
+/* ---------- l'aube : ce qu'on voit le temps que la rade se peigne ---------- */
+#charge{position:fixed;inset:0;z-index:90;background:#0e1c2e;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .45s ease}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-family:'DM Serif Display',Georgia,serif;
+  font-size:27px;color:#fdf6e6;letter-spacing:.02em}
+#charge .fl{width:118px;height:3px;border-radius:2px;
+  background:rgba(253,246,230,.14);overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#f0c46a;
+  animation:houle 1.15s ease-in-out infinite}
+@keyframes houle{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+
 /* la caisse, à gauche, la plus lisible */
 .barre .sous{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
   justify-content:center;padding:0 12px;border-right:2px solid rgba(18,48,63,.14)}
@@ -858,6 +896,7 @@ html{font-size:calc(16px * var(--txt, 1))}
 </style>
 </head>
 <body>
+<div id="charge"><div class="ti">Battle Dock</div><div class="fl"><i></i></div></div>
 <div id="sc"></div>
 <div id="eti"></div>
 <div class="fi" id="fi"></div>
@@ -4160,6 +4199,22 @@ function poserAvatar(d){
     + (nom ? '<span class="nm">' + nom + '</span>' : '');
 }
 
+/* on ne lève l'aube qu'une fois, et jamais avant que la rade soit peinte.
+   Les redirections (mer, barcelone…) la gardent baissée : pas de clignotement. */
+let AUBE_LEVEE = false;
+function leverAube(){
+  if (AUBE_LEVEE) return;
+  AUBE_LEVEE = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const ch = document.getElementById('charge');
+    if (!ch) return;
+    ch.classList.add('parti');
+    setTimeout(() => ch.remove(), 500);
+  }));
+}
+/* filet de sécurité : si quelque chose coince, on n'enferme pas le joueur */
+setTimeout(leverAube, 6000);
+
 (async () => {
   try {
     const d = await BD.charger();
@@ -4180,6 +4235,7 @@ function poserAvatar(d){
     poserBarque(d);
     poserChantier(d);
     poserBas(d);
+    leverAube();
     /* si on revient du hub avec une intention, on l'exécute */
     try {
       const q = sessionStorage.getItem('bd-ouvrir');
@@ -4253,6 +4309,7 @@ function poserAvatar(d){
   } catch (e){
     /* hors ligne ou pas connecté : on laisse le carré vide plutôt que de planter */
     console.warn('avatar indisponible', e);
+    leverAube();
   }
   /* tout est en place : on découvre la rade */
 })();
