@@ -2971,7 +2971,7 @@ function poserBarre(d){
   const el = document.getElementById('barre');
   if (!el || !d) return;
 
-  const PORTS = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
+  const PORTS = { anse:'Marseille', marseille:'Marseille', barcelone:'Barcelone',
                   alger:'Alger', naples:'Naples' };
   /* le lieu en petit, la caisse en grand : rien ne bouge */
   document.getElementById('b-lb').textContent = PORTS[d.port] || 'En mer';
@@ -3711,7 +3711,7 @@ function basculerChantier(forcer){
   majVoile();
 }
 
-const PORTS_N = { anse:'Ton anse', marseille:'Marseille', barcelone:'Barcelone',
+const PORTS_N = { anse:'Marseille', marseille:'Marseille', barcelone:'Barcelone',
                   alger:'Alger', naples:'Naples' };
 
 
@@ -4106,7 +4106,7 @@ async function basculerEntrepot(o){
     });
 }
 
-const OU_NOM = { anse:'ton anse', marseille:'Marseille', barcelone:'Barcelone',
+const OU_NOM = { anse:'Marseille', marseille:'Marseille', barcelone:'Barcelone',
                  palma:'Palma', ajaccio:'Ajaccio' };
 
 
@@ -4339,7 +4339,7 @@ setTimeout(leverAube, 6000);
     const bm = document.getElementById('b-mar');
     if (bm && d.port === 'anse' && !d.parti_le){
       bm.disabled = false;
-      bm.querySelector('span').textContent = 'Ton anse';
+      bm.querySelector('span').textContent = 'Marseille';
       if (!d.affaire){
         /* Félix attend : c'est le premier geste à faire */
         bm.classList.add('vif');
@@ -4351,7 +4351,7 @@ setTimeout(leverAube, 6000);
         const st = (d.affaire.prod || {}).stock || 0;
         if (st >= 1){
           bm.classList.add('vif');
-          bm.querySelector('span').textContent = 'Ton anse ·';
+          bm.querySelector('span').textContent = 'Marseille ·';
         }
       }
     }
