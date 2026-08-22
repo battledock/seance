@@ -287,6 +287,9 @@ const TUILES = [
     f:() => location.href = 'contrats.html' },
   { k:'chantier', ici:'anse', em:'🔨', t:'Le chantier', s:'Toussaint et ta barque',
     f:() => location.href = 'chantier.html' },
+  { k:'fabrique', ici:'anse', em:'🏭', t:'Ta fabrique', s:'Elle produit même en ton absence',
+    si:'affaire', sinon:'Il faut ouvrir une affaire chez Félix',
+    f:() => location.href = 'anse.html' },
 
   /* ---- Barcelone ---- */
   { k:'chargement', ici:'barcelone', gd:1, em:'🏷️', t:'Le chargement',
@@ -430,6 +433,8 @@ document.getElementById('ouv-ok').onclick = () => {
     /* le hub prend la couleur du port où l'on se trouve */
     PORT = d.port || 'anse';
     VECU = (d.rencontres || []).slice();
+    /* ouvrir une affaire chez Félix débloque la fabrique */
+    if (d.affaire) VECU.push('affaire');
     const R = RADE[PORT] || RADE.anse;
     document.querySelector('.rade .tx b').textContent = R.t;
     document.querySelector('.rade .tx span').textContent = R.s;
