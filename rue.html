@@ -40,6 +40,23 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 .tete .ou b{display:block;font-size:14px;font-weight:700;letter-spacing:.03em}
 .tete .ou span{display:block;font-size:8px;letter-spacing:.18em;text-transform:uppercase;
   color:rgba(255,255,255,.6);margin-top:2px}
+/* ---------- ton portrait : la porte du menu ----------
+   Le même geste qu'à l'anse : on touche le portrait, le hub s'ouvre.
+   Il tient ce qui te suit partout — carnet, sacoche, fiche, contrats —
+   pendant que la barre du bas garde ce qui appartient à la ruelle. */
+.tete .por{position:relative;flex:0 0 42px;height:42px;border-radius:8px;
+  overflow:hidden;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.34);background:rgba(20,28,44,.42);
+  transition:transform .12s}
+.tete .por:active{transform:scale(.94)}
+.tete .por svg{display:block;width:100%;height:100%}
+.porpt{position:fixed;z-index:6;
+  top:calc(env(safe-area-inset-top) + 8px);left:100px;
+  width:19px;height:19px;border-radius:50%;pointer-events:none;
+  background:#f0c46a;border:2px solid #141c2c;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.porpt i{width:8.5px;height:1.7px;border-radius:1px;background:#141c2c}
+
 .tete .eu{flex:0 0 auto;background:rgba(20,28,44,.42);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border:1.5px solid rgba(255,255,255,.26);border-radius:8px;padding:10px 13px;
@@ -225,6 +242,8 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 
 <div class="tete">
   <button class="ret" id="ret"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="por" id="por"></span>
+  <span class="porpt"><i></i><i></i><i></i></span>
   <span class="ou"><b>La Barceloneta</b><span id="ou-h">Barcelone</span></span>
   <span class="eu" id="eu">—</span>
 </div>
@@ -1502,6 +1521,13 @@ function poserMiquel(vecue){
 
   document.getElementById('eu').textContent =
     Number(d.euros || 0).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
+
+  /* le portrait ouvre le hub, comme à l'anse */
+  const por = document.getElementById('por');
+  por.innerHTML = BD.avatarSVG(d);
+  const sv = por.querySelector('svg');
+  if (sv) sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+  por.onclick = () => location.href = 'hub.html?v=3';
 
   const n = Math.max(1, Number(d.barque || 1));
   const P = PALIERS_B[n - 1];
