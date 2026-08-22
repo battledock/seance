@@ -259,8 +259,9 @@ function poser(p){
 
   /* le temps déjà écoulé compte : on reprend la traversée où elle en est */
   const ecoule = (Date.now() - new Date(d.parti_le).getTime()) / 1000;
-  /* le serveur exige 20 secondes : on en montre 24 pour être sûr */
-  const duree = 24000;
+  /* le serveur laisse accoster au bout de 6 s : on en montre 8,
+     pour garder une marge et ne jamais tomber sur un « trop tôt ». */
+  const duree = 8000;
   const debut = Date.now() - Math.min(duree, ecoule * 1000);
 
   let fait = false, avance = 0;
