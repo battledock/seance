@@ -10,40 +10,39 @@
 <link rel="stylesheet" href="chaud.css?v=2">
 <style>
 /* ---------- ce qui est propre au hub ---------- */
-.moi{padding:calc(env(safe-area-inset-top) + 20px) 4px 18px;
-  display:flex;align-items:center;gap:14px}
-.moi .av{width:58px;height:58px;border-radius:16px;flex:0 0 58px;overflow:hidden;
-  background:var(--creme);border:3px solid var(--encre);
-  }
-.moi .av svg{width:100%;height:100%;display:block}
-.moi .q{flex:1;min-width:0}
-.moi .q b{display:block;font-family:'DM Serif Display',Georgia,serif;
-  font-size:26px;line-height:1.05;color:#fffaf0;
-  text-shadow:0 2px 0 rgba(18,48,63,.34)}
-.moi .q span{display:block;font-size:11px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(255,250,240,.76);margin-top:4px}
-
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:13px}
-.ct{position:relative;padding:15px 16px;border-radius:16px;
-  background:var(--creme);border:3px solid var(--encre);}
-.ct b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:28px;
-  line-height:1;color:var(--encre)}
-.ct span{display:block;font-size:10px;font-weight:800;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(18,48,63,.5);margin-top:6px}
-.ct .em{position:absolute;top:12px;right:13px;font-size:21px}
-
-.nrj{padding:14px 16px;border-radius:16px;margin-bottom:18px;
-  background:var(--creme);border:3px solid var(--encre);}
-.nrj .l1{display:flex;justify-content:space-between;align-items:baseline;
-  margin-bottom:9px}
-.nrj .l1 span{font-size:10px;font-weight:800;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(18,48,63,.5)}
-.nrj .l1 b{font-family:'DM Serif Display',Georgia,serif;font-size:21px;line-height:1}
-.nrj .ba{height:12px;border-radius:8px;background:rgba(18,48,63,.1);
-  border:2px solid var(--encre);overflow:hidden}
-.nrj .ba i{display:block;height:100%;background:var(--vert);
+/* ---------- ton livret de docker ----------
+   Une seule carte au lieu de trois : le portrait, ton nom, puis les
+   trois chiffres en pied séparés de filets. L'énergie court en trait
+   plein tout en bas, sur la tranche du livret. */
+.liv{margin:calc(env(safe-area-inset-top) + 20px) 0 20px;
+  border-radius:20px;overflow:hidden;
+  background:var(--creme);border:3px solid var(--encre)}
+.liv .h{display:flex;align-items:center;gap:14px;padding:16px 17px 15px}
+.liv .av{flex:0 0 56px;width:56px;height:56px;border-radius:12px;overflow:hidden;
+  background:#dfe8ee;border:2.5px solid var(--encre)}
+.liv .av svg{display:block;width:100%;height:100%}
+.liv .q{flex:1;min-width:0}
+.liv .q .su{font-size:9px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(18,48,63,.44)}
+.liv .q b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:24px;
+  line-height:1.05;margin-top:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.liv .q .ou{display:block;font-size:11px;font-weight:700;
+  color:rgba(18,48,63,.56);margin-top:3px}
+/* le pied : les trois chiffres, à égalité */
+.liv .pied3{display:flex;border-top:2.5px solid rgba(18,48,63,.14)}
+.liv .pied3 div{flex:1;min-width:0;padding:12px 8px;text-align:center}
+.liv .pied3 div + div{border-left:2.5px solid rgba(18,48,63,.14)}
+.liv .pied3 b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:20px;
+  line-height:1;white-space:nowrap}
+.liv .pied3 span{display:block;font-size:9px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(18,48,63,.46);margin-top:5px}
+/* la tranche : l'énergie, en trait plein */
+.liv .fil{height:7px;background:rgba(18,48,63,.12);
+  border-top:2.5px solid var(--encre)}
+.liv .fil i{display:block;height:100%;background:var(--vert);
   transition:width .6s cubic-bezier(.3,.9,.3,1)}
-.nrj .ba i.plein{background:var(--or)}
+.liv .fil i.plein{background:var(--or)}
 
 .cad{position:relative;display:flex;align-items:center;gap:14px;width:100%;
   padding:17px 18px;margin-bottom:20px;border-radius:18px;cursor:pointer;
@@ -153,21 +152,21 @@
 
 <div class="pont">
 
-  <div class="moi">
-    <span class="av" id="hub-av"></span>
-    <span class="q attend" id="q"><b id="hub-nom"></b><span id="hub-ou"></span></span>
-  </div>
-
-  <div class="duo attend" id="duo">
-    <div class="ct"><span class="em">💰</span>
-      <b id="hub-eu">—</b><span>en caisse</span></div>
-    <div class="ct"><span class="em">🧭</span>
-      <b id="hub-xp">—</b><span>xp</span></div>
-  </div>
-
-  <div class="nrj attend" id="nrj">
-    <div class="l1"><span>Ton énergie</span><b id="hub-nrjn">—</b></div>
-    <div class="ba"><i id="hub-nrj" style="width:0%"></i></div>
+  <div class="liv attend" id="liv">
+    <div class="h">
+      <span class="av" id="hub-av"></span>
+      <span class="q">
+        <span class="su">Docker inscrit</span>
+        <b id="hub-nom">—</b>
+        <span class="ou" id="hub-ou">—</span>
+      </span>
+    </div>
+    <div class="pied3">
+      <div><b id="hub-eu">—</b><span>En caisse</span></div>
+      <div><b id="hub-xp">—</b><span>Expérience</span></div>
+      <div><b id="hub-nrjn">—</b><span>Énergie</span></div>
+    </div>
+    <div class="fil"><i id="hub-nrj" style="width:0%"></i></div>
   </div>
 
   <button class="rade attend" id="rade">
@@ -204,7 +203,7 @@
 <script>
 /* rien ne se montre tant que tout n'est pas là */
 function paraitre(){
-  ['q', 'duo', 'nrj', 'rade', 'cadeau', 'tuiles', 'pied'].forEach(k => {
+  ['liv', 'rade', 'cadeau', 'tuiles', 'pied'].forEach(k => {
     const e = document.getElementById(k);
     if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
   });
@@ -445,7 +444,7 @@ document.getElementById('ouv-ok').onclick = () => {
     document.getElementById('hub-ou').textContent =
       (PORTS_N[d.port] || 'En mer') + ' · niveau ' + (d.niveau || 1);
     document.getElementById('hub-eu').textContent =
-      Math.round(Number(d.euros || 0)).toLocaleString('fr-FR');
+      Math.round(Number(d.euros || 0)).toLocaleString('fr-FR') + ' €';
     document.getElementById('hub-xp').textContent =
       Number(d.xp || 0).toLocaleString('fr-FR');
 
@@ -453,8 +452,8 @@ document.getElementById('ouv-ok').onclick = () => {
     const jn = document.getElementById('hub-nrj');
     jn.style.width = Math.min(100, nrj / nmax * 100).toFixed(0) + '%';
     jn.classList.toggle('plein', nrj > nmax);
-    document.getElementById('hub-nrjn').textContent =
-      Math.round(nrj) + ' / ' + nmax;
+    /* dans le pied, le chiffre seul : la barre en dessous dit le reste */
+    document.getElementById('hub-nrjn').textContent = Math.round(nrj);
 
 
     dessinerTuiles();
