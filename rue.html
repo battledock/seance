@@ -11,8 +11,16 @@
   -webkit-user-select:none;user-select:none}
 html,body{height:100%;overflow:hidden;background:#0c1830;
   font-family:'Courier Prime',monospace;color:#fff}
-#rue{position:fixed;inset:0}
+#rue{position:fixed;inset:0;
+  /* la ruelle est dessinée une fois pour toutes : on ne fait que
+     l'éclairer autrement selon l'heure qu'il est chez le joueur */
+  filter:var(--filtre,none);transition:filter 1.6s linear}
 #rue svg{display:block;width:100%;height:100%}
+/* la teinte du moment, posée par-dessus */
+#teinte{position:fixed;inset:0;z-index:1;pointer-events:none;
+  mix-blend-mode:multiply;
+  background:var(--teinte,#ffffff);opacity:var(--force,0);
+  transition:background 1.6s linear,opacity 1.6s linear}
 
 /* ---------- l'entête ---------- */
 .tete{position:fixed;left:0;right:0;top:0;z-index:4;
@@ -213,10 +221,11 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 <body>
 
 <div id="rue"></div>
+<div id="teinte"></div>
 
 <div class="tete">
   <button class="ret" id="ret"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-  <span class="ou"><b>La Barceloneta</b><span>Barcelone — 21 h</span></span>
+  <span class="ou"><b>La Barceloneta</b><span id="ou-h">Barcelone</span></span>
   <span class="eu" id="eu">—</span>
 </div>
 
@@ -260,6 +269,7 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=3"></script>
+<script src="heure.js?v=1"></script>
 <script>
 /* ============================================================
    UNE RUE DE LA BARCELONETA — vue du sol, en fin d'après-midi
@@ -1282,6 +1292,16 @@ function dessiner(){
   feuille.textContent = coursesCSS();
 }
 dessiner();
+
+/* la lumière suit l'heure qu'il est chez le joueur */
+function poserLumiere(){
+  const L = HEURE.poser(HEURE.a());
+  const h = document.getElementById('ou-h');
+  if (h) h.textContent = 'Barcelone — ' + HEURE.texte(L);
+  return L;
+}
+poserLumiere();
+setInterval(poserLumiere, 60000);
 
 document.getElementById('lieux').innerHTML = LIEUX.map(L =>
   '<button class="' + (L.ouvert ? 'vif' : '') + '" data-k="' + L.k + '"'
