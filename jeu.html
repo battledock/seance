@@ -161,6 +161,39 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
 .av{opacity:0;transition:opacity .5s}
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
+
+/* ---------- ce qui dit que le portrait s'ouvre ----------
+   Sans ça, rien ne signale que c'est un bouton : on voit un
+   portrait, pas une porte. La pastille reste toujours là. */
+.avpt{position:fixed;z-index:11;
+  top:calc(env(safe-area-inset-top) + 8px);left:56px;
+  width:23px;height:23px;border-radius:50%;cursor:pointer;
+  background:#f0a92e;border:2.5px solid #12303f;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5px;
+  opacity:0;transition:opacity .5s,transform .13s}
+.avpt.pret{opacity:1}
+.avpt i{width:11px;height:2px;border-radius:1px;background:#12303f}
+.av:active + .avpt,.avpt:active{transform:scale(.9)}
+
+/* la bulle du premier jour : elle part dès qu'on a touché une fois */
+.avdit{position:fixed;z-index:12;
+  top:calc(env(safe-area-inset-top) + 20px);left:80px;max-width:210px;
+  padding:9px 13px;border-radius:13px;cursor:pointer;
+  background:#fdf6e6;border:2.5px solid #12303f;
+  font-family:'Nunito',system-ui,sans-serif;font-size:12px;font-weight:700;
+  color:#12303f;line-height:1.35;
+  opacity:0;transform:translateX(-6px);pointer-events:none;
+  transition:opacity .45s .9s,transform .5s .9s}
+.avdit.pret{opacity:1;transform:none;pointer-events:auto;
+  animation:pousse 2.6s ease-in-out 1.6s infinite}
+@keyframes pousse{0%,100%{transform:none}50%{transform:translateX(4px)}}
+/* la pointe, tournée vers le portrait */
+.avdit::before{content:'';position:absolute;left:-9px;top:15px;
+  width:0;height:0;border:7px solid transparent;border-right-color:#12303f;
+  border-left:0}
+.avdit::after{content:'';position:absolute;left:-5px;top:15px;
+  width:0;height:0;border:7px solid transparent;border-right-color:#fdf6e6;
+  border-left:0}
 /* ---------- la confirmation de dépense ---------- */
 .cf{position:fixed;z-index:30;left:20px;right:20px;top:50%;max-width:320px;margin:0 auto;
   transform:translateY(-50%) scale(.94);
@@ -902,6 +935,8 @@ html{font-size:calc(16px * var(--txt, 1))}
 <div class="fi" id="fi"></div>
 
 <div class="av" id="av"></div>
+<div class="avpt" id="avpt"><i></i><i></i><i></i></div>
+<div class="avdit" id="avdit">Touche ton portrait&nbsp;: contrats, carnet, entrepôt, cadeau du jour.</div>
 
 <div class="att" id="att">
   <span class="pt"></span>
@@ -4146,10 +4181,34 @@ function basculerMenu(forcer){
   document.getElementById('voile').classList.toggle('on', menuOuvert);
   document.getElementById('av').classList.toggle('ouvert', menuOuvert);
 }
-document.getElementById('av').onclick = e => {
-  e.stopPropagation();
+/* le portrait, la pastille et la bulle mènent tous au même endroit */
+function ouvrirLePort(e){
+  if (e) e.stopPropagation();
+  try { localStorage.setItem('bd-portrait-vu', '1'); } catch(err){}
   location.href = 'hub.html?v=3';
-};
+}
+document.getElementById('av').onclick = ouvrirLePort;
+document.getElementById('avpt').onclick = ouvrirLePort;
+document.getElementById('avdit').onclick = ouvrirLePort;
+
+/* la bulle n'apparaît que tant qu'on n'a jamais ouvert le port,
+   et s'efface d'elle-même au bout d'un moment pour ne pas gêner */
+function poserIndice(){
+  const b = document.getElementById('avdit');
+  if (!b) return;
+  let vu = false;
+  try { vu = localStorage.getItem('bd-portrait-vu') === '1'; } catch(err){}
+  if (vu){ b.remove(); return; }
+  b.classList.add('pret');
+  const chasser = () => {
+    b.classList.remove('pret');
+    setTimeout(() => b.remove(), 600);
+    removeEventListener('pointerdown', chasser);
+  };
+  setTimeout(chasser, 9000);
+  /* elle recouvre la barre du haut : au premier geste, elle s'en va */
+  setTimeout(() => addEventListener('pointerdown', chasser), 1600);
+}
 
 /* tout refermer d'un coup */
 function toutFermer(){
@@ -4185,10 +4244,11 @@ function poserBas(d){
     };
     b.classList.add('pret');
   }
-  ['barre', 'av'].forEach(k => {
+  ['barre', 'av', 'avpt'].forEach(k => {
     const x = document.getElementById(k);
     if (x) x.classList.add('pret');
   });
+  poserIndice();
 }
 
 function poserAvatar(d){
