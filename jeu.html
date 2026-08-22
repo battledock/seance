@@ -1322,13 +1322,6 @@ function ombreDe(x, ySol, larg, haut, d){
     h${(-larg*.9).toFixed(1)} z" fill="${OMBRE}" opacity=".2"/>`;
 }
 
-/* le raccourci qu'attendaient les objets du quai : on retrouve la
-   distance à partir de la hauteur au sol, puis on passe la main. */
-function ombre(x, ySol, larg, haut){
-  const d = OEIL * FOCALE / Math.max(1, ySol - HORIZON);
-  return ombreDe(x, ySol, larg, haut, d);
-}
-
 /* ---------- le grain : une texture discrète sur tout ---------- */
 function grain(){
   return `<filter id="b-grain" x="0" y="0" width="100%" height="100%">
@@ -2830,51 +2823,6 @@ function caisse(x, d, dy, ton){
   return s + `</g>`;
 }
 
-/* ---------- ce qui traîne sur le quai ----------
-   Le quai fait 21 m de profondeur (D_BORD) ; le bord de l'eau est
-   au plus loin. On pose du fond vers l'avant : les objets proches
-   passent par-dessus les autres, comme il faut. */
-function quai(){
-  let s = '';
-  /* Le cadre ne montre qu'une bande étroite : à 21 m on voit ±6,9 m
-     de large, à 14 m plus que ±4,6 m, et le bas de l'écran tombe vers
-     13,6 m. Tout est posé dans ces limites, du fond vers l'avant. */
-
-  /* --- au bord de l'eau : les bittes d'amarrage --- */
-  [-5.6, -1.9, 1.9, 5.6].forEach(X =>
-    s += bitte(projX(X, 20.4), 20.4));
-
-  /* --- les anneaux scellés, entre les bittes --- */
-  [-3.8, 0, 3.8].forEach(X =>
-    s += anneau(projX(X, 20.8), 20.8));
-
-  /* --- les défenses pendues au bord --- */
-  [[-4.8,'#8a6a4a'], [-0.9,'#6a4a38'], [4.6,'#8a6a4a']].forEach(([X, t]) =>
-    s += defense(projX(X, 20.9), 20.9, t));
-
-  /* --- l'échelle qui descend à l'eau --- */
-  s += echelle(projX(2.9, 20.6), 20.6);
-
-  /* --- les cordages lovés, un peu en retrait --- */
-  [[-4.3, 18.6], [3.6, 17.4], [1.2, 15.0]].forEach(([X, d]) =>
-    s += cordage(projX(X, d), d));
-
-  /* --- les caisses de pêche, en piles --- */
-  [ { X:-5.2, d:18.0, n:3, t:'#b8683c' },
-    { X:-4.4, d:17.2, n:2, t:'#8a9a6a' },
-    { X: 4.9, d:18.2, n:3, t:'#8a9a6a' },
-    { X: 4.2, d:17.0, n:2, t:'#b8683c' },
-    { X:-2.2, d:15.4, n:2, t:'#b8683c' },
-    { X: 3.1, d:14.6, n:2, t:'#8a9a6a' }
-  ].forEach(p => {
-    /* on empile du bas vers le haut, chaque caisse d'une hauteur */
-    for (let k = 0; k < p.n; k++)
-      s += caisse(projX(p.X, p.d), p.d, -k * px(.3, p.d), p.t);
-  });
-
-  return s;
-}
-
 /* ---------- la scène complète ---------- */
 
 /* ============================================================
@@ -2989,12 +2937,8 @@ function scene(){
   /* le clapot qu'elle fait, par-dessus */
   s += clapot();
 
-  /* ---------- le quai, et ce qui traîne dessus ----------
-     Tous ces objets étaient écrits et n'étaient jamais posés :
-     le quai restait vide. On les range du plus loin au plus près,
-     pour que les ombres se recouvrent dans le bon ordre. */
+  /* ---------- le quai, nu ---------- */
   s += pave();
-  s += quai();
 
   /* le voile doré : un dégradé centré sur le soleil, très léger */
   s += `<defs><radialGradient id="b-voile" cx="0.5" cy="0.5">
