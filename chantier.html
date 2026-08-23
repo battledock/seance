@@ -88,6 +88,34 @@
 .mat .li.court .cb{background:rgba(224,83,60,.16);border-color:var(--rouge);
   color:#a8351f}
 .mat .li.court .co span{color:#a8351f}
+
+/* ---------- Toussaint est dessus ----------
+   Les travaux prennent du temps, et il travaille pendant que tu
+   navigues. Rien ne t'oblige à rester le regarder. */
+.trav{padding:18px 19px;border-radius:18px;margin-bottom:15px;
+  background:var(--creme);border:3px solid var(--encre)}
+.trav .tt2{font-size:9.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(18,48,63,.46)}
+.trav b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px;
+  line-height:1.1;margin-top:6px}
+.trav .ba{height:12px;border-radius:8px;margin-top:14px;overflow:hidden;
+  background:rgba(18,48,63,.1);border:2px solid var(--encre)}
+.trav .ba i{display:block;height:100%;background:var(--or);transition:width 1s linear}
+.trav .rs{font-size:12.5px;font-weight:700;color:rgba(18,48,63,.6);margin-top:10px}
+.trav .rs em{font-style:normal;font-family:'DM Serif Display',Georgia,serif;
+  font-size:16px;color:var(--encre)}
+.trav .part{font-size:11.5px;font-weight:600;color:rgba(18,48,63,.5);
+  margin-top:9px;line-height:1.5}
+/* il vient de finir */
+.fini{padding:18px 19px;border-radius:18px;margin-bottom:15px;
+  background:rgba(47,138,92,.12);border:3px solid var(--vert)}
+.fini .tt2{font-size:9.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(31,107,69,.7)}
+.fini b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px;
+  line-height:1.1;margin-top:6px;color:#1f6b45}
+/* le temps que ça prendra, annoncé d'avance */
+.combien{font-size:11.5px;font-weight:700;color:rgba(18,48,63,.5);
+  margin:-6px 0 14px;text-align:center}
 </style>
 </head>
 <body>
@@ -278,6 +306,34 @@ function bloqueMateriaux(){
     + '</div>';
 }
 
+/* le temps qu'il reste, dit comme on le dirait */
+function duree(s){
+  if (s <= 0) return "c'est prêt";
+  const m = Math.floor(s / 60), r = s % 60;
+  if (m >= 1) return m + ' min' + (r ? ' ' + String(r).padStart(2,'0') : '');
+  return s + ' secondes';
+}
+
+/* le décompte, tant que Toussaint est dessus */
+let bat = null;
+function minuter(total){
+  clearInterval(bat);
+  bat = setInterval(async () => {
+    if (!CH || !CH.en_travaux){ clearInterval(bat); return; }
+    CH.reste_s = Math.max(0, (CH.reste_s || 0) - 1);
+    const r = document.getElementById('tv-rs'), b = document.getElementById('tv-ba');
+    if (!r){ clearInterval(bat); return; }
+    r.textContent = duree(CH.reste_s);
+    if (b) b.style.width = Math.min(100, (1 - CH.reste_s / total) * 100).toFixed(1) + '%';
+    if (CH.reste_s <= 0){
+      clearInterval(bat);
+      try { CH = await BD.agir('mon_chantier'); } catch(e){}
+      try { Object.assign(D, await BD.charger()); } catch(e){}
+      dessiner();
+    }
+  }, 1000);
+}
+
 function dessiner(){
   const d = D;
   const n = Number(d.barque || 0);
@@ -311,6 +367,29 @@ function dessiner(){
       + '</div></div>';
   }
 
+  /* ---------- Toussaint vient de poser ses outils ---------- */
+  if (CH && CH.fini_a_l_instant && CH.fini_a_l_instant.fini){
+    h += '<div class="fini"><p class="tt2">C\'est fait</p>'
+      + '<b>' + CH.fini_a_l_instant.nom + '</b></div>';
+  }
+
+  /* ---------- Toussaint est encore dessus ---------- */
+  if (CH && CH.en_travaux){
+    const total = 120 + CH.palier * 60;
+    const reste = Math.max(0, CH.reste_s || 0);
+    const fait = Math.min(100, (1 - reste / total) * 100);
+    h += '<div class="trav"><p class="tt2">Sur le chantier</p>'
+      + '<b>' + CH.nom + '</b>'
+      + '<div class="ba"><i id="tv-ba" style="width:' + fait.toFixed(1) + '%"></i></div>'
+      + '<p class="rs">Prêt dans <em id="tv-rs">' + duree(reste) + '</em></p>'
+      + '<p class="part">Il travaille même quand tu n\'es pas là. '
+      + 'Tu peux reprendre la mer.</p></div>';
+    C.innerHTML = h; paraitre();
+    document.getElementById('c-sous').textContent = 'Travaux en cours';
+    minuter(total);
+    return;
+  }
+
   /* le bout du chemin */
   if (n >= PALIERS_B.length){
     h += '<p class="dit">« Je ne peux plus rien faire pour toi. '
@@ -326,7 +405,10 @@ function dessiner(){
   const peut = gratuit || sous >= S.prix;
 
   const manqueMat = CH && CH.ok && !CH.au_bout && CH.assez_de_materiaux === false;
-  h += '<p class="dit">' + (!n
+  /* si tu lui as écrit une phrase pour ce moment, c'est la sienne
+     qui parle ; sinon on garde celles de la page */
+  h += CH && CH.mot ? '<p class="dit">« ' + CH.mot + ' »</p>' :
+    '<p class="dit">' + (!n
     ? '« Tu veux un bateau ? Je sors le bois, tu tiens la scie. '
       + 'La quille je te la fais, le reste tu paieras. »'
     : manqueMat
@@ -358,6 +440,9 @@ function dessiner(){
     +     '</p></div>'
     + '</div>'
     + bloqueMateriaux()
+    + (CH && CH.combien_de_temps
+        ? '<p class="combien">Toussaint y passera ' + duree(CH.combien_de_temps) + '.</p>'
+        : '')
     + '<button class="gros" id="go"'
     +   ((peut && (!CH || CH.assez_de_materiaux !== false)) ? '' : ' disabled') + '>'
     +   (peut ? (n ? 'Faire les travaux' : 'Construire la coque') : 'Pas assez') + '</button>'
@@ -395,12 +480,11 @@ async function construire(){
     try { Object.assign(D, await BD.charger()); } catch(e){}
     try { CH = await BD.agir('mon_chantier'); } catch(e){}
     dessiner();
-    const dit = document.querySelector('.dit');
-    if (dit) dit.innerHTML = '« Voilà. <i>' + r.nom + '</i>. Fais-en bon usage. »';
   } else {
     const M = { pas_ici:"Toussaint n'est pas ici.",
                 deja_au_bout:"Il n'y a rien au-dessus.",
                 sans_materiaux:'Il te manque de la matière.',
+                deja_en_travaux:'Il est déjà sur ta barque.',
                 trop_cher:'Il te manque ' + eur((r && r.manque) || 0) + '.' };
     if (r && r.pourquoi === 'sans_materiaux'){
       try { CH = await BD.agir('mon_chantier'); } catch(e){}
