@@ -44,6 +44,12 @@
 /* ---------- ce que tu as décidé ----------
    La base gardait le choix de chaque joueur sans jamais le montrer.
    C'est pourtant la seule chose qu'un carnet devrait retenir. */
+/* ---------- ce qu'il te reste à faire ----------
+   Le résumé dit où en est l'histoire ; cette ligne dit quoi faire. */
+.hi .faire{display:flex;align-items:flex-start;gap:9px;margin:-4px 0 14px;
+  font-size:13px;font-weight:700;line-height:1.5;color:var(--encre)}
+.hi .faire .pl{flex:0 0 auto;color:var(--or);font-weight:800}
+
 .hi .choix{display:flex;align-items:flex-start;gap:11px;padding:12px 13px;
   border-radius:14px;margin:0 0 13px;
   background:rgba(47,138,92,.09);border:2.5px solid rgba(47,138,92,.3)}
@@ -93,7 +99,8 @@ function paraitre(){
   if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
 }
 
-/* combien d'étapes compte chaque histoire, pour les points */
+/* Combien d'étapes compte chaque histoire. Le serveur le sait dès que
+   la table des étapes est remplie ; en attendant, on garde ce repli. */
 const LONGUEUR = { ardit:3, miquel_2:2, pere:2, titou:2 };
 
 /* ---------- où se joue chaque histoire ----------
@@ -112,7 +119,7 @@ function leJour(iso){
 }
 
 function carte(q, ici){
-  const total = LONGUEUR[q.k] || Math.max(2, q.etape);
+  const total = q.total || LONGUEUR[q.k] || Math.max(2, q.etape);
   const finie = q.etat === 'finie';
   let pas = '';
   for (let i = 1; i <= total; i++)
@@ -128,6 +135,11 @@ function carte(q, ici){
     +     '<em>' + q.qui + '</em> — ' + q.ou + '</span></span>'
     + '</div>'
     + '<p class="res">' + q.resume + '</p>'
+
+    /* ce qu'il te reste à faire, si l'étape le précise */
+    + (!finie && q.faire
+        ? '<p class="faire"><span class="pl">→</span>' + q.faire + '</p>'
+        : '')
 
     /* ce que tu as décidé — la mémoire du carnet */
     + (q.issue_mot
