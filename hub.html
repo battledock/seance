@@ -99,6 +99,15 @@
   display:flex;align-items:center;justify-content:center;padding:0 7px;
   font-family:'DM Serif Display',Georgia,serif;font-size:14px;color:var(--encre);
   background:var(--or);border:2.5px solid var(--encre)}
+/* ---------- le chantier ----------
+   Le minium : le rouge antirouille qu'on passe sous les coques.
+   La seule tuile colorée du hub — c'est un atelier, pas un menu. */
+.li.chantier{background:#c85a3c}
+.li.chantier .co b{color:#fff6ea}
+.li.chantier .co span{color:rgba(255,246,234,.72)}
+.li.chantier .fl{color:rgba(255,246,234,.6)}
+.li.chantier:active{background:#b44e32}
+
 /* une tuile close se voit : plus terne, et elle ne répond pas */
 .pri:disabled,.li:disabled{opacity:.44;cursor:default}
 
@@ -355,7 +364,7 @@ const TUILES = [
     si:'affaire', sinon:'Il faut ouvrir une affaire chez Félix',
     f:() => location.href = 'anse.html' },
   { k:'chantier', ou:'lieu', ici:'anse', em:'🔨', t:'Le chantier',
-    s:'Toussaint et ta barque',
+    s:'Toussaint et ta barque', teinte:'chantier',
     f:() => location.href = 'chantier.html' },
 
   /* ---- Barcelone ---- */
@@ -426,7 +435,8 @@ function dessinerTuiles(){
     } else {
       /* les autres en lignes serrées : on les consulte, on n'y court pas */
       h += '<div class="bloc">' + lot.map(t =>
-        '<button class="li" data-k="' + t.k + '"' + (close(t) ? ' disabled' : '') + '>'
+        '<button class="li' + (t.teinte ? ' ' + t.teinte : '') + '" data-k="'
+        + t.k + '"' + (close(t) ? ' disabled' : '') + '>'
         + '<span class="em">' + t.em + '</span>'
         + '<span class="co"><b>' + t.t + '</b><span>' + sousTitre(t) + '</span></span>'
         + (!close(t) && E[t.k]
