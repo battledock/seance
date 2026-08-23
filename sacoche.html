@@ -23,8 +23,18 @@
   color:rgba(18,48,63,.7);margin-top:6px;line-height:1.5}
 .ob .tx .d{display:block;font-size:12px;font-weight:600;font-style:italic;
   color:rgba(18,48,63,.5);margin-top:7px;line-height:1.5}
-.ob .tx .ou{display:block;font-size:11.5px;font-weight:700;
-  color:rgba(18,48,63,.42);margin-top:8px}
+/* ---------- d'où il vient, et quand ----------
+   La date était enregistrée et jamais montrée. Pour un souvenir,
+   c'est pourtant ce qui compte le plus. */
+.ob .tx .ou{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;
+  margin-top:11px;padding-top:10px;
+  border-top:2.5px solid rgba(18,48,63,.1);
+  font-size:11.5px;font-weight:700;color:rgba(18,48,63,.5)}
+.ob .tx .ou em{font-style:normal;color:var(--encre)}
+.ob .tx .ou i{width:3.5px;height:3.5px;border-radius:50%;
+  background:rgba(18,48,63,.24);align-self:center}
+/* les plus vieux objets se distinguent : tu les traînes depuis longtemps */
+.ob .tx .ou .vieux{color:#a8741a}
 .ob .nb{position:absolute;top:14px;right:15px;min-width:30px;height:30px;
   border-radius:11px;display:flex;align-items:center;justify-content:center;
   padding:0 8px;font-family:'DM Serif Display',Georgia,serif;font-size:17px;
@@ -55,6 +65,36 @@ const GENRES = [
   ['quete',    'Ce qui sert à quelque chose'],
   ['outil',    'Ce qui te sert tous les jours'],
   ['souvenir', 'Ce que tu gardes'] ];
+
+/* la date, comme on la dirait : « le 17 août », « hier », « aujourd'hui » */
+function leJour(iso){
+  if (!iso) return '';
+  const d = new Date(iso), n = new Date();
+  const jours = Math.floor((n - d) / 86400000);
+  if (jours <= 0) return "aujourd'hui";
+  if (jours === 1) return 'hier';
+  if (jours < 7) return 'il y a ' + jours + ' jours';
+  return 'le ' + d.toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+}
+
+/* depuis combien de temps tu le portes */
+function depuis(iso){
+  if (!iso) return 0;
+  return Math.floor((new Date() - new Date(iso)) / 86400000);
+}
+
+/* la ligne du bas : d'où il vient, et quand tu l'as eu */
+function provenance(o){
+  const bouts = [];
+  if (o.d_ou) bouts.push('<em>' + o.d_ou + '</em>');
+  if (o.pris_le){
+    const j = depuis(o.pris_le);
+    bouts.push('<span class="' + (j >= 14 ? 'vieux' : '') + '">'
+      + leJour(o.pris_le) + '</span>');
+  }
+  if (!bouts.length) return '';
+  return '<span class="ou">' + bouts.join('<i></i>') + '</span>';
+}
 
 function objetSVG(k){
   const O = {
@@ -135,8 +175,12 @@ function objetSVG(k){
     if (!d){ location.href = 'index.html'; return; }
 
     const S = d.sacoche || [];
-    document.getElementById('s-sous').textContent = S.length
-      ? S.length + (S.length > 1 ? ' objets' : ' objet') : 'Elle est vide';
+    const vieux = S.reduce((a, o) =>
+      Math.max(a, depuis(o.pris_le)), 0);
+    document.getElementById('s-sous').textContent = !S.length
+      ? 'Elle est vide'
+      : S.length + (S.length > 1 ? ' objets' : ' objet')
+        + (vieux >= 2 ? ' · le plus ancien depuis ' + vieux + ' jours' : '');
 
     if (!S.length){
       C.innerHTML = '<p class="vide">Ta sacoche est vide.<br>'
@@ -147,7 +191,9 @@ function objetSVG(k){
 
     let h = '';
     GENRES.forEach(([g, titre]) => {
-      const L = S.filter(o => o.genre === g);
+      /* le plus ancien en tête : c'est celui qui a le plus d'histoire */
+      const L = S.filter(o => o.genre === g)
+        .sort((a, b) => new Date(a.pris_le || 0) - new Date(b.pris_le || 0));
       if (!L.length) return;
       h += '<p class="sec">' + titre + '</p>';
       h += L.map(o =>
@@ -157,7 +203,7 @@ function objetSVG(k){
         + '<span class="tx"><b>' + o.nom + '</b>'
         + '<span class="n">' + o.note + '</span>'
         + (o.detail ? '<span class="d">' + o.detail + '</span>' : '')
-        + (o.d_ou ? '<span class="ou">' + o.d_ou + '.</span>' : '')
+        + provenance(o)
         + '</span></div>').join('');
     });
 
@@ -172,7 +218,7 @@ function objetSVG(k){
           + '<span class="vi">' + objetSVG(o.signe) + '</span>'
           + '<span class="tx"><b>' + o.nom + '</b>'
           + '<span class="n">' + o.note + '</span>'
-          + (o.d_ou ? '<span class="ou">' + o.d_ou + '.</span>' : '')
+          + provenance(o)
           + '</span></div>').join('');
     }
 
