@@ -73,6 +73,12 @@ html,body{height:100%;overflow:hidden;background:#f4efe3;
 .prod .jauge i{display:block;height:100%;border-radius:4px;
   background:linear-gradient(90deg,#d8a848,#f0c46a);transition:width .7s}
 .prod .jauge i.plein{background:linear-gradient(90deg,#b8483a,#e08a6a)}
+/* ce qui s'entasse dehors, une fois la réserve pleine : hachuré,
+   pour dire que ça produit encore mais moins bien */
+.prod .jauge i.dehors{background:repeating-linear-gradient(-45deg,
+  #c08a4a 0 5px,rgba(192,138,74,.5) 5px 10px)}
+.prod .dbd{font-size:11px;line-height:1.5;margin-top:9px;color:#a86a2a;
+  font-family:system-ui,sans-serif}
 .prod .sous{display:flex;justify-content:space-between;margin-top:8px;font-size:10.5px;
   color:rgba(38,49,63,.46);font-family:system-ui,sans-serif}
 .prod button{width:100%;margin-top:14px;padding:15px;border:0;border-radius:9px;cursor:pointer;
@@ -1021,6 +1027,7 @@ function entete(){
 function poserProd(){
   const A = D.affaire || {}, P = A.prod || {};
   const stock = +P.stock || 0, cap = +P.capacite || 1;
+  const plaf = +P.plafond || cap * 2;
   const vaut = +P.vaut || 0;
   const el = document.getElementById('prod');
   el.innerHTML = '<div class="l1">'
@@ -1030,13 +1037,20 @@ function poserProd(){
     + '<span>' + (+P.par_jour || 0).toFixed(1) + ' par jour, à '
     + (+P.prix_piece || 0).toFixed(1) + ' € la pièce.</span></span>'
     + '<span class="px"><em>' + vaut + ' €</em></span></div>'
-    + '<div class="jauge"><i class="' + (P.plein ? 'plein' : '') + '" style="width:'
-    + Math.min(100, stock / cap * 100).toFixed(1) + '%"></i></div>'
-    + '<div class="sous"><span>Ta réserve</span><span>'
-    + stock.toFixed(1) + ' / ' + cap + '</span></div>'
+    /* la jauge court jusqu'au plafond : la réserve, puis ce qui
+       s'entasse dehors une fois qu'elle est pleine */
+    + '<div class="jauge"><i class="'
+    + (P.plein ? 'plein' : P.deborde ? 'dehors' : '') + '" style="width:'
+    + Math.min(100, stock / plaf * 100).toFixed(1) + '%"></i></div>'
+    + '<div class="sous"><span>' + (P.deborde ? 'Ta réserve déborde' : 'Ta réserve')
+    + '</span><span>' + stock.toFixed(1) + ' / ' + cap
+    + (P.deborde ? ' — puis dehors jusqu\'à ' + plaf : '') + '</span></div>'
+    + (P.deborde ? '<p class="dbd">' + (P.plein
+        ? 'On n\'entasse plus rien : tout est plein. Ramasse ou charge.'
+        : 'La réserve est pleine, on entasse dehors — ça sèche quatre fois '
+          + 'moins vite. Un plus grand abri réglerait ça.') + '</p>' : '')
     + '<button id="ram"' + (stock < 1 ? ' disabled' : '') + '>'
-    + (P.plein ? 'Ta réserve déborde — ramasser ' + vaut + ' €'
-       : stock < 1 ? 'Rien à prendre pour l\'instant'
+    + (stock < 1 ? 'Rien à prendre pour l\'instant'
        : 'Ramasser — ' + vaut + ' €') + '</button>';
   const b = document.getElementById('ram');
   if (b && stock >= 1) b.onclick = async () => {
