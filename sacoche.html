@@ -39,6 +39,32 @@
   border-radius:11px;display:flex;align-items:center;justify-content:center;
   padding:0 8px;font-family:'DM Serif Display',Georgia,serif;font-size:17px;
   background:var(--or);border:2.5px solid var(--encre)}
+
+/* ---------- ce que le carnet retient ----------
+   Le seul objet de la sacoche qui fasse quelque chose : il garde
+   le prix de tes livraisons, marchandise par marchandise et port
+   par port. C'est l'outil qui manquait au commerçant. */
+.notes{margin:11px 0 0;padding-top:11px;
+  border-top:2.5px solid rgba(18,48,63,.12)}
+.notes .tt2{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(18,48,63,.44);margin-bottom:9px}
+.notes .li2{display:flex;align-items:baseline;gap:9px;padding:6px 0;
+  font-size:12px;font-weight:700}
+.notes .li2 + .li2{border-top:2px solid rgba(18,48,63,.07)}
+.notes .li2 .n2{flex:1;min-width:0;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;color:var(--encre)}
+.notes .li2 .p2{flex:0 0 auto;color:rgba(18,48,63,.42);font-size:11px}
+.notes .li2 .m2{flex:0 0 auto;font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;font-weight:400;color:var(--encre)}
+/* le meilleur prix jamais obtenu se distingue */
+.notes .li2.record .m2{color:#a8741a}
+.notes .plus{display:block;width:100%;margin-top:10px;padding:9px;
+  border-radius:11px;cursor:pointer;
+  background:rgba(18,48,63,.06);border:2px solid rgba(18,48,63,.2);
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(18,48,63,.6)}
+.notes .rien2{font-size:12px;font-weight:600;color:rgba(18,48,63,.45);
+  line-height:1.5;padding:4px 0}
 </style>
 </head>
 <body>
@@ -65,6 +91,35 @@ const GENRES = [
   ['quete',    'Ce qui sert à quelque chose'],
   ['outil',    'Ce qui te sert tous les jours'],
   ['souvenir', 'Ce que tu gardes'] ];
+
+/* ---------- ce que le carnet a retenu ----------
+   Le prix par place de chaque livraison, groupé par marchandise et
+   par port. On montre le meilleur, parce que c'est lui qui sert de
+   repère quand on se demande si l'offre du jour est bonne. */
+let NOTES = null, toutVoir = false;
+
+function blocNotes(){
+  if (!NOTES || !NOTES.ok) return '';
+  const L = NOTES.lignes || [];
+  if (!L.length){
+    return '<div class="notes"><p class="tt2">Ce que tu y as noté</p>'
+      + '<p class="rien2">Rien encore. Livre une course et le prix s\'inscrira.</p></div>';
+  }
+  /* les mieux payées d'abord : c'est ce qu'on vient y chercher */
+  const tri = L.slice().sort((a, b) => b.meilleur - a.meilleur);
+  const vus = toutVoir ? tri : tri.slice(0, 5);
+  return '<div class="notes"><p class="tt2">Ce que tu y as noté</p>'
+    + vus.map(l =>
+        '<div class="li2' + (l.dernier >= l.meilleur ? ' record' : '') + '">'
+        + '<span class="n2">' + l.nom + '</span>'
+        + '<span class="p2">' + l.port + '</span>'
+        + '<span class="m2">' + l.meilleur + ' €</span></div>').join('')
+    + (tri.length > 5
+        ? '<button class="plus" id="n-plus">'
+          + (toutVoir ? 'Refermer' : 'Les ' + tri.length + ' lignes') + '</button>'
+        : '')
+    + '</div>';
+}
 
 /* la date, comme on la dirait : « le 17 août », « hier », « aujourd'hui » */
 function leJour(iso){
@@ -175,6 +230,10 @@ function objetSVG(k){
     if (!d){ location.href = 'index.html'; return; }
 
     const S = d.sacoche || [];
+    /* le carnet ne se lit que si tu l'as */
+    if (S.some(o => o.k === 'carnet')){
+      try { NOTES = await BD.agir('mon_carnet'); } catch(e){ NOTES = null; }
+    }
     const vieux = S.reduce((a, o) =>
       Math.max(a, depuis(o.pris_le)), 0);
     document.getElementById('s-sous').textContent = !S.length
@@ -204,6 +263,7 @@ function objetSVG(k){
         + '<span class="n">' + o.note + '</span>'
         + (o.detail ? '<span class="d">' + o.detail + '</span>' : '')
         + provenance(o)
+        + (o.k === 'carnet' ? blocNotes() : '')
         + '</span></div>').join('');
     });
 
@@ -219,10 +279,18 @@ function objetSVG(k){
           + '<span class="tx"><b>' + o.nom + '</b>'
           + '<span class="n">' + o.note + '</span>'
           + provenance(o)
+          + (o.k === 'carnet' ? blocNotes() : '')
           + '</span></div>').join('');
     }
 
     C.innerHTML = h; paraitre();
+    /* « tout voir » ne redessine que le bloc des notes */
+    C.addEventListener('click', e => {
+      if (!e.target.closest('#n-plus')) return;
+      toutVoir = !toutVoir;
+      const bloc = C.querySelector('.notes');
+      if (bloc) bloc.outerHTML = blocNotes();
+    });
 
   } catch(e){
     console.warn(e);
