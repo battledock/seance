@@ -64,6 +64,30 @@
   color:rgba(18,48,63,.46);margin-top:2px}
 .pal .px{font-size:12px;font-weight:800;color:rgba(18,48,63,.5);white-space:nowrap}
 .pal.fait .px{color:var(--vert)}
+
+/* ---------- ce qu'il faut apporter ----------
+   Un bateau ne se bâtit pas qu'avec de l'argent. Le bois vient
+   d'Ajaccio, le fer de Barcelone : il faut aller les chercher. */
+.mat{margin:0 0 15px;padding:13px 14px;border-radius:14px;
+  background:rgba(18,48,63,.05);border:2.5px solid rgba(18,48,63,.16)}
+.mat .tt2{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(18,48,63,.46);margin-bottom:10px}
+.mat .li{display:flex;align-items:center;gap:11px;padding:7px 0}
+.mat .li + .li{border-top:2px solid rgba(18,48,63,.08)}
+.mat .li .co{flex:1;min-width:0}
+.mat .li .co b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;line-height:1.15}
+.mat .li .co span{display:block;font-size:10.5px;font-weight:700;
+  color:rgba(18,48,63,.5);margin-top:2px}
+.mat .li .cb{flex:0 0 auto;padding:4px 10px;border-radius:20px;
+  font-family:'DM Serif Display',Georgia,serif;font-size:14px;
+  background:rgba(18,48,63,.08);border:2px solid rgba(18,48,63,.2)}
+/* tu l'as : le compte est bon */
+.mat .li.assez .cb{background:var(--vert);border-color:var(--encre);color:#fff}
+/* il t'en manque : on dit où le trouver */
+.mat .li.court .cb{background:rgba(224,83,60,.16);border-color:var(--rouge);
+  color:#a8351f}
+.mat .li.court .co span{color:#a8351f}
 </style>
 </head>
 <body>
@@ -235,6 +259,25 @@ function eur(v){ return Number(v || 0).toLocaleString('fr-FR') + ' €'; }
 
 let D = null, enTravaux = false;
 
+/* ce que le chantier réclame, et ce que tu as déjà déposé */
+let CH = null;
+const OU_MAT = { ajaccio:'Ajaccio', barcelone:'Barcelone',
+                 anse:'Marseille', palma:'Palma' };
+
+function bloqueMateriaux(){
+  if (!CH || !CH.ok || CH.au_bout || !(CH.faut || []).length) return '';
+  return '<div class="mat"><p class="tt2">Ce qu\'il faut apporter</p>'
+    + CH.faut.map(m => {
+        const ok = m.as >= m.faut;
+        return '<div class="li ' + (ok ? 'assez' : 'court') + '">'
+          + '<span class="co"><b>' + (m.nom || m.k) + '</b>'
+          + '<span>' + (ok ? 'Déposé au chantier'
+              : 'Rapporte-en de ' + (OU_MAT[m.ou] || m.ou)) + '</span></span>'
+          + '<span class="cb">' + m.as + ' / ' + m.faut + '</span></div>';
+      }).join('')
+    + '</div>';
+}
+
 function dessiner(){
   const d = D;
   const n = Number(d.barque || 0);
@@ -282,9 +325,13 @@ function dessiner(){
   const gratuit = S.prix === 0;
   const peut = gratuit || sous >= S.prix;
 
+  const manqueMat = CH && CH.ok && !CH.au_bout && CH.assez_de_materiaux === false;
   h += '<p class="dit">' + (!n
     ? '« Tu veux un bateau ? Je sors le bois, tu tiens la scie. '
       + 'La quille je te la fais, le reste tu paieras. »'
+    : manqueMat
+      ? '« L\'argent ne fait pas une coque. Rapporte-moi la matière, '
+        + 'et on en reparle. »'
     : peut
       ? "« Fais voir ta caisse… bon. On peut s'y mettre. »"
       : '« Reviens quand tu auras de quoi. Le bois ne se coupe pas tout seul. »')
@@ -310,7 +357,9 @@ function dessiner(){
     +     (A && S.vit > A.vit ? ' <em>+' + (S.vit - A.vit).toFixed(1) + '</em>' : '')
     +     '</p></div>'
     + '</div>'
-    + '<button class="gros" id="go"' + (peut ? '' : ' disabled') + '>'
+    + bloqueMateriaux()
+    + '<button class="gros" id="go"'
+    +   ((peut && (!CH || CH.assez_de_materiaux !== false)) ? '' : ' disabled') + '>'
     +   (peut ? (n ? 'Faire les travaux' : 'Construire la coque') : 'Pas assez') + '</button>'
     + (peut ? '' : '<p class="man">Il te manque ' + eur(S.prix - sous) + '</p>')
     + '</div></div>';
@@ -344,13 +393,19 @@ async function construire(){
 
   if (r && r.ok){
     try { Object.assign(D, await BD.charger()); } catch(e){}
+    try { CH = await BD.agir('mon_chantier'); } catch(e){}
     dessiner();
     const dit = document.querySelector('.dit');
     if (dit) dit.innerHTML = '« Voilà. <i>' + r.nom + '</i>. Fais-en bon usage. »';
   } else {
     const M = { pas_ici:"Toussaint n'est pas ici.",
                 deja_au_bout:"Il n'y a rien au-dessus.",
+                sans_materiaux:'Il te manque de la matière.',
                 trop_cher:'Il te manque ' + eur((r && r.manque) || 0) + '.' };
+    if (r && r.pourquoi === 'sans_materiaux'){
+      try { CH = await BD.agir('mon_chantier'); } catch(e){}
+      dessiner(); enTravaux = false; return;
+    }
     go.textContent = 'Pas possible';
     const man = document.createElement('p');
     man.className = 'man';
@@ -364,6 +419,7 @@ async function construire(){
   try {
     D = await BD.charger();
     if (!D){ location.href = 'index.html'; return; }
+    try { CH = await BD.agir('mon_chantier'); } catch(e){ CH = null; }
     dessiner();
   } catch(e){
     console.warn(e);
