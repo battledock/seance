@@ -40,6 +40,37 @@
 .hi.finie{background:#eaf6ee;opacity:.82}
 .hi.finie .qui{background:var(--vert);color:#fff}
 .hi.finie .fin{font-size:12.5px;font-weight:800;color:var(--vert)}
+
+/* ---------- ce que tu as décidé ----------
+   La base gardait le choix de chaque joueur sans jamais le montrer.
+   C'est pourtant la seule chose qu'un carnet devrait retenir. */
+.hi .choix{display:flex;align-items:flex-start;gap:11px;padding:12px 13px;
+  border-radius:14px;margin:0 0 13px;
+  background:rgba(47,138,92,.09);border:2.5px solid rgba(47,138,92,.3)}
+.hi .choix .pl{flex:0 0 auto;font-size:16px;line-height:1.2}
+.hi .choix .tx b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:16px;line-height:1.15;color:#1f6b45}
+.hi .choix .tx span{display:block;font-size:12px;font-weight:600;line-height:1.5;
+  color:rgba(18,48,63,.6);margin-top:4px}
+/* quand l'histoire court encore, le choix est en attente */
+.hi:not(.finie) .choix{background:rgba(240,169,46,.12);
+  border-color:rgba(240,169,46,.42)}
+.hi:not(.finie) .choix .tx b{color:#a8741a}
+
+/* ---------- y aller ---------- */
+.hi .aller{display:flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;padding:14px;margin-top:13px;border-radius:14px;cursor:pointer;
+  background:var(--or);border:3px solid var(--encre);color:var(--encre);
+  font-family:'DM Serif Display',Georgia,serif;font-size:17px;
+  transition:background .12s}
+.hi .aller:active{background:#d9962a}
+/* pas au bon port : on dit où il faut être */
+.hi .loin{font-size:12px;font-weight:700;color:rgba(18,48,63,.5);
+  margin-top:13px;padding-top:12px;border-top:2.5px solid rgba(18,48,63,.1)}
+.hi .loin em{font-style:normal;font-weight:800;color:var(--encre)}
+
+/* ---------- quand ça s'est joué ---------- */
+.hi .quand{font-size:11px;font-weight:700;color:rgba(18,48,63,.42);margin-top:9px}
 </style>
 </head>
 <body>
@@ -65,6 +96,21 @@ function paraitre(){
 /* combien d'étapes compte chaque histoire, pour les points */
 const LONGUEUR = { ardit:3, miquel_2:2, pere:2, titou:2 };
 
+/* ---------- où se joue chaque histoire ----------
+   Le carnet ne se contente plus de dire « ça t'attend ici » :
+   il t'y emmène. Chaque personnage a sa page. */
+const CHEZ = { nuria:'barcelone.html', miquel:'rue.html',
+               pere:'palma.html', titou:'jeu.html', ardit:'ardit.html' };
+const PORT_DE = { Marseille:'anse', Barcelone:'barcelone',
+                  Palma:'palma', Ajaccio:'ajaccio' };
+
+/* la date, à la façon du carnet : courte et sans heure */
+function leJour(iso){
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+}
+
 function carte(q, ici){
   const total = LONGUEUR[q.k] || Math.max(2, q.etape);
   const finie = q.etat === 'finie';
@@ -82,12 +128,30 @@ function carte(q, ici){
     +     '<em>' + q.qui + '</em> — ' + q.ou + '</span></span>'
     + '</div>'
     + '<p class="res">' + q.resume + '</p>'
+
+    /* ce que tu as décidé — la mémoire du carnet */
+    + (q.issue_mot
+        ? '<div class="choix"><span class="pl">' + (finie ? '✦' : '⌖') + '</span>'
+          + '<span class="tx"><b>' + q.issue_mot + '</b>'
+          + (q.issue_note ? '<span>' + q.issue_note + '</span>' : '')
+          + '</span></div>'
+        : '')
+
     + '<div class="l2">'
     +   (finie ? '<span class="fin">✓ Cette histoire est close</span>'
          : '<span class="et"><span class="pt"></span>Étape ' + q.etape
            + ' sur ' + total + '</span>')
     +   (finie ? '' : '<span class="pas">' + pas + '</span>')
-    + '</div></div></div>';
+    + '</div>'
+
+    /* et de quoi y retourner */
+    + (finie
+        ? (q.finie_le ? '<p class="quand">Close le ' + leJour(q.finie_le) + '</p>' : '')
+        : ici && CHEZ[q.qui_k]
+          ? '<button class="aller" data-va="' + CHEZ[q.qui_k] + '">Y aller</button>'
+          : '<p class="loin">Il faut être à <em>' + q.ou + '</em> pour la suite.</p>')
+
+    + '</div></div>';
 }
 
 (async () => {
@@ -128,6 +192,10 @@ function carte(q, ici){
     }
 
     L.innerHTML = h; paraitre();
+
+    /* le carnet t'emmène là où l'histoire attend */
+    L.querySelectorAll('[data-va]').forEach(b =>
+      b.onclick = () => location.href = b.dataset.va);
 
   } catch(e){
     console.warn(e);
