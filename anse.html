@@ -81,6 +81,42 @@ html,body{height:100%;overflow:hidden;background:#f4efe3;
   font-family:'Courier Prime',monospace;font-size:13.5px;font-weight:700;letter-spacing:.06em;
   transition:transform .12s}
 .prod button:active{transform:scale(.986)}
+
+/* ---------- charger la production en cale ----------
+   Ce que produit ta fabrique devient une vraie cargaison :
+   tu choisis où l'emmener, et le marché de là-bas fait le prix. */
+.carg{background:#fffdf8;border:1.5px solid rgba(38,49,63,.12);border-radius:12px;
+  padding:16px;margin-bottom:4px;
+  box-shadow:0 1px 2px rgba(80,64,40,.05),0 8px 22px rgba(80,64,40,.06)}
+.carg .h1{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  margin-bottom:4px}
+.carg .h1 b{font-size:15px;color:#1b2836;font-weight:700}
+.carg .h1 span{font-size:10.5px;color:rgba(38,49,63,.5);
+  font-family:system-ui,sans-serif;white-space:nowrap}
+.carg .mo{font-size:11.5px;color:rgba(38,49,63,.55);line-height:1.5;
+  font-family:system-ui,sans-serif;margin-bottom:13px}
+/* un port, une ligne : ce qu'il paie et ce que la course coûte */
+.carg .ou{display:flex;align-items:center;gap:12px;width:100%;padding:12px 13px;
+  margin-top:8px;border-radius:10px;cursor:pointer;text-align:left;
+  background:rgba(184,134,58,.08);border:1.5px solid rgba(184,134,58,.28);
+  font-family:'Courier Prime',monospace;transition:background .12s}
+.carg .ou:active{background:rgba(184,134,58,.18)}
+.carg .ou .tx{flex:1;min-width:0}
+.carg .ou .tx b{display:block;font-size:14.5px;color:#1b2836;font-weight:700}
+.carg .ou .tx span{display:block;font-size:10.5px;color:rgba(38,49,63,.5);
+  margin-top:3px;font-family:system-ui,sans-serif}
+.carg .ou .px{flex:0 0 auto;text-align:right}
+.carg .ou .px em{display:block;font-style:normal;font-size:19px;font-weight:700;
+  color:#b8863a}
+.carg .ou .px span{display:block;font-size:9.5px;margin-top:2px;
+  font-family:system-ui,sans-serif}
+/* l'état du marché là-bas, en un mot */
+.carg .ou .px span.bon{color:#3d7a4a}
+.carg .ou .px span.moy{color:rgba(38,49,63,.45)}
+.carg .ou .px span.mal{color:#b8483a}
+.carg .ou:disabled{opacity:.42;cursor:default}
+.carg .rien{font-size:11.5px;color:rgba(38,49,63,.45);line-height:1.5;
+  font-family:system-ui,sans-serif;text-align:center;padding:8px 0}
 .prod button:disabled{background:rgba(38,49,63,.09);color:rgba(38,49,63,.34);
   box-shadow:none;cursor:default}
 
@@ -237,6 +273,9 @@ html,body{height:100%;overflow:hidden;background:#f4efe3;
 <div class="w">
   <p class="tt">Ce qui a séché</p>
   <div class="prod" id="prod"></div>
+  <p class="tt">Où l'emmener</p>
+  <div class="carg" id="carg"></div>
+
   <p class="tt">Ce que tu bâtis</p>
   <div class="ongB" id="ongB"></div>
   <div class="det" id="det"></div>
@@ -1003,9 +1042,73 @@ function poserProd(){
   if (b && stock >= 1) b.onclick = async () => {
     b.disabled = true; b.textContent = '…';
     const r = await BD.agir('ramasser');
-    if (r.ok){ D = await BD.charger(); entete(); poserProd(); poserBatis(); }
+    if (r.ok){ D = await BD.charger(); entete(); poserProd(); poserCargaison(); poserBatis(); }
     else b.textContent = "Ça n'a pas marché";
   };
+}
+
+/* ---------- où emmener ce que tu produis ----------
+   La fabrique ne fait plus seulement des euros : sa production
+   se charge en cale et va se vendre là où elle manque. */
+const MOT_MARCHE = p =>
+  p < 2  ? { t:'Ils en manquent', c:'bon' }
+: p < 7  ? { t:'Marché correct',  c:'moy' }
+:          { t:'Marché saturé',   c:'mal' };
+
+async function poserCargaison(){
+  const el = document.getElementById('carg');
+  if (!el) return;
+  let r;
+  try { r = await BD.agir('production_a_vendre'); } catch(e){ r = null; }
+
+  if (!r || !r.ok){
+    const M = { cale_prise:'Ta cale est déjà prise. Va livrer avant de recharger.',
+                pas_d_affaire:"Tu n'as pas encore d'affaire.",
+                pas_ici:"Il faut être à l'anse.",
+                sans_marchandise:'Ton métier ne produit rien de transportable.' };
+    el.innerHTML = '<p class="rien">'
+      + ((r && M[r.pourquoi]) || "Rien à charger pour l'instant.") + '</p>';
+    return;
+  }
+
+  const faut = Number(r.par_place) || 5;
+  if (!r.places){
+    el.innerHTML = '<div class="h1"><b>' + r.nom + '</b>'
+      + '<span>' + r.stock + ' en réserve</span></div>'
+      + '<p class="mo">Il faut <b>' + faut + ' pièces</b> pour remplir une place '
+      + 'de cale. Laisse sécher encore un peu.</p>';
+    return;
+  }
+
+  el.innerHTML = '<div class="h1"><b>' + r.nom + '</b>'
+    + '<span>' + r.places + ' place' + (r.places > 1 ? 's' : '') + ' sur '
+    + r.places_libres + '</span></div>'
+    + '<p class="mo">Charge <b>' + (r.places * faut) + ' pièces</b> et va les vendre. '
+    + 'Le prix dépend de ce qui est déjà arrivé là-bas.</p>'
+    + (r.ou || []).map(o => {
+        const m = MOT_MARCHE(Number(o.pression) || 0);
+        return '<button class="ou" data-v="' + o.vers + '">'
+          + '<span class="tx"><b>' + o.nom + '</b>'
+          + '<span>' + o.jours + (o.jours > 1 ? ' nuits' : ' nuit')
+          + ' de mer · ' + o.energie + ' points</span></span>'
+          + '<span class="px"><em>' + o.paie + ' €</em>'
+          + '<span class="' + m.c + '">' + m.t + '</span></span></button>';
+      }).join('')
+    + '<p class="mo" style="margin:13px 0 0">Ou <b>ramasse</b> tout de suite '
+    + 'pour ' + r.sur_place + ' € — l\'argent sans le voyage.</p>';
+
+  el.querySelectorAll('[data-v]').forEach(b =>
+    b.onclick = async () => {
+      el.querySelectorAll('[data-v]').forEach(x => x.disabled = true);
+      b.querySelector('.px em').textContent = '…';
+      const x = await BD.agir('charger_production', { p_vers: b.dataset.v });
+      if (x && x.ok){
+        D = await BD.charger();
+        entete(); poserProd(); poserCargaison(); poserBatis();
+        return;
+      }
+      poserCargaison();
+    });
 }
 
 const ICOB = {
@@ -1074,7 +1177,7 @@ async function vraimentBatir(bt){
   {
     bt.disabled = true; bt.textContent = 'On monte…';
     const r = await BD.agir('batir', { p_quoi: bt.dataset.b });
-    if (r.ok){ D = await BD.charger(); decor(); entete(); poserProd(); poserBatis(); }
+    if (r.ok){ D = await BD.charger(); decor(); entete(); poserProd(); poserCargaison(); poserBatis(); }
     else bt.textContent = r.pourquoi === 'trop_cher' ? 'Pas assez' : "Ça n'a pas marché";
   }
 }
@@ -1167,6 +1270,7 @@ document.getElementById('ret').onclick = () => location.href = 'jeu.html';
   if (!D.affaire){ location.href = 'registre.html'; return; }
   if (D.parti_le || D.port !== 'anse'){ location.href = 'jeu.html'; return; }
   decor(); entete(); poserProd(); poserBatis(); poserEnseigne();
+  poserCargaison();
 })();
 
 let t = null;
