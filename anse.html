@@ -1274,7 +1274,8 @@ function majEnseigne(){
   if (ap) ap.textContent = MQ.nom || 'Sans nom';
 }
 
-document.getElementById('ret').onclick = () => location.href = 'jeu.html';
+/* on revient au hub, d'où l'on est venu — pas à la rade */
+document.getElementById('ret').onclick = () => location.href = 'hub.html?v=3';
 
 (async () => {
   try {
