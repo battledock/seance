@@ -37,7 +37,7 @@
 .pts span{flex:1;font-size:12.5px;font-weight:700;color:rgba(18,48,63,.8);
   line-height:1.45}
 .cmp{display:flex;align-items:center;gap:12px;padding:14px 16px;
-  border-bottom:2px solid rgba(18,48,63,.1)}
+  flex-wrap:wrap;border-bottom:2px solid rgba(18,48,63,.1)}
 .cmp:last-child{border-bottom:0}
 .cmp .nm{flex:0 0 92px;font-size:14px;font-weight:800}
 .cmp .ba{flex:1;display:flex;gap:4px}
@@ -54,6 +54,36 @@
 .cmp .plus:active{box-shadow:none}
 .cmp .plus:disabled{opacity:.35;box-shadow:none;transform:none}
 .cmp .rien{flex:0 0 32px}
+
+/* ---------- l'état de service ----------
+   Tout était en base — contrats, liens, arrivages — et n'avait
+   jamais été compté. Une fiche de docker doit dire ce qu'il a fait. */
+.serv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.serv div{padding:14px 15px;border-radius:16px;
+  background:var(--creme);border:3px solid var(--encre)}
+.serv b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:25px;
+  line-height:1}
+.serv span{display:block;font-size:9.5px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(18,48,63,.48);margin-top:6px}
+.serv .large{grid-column:1 / -1;text-align:center}
+
+/* le mot qui prévient que les compétences agissent aussi dans les scènes */
+.expl{font-size:12px;font-weight:600;line-height:1.55;
+  color:rgba(255,250,240,.78);margin:-4px 4px 11px;
+  text-shadow:0 1px 0 rgba(18,48,63,.2)}
+
+/* ---------- ce que chaque compétence fait ----------
+   Deux effets, deux natures : ce qu'elle change dans ton métier,
+   et ce qu'elle t'ouvre face aux gens. */
+.cmp .eff{flex:0 0 100%;display:flex;flex-wrap:wrap;gap:6px 10px;
+  margin-top:4px;padding-left:2px}
+.cmp .eff span{font-size:11px;font-weight:700}
+/* le métier : chiffré */
+.cmp .eff .m{color:rgba(18,48,63,.55)}
+/* les rencontres : ce que ça t'ouvre en face de quelqu'un */
+.cmp .eff .r{color:#7a5aa0;display:flex;align-items:center;gap:5px}
+.cmp .eff .r::before{content:'';width:4px;height:4px;border-radius:50%;
+  background:rgba(122,90,160,.5)}
 </style>
 </head>
 <body>
@@ -89,7 +119,30 @@ const CMP = [
 const PORTS = { anse:'Marseille', marseille:'Marseille', barcelone:'Barcelone',
                 palma:'Palma', ajaccio:'Ajaccio' };
 
-let D = null, occupe = false;
+let D = null, occupe = false, ETAT = null;
+
+/* ce que chaque compétence donne, dit par le serveur :
+   `fait` sur ton métier, `dit` face aux gens */
+function effetDe(k){
+  if (!ETAT || !ETAT.ok) return null;
+  return (ETAT.effets || []).find(x => x.k === k) || null;
+}
+
+/* ---------- l'état de service ---------- */
+function blocService(){
+  if (!ETAT || !ETAT.ok) return '';
+  const S = ETAT.service || {};
+  const eur = n => Math.round(Number(n) || 0).toLocaleString('fr-FR');
+  return '<p class="sec">Ton état de service</p>'
+    + '<div class="serv">'
+    + '<div><b>' + (S.courses || 0) + '</b><span>Courses livrées</span></div>'
+    + '<div><b>' + eur(S.gagne) + ' €</b><span>Gagné en mer</span></div>'
+    + '<div><b>' + (S.gens || 0) + '</b><span>Gens qui te connaissent</span></div>'
+    + '<div><b>' + (S.histoires || 0) + '</b><span>Histoires closes</span></div>'
+    + '<div class="large"><b>' + (S.jours || 0) + '</b>'
+    + '<span>Jours depuis ton premier embarquement</span></div>'
+    + '</div>';
+}
 
 function dessiner(){
   const d = D;
@@ -117,9 +170,15 @@ function dessiner(){
       + (reste > 1 ? 'points à placer' : 'point à placer')
       + ' — touche le plus, à côté de ce que tu veux améliorer.</span></div>';
 
-  h += '<p class="sec">Ce que tu sais faire</p><div class="bloc">'
+  h += blocService();
+
+  h += '<p class="sec">Ce que tu sais faire</p>'
+    + '<p class="expl">Chacune agit deux fois : sur ton métier, et sur ce que '
+    + 'tu peux dire ou voir quand tu te retrouves en face de quelqu\'un.</p>'
+    + '<div class="bloc">'
     + CMP.map(([k, n, c]) => {
       const v = Math.max(0, Math.min(8, Number(V[k] ?? 0)));
+      const E = effetDe(k);
       return '<div class="cmp"><span class="nm">' + n + '</span>'
         + '<span class="ba" style="--c:' + c + '">'
         + Array.from({length:8}, (_, i) =>
@@ -128,6 +187,12 @@ function dessiner(){
         + (reste > 0 && v < 8
             ? '<button class="plus" data-k="' + k + '">+</button>'
             : '<span class="rien"></span>')
+        + (E && (E.fait || E.dit)
+            ? '<span class="eff">'
+              + (E.fait ? '<span class="m">' + E.fait + '</span>' : '')
+              + (E.dit ? '<span class="r">' + E.dit + '</span>' : '')
+              + '</span>'
+            : '')
         + '</div>';
     }).join('') + '</div>';
 
@@ -140,7 +205,10 @@ function dessiner(){
       document.querySelectorAll('.plus').forEach(x => x.disabled = true);
       try {
         const r = await BD.agir('placer_point', { p_quoi: b.dataset.k });
-        if (r && r.ok) Object.assign(D, await BD.charger());
+        if (r && r.ok){
+          Object.assign(D, await BD.charger());
+          try { ETAT = await BD.agir('mon_etat'); } catch(e2){}
+        }
       } catch(e){}
       occupe = false;
       dessiner();
@@ -151,6 +219,7 @@ function dessiner(){
   try {
     D = await BD.charger();
     if (!D){ location.href = 'index.html'; return; }
+    try { ETAT = await BD.agir('mon_etat'); } catch(e){ ETAT = null; }
     dessiner();
   } catch(e){
     console.warn(e);
