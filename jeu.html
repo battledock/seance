@@ -836,6 +836,9 @@ html{font-size:calc(16px * var(--txt, 1))}
    enfin ce qui vous sépare et ce qu'il a fait de mieux. */
 .fi{position:fixed;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 92px);
   z-index:24;max-width:360px;margin:0 auto;max-height:64vh;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  /* elle grandit vers le haut sans bousculer ce qui est dessous */
+  will-change:transform;
   border-radius:20px;background:#fdf6e6;border:3px solid #12303f;
   box-shadow:0 14px 44px rgba(6,16,28,.5);color:#12303f;
   opacity:0;transform:translateY(14px);pointer-events:none;
@@ -2896,8 +2899,34 @@ function etiquettes(v){
     b.onclick = () => ficheAutre(+b.dataset.a));
 }
 
-function ficheAutre(i){
+/* on garde ce qu'on sait déjà : rouvrir une fiche doit être immédiat */
+const SU_E = {};
+let SU_TOUR = 0, SU_TUYAUX = null;
+
+async function ficheAutre(i){
   const j = POS_A[i].j;
+  const tour = ++SU_TOUR;
+
+  /* on va chercher la connaissance AVANT de dessiner : la fiche
+     paraît d'un seul tenant, au lieu de grandir en trois fois */
+  let E = SU_E[j.id] || null;
+  if (!E && j.id){
+    try { E = await BD.agir('entre_vous', { p_avec: j.id }); } catch(e){}
+    if (tour !== SU_TOUR) return;   /* on a touché quelqu'un d'autre entre-temps */
+    if (E) SU_E[j.id] = E;
+  }
+  dessinerFiche(j, E);
+  if (SU_E[j.id]){
+    /* on rafraîchit en fond, sans faire bouger ce qui est déjà à l'écran */
+    BD.agir('entre_vous', { p_avec: j.id }).then(f => {
+      if (tour !== SU_TOUR || !f || !f.ok) return;
+      SU_E[j.id] = f;
+      majConnaissance(f);
+    }).catch(() => {});
+  }
+}
+
+function dessinerFiche(j, E){
   const c = COULEURS.find(x => x.k === j.couleur) || COULEURS[0];
   const f = (ECUSSONS.find(x => x.k === j.ecusson) || ECUSSONS[0]).r;
   const h = +j.depuis_h || 0;
@@ -3024,43 +3053,68 @@ function poserConnaissance(E){
   } else vu.style.display = 'none';
 }
 
-async function poserGestes(j){
+/* ---------- rafraîchir la jauge sans redessiner ----------
+   Redessiner tout le bloc faisait sauter la fiche à chaque geste.
+   On ne touche qu'aux quelques éléments qui changent vraiment. */
+function majConnaissance(E){
+  const cn = document.getElementById('fi-cn');
+  if (!cn || !E || !E.ok) return;
+  const P = E.palier || {}, S = E.prochain;
+  const depuis = [0, 6, 18, 35, 60][P.n || 0] || 0;
+  const jusque = S ? S.a : 100;
+  const part = S
+    ? Math.max(0, Math.min(100, (E.valeur - depuis) / (jusque - depuis) * 100))
+    : 100;
+  const ba = cn.querySelector('.ba6 i');
+  if (ba) ba.style.width = part.toFixed(0) + '%';
+  const nom = cn.querySelector('.l6 b');
+  if (nom && nom.textContent !== P.nom){
+    /* le palier a changé : là seulement on refait le bloc */
+    poserConnaissance(E);
+    return;
+  }
+  const cpt = cn.querySelector('.l6 span');
+  if (cpt) cpt.textContent = (E.saluts || 0) + (E.saluts > 1 ? ' saluts' : ' salut')
+    + (E.tuyaux ? ' · ' + E.tuyaux + (E.tuyaux > 1 ? ' tuyaux' : ' tuyau') : '');
+}
+
+function poserGestes(j, E){
   const bs = document.getElementById('g-salut');
   const bt = document.getElementById('g-tuyau');
   const dit = document.getElementById('g-dit');
   const tuy = document.getElementById('g-tuy');
   if (!bs || !j.id) return;
 
-  let E = null;
-  async function relire(){
-    try { E = await BD.agir('entre_vous', { p_avec: j.id }); } catch(e){}
-    poserConnaissance(E);
-    if (E && E.salue_aujourdhui){ bs.disabled = true; bs.textContent = 'Salué'; }
-  }
-  await relire();
-  dit.textContent = 'Il le trouvera en revenant au port.';
+  if (E && E.salue_aujourdhui){ bs.disabled = true; bs.textContent = 'Salué'; }
 
   bs.onclick = async () => {
     bs.disabled = true; bs.textContent = '…';
     const r = await BD.agir('saluer', { p_vers: j.id });
-    if (r && r.ok){
-      bs.textContent = 'Salué';
-      /* ce que le salut t'a rapporté, dit tout de suite */
-      const monte = r.lien && r.lien.monte;
-      dit.textContent = monte
-        ? 'Vous voilà « ' + r.lien.palier.nom + ' ». +' + r.energie + ' d\'énergie.'
-        : '+' + r.energie + " d'énergie pour vous deux.";
-      dit.classList.add('fait');
-      await relire();
-    } else bs.textContent = 'Déjà fait';
+    if (!r || !r.ok){ bs.textContent = 'Déjà fait'; return; }
+    bs.textContent = 'Salué';
+    dit.textContent = (r.lien && r.lien.monte)
+      ? 'Vous voilà « ' + r.lien.palier.nom + ' ». +' + r.energie + ' d\'énergie.'
+      : '+' + r.energie + " d'énergie pour vous deux.";
+    dit.classList.add('fait');
+    /* on met à jour ce qu'on sait, sans refaire la fiche */
+    if (E){
+      E.valeur = (r.lien && r.lien.apres) ?? E.valeur;
+      E.saluts = (E.saluts || 0) + 1;
+      E.salue_aujourdhui = true;
+      if (r.lien && r.lien.palier) E.palier = r.lien.palier;
+      SU_E[j.id] = E;
+      majConnaissance(E);
+    }
   };
 
-  /* les tuyaux : trois prix tirés de ton propre carnet */
+  /* les tuyaux : on les tient d'avance, la liste s'ouvre sans attendre */
   bt.onclick = async () => {
-    if (tuy.innerHTML){ tuy.innerHTML = ''; return; }
-    tuy.innerHTML = '<p class="dit3">On regarde ton carnet…</p>';
-    let T = [];
-    try { T = await BD.agir('mes_tuyaux'); } catch(e){}
+    if (tuy.innerHTML){ tuy.innerHTML = ''; bt.textContent = 'Un tuyau'; return; }
+    bt.textContent = 'Refermer';
+    let T = SU_TUYAUX;
+    if (!T){
+      try { T = await BD.agir('mes_tuyaux'); SU_TUYAUX = T; } catch(e){}
+    }
     if (!Array.isArray(T) || !T.length){
       tuy.innerHTML = '<p class="dit3">Tu n\'as encore rien à lui apprendre. '
         + 'Livre quelques courses d\'abord.</p>';
@@ -3081,7 +3135,13 @@ async function poserGestes(j){
             dit.textContent = 'Vous voilà « ' + r.lien.palier.nom + ' ».';
             dit.classList.add('fait');
           }
-          await relire();
+          if (E){
+            E.valeur = (r.lien && r.lien.apres) ?? E.valeur;
+            E.tuyaux = (E.tuyaux || 0) + 1;
+            if (r.lien && r.lien.palier) E.palier = r.lien.palier;
+            SU_E[j.id] = E;
+            majConnaissance(E);
+          }
         }
       });
   };
@@ -4411,6 +4471,8 @@ setTimeout(leverAube, 6000);
     poserAttente();
     MOI = d;
     chercherLesAutres().then(n => { if (n) dessiner(); });
+    /* on tient les tuyaux prêts : la liste s'ouvrira sans attendre */
+    BD.agir('mes_tuyaux').then(t => { SU_TUYAUX = t; }).catch(() => {});
     /* un gamin t'attend sur le quai, si tu as la boussole.
        Il ne paraît qu'à Marseille, et jamais pendant une traversée. */
     if ((d.niveau || 1) >= 5
