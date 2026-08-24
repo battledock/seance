@@ -82,6 +82,8 @@ body::before{background:linear-gradient(180deg,var(--h1) 0%,var(--h2) 26%,
 .nrj2 .ba .cout{background:repeating-linear-gradient(-45deg,
   rgba(224,83,60,.9) 0 5px,rgba(224,83,60,.48) 5px 10px)}
 .nrj2 .sous{font-size:12px;font-weight:600;color:rgba(18,48,63,.56);margin-top:10px}
+/* ce que tes compétences t'épargnent : on le dit, sinon ça ne se voit pas */
+.nrj2 .sous .endur{color:var(--vert);font-weight:800}
 
 /* ---------- larguer ---------- */
 .largue{width:100%;padding:20px;border-radius:18px;cursor:pointer;
@@ -231,9 +233,15 @@ function poserCap(){
   const co = document.querySelector('.nrj2 .cout');
   co.style.left = (reste / max * 100) + '%';
   co.style.width = (Math.min(cout, nrj) / max * 100) + '%';
-  document.getElementById('n-sous').textContent = assez
+  /* ce que ton endurance t'épargne sur cette course */
+  const plein = Number(CAP.energie_plein || cout);
+  const gagne = Math.max(0, plein - cout);
+  document.getElementById('n-sous').innerHTML = assez
     ? 'La traversée te prend ' + cout + " points. Il t'en restera "
       + Math.round(reste) + ' en arrivant.'
+      + (gagne > 0
+          ? ' <span class="endur">Ton endurance t\'en épargne '
+            + gagne + '.</span>' : '')
     : 'Il te manque ' + Math.round(cout - nrj) + ' points — '
       + Math.round(cout - nrj) + ' minutes de repos.';
 
