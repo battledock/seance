@@ -19,6 +19,24 @@ body::before{background:linear-gradient(180deg,
   var(--h4,#3f87a6) 70%, var(--h5,#2b6f92) 100%);
   transition:background 1s ease}
 </style>
+<script>
+/* On se souvient du dernier port pour peindre le bon ciel dès la
+   première image. Sans ça le hub s'ouvrait en orange marseillais
+   et basculait au violet une fois le serveur revenu. */
+(function(){
+  const C = { anse:['#f5a53a','#eeb455','#c9b978','#3f87a6','#2b6f92'],
+    barcelone:['#e8873f','#c9686a','#8a5f84','#3f5f82','#1c3350'],
+    palma:['#f6d97a','#e8b45c','#88b8a8','#2f92a4','#14566a'],
+    ajaccio:['#e8a8a0','#c98fa0','#8f8fa8','#3f7f92','#17475c'] };
+  let p = 'anse';
+  try { p = localStorage.getItem('bd-port') || 'anse'; } catch(e){}
+  const ci = C[p] || C.anse;
+  const R = document.documentElement.style;
+  ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', ci[0]);
+})();
+</script>
 <style>
 /* ---------- ce qui est propre au hub ---------- */
 /* ---------- ton livret de docker ----------
@@ -552,6 +570,7 @@ document.getElementById('ouv-ok').onclick = () => {
     ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
     const tc = document.querySelector('meta[name="theme-color"]');
     if (tc) tc.setAttribute('content', ci[0]);
+    try { localStorage.setItem('bd-port', PORT); } catch(e){}
     VECU = (d.rencontres || []).slice();
     /* ouvrir une affaire chez Félix débloque la fabrique */
     if (d.affaire) VECU.push('affaire');
