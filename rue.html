@@ -1593,6 +1593,8 @@ function poserMiquel(vecue){
 
   /* le signe au-dessus de sa tête disparaît une fois la scène vécue */
   MOI = d;
+  /* on retient le port : le hub s ouvrira du bon ciel */
+  try { localStorage.setItem("bd-port", d.port || "anse"); } catch(e){}
   const vu = (d.rencontres || []).includes('miquel');
   const connu = (d.quetes || []).some(q => q.k === 'miquel_2');
 
