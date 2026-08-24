@@ -454,8 +454,14 @@ const TUILES = [
     s:'Pas encore ouvert', ferme:1 },
 
   /* ---- partout ---- */
-  { k:'quetes', ou:'attend', em:'📓', t:'Ton carnet', s:'Les histoires en cours',
+  { k:'quetes', ou:'attend', ici:'anse', em:'📓', t:'Ton carnet',
+    s:'Les histoires en cours',
     f:() => location.href = 'carnet.html' },
+  /* Barcelone est une place de commerce : on y apprend les cours.
+     Marseille n'est qu'une anse — elle n'a rien de tel. */
+  { k:'bourse', ou:'attend', ici:'barcelone', em:'📈', t:'Le cours du jour',
+    s:'Ce que la place dit des prix',
+    f:() => location.href = 'bourse.html' },
   { k:'barque', ou:'toi', em:'⛵', t:'Ta barque', s:'Les avirons',
     f:() => location.href = 'barque.html' },
   { k:'sacoche', ou:'toi', em:'🎒', t:'Ta sacoche', s:'Ce que tu portes',
