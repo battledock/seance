@@ -873,6 +873,67 @@ html{font-size:calc(16px * var(--txt, 1))}
 .fi .vs .l4.devant .v4{color:#1f6b45}
 .fi .vs .l4.egal .v4{color:rgba(18,48,63,.4)}
 
+/* ---------- les deux gestes ----------
+   Le jeu est asynchrone : Martin n'est pas vraiment là. On ne peut
+   que lui laisser quelque chose qu'il trouvera en revenant. */
+.fi .ges{border-top:2.5px solid rgba(18,48,63,.12);padding:14px 17px 15px}
+.fi .ges .tt3{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(18,48,63,.42);margin-bottom:10px}
+.fi .ges .duo2{display:flex;gap:9px}
+.fi .ges button{flex:1;padding:12px 8px;border-radius:14px;cursor:pointer;
+  background:#f0a92e;border:2.5px solid #12303f;color:#12303f;
+  font-family:'DM Serif Display',Georgia,serif;font-size:15px;
+  transition:background .12s}
+.fi .ges button:active{background:#d9962a}
+.fi .ges button:disabled{background:rgba(18,48,63,.08);
+  color:rgba(18,48,63,.4);cursor:default}
+.fi .ges .dit3{font-size:11.5px;font-weight:700;color:rgba(18,48,63,.5);
+  margin-top:10px;line-height:1.5}
+.fi .ges .dit3.fait{color:#1f6b45}
+/* ---------- ce que vous êtes l'un pour l'autre ----------
+   Les saluts et les tuyaux font monter une connaissance, et chaque
+   palier découvre quelque chose de lui. */
+.fi .cn{padding:0 17px 14px}
+.fi .cn .l6{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.fi .cn .l6 b{font-family:'DM Serif Display',Georgia,serif;font-size:17px}
+.fi .cn .l6 span{font-size:10.5px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(18,48,63,.42)}
+.fi .cn .ba6{position:relative;height:10px;border-radius:6px;margin-top:9px;
+  background:rgba(18,48,63,.1);border:2px solid #12303f;overflow:hidden}
+.fi .cn .ba6 i{display:block;height:100%;background:#2f8a5c;
+  transition:width .5s cubic-bezier(.3,.9,.3,1)}
+.fi .cn .d6{font-size:11.5px;font-weight:600;color:rgba(18,48,63,.55);
+  margin-top:9px;line-height:1.5}
+/* ce que ce palier t'a ouvert */
+.fi .cn .o6{display:flex;align-items:flex-start;gap:8px;margin-top:9px;
+  font-size:11.5px;font-weight:700;color:#1f6b45;line-height:1.45}
+.fi .cn .o6::before{content:'✦';flex:0 0 auto;opacity:.7}
+/* ce que le palier suivant ouvrira */
+.fi .cn .s6{font-size:11px;font-weight:700;color:rgba(18,48,63,.4);margin-top:7px}
+
+/* ce que le lien te laisse voir de lui */
+.fi .vu{border-top:2.5px solid rgba(18,48,63,.12);padding:13px 17px}
+.fi .vu .tt3{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(18,48,63,.42);margin-bottom:9px}
+.fi .vu .l7{display:flex;align-items:baseline;gap:9px;padding:5px 0;font-size:12.5px}
+.fi .vu .l7 .n7{flex:1;min-width:0;font-weight:700;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi .vu .l7 .p7{flex:0 0 auto;font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;color:#c07f14}
+.fi .vu .rv{font-size:12.5px;font-weight:700;color:rgba(18,48,63,.6)}
+
+/* la liste des tuyaux qu'on peut lui donner */
+.fi .tuy{margin-top:11px}
+.fi .tuy button{display:flex;align-items:baseline;gap:9px;width:100%;
+  padding:10px 12px;margin-top:7px;border-radius:12px;cursor:pointer;text-align:left;
+  background:rgba(18,48,63,.05);border:2.5px solid rgba(18,48,63,.18);
+  font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:700;color:#12303f}
+.fi .tuy button:active{background:rgba(18,48,63,.12)}
+.fi .tuy button .n6{flex:1;min-width:0;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.fi .tuy button .p6{flex:0 0 auto;font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;font-weight:400;color:#c07f14}
+
 /* ---------- ses records ---------- */
 .fi .rc{border-top:2.5px solid rgba(18,48,63,.12);padding:14px 17px 16px}
 .fi .rc .tt3{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
@@ -2885,6 +2946,15 @@ function ficheAutre(i){
           + 'Rien à lui reprendre pour l\'instant.</p>')
     + '</div>';
 
+  /* ---- les deux gestes qu'on peut laisser ---- */
+  const ges = '<div class="ges" id="fi-ges">'
+    + '<p class="tt3">Ce que tu peux laisser</p>'
+    + '<div class="duo2">'
+    + '<button id="g-salut">Le saluer</button>'
+    + '<button id="g-tuyau">Un tuyau</button></div>'
+    + '<p class="dit3" id="g-dit">Il le trouvera en revenant au port.</p>'
+    + '<div class="tuy" id="g-tuy"></div></div>';
+
   document.getElementById('fi').innerHTML =
     '<div class="h"><span class="ec" style="background:' + c.c
     + ';border-radius:' + f + '">' + (j.signe ? signe(j.signe, '#fff') : '') + '</span>'
@@ -2894,11 +2964,127 @@ function ficheAutre(i){
     + '<span class="qd">Niveau ' + (j.niveau || 1) + ' · au port depuis '
     + (h < 1 ? "moins d'une heure" : h + ' h') + '</span></span>'
     + '<button class="fer" id="fi-x">×</button></div>'
-    + vs + rc;
+    + '<div class="cn" id="fi-cn"></div>'
+    + '<div class="vu" id="fi-vu" style="display:none"></div>'
+    + vs + ges + rc;
 
   document.getElementById('fi').classList.add('on');
+  poserGestes(j);
   document.getElementById('fi-x').onclick = () =>
     document.getElementById('fi').classList.remove('on');
+}
+
+/* ---------- saluer, et donner un tuyau ----------
+   Deux gestes, aucun texte libre : rien à modérer, et tout se
+   retrouve à son retour. */
+/* ---------- ce que vous êtes l'un pour l'autre ---------- */
+function poserConnaissance(E){
+  const cn = document.getElementById('fi-cn');
+  const vu = document.getElementById('fi-vu');
+  if (!cn || !E || !E.ok) return;
+
+  const P = E.palier || {}, S = E.prochain;
+  const jusque = S ? S.a : 100;
+  const depuis = (P.n || 0) === 0 ? 0
+    : [0, 6, 18, 35, 60][P.n] || 0;
+  const part = S
+    ? Math.max(0, Math.min(100, (E.valeur - depuis) / (jusque - depuis) * 100))
+    : 100;
+
+  cn.innerHTML = '<div class="l6"><b>' + (P.nom || '') + '</b>'
+    + '<span>' + (E.saluts || 0) + (E.saluts > 1 ? ' saluts' : ' salut')
+    + (E.tuyaux ? ' · ' + E.tuyaux + (E.tuyaux > 1 ? ' tuyaux' : ' tuyau') : '')
+    + '</span></div>'
+    + '<div class="ba6"><i style="width:' + part.toFixed(0) + '%"></i></div>'
+    + '<p class="d6">' + (P.dit || '') + '</p>'
+    + (P.ouvre ? '<p class="o6">' + P.ouvre + '</p>' : '')
+    + (S ? '<p class="s6">Encore un peu et ce sera « ' + S.nom + ' ».</p>' : '');
+
+  /* ---- ce que le lien te laisse voir ---- */
+  let h = '';
+  if (E.revient_de) h += '<p class="rv">Il revient de ' + E.revient_de + '.</p>';
+  if (Array.isArray(E.cale) && E.cale.length)
+    h += '<p class="tt3" style="margin-top:11px">Ce qu\'il a en cale</p>'
+      + E.cale.map(x => '<div class="l7"><span class="n7">' + x.nom
+        + '</span><span class="p7">→ ' + (x.vers || '') + '</span></div>').join('');
+  if (Array.isArray(E.contrats) && E.contrats.length)
+    h += '<p class="tt3" style="margin-top:11px">Ce qu\'on lui propose</p>'
+      + E.contrats.map(x => '<div class="l7"><span class="n7">' + x.nom
+        + '</span><span class="p7">' + Number(x.paie).toLocaleString('fr-FR')
+        + ' €</span></div>').join('');
+  if (Array.isArray(E.carnet) && E.carnet.length)
+    h += '<p class="tt3" style="margin-top:11px">Son carnet de prix</p>'
+      + E.carnet.slice(0, 5).map(x => '<div class="l7"><span class="n7">' + x.nom
+        + ' à ' + x.port + '</span><span class="p7">' + x.prix
+        + ' €</span></div>').join('');
+
+  if (h){
+    vu.innerHTML = '<p class="tt3">Ce que tu sais de lui</p>' + h;
+    vu.style.display = '';
+  } else vu.style.display = 'none';
+}
+
+async function poserGestes(j){
+  const bs = document.getElementById('g-salut');
+  const bt = document.getElementById('g-tuyau');
+  const dit = document.getElementById('g-dit');
+  const tuy = document.getElementById('g-tuy');
+  if (!bs || !j.id) return;
+
+  let E = null;
+  async function relire(){
+    try { E = await BD.agir('entre_vous', { p_avec: j.id }); } catch(e){}
+    poserConnaissance(E);
+    if (E && E.salue_aujourdhui){ bs.disabled = true; bs.textContent = 'Salué'; }
+  }
+  await relire();
+  dit.textContent = 'Il le trouvera en revenant au port.';
+
+  bs.onclick = async () => {
+    bs.disabled = true; bs.textContent = '…';
+    const r = await BD.agir('saluer', { p_vers: j.id });
+    if (r && r.ok){
+      bs.textContent = 'Salué';
+      /* ce que le salut t'a rapporté, dit tout de suite */
+      const monte = r.lien && r.lien.monte;
+      dit.textContent = monte
+        ? 'Vous voilà « ' + r.lien.palier.nom + ' ». +' + r.energie + ' d\'énergie.'
+        : '+' + r.energie + " d'énergie pour vous deux.";
+      dit.classList.add('fait');
+      await relire();
+    } else bs.textContent = 'Déjà fait';
+  };
+
+  /* les tuyaux : trois prix tirés de ton propre carnet */
+  bt.onclick = async () => {
+    if (tuy.innerHTML){ tuy.innerHTML = ''; return; }
+    tuy.innerHTML = '<p class="dit3">On regarde ton carnet…</p>';
+    let T = [];
+    try { T = await BD.agir('mes_tuyaux'); } catch(e){}
+    if (!Array.isArray(T) || !T.length){
+      tuy.innerHTML = '<p class="dit3">Tu n\'as encore rien à lui apprendre. '
+        + 'Livre quelques courses d\'abord.</p>';
+      return;
+    }
+    tuy.innerHTML = T.map(t =>
+      '<button data-k="' + t.k + '" data-ou="' + t.ou + '">'
+      + '<span class="n6">' + t.nom + ' à ' + t.port + '</span>'
+      + '<span class="p6">' + t.prix + ' €</span></button>').join('');
+    tuy.querySelectorAll('[data-k]').forEach(b =>
+      b.onclick = async () => {
+        b.disabled = true;
+        const r = await BD.agir('donner_tuyau',
+          { p_vers: j.id, p_k: b.dataset.k, p_ou: b.dataset.ou });
+        b.querySelector('.p6').textContent = (r && r.ok) ? 'dit' : 'déjà dit';
+        if (r && r.ok){
+          if (r.lien && r.lien.monte){
+            dit.textContent = 'Vous voilà « ' + r.lien.palier.nom + ' ».';
+            dit.classList.add('fait');
+          }
+          await relire();
+        }
+      });
+  };
 }
 
 async function chercherLesAutres(){
