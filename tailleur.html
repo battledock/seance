@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#e8873f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Le tailleur — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chaud.css?v=2">
+<script>
+/* ---------- le ciel du port ---------- */
+(function(){
+  const C = { anse:['#f5a53a','#eeb455','#c9b978','#3f87a6','#2b6f92'],
+    barcelone:['#e8873f','#c9686a','#8a5f84','#3f5f82','#1c3350'],
+    palma:['#f6d97a','#e8b45c','#88b8a8','#2f92a4','#14566a'],
+    ajaccio:['#e8a8a0','#c98fa0','#8f8fa8','#3f7f92','#17475c'] };
+  let p = 'barcelone';
+  try { p = localStorage.getItem('bd-port') || 'barcelone'; } catch(e){}
+  const ci = C[p] || C.barcelone;
+  const R = document.documentElement.style;
+  ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', ci[0]);
+})();
+</script>
+<style>
+html{background:var(--h5,#1c3350)}
+body::before{background:linear-gradient(180deg,
+  var(--h1,#e8873f) 0%, var(--h2,#c9686a) 16%, var(--h3,#8a5f84) 38%,
+  var(--h4,#3f5f82) 70%, var(--h5,#1c3350) 100%)}
+
+/* ---------- le miroir ----------
+   Ton portrait en grand, qui change à chaque essayage : c'est le
+   plaisir de la boutique, il faut le voir tout de suite. */
+.miroir{display:flex;align-items:center;gap:16px;padding:16px 17px;
+  border-radius:20px;margin-bottom:15px;
+  background:var(--creme);border:3px solid var(--encre)}
+.miroir .av{flex:0 0 96px;width:96px;height:96px;border-radius:16px;overflow:hidden;
+  background:#dfe8ee;border:3px solid var(--encre)}
+.miroir .av svg{display:block;width:100%;height:100%}
+.miroir .tx{flex:1;min-width:0}
+.miroir .tx .su{font-size:9px;font-weight:800;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(18,48,63,.44)}
+.miroir .tx b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:23px;line-height:1.1;margin-top:5px}
+.miroir .tx .eu{display:block;font-size:13px;font-weight:700;
+  color:rgba(18,48,63,.6);margin-top:6px}
+.miroir .tx .eu em{font-style:normal;font-family:'DM Serif Display',Georgia,serif;
+  font-size:17px;color:var(--encre)}
+
+/* ---------- un rayon ---------- */
+.ray{margin-bottom:13px;border-radius:18px;overflow:hidden;
+  background:var(--creme);border:3px solid var(--encre)}
+.ray .h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:13px 16px 11px}
+.ray .h b{font-family:'DM Serif Display',Georgia,serif;font-size:18px}
+.ray .h span{font-size:10px;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(18,48,63,.45)}
+.ray .pieces{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 15px}
+.ray button{flex:0 0 auto;min-width:52px;padding:10px 12px;border-radius:13px;
+  cursor:pointer;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;
+  background:rgba(18,48,63,.06);border:2.5px solid rgba(18,48,63,.2);
+  color:rgba(18,48,63,.6);transition:background .12s,border-color .12s}
+/* ce que tu portes */
+.ray button.porte{background:var(--or);border-color:var(--encre);color:var(--encre)}
+/* ce que tu possèdes sans le porter */
+.ray button.a_toi{background:var(--creme2);border-color:var(--encre);color:var(--encre)}
+/* ce qu'il faut acheter : le prix est écrit dessus */
+.ray button.vendre{border-style:dashed}
+.ray button:disabled{opacity:.4;cursor:default}
+.ray button small{display:block;font-size:9px;font-weight:700;margin-top:3px;
+  color:#c07f14}
+
+/* ---------- l'essayage ----------
+   On enfile la pièce sans payer : le miroir la montre, et c'est
+   seulement en confirmant qu'on sort l'argent. */
+.essai{position:fixed;left:14px;right:14px;z-index:30;
+  bottom:calc(env(safe-area-inset-bottom) + 14px);
+  max-width:420px;margin:0 auto;padding:14px 16px;border-radius:18px;
+  background:var(--creme);border:3px solid var(--encre);
+  box-shadow:0 10px 34px rgba(6,16,28,.45);
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity .25s,transform .3s cubic-bezier(.2,.9,.3,1)}
+.essai.on{opacity:1;transform:none;pointer-events:auto}
+.essai .q{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.essai .q b{font-family:'DM Serif Display',Georgia,serif;font-size:18px}
+.essai .q span{font-family:'DM Serif Display',Georgia,serif;font-size:19px;
+  color:#c07f14;white-space:nowrap}
+.essai .duo{display:flex;gap:9px;margin-top:12px}
+.essai .duo button{flex:1;padding:13px 8px;border-radius:14px;cursor:pointer;
+  font-family:'DM Serif Display',Georgia,serif;font-size:17px;
+  border:3px solid var(--encre);transition:background .12s}
+.essai .duo .oui{background:var(--or);color:var(--encre)}
+.essai .duo .oui:active{background:#d9962a}
+.essai .duo .oui:disabled{background:rgba(18,48,63,.08);
+  color:rgba(18,48,63,.4);cursor:default}
+.essai .duo .non{background:rgba(18,48,63,.06);color:rgba(18,48,63,.62)}
+/* la pièce en cours d'essayage se voit dans le rayon */
+.ray button.essaye{background:var(--creme2);border-color:var(--encre);
+  border-style:solid;color:var(--encre);
+  box-shadow:0 0 0 3px rgba(240,169,46,.5)}
+
+/* ---------- la pension ---------- */
+.lit{padding:17px 18px;border-radius:20px;margin:20px 0 13px;
+  background:var(--creme);border:3px solid var(--encre)}
+.lit .h{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.lit .h b{font-family:'DM Serif Display',Georgia,serif;font-size:21px}
+.lit .h span{font-size:10px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(18,48,63,.45)}
+.lit .ba{position:relative;height:14px;border-radius:8px;margin-top:13px;
+  background:rgba(18,48,63,.1);border:2px solid var(--encre);overflow:hidden}
+.lit .ba i{display:block;height:100%;background:var(--vert);transition:width .6s}
+.lit p{font-size:12.5px;font-weight:600;line-height:1.55;
+  color:rgba(18,48,63,.6);margin-top:11px}
+.lit button{width:100%;margin-top:13px;padding:16px;border-radius:16px;cursor:pointer;
+  font-family:'DM Serif Display',Georgia,serif;font-size:19px;color:var(--encre);
+  background:var(--or);border:3px solid var(--encre);transition:background .12s}
+.lit button:active{background:#d9962a}
+.lit button:disabled{background:rgba(18,48,63,.08);color:rgba(18,48,63,.4);
+  cursor:default}
+
+.mot{font-size:11.5px;font-weight:700;color:rgba(255,250,240,.72);
+  margin:0 4px 10px;line-height:1.55;text-shadow:0 1px 0 rgba(18,48,63,.2)}
+.rien{font-size:13px;font-weight:600;color:rgba(18,48,63,.5);line-height:1.55;
+  padding:18px 16px;text-align:center}
+
+#charge{position:fixed;inset:0;z-index:90;background:var(--h1,#e8873f);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .45s ease}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-family:'DM Serif Display',Georgia,serif;font-size:27px;color:#fffaf0}
+#charge .fl{width:118px;height:3px;border-radius:2px;
+  background:rgba(255,250,240,.26);overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#fffaf0;
+  animation:houle 1.15s ease-in-out infinite}
+@keyframes houle{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div id="charge"><div class="ti">Battle Dock</div><div class="fl"><i></i></div></div>
+
+<div class="pont">
+  <div class="tete">
+    <span class="q"><b>Le tailleur</b><span id="t-sous">—</span></span>
+    <button class="retour" id="retour">‹ Retour</button>
+  </div>
+
+  <div class="miroir" id="miroir"></div>
+  <p class="mot">Ce que tu portes te suit partout — sur le quai, au classement,
+    dans la fiche que les autres consultent.</p>
+  <div id="rayons"></div>
+
+  <div class="lit" id="lit"></div>
+
+  <div class="essai" id="essai"></div>
+
+  <p class="pied">Battle Dock — Barcelone</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+let AUBE = false;
+function leverAube(){
+  if (AUBE) return;
+  AUBE = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const c = document.getElementById('charge');
+    if (!c) return;
+    c.classList.add('parti');
+    setTimeout(() => c.remove(), 500);
+  }));
+}
+setTimeout(leverAube, 6000);
+
+/* ============================================================
+   LE TAILLEUR
+   L'avatar était choisi une fois pour toutes à l'inscription.
+   Ici on en change — et comme il vit dans `dockers.avatar`,
+   il change partout du même coup.
+   ============================================================ */
+let MOI = null, BOUTIQUE = null, occupe = false;
+const eur = n => Math.round(Number(n) || 0).toLocaleString('fr-FR');
+
+/* la pièce qu'on essaie, pas encore achetée */
+let ESSAI = null;
+
+/* le portrait tel qu'on le verrait avec la pièce sur le dos */
+function commeCa(){
+  if (!ESSAI) return MOI;
+  const a = Object.assign({}, MOI.avatar);
+  a[ESSAI.quoi] = ESSAI.valeur;
+  return Object.assign({}, MOI, { avatar: a });
+}
+
+function miroir(){
+  const el = document.getElementById('miroir');
+  el.innerHTML = '<span class="av">' + BD.avatarSVG(commeCa()) + '</span>'
+    + '<span class="tx"><span class="su">Devant la glace</span>'
+    + '<b>' + (MOI.pseudo || '') + '</b>'
+    + '<span class="eu">' + (ESSAI
+        ? 'Tu l\'essaies. Rien n\'est payé.'
+        : 'En caisse <em>' + eur(MOI.euros) + ' €</em>') + '</span></span>';
+  const sv = el.querySelector('svg');
+  if (sv) sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+}
+
+function rayons(){
+  const el = document.getElementById('rayons');
+  if (!BOUTIQUE || !BOUTIQUE.ok){
+    el.innerHTML = '<div class="ray"><p class="rien">'
+      + "La boutique est fermée.</p></div>";
+    return;
+  }
+  el.innerHTML = BOUTIQUE.rayons.map(r =>
+    '<div class="ray"><div class="h"><b>' + r.nom + '</b>'
+    + '<span>' + eur(r.prix) + ' € la pièce</span></div>'
+    + '<div class="pieces">' + r.pieces.map(p =>
+        '<button data-k="' + r.k + '" data-i="' + p.i + '" class="'
+        + (ESSAI && ESSAI.quoi === r.k && ESSAI.valeur === p.i ? 'essaye'
+           : p.porte ? 'porte' : p.a_toi ? 'a_toi' : 'vendre') + '">'
+        + (p.i + 1)
+        + (p.a_toi ? '' : '<small>' + eur(r.prix) + ' €</small>')
+        + '</button>').join('')
+    + '</div></div>').join('');
+}
+
+/* ---------- la barre d'essayage ---------- */
+function poserEssai(){
+  const el = document.getElementById('essai');
+  if (!ESSAI){ el.classList.remove('on'); return; }
+  const r = BOUTIQUE.rayons.find(x => x.k === ESSAI.quoi);
+  const p = r.pieces.find(x => x.i === ESSAI.valeur);
+  const gratuit = p.a_toi;
+  const assez = gratuit || MOI.euros >= r.prix;
+
+  el.innerHTML = '<div class="q"><b>' + r.nom + ' ' + (ESSAI.valeur + 1) + '</b>'
+    + '<span>' + (gratuit ? 'à toi' : eur(r.prix) + ' €') + '</span></div>'
+    + '<div class="duo">'
+    + '<button class="oui" id="e-oui"' + (assez ? '' : ' disabled') + '>'
+    + (gratuit ? 'La mettre'
+       : assez ? "L'acheter"
+       : 'Il te manque ' + eur(r.prix - MOI.euros) + ' €') + '</button>'
+    + '<button class="non" id="e-non">Laisser</button></div>';
+  el.classList.add('on');
+
+  document.getElementById('e-non').onclick = () => {
+    ESSAI = null; miroir(); rayons(); poserEssai();
+  };
+  document.getElementById('e-oui').onclick = async () => {
+    if (occupe) return;
+    occupe = true;
+    const b2 = document.getElementById('e-oui');
+    b2.disabled = true; b2.textContent = '…';
+    const rep = await BD.agir('essayer',
+      { p_quoi: ESSAI.quoi, p_valeur: ESSAI.valeur });
+    occupe = false;
+    if (!rep || !rep.ok){
+      const M = { trop_cher:'Il te manque ' + eur((rep || {}).manque) + ' €',
+                  pas_ici:"Il faut être à Barcelone." };
+      b2.textContent = M[(rep || {}).pourquoi] || 'Impossible';
+      return;
+    }
+    MOI.avatar = rep.avatar;
+    MOI.euros = rep.euros;
+    ESSAI = null;
+    BOUTIQUE = await BD.agir('le_tailleur');
+    LIT = await BD.agir('la_pension');
+    miroir(); rayons(); poserEssai(); poserLit();
+  };
+}
+
+/* toucher une pièce l'enfile — on ne paie qu'en confirmant */
+document.getElementById('rayons').onclick = e => {
+  const b = e.target.closest('[data-k]');
+  if (!b || occupe) return;
+  const k = b.dataset.k, i = Number(b.dataset.i);
+  /* on la porte déjà : rien à faire */
+  const r = BOUTIQUE.rayons.find(x => x.k === k);
+  if (r && r.pieces.find(x => x.i === i).porte){
+    ESSAI = null; miroir(); rayons(); poserEssai(); return;
+  }
+  ESSAI = (ESSAI && ESSAI.quoi === k && ESSAI.valeur === i)
+    ? null : { quoi:k, valeur:i };
+  miroir(); rayons(); poserEssai();
+};
+
+/* ============================================================
+   LA PENSION
+   Le prix vient du serveur, jamais d'ici.
+   ============================================================ */
+let LIT = null;
+
+function poserLit(){
+  const el = document.getElementById('lit');
+  if (!LIT || !LIT.ok){ el.style.display = 'none'; return; }
+  el.style.display = '';
+  const part = Math.min(100, LIT.energie / Math.max(1, LIT.max) * 100);
+  const plein = LIT.rend <= 0;
+
+  el.innerHTML = '<div class="h"><b>La pension</b>'
+    + '<span>Au-dessus de la taverne</span></div>'
+    + '<div class="ba"><i style="width:' + part.toFixed(0) + '%"></i></div>'
+    + '<p>' + (plein
+        ? 'Tu n\'as pas sommeil. Reviens quand tu auras ramé.'
+        : LIT.deja
+          ? 'Tu as déjà dormi ici aujourd\'hui. Une nuit par jour, pas plus.'
+          : 'Une chambre pour la nuit. Tu te réveilles à <b>' + LIT.max
+            + '</b> d\'énergie, soit <b>' + LIT.rend + ' points</b> rendus '
+            + 'd\'un coup — et autant de minutes gagnées.') + '</p>'
+    + '<button id="l-go"' + ((plein || LIT.deja || !LIT.assez) ? ' disabled' : '') + '>'
+    + (plein ? 'Tu es frais'
+      : LIT.deja ? 'Déjà dormi'
+      : !LIT.assez ? 'Il te manque ' + eur(LIT.prix - LIT.euros) + ' €'
+      : 'Prendre la chambre — ' + eur(LIT.prix) + ' €') + '</button>';
+
+  const g = document.getElementById('l-go');
+  if (g) g.onclick = async () => {
+    g.disabled = true; g.textContent = '…';
+    const r = await BD.agir('dormir');
+    if (r && r.ok){
+      MOI.euros = r.euros;
+      LIT = await BD.agir('la_pension');
+      miroir(); poserLit();
+      const p = document.querySelector('.lit p');
+      if (p) p.innerHTML = 'Tu as dormi comme une pierre. <b>+' + r.rend
+        + '</b> d\'énergie pour ' + eur(r.paye) + ' €.';
+    } else {
+      const M = { deja_dormi:'Déjà dormi aujourd\'hui',
+                  pas_fatigue:'Tu n\'as pas sommeil',
+                  trop_cher:'Il te manque ' + eur((r || {}).manque) + ' €' };
+      g.textContent = M[(r || {}).pourquoi] || 'Impossible';
+    }
+  };
+}
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+
+(async () => {
+  try {
+    MOI = await BD.charger();
+    if (!MOI){ location.href = 'index.html'; return; }
+    if (MOI.parti_le){ location.href = 'mer.html'; return; }
+    if (MOI.port !== 'barcelone'){ location.href = 'hub.html?v=3'; return; }
+
+    BOUTIQUE = await BD.agir('le_tailleur');
+    LIT = await BD.agir('la_pension');
+
+    let n = 0;
+    if (BOUTIQUE && BOUTIQUE.ok)
+      BOUTIQUE.rayons.forEach(r => r.pieces.forEach(p => { if (!p.a_toi) n++; }));
+    document.getElementById('t-sous').textContent =
+      n ? n + ' pièces à prendre' : 'Tu as déjà tout';
+
+    miroir(); rayons(); poserLit();
+    leverAube();
+  } catch(e){
+    console.warn(e);
+    document.getElementById('rayons').innerHTML =
+      '<div class="ray"><p class="rien">La boutique n\'a pas répondu.</p></div>';
+    leverAube();
+  }
+})();
+</script>
+</body>
+</html>
