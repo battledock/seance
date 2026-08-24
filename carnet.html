@@ -8,6 +8,41 @@
 <title>Ton carnet — Battle Dock</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="chaud.css?v=2">
+<script>
+/* ---------- le ciel du port où l'on se trouve ----------
+   Posé avant la première image, pour ne pas ouvrir sur l'ocre de
+   Marseille puis basculer. Le port est retenu par le hub. */
+(function(){
+  const C = { anse:['#f5a53a','#eeb455','#c9b978','#3f87a6','#2b6f92'],
+    barcelone:['#e8873f','#c9686a','#8a5f84','#3f5f82','#1c3350'],
+    palma:['#f6d97a','#e8b45c','#88b8a8','#2f92a4','#14566a'],
+    ajaccio:['#e8a8a0','#c98fa0','#8f8fa8','#3f7f92','#17475c'] };
+  let p = 'anse';
+  try { p = localStorage.getItem('bd-port') || 'anse'; } catch(e){}
+  const ci = C[p] || C.anse;
+  const R = document.documentElement.style;
+  ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', ci[0]);
+})();
+
+  /* le pied dit le port où l'on est, pas Marseille en toutes lettres */
+  (function(){
+    const N = { anse:'Marseille', barcelone:'Barcelone',
+                palma:'Palma', ajaccio:'Ajaccio' };
+    let p = 'anse';
+    try { p = localStorage.getItem('bd-port') || 'anse'; } catch(e){}
+    const el = document.querySelector('.pied');
+    if (el) el.textContent = 'Battle Dock — ' + (N[p] || 'Marseille');
+  })();
+</script>
+<style>
+/* on recouvre le dégradé commun de chaud.css */
+html{background:var(--h5,#2b6f92)}
+body::before{background:linear-gradient(180deg,
+  var(--h1,#f5a53a) 0%, var(--h2,#eeb455) 16%, var(--h3,#c9b978) 38%,
+  var(--h4,#3f87a6) 70%, var(--h5,#2b6f92) 100%)}
+</style>
 <style>
 .hi{position:relative;padding:17px 18px;margin-bottom:13px;border-radius:18px;
   background:var(--creme);border:3px solid var(--encre);}
