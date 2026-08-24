@@ -9,6 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="chaud.css?v=2">
 <style>
+/* ---------- le ciel du hub, port par port ----------
+   Chaque port a sa lumière. Marseille garde le matin chaud de
+   chaud.css ; Barcelone prend le soir, puisque c'est le soir
+   qu'on y vit. On recouvre le dégradé commun. */
+html{background:var(--h5,#2b6f92)}
+body::before{background:linear-gradient(180deg,
+  var(--h1,#f5a53a) 0%, var(--h2,#eeb455) 16%, var(--h3,#c9b978) 38%,
+  var(--h4,#3f87a6) 70%, var(--h5,#2b6f92) 100%);
+  transition:background 1s ease}
+</style>
+<style>
 /* ---------- ce qui est propre au hub ---------- */
 /* ---------- ton livret de docker ----------
    Une seule carte au lieu de trois : le portrait, ton nom, puis les
@@ -323,6 +334,15 @@ function euro(v){
    Seuls le bouton du haut, le chantier et le pied changent selon le port. */
 /* À Barcelone on revient dans la rue, pas sur le bassin : c'est là
    qu'on vit. Le bassin n'est qu'un sas d'arrivée. */
+/* la lumière de chaque port, la même que sur l'écran du départ */
+const CIELS = {
+  anse:      ['#f5a53a','#eeb455','#c9b978','#3f87a6','#2b6f92'],
+  /* Barcelone se vit le soir : cuivre, puis violet, puis l'eau sombre */
+  barcelone: ['#e8873f','#c9686a','#8a5f84','#3f5f82','#1c3350'],
+  palma:     ['#f6d97a','#e8b45c','#88b8a8','#2f92a4','#14566a'],
+  ajaccio:   ['#e8a8a0','#c98fa0','#8f8fa8','#3f7f92','#17475c']
+};
+
 const PAGE_PORT = { anse:'jeu.html', barcelone:'rue.html',
                     palma:'palma.html', ajaccio:'ajaccio.html' };
 /* le bouton dit où il ramène : c'est plus court et plus juste
@@ -526,6 +546,12 @@ document.getElementById('ouv-ok').onclick = () => {
     if (sv) sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
     /* le hub prend la couleur du port où l'on se trouve */
     PORT = d.port || 'anse';
+    /* le hub prend la lumière du port où l'on se trouve */
+    const ci = CIELS[PORT] || CIELS.anse;
+    const R = document.documentElement.style;
+    ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
+    const tc = document.querySelector('meta[name="theme-color"]');
+    if (tc) tc.setAttribute('content', ci[0]);
     VECU = (d.rencontres || []).slice();
     /* ouvrir une affaire chez Félix débloque la fabrique */
     if (d.affaire) VECU.push('affaire');
