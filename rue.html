@@ -23,36 +23,43 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
   transition:background 1.6s linear,opacity 1.6s linear}
 
 /* ---------- l'entête ---------- */
-.tete{position:fixed;left:0;right:0;top:0;z-index:4;
-  padding:calc(env(safe-area-inset-top) + 14px) 14px 0;
-  display:flex;align-items:center;gap:11px}
-.tete .ret{flex:0 0 42px;height:42px;border-radius:8px;
-  border:1.5px solid rgba(255,255,255,.34);background:rgba(20,28,44,.42);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  transition:transform .12s}
-.tete .ret:active{transform:scale(.94)}
-.tete .ret svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round}
-.tete .ou{flex:1;min-width:0;background:rgba(20,28,44,.42);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border:1.5px solid rgba(255,255,255,.26);border-radius:8px;padding:7px 13px}
-.tete .ou b{display:block;font-size:14px;font-weight:700;letter-spacing:.03em}
-.tete .ou span{display:block;font-size:8px;letter-spacing:.18em;text-transform:uppercase;
-  color:rgba(255,255,255,.6);margin-top:2px}
-/* ---------- ton portrait : la porte du menu ----------
-   Le même geste qu'à Marseille : on touche le portrait, le hub s'ouvre. */
-.tete .por{position:relative;flex:0 0 42px;height:42px;border-radius:8px;
-  overflow:hidden;cursor:pointer;
-  border:1.5px solid rgba(255,255,255,.34);background:rgba(20,28,44,.42);
-  transition:transform .12s}
-.tete .por:active{transform:scale(.94)}
-.tete .por svg{display:block;width:100%;height:100%}
+/* ---------- l'entête ----------
+   La même qu'à Marseille : le portrait carré à gauche, puis une
+   carte crème bordée d'encre. La rue était restée au verre sombre. */
+.av{position:fixed;z-index:10;
+  top:calc(env(safe-area-inset-top) + 14px);left:14px;
+  width:56px;height:56px;border-radius:6px;overflow:hidden;
+  background:#dfe8ee;border:2px solid rgba(255,255,255,.82);
+  box-shadow:0 3px 14px rgba(8,20,32,.42),inset 0 0 0 1px rgba(20,40,60,.14);
+  cursor:pointer;transition:transform .13s}
+.av:active{transform:scale(.96)}
+.av svg{display:block;width:100%;height:100%}
+.av .nm{position:absolute;left:0;right:0;bottom:0;background:#12303f;
+  color:#fdf6e6;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;
+  text-align:center;padding:3px 2px;font-weight:800}
 
-.tete .eu{flex:0 0 auto;background:rgba(20,28,44,.42);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border:1.5px solid rgba(255,255,255,.26);border-radius:8px;padding:10px 13px;
-  font-size:13.5px;font-weight:700;color:#ffd894;white-space:nowrap}
+.barre{position:fixed;z-index:10;
+  top:calc(env(safe-area-inset-top) + 14px);left:82px;right:14px;
+  height:58px;border-radius:16px;overflow:hidden;
+  background:#fdf6e6;border:3px solid #12303f;
+  display:flex;align-items:stretch}
+.barre .sous{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;
+  justify-content:center;padding:0 12px;border-right:2px solid rgba(18,48,63,.14)}
+.barre .sous .lb{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:800;color:rgba(18,48,63,.5);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.barre .sous .vl{font-family:'DM Serif Display',Georgia,serif;font-size:19px;
+  color:#12303f;line-height:1.1;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.barre .jauges{flex:0 0 auto;display:flex;flex-direction:column;
+  justify-content:center;gap:5px;padding:0 11px;min-width:104px}
+.jg{display:flex;align-items:center;gap:6px}
+.jg .ic{flex:0 0 11px;height:11px}
+.jg .ba{flex:1;height:7px;background:rgba(18,48,63,.12);border-radius:4px;
+  border:1.5px solid rgba(18,48,63,.5);overflow:hidden}
+.jg .ba i{display:block;height:100%;border-radius:3px;transition:width .6s}
+.jg .nb{flex:0 0 auto;font-size:9.5px;font-weight:800;color:rgba(18,48,63,.66);
+  min-width:24px;text-align:right}
 
 /* ---------- la barre des lieux ---------- */
 .bas{position:fixed;left:0;right:0;bottom:0;z-index:5;
@@ -252,10 +259,29 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 <div id="rue"></div>
 <div id="teinte"></div>
 
-<div class="tete">
-  <span class="por" id="por"></span>
-  <span class="ou"><b>La Barceloneta</b><span id="ou-h">Barcelone</span></span>
-  <span class="eu" id="eu">—</span>
+<div class="av" id="por"></div>
+
+<div class="barre">
+  <span class="sous">
+    <span class="lb" id="ou-h">Barcelone</span>
+    <span class="vl" id="eu">—</span>
+  </span>
+  <span class="jauges">
+    <span class="jg">
+      <svg class="ic" viewBox="0 0 12 12"><path d="M6.6 1L2.4 6.8h2.6L4.6 11l4.4-6h-2.8z"
+        fill="#4faa72"/></svg>
+      <span class="ba"><i id="b-nrj"
+        style="background:linear-gradient(90deg,#4faa72,#8ce0a8)"></i></span>
+      <span class="nb" id="b-nrjn">—</span>
+    </span>
+    <span class="jg">
+      <svg class="ic" viewBox="0 0 12 12"><path d="M6 1l1.5 3.2L11 4.7 8.5 7.1 9.1 10.6
+        6 9 2.9 10.6l.6-3.5L1 4.7l3.5-.5z" fill="#c8a24a"/></svg>
+      <span class="ba"><i id="b-xp"
+        style="background:linear-gradient(90deg,#c8a24a,#f0c46a)"></i></span>
+      <span class="nb" id="b-niv">—</span>
+    </span>
+  </span>
 </div>
 
 <button class="partir" id="partir">
@@ -1485,8 +1511,8 @@ function aborder(){
   setTimeout(() => location.href = 'miquel.html', 2900);
 }
 
-/* le grand bouton du bas ramène au bassin, comme à Marseille */
-document.getElementById('partir').onclick = () => location.href = 'barcelone.html';
+/* le grand bouton du bas mène au choix du cap, comme à Marseille */
+document.getElementById('partir').onclick = () => location.href = 'voyager.html';
 requestAnimationFrame(() =>
   document.getElementById('partir').classList.add('pret'));
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
@@ -1530,9 +1556,20 @@ function poserMiquel(vecue){
   document.getElementById('eu').textContent =
     Number(d.euros || 0).toLocaleString('fr-FR', {minimumFractionDigits:2}) + ' €';
 
+  /* les deux jauges, comme sur la rade */
+  const nrj = Number(d.energie ?? 0), nmax = Number(d.energie_max ?? 100) || 100;
+  document.getElementById('b-nrj').style.width =
+    Math.min(100, nrj / nmax * 100) + '%';
+  document.getElementById('b-nrjn').textContent = Math.round(nrj);
+  const xp = Number(d.xp || 0), seuil = Number(d.seuil_xp || 1) || 1;
+  document.getElementById('b-xp').style.width =
+    Math.min(100, xp / seuil * 100) + '%';
+  document.getElementById('b-niv').textContent = 'nv ' + (d.niveau || 1);
+
   /* le portrait ouvre le hub, comme à l'anse */
   const por = document.getElementById('por');
-  por.innerHTML = BD.avatarSVG(d);
+  por.innerHTML = BD.avatarSVG(d)
+    + '<span class="nm">' + (d.pseudo || '') + '</span>';
   const sv = por.querySelector('svg');
   if (sv) sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
   por.onclick = () => location.href = 'hub.html?v=3';
