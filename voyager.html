@@ -3,11 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#e8a8a0" id="tc">
+<meta name="theme-color" content="#f5a53a" id="tc">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Battle Dock — Prendre la mer</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="chaud.css?v=2">
+<script>
+/* le ciel du port d'où l'on part, dès la première image */
+(function(){
+  const C = { anse:['#f5a53a','#eeb455','#c9b978','#3f87a6','#2b6f92'],
+    barcelone:['#e8873f','#c9686a','#8a5f84','#3f5f82','#1c3350'],
+    palma:['#f6d97a','#e8b45c','#88b8a8','#2f92a4','#14566a'],
+    ajaccio:['#e8a8a0','#c98fa0','#8f8fa8','#3f7f92','#17475c'] };
+  let p = 'anse';
+  try { p = localStorage.getItem('bd-port') || 'anse'; } catch(e){}
+  const ci = C[p] || C.anse;
+  const R = document.documentElement.style;
+  ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
+  const m = document.getElementById('tc') ||
+            document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', ci[0]);
+})();
+</script>
 <style>
 /* ---------- ce qui est propre à la page du départ ---------- */
 
@@ -102,7 +119,9 @@ body::before{background:linear-gradient(180deg,var(--h1) 0%,var(--h2) 26%,
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 
 /* ---------- l'aube, le temps que la page se pose ---------- */
-#charge{position:fixed;inset:0;z-index:90;background:#e8a8a0;
+/* le voile prend le ciel du port d'où l'on part : il était resté
+   au rose d'Ajaccio, quel que soit l'endroit */
+#charge{position:fixed;inset:0;z-index:90;background:var(--h1,#f5a53a);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
   transition:opacity .45s ease}
 #charge.parti{opacity:0;pointer-events:none}
@@ -283,6 +302,7 @@ document.getElementById('caps').onclick = e => {
 
     MOI = d;
     DEPART = d.port || 'anse';
+    try { localStorage.setItem('bd-port', DEPART); } catch(e){}
     const RET = { barcelone:'barcelone.html', palma:'palma.html',
                   ajaccio:'ajaccio.html', anse:'jeu.html' };
     RETOUR = RET[DEPART] || 'jeu.html';
