@@ -450,13 +450,13 @@ const TUILES = [
     f:() => location.href = 'taverne.html' },
   /* On ne se rhabille qu'à Barcelone : on en revient avec des habits,
      pas de Marseille. Et on y trouve un lit quand on est loin de chez soi. */
+  /* la criée : un lot par semaine, et un seul l'emporte */
+  { k:'criee', ou:'attend', ici:'barcelone', em:'🔨', t:'La criée',
+    s:'Un lot par semaine, un seul vainqueur',
+    f:() => location.href = 'criee.html' },
   { k:'tailleur', ou:'lieu', ici:'barcelone', em:'🧥', t:'Le tailleur',
     s:'Se rhabiller, et une chambre pour la nuit',
     f:() => location.href = 'tailleur.html' },
-  { k:'marche', ou:'lieu', ici:'barcelone', em:'🧺', t:'Le marché',
-    s:'Pas encore ouvert', ferme:1 },
-  { k:'entrepot', ou:'lieu', ici:'barcelone', em:'🏚️', t:"L'entrepôt",
-    s:'Pas encore ouvert', ferme:1 },
 
   /* ---- partout ---- */
   { k:'quetes', ou:'attend', em:'📓', t:'Ton carnet',
