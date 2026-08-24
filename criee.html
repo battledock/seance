@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#e8873f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>La criée — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chaud.css?v=2">
+<script>
+(function(){
+  const C = { anse:['#f5a53a','#eeb455','#c9b978','#3f87a6','#2b6f92'],
+    barcelone:['#e8873f','#c9686a','#8a5f84','#3f5f82','#1c3350'],
+    palma:['#f6d97a','#e8b45c','#88b8a8','#2f92a4','#14566a'],
+    ajaccio:['#e8a8a0','#c98fa0','#8f8fa8','#3f7f92','#17475c'] };
+  let p = 'barcelone';
+  try { p = localStorage.getItem('bd-port') || 'barcelone'; } catch(e){}
+  const ci = C[p] || C.barcelone;
+  const R = document.documentElement.style;
+  ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', ci[0]);
+})();
+</script>
+<style>
+html{background:var(--h5,#1c3350)}
+body::before{background:linear-gradient(180deg,
+  var(--h1,#e8873f) 0%, var(--h2,#c9686a) 16%, var(--h3,#8a5f84) 38%,
+  var(--h4,#3f5f82) 70%, var(--h5,#1c3350) 100%)}
+
+/* ---------- le lot ---------- */
+.lot{border-radius:20px;overflow:hidden;margin-bottom:13px;
+  background:var(--creme);border:3px solid var(--encre)}
+.lot .sc{position:relative;height:124px;background:#d9c9a8;
+  border-bottom:3px solid var(--encre);
+  display:flex;align-items:center;justify-content:center}
+.lot .sc .vi{width:82px;height:82px}
+.lot .sc .vi svg{display:block;width:100%;height:100%}
+/* la paille du fond */
+.lot .sc::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(102deg,
+    rgba(176,154,112,.42) 0 2px,transparent 2px 13px)}
+.lot .tm{position:absolute;right:11px;top:11px;z-index:2;padding:7px 12px;
+  border-radius:12px;background:var(--encre);color:#fdf6e6;
+  font-family:'DM Serif Display',Georgia,serif;font-size:15px}
+.lot .tm.chaud{background:var(--rouge)}
+.lot .co{padding:15px 17px 16px}
+.lot .co .su2{font-size:9px;font-weight:800;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(18,48,63,.44)}
+.lot .co b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:24px;line-height:1.1;margin-top:5px}
+.lot .co p{font-size:12.5px;font-weight:600;line-height:1.55;
+  color:rgba(18,48,63,.6);margin-top:8px}
+
+/* ---------- la mise ---------- */
+.mise{padding:17px 18px;border-radius:20px;margin-bottom:11px;
+  background:var(--creme);border:3px solid var(--encre)}
+.mise .h span{font-size:9.5px;font-weight:800;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(18,48,63,.44)}
+.mise .gros{font-family:'DM Serif Display',Georgia,serif;font-size:38px;
+  line-height:1;margin-top:8px}
+.mise .qui{font-size:13px;font-weight:700;margin-top:7px;color:rgba(18,48,63,.6)}
+.mise.moi{background:rgba(47,138,92,.13);border-color:var(--vert)}
+.mise.moi .gros,.mise.moi .qui{color:#1f6b45}
+.mise.repris{background:rgba(224,83,60,.12);border-color:var(--rouge)}
+.mise.repris .qui{color:#a8351f}
+
+/* ---------- ta caisse ---------- */
+.caisse{display:flex;border-radius:18px;overflow:hidden;margin-bottom:11px;
+  background:var(--creme);border:3px solid var(--encre)}
+.caisse div{flex:1;padding:12px 10px;text-align:center}
+.caisse div + div{border-left:2.5px solid rgba(18,48,63,.14)}
+.caisse b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:19px;
+  line-height:1}
+.caisse span{display:block;font-size:8.5px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(18,48,63,.46);margin-top:5px}
+.caisse .gel b{color:#a8741a}
+.caisse .gel.rien b{color:rgba(18,48,63,.3)}
+
+/* ---------- miser ---------- */
+.pas{display:flex;gap:9px;margin-bottom:10px}
+.pas button{flex:1;padding:14px 6px;border-radius:15px;cursor:pointer;
+  background:var(--creme);border:3px solid var(--encre);
+  font-family:'DM Serif Display',Georgia,serif;font-size:17px;color:var(--encre);
+  transition:background .12s}
+.pas button:active{background:var(--creme2)}
+.pas button:disabled{background:rgba(253,246,230,.4);
+  color:rgba(18,48,63,.35);cursor:default}
+.pas button small{display:block;font-family:'Nunito',sans-serif;font-size:9.5px;
+  font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(18,48,63,.45);margin-top:3px}
+.gd{width:100%;padding:17px;border-radius:16px;cursor:pointer;margin-bottom:12px;
+  background:var(--or);border:3px solid var(--encre);
+  font-family:'DM Serif Display',Georgia,serif;font-size:19px;color:var(--encre);
+  transition:background .12s}
+.gd:active{background:#d9962a}
+.gd:disabled{background:rgba(18,48,63,.08);color:rgba(18,48,63,.4);cursor:default}
+
+/* ---------- le livre des mises ---------- */
+.livre{border-radius:18px;overflow:hidden;margin-bottom:13px;
+  background:var(--creme);border:3px solid var(--encre)}
+.livre .t{padding:13px 16px 10px;font-size:9.5px;font-weight:800;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(18,48,63,.44)}
+.livre .l{display:flex;align-items:baseline;gap:10px;padding:10px 16px;
+  border-top:2px solid rgba(18,48,63,.09);font-size:12.5px;font-weight:700}
+.livre .l .n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.livre .l .h2{flex:0 0 auto;font-size:10.5px;color:rgba(18,48,63,.4)}
+.livre .l .m{flex:0 0 auto;font-family:'DM Serif Display',Georgia,serif;
+  font-size:16px;font-weight:400}
+.livre .l.toi{background:rgba(240,169,46,.16)}
+
+/* ---------- ce que tu as emporté ---------- */
+.gagne{padding:17px 18px;border-radius:20px;margin-bottom:13px;
+  background:rgba(240,169,46,.16);border:3px solid var(--or)}
+.gagne .su2{font-size:9.5px;font-weight:800;letter-spacing:.2em;
+  text-transform:uppercase;color:#a8741a}
+.gagne b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:22px;
+  line-height:1.1;margin-top:6px}
+.gagne p{font-size:12.5px;font-weight:600;line-height:1.55;
+  color:rgba(18,48,63,.62);margin-top:8px}
+
+.mot{font-size:11.5px;font-weight:700;color:rgba(255,250,240,.75);
+  margin:0 4px 13px;line-height:1.55;text-shadow:0 1px 0 rgba(18,48,63,.2)}
+.rien{font-size:13px;font-weight:600;color:rgba(18,48,63,.55);line-height:1.6;
+  padding:20px 17px;text-align:center}
+
+#charge{position:fixed;inset:0;z-index:90;background:var(--h1,#e8873f);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .45s ease}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-family:'DM Serif Display',Georgia,serif;font-size:27px;color:#fffaf0}
+#charge .fl{width:118px;height:3px;border-radius:2px;
+  background:rgba(255,250,240,.26);overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#fffaf0;
+  animation:houle 1.15s ease-in-out infinite}
+@keyframes houle{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div id="charge"><div class="ti">Battle Dock</div><div class="fl"><i></i></div></div>
+
+<div class="pont">
+  <div class="tete">
+    <span class="q"><b>La criée</b><span id="c-sous">—</span></span>
+    <button class="retour" id="retour">&lsaquo; Retour</button>
+  </div>
+  <div id="corps" class="attend"></div>
+  <p class="pied">Battle Dock — Barcelone</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+let AUBE = false;
+function leverAube(){
+  if (AUBE) return;
+  AUBE = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const c = document.getElementById('charge');
+    if (!c) return;
+    c.classList.add('parti');
+    setTimeout(() => c.remove(), 500);
+  }));
+}
+setTimeout(leverAube, 6000);
+
+function objetSVG(k){
+  const O = {
+    cle: `<path d="M17 22a7 7 0 1 0 0-14 7 7 0 0 0 0 14z" fill="none" stroke="#c9a374" stroke-width="3"/>
+      <circle cx="17" cy="15" r="2.6" fill="#3a3028"/>
+      <path d="M24 15h20M40 15v6M35 15v4M44 15v7" stroke="#c9a374" stroke-width="3"
+        stroke-linecap="round"/>
+      <path d="M17 8.4a7 7 0 0 0-6.4 4.2 7 7 0 0 1 9.6 8.6A7 7 0 0 0 17 8.4z"
+        fill="#e0bc8c" opacity=".5"/>`,
+
+    carte: `<path d="M5 8l12-3 13 4 12-3v22l-12 3-13-4-12 3z" fill="#e4d8b8"/>
+      <path d="M5 8l12-3v22l-12 3z" fill="#f0e6cc"/>
+      <path d="M17 5v22M30 9v22" stroke="#c4b490" stroke-width="1"/>
+      <path d="M9 15q6-3 11 1t9-1" stroke="#8a9aa8" stroke-width="1.4" fill="none"/>
+      <path d="M11 21q7-2 12 2" stroke="#8a9aa8" stroke-width="1.2" fill="none"/>
+      <path d="M24 17l3 3M27 17l-3 3" stroke="#8a4a3a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M42 6v22l-2-1V7z" fill="#c4b490"/>
+      <path d="M42 6l-2 1v20l2 1z" fill="#3a3630" opacity=".2"/>`,
+
+    boussole: `<circle cx="24" cy="18" r="14" fill="#a8823c"/>
+      <circle cx="24" cy="18" r="11.6" fill="#e8dcc0"/>
+      <circle cx="24" cy="18" r="11.6" fill="none" stroke="#8a6a30" stroke-width="1"/>
+      <path d="M24 8v3M24 25v3M14 18h3M31 18h3" stroke="#6d5a38" stroke-width="1.4"/>
+      <path d="M24 9l3 8-3 2-3-2z" fill="#b8483a"/>
+      <path d="M24 27l-3-8 3-2 3 2z" fill="#e8e2d4"/>
+      <circle cx="24" cy="18" r="1.6" fill="#6d5a38"/>
+      <path d="M24 4a14 14 0 0 0-9.9 4.1 14 14 0 0 1 19.8 19.8A14 14 0 0 0 24 4z"
+        fill="#e0c088" opacity=".34"/>
+      <path d="M20 4h8v2h-8z" fill="#8a6a30"/>`,
+
+    bague: `<ellipse cx="24" cy="19" rx="10" ry="11" fill="none" stroke="#9a9aa0" stroke-width="3.4"/>
+      <ellipse cx="24" cy="19" rx="10" ry="11" fill="none" stroke="#d0d0d6" stroke-width="1.2"
+        stroke-dasharray="8 20" stroke-dashoffset="14"/>
+      <path d="M19 9q5-3 10 0" stroke="#e4e4e8" stroke-width="1.4" fill="none"/>
+      <ellipse cx="24" cy="19" rx="6.4" ry="7.4" fill="#2a2e36" opacity=".2"/>`,
+
+    lettre: `<path d="M7 10h34v20H7z" fill="#f0e8d4"/>
+      <path d="M7 10h34v20H7z" fill="none" stroke="#c9bda0" stroke-width="1"/>
+      <path d="M7 10l17 11 17-11" fill="none" stroke="#c9bda0" stroke-width="1.4"/>
+      <path d="M7 30l12-9M41 30l-12-9" fill="none" stroke="#dcd2ba" stroke-width="1"/>
+      <circle cx="24" cy="22" r="4.6" fill="#a8433a"/>
+      <circle cx="24" cy="22" r="4.6" fill="none" stroke="#7a2e28" stroke-width=".8"/>
+      <path d="M22 20.4l4 3.2M26 20.4l-4 3.2" stroke="#7a2e28" stroke-width="1"/>`,
+
+    couteau: `<path d="M6 22q10-9 22-10 4-.4 5 1.4t-2 4Q20 22 8 25z" fill="#c4ccd2"/>
+      <path d="M6 22q10-9 22-10 4-.4 5 1.4-12 2-25 11z" fill="#e8eef2"/>
+      <path d="M31 17l11 3.4q2 .6 2 2.2t-2 2.2L31 25z" fill="#6d4a30"/>
+      <path d="M31 17l11 3.4q2 .6 2 2.2l-13-2z" fill="#8a6444"/>
+      <circle cx="36" cy="21.4" r="1" fill="#3a2a1c"/>
+      <circle cx="40" cy="22" r="1" fill="#3a2a1c"/>`,
+
+    medaille: `<circle cx="24" cy="21" r="11" fill="#b4a068"/>
+      <circle cx="24" cy="21" r="9.2" fill="#cdb87e"/>
+      <circle cx="24" cy="21" r="9.2" fill="none" stroke="#9a8850" stroke-width=".8"/>
+      <path d="M24 14v5M21.4 19h5.2M24 19v9" stroke="#7a6a3c" stroke-width="1.6"
+        stroke-linecap="round"/>
+      <path d="M19 27q5 3 10 0" stroke="#7a6a3c" stroke-width="1.2" fill="none"/>
+      <path d="M24 10a11 11 0 0 0-7.8 3.2 11 11 0 0 1 15.6 15.6A11 11 0 0 0 24 10z"
+        fill="#e0cf9a" opacity=".4"/>
+      <path d="M22 10l2-6 2 6z" fill="#8a7a48"/>`,
+
+    carnet: `<path d="M9 7h28q2 0 2 2v22q0 2-2 2H9z" fill="#7a5c3a"/>
+      <path d="M11 7h26v26H11z" fill="#e4d8bc"/>
+      <path d="M11 7h26v26H11z" fill="none" stroke="#c4b494" stroke-width=".8"/>
+      <path d="M15 13h18M15 17h18M15 21h14M15 25h16M15 29h11"
+        stroke="#a89a80" stroke-width="1"/>
+      <path d="M15 17h18" stroke="#8a4a3a" stroke-width="1.2"/>
+      <path d="M9 7h3v26H9z" fill="#5a4028"/>
+      <path d="M37 15h5v6l-2.5-2-2.5 2z" fill="#b8483a"/>`
+  }[k] || '';
+  return '<svg viewBox="0 0 48 40" xmlns="http://www.w3.org/2000/svg">' + O + '</svg>';
+}
+
+/* ============================================================
+   LA CRIÉE
+   Un lot par semaine, un seul vainqueur. Ton argent est retenu
+   tant que tu mènes, et te revient dès qu'on te double.
+   ============================================================ */
+let C = null, occupe = false, bat = null;
+const eur = n => Math.round(Number(n) || 0).toLocaleString('fr-FR');
+
+function duree(s){
+  if (s <= 0) return 'terminé';
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  if (h >= 24) return Math.floor(h / 24) + ' j ' + (h % 24) + ' h';
+  if (h >= 1) return h + ' h' + (m ? ' ' + String(m).padStart(2,'0') : '');
+  return m + ' min';
+}
+
+function quand(iso){
+  const s = Math.max(0, (Date.now() - new Date(iso)) / 1000);
+  if (s < 90) return "à l'instant";
+  if (s < 5400) return 'il y a ' + Math.round(s / 60) + ' min';
+  if (s < 172800) return 'il y a ' + Math.round(s / 3600) + ' h';
+  return 'il y a ' + Math.round(s / 86400) + ' j';
+}
+
+/* le pas d'enchère monte avec le lot */
+function pasDe(m){
+  if (m < 1000) return [50, 100, 250];
+  if (m < 3000) return [100, 250, 500];
+  return [200, 500, 1000];
+}
+
+function rendre(){
+  const el = document.getElementById('corps');
+
+  /* ce qu'on vient de remporter, s'il y a lieu */
+  let tete = '';
+  ((C && C.gagne) || []).forEach(g => {
+    tete += '<div class="gagne"><p class="su2">Le marteau est tombé</p>'
+      + '<b>' + g.nom + '</b><p>' + g.gagnant + " l'emporte pour "
+      + eur(g.paye) + ' €.</p></div>';
+  });
+
+  if (!C || !C.ok){
+    el.innerHTML = tete + '<div class="lot"><p class="rien">'
+      + "La criée n'a pas répondu.</p></div>";
+    return;
+  }
+
+  if (C.rien){
+    document.getElementById('c-sous').textContent = 'Rien à crier';
+    el.innerHTML = tete + '<div class="lot"><p class="rien">'
+      + "Le tréteau est vide. On crie un lot par semaine — reviens."
+      + '</p></div>';
+    return;
+  }
+
+  const pas = pasDe(C.mise);
+  const jeMene = !!C.moi_qui_mene;
+  const personne = !C.qui;
+  const chaud = C.reste_s < 3600;
+  const deja = jeMene ? C.gele : 0;
+
+  document.getElementById('c-sous').textContent =
+    'Ferme dans ' + duree(C.reste_s);
+
+  el.innerHTML = tete
+
+    + '<div class="lot"><div class="sc">'
+    + '<span class="vi">' + objetSVG(C.signe || 'medaille') + '</span>'
+    + '<span class="tm' + (chaud ? ' chaud' : '') + '" id="tm">'
+    + duree(C.reste_s) + '</span></div>'
+    + '<div class="co"><span class="su2">' + (C.su || 'Au tréteau') + '</span>'
+    + '<b>' + C.nom + '</b>'
+    + '<p>' + (C.note || '') + (C.detail ? ' ' + C.detail : '') + '</p></div></div>'
+
+    + '<div class="mise ' + (jeMene ? 'moi' : (C.qui ? 'repris' : '')) + '">'
+    + '<div class="h"><span>' + (personne ? 'Mise à prix' : 'Enchère en cours')
+    + '</span></div><div class="gros">' + eur(C.mise) + ' €</div>'
+    + '<div class="qui">' + (personne
+        ? "Personne n'a encore levé la main."
+        : jeMene ? 'Tu mènes.'
+        : C.qui + " t'a repris la main.") + '</div></div>'
+
+    + '<div class="caisse">'
+    + '<div><b>' + eur(C.euros + C.gele) + ' €</b><span>Ta caisse</span></div>'
+    + '<div class="gel' + (C.gele ? '' : ' rien') + '"><b>'
+    + (C.gele ? eur(C.gele) + ' €' : '—') + '</b><span>Retenu ici</span></div>'
+    + '<div><b>' + eur(C.euros) + ' €</b><span>Disponible</span></div></div>'
+
+    + '<div class="pas">' + pas.map(p => {
+        const total = C.mise + p;
+        return '<button data-m="' + total + '"'
+          + (C.euros < total - deja ? ' disabled' : '') + '>+' + eur(p)
+          + '<small>' + eur(total) + ' €</small></button>';
+      }).join('') + '</div>'
+
+    + '<button class="gd" id="go"' + (jeMene ? ' disabled' : '') + '></button>'
+    + '<p class="mot">' + (jeMene
+        ? 'Tes ' + eur(C.gele) + ' € dorment ici tant que tu mènes. Ils te '
+          + "reviennent dès qu'on te double — d'ici là tu ne peux pas les "
+          + 'dépenser ailleurs.'
+        : "Pour miser, il faut avoir l'argent. Toute mise dans la dernière "
+          + 'demi-heure repousse la fin de dix minutes.') + '</p>'
+
+    + '<div class="livre"><p class="t">Le livre des mises</p>'
+    + ((C.mises || []).length
+        ? C.mises.map(x => '<div class="l' + (x.moi ? ' toi' : '') + '">'
+            + '<span class="n">' + x.qui + (x.moi ? ' — toi' : '') + '</span>'
+            + '<span class="h2">' + quand(x.quand) + '</span>'
+            + '<span class="m">' + eur(x.montant) + ' €</span></div>').join('')
+        : '<div class="l"><span class="n">Personne encore</span></div>')
+    + '</div>';
+
+  /* le grand coup : reprendre la main franchement */
+  const coup = C.mise + pas[2] * 2;
+  const g = document.getElementById('go');
+  g.disabled = jeMene || C.euros < coup - deja;
+  g.textContent = jeMene ? 'Tu tiens la corde'
+    : C.euros < coup - deja ? 'Ta caisse ne suit plus'
+    : 'Emporter le morceau — ' + eur(coup) + ' €';
+  g.onclick = () => miser(coup);
+
+  el.querySelectorAll('[data-m]').forEach(b =>
+    b.onclick = () => miser(Number(b.dataset.m)));
+
+  el.classList.remove('attend');
+  el.classList.add('venu');
+  minuter();
+}
+
+/* le décompte, à la minute */
+function minuter(){
+  clearInterval(bat);
+  bat = setInterval(() => {
+    if (!C || C.rien || C.reste_s <= 0){ clearInterval(bat); return; }
+    C.reste_s = Math.max(0, C.reste_s - 30);
+    const t = document.getElementById('tm');
+    if (!t){ clearInterval(bat); return; }
+    t.textContent = duree(C.reste_s);
+    t.classList.toggle('chaud', C.reste_s < 3600);
+    document.getElementById('c-sous').textContent =
+      C.reste_s > 0 ? 'Ferme dans ' + duree(C.reste_s) : 'Le marteau va tomber';
+    if (C.reste_s <= 0) relire();
+  }, 30000);
+}
+
+async function miser(montant){
+  if (occupe) return;
+  occupe = true;
+  const g = document.getElementById('go');
+  if (g) g.textContent = '…';
+  const r = await BD.agir('miser', { p_criee: C.id, p_montant: montant });
+  occupe = false;
+  if (!r || !r.ok){
+    const M = { trop_bas:'On a misé plus haut entre-temps.',
+                trop_cher:'Il te manque ' + eur((r || {}).manque) + ' €.',
+                close:'La criée est fermée.',
+                pas_ici:'Il faut être à Barcelone.' };
+    if (g) g.textContent = M[(r || {}).pourquoi] || 'Impossible';
+    setTimeout(relire, 1400);
+    return;
+  }
+  relire();
+}
+
+async function relire(){
+  try { C = await BD.agir('la_criee'); } catch(e){ C = null; }
+  rendre();
+}
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+
+(async () => {
+  try {
+    const d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+    if (d.parti_le){ location.href = 'mer.html'; return; }
+    if (d.port !== 'barcelone'){ location.href = 'hub.html?v=3'; return; }
+    await relire();
+    leverAube();
+  } catch(e){
+    console.warn(e);
+    document.getElementById('corps').innerHTML =
+      '<div class="lot"><p class="rien">La criée n\'a pas répondu.</p></div>';
+    leverAube();
+  }
+})();
+</script>
+</body>
+</html>
