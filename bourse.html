@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#e8873f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Le cours du jour — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chaud.css?v=2">
+<script>
+/* ---------- le ciel du port où l'on se trouve ---------- */
+(function(){
+  const C = { anse:['#f5a53a','#eeb455','#c9b978','#3f87a6','#2b6f92'],
+    barcelone:['#e8873f','#c9686a','#8a5f84','#3f5f82','#1c3350'],
+    palma:['#f6d97a','#e8b45c','#88b8a8','#2f92a4','#14566a'],
+    ajaccio:['#e8a8a0','#c98fa0','#8f8fa8','#3f7f92','#17475c'] };
+  let p = 'barcelone';
+  try { p = localStorage.getItem('bd-port') || 'barcelone'; } catch(e){}
+  const ci = C[p] || C.barcelone;
+  const R = document.documentElement.style;
+  ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', ci[0]);
+})();
+</script>
+<style>
+html{background:var(--h5,#1c3350)}
+body::before{background:linear-gradient(180deg,
+  var(--h1,#e8873f) 0%, var(--h2,#c9686a) 16%, var(--h3,#8a5f84) 38%,
+  var(--h4,#3f5f82) 70%, var(--h5,#1c3350) 100%)}
+
+/* ---------- l'ardoise du courtier ----------
+   Une seule feuille, une ligne par marchandise. Ce que la place
+   dit aujourd'hui : d'où ça vient, où ça se vend, et à combien. */
+.jour{padding:15px 17px;border-radius:18px;margin-bottom:15px;
+  background:var(--creme);border:3px solid var(--encre)}
+.jour p{font-size:13px;line-height:1.6;font-weight:600;color:rgba(18,48,63,.72)}
+.jour p + p{margin-top:8px}
+.jour b{font-family:'DM Serif Display',Georgia,serif;font-weight:400;font-size:16px;
+  color:var(--encre)}
+
+/* les onglets : ce qui monte, ce qui tombe, tout */
+.tri{display:flex;gap:9px;margin-bottom:14px}
+.tri button{flex:1;padding:10px 5px 11px;border-radius:15px;cursor:pointer;
+  background:rgba(253,246,230,.4);border:3px solid rgba(18,48,63,.3);
+  font-family:'Nunito',sans-serif;transition:background .14s,border-color .14s}
+.tri button b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;line-height:1.1;color:rgba(18,48,63,.6)}
+.tri button small{display:block;font-size:9px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(18,48,63,.4);margin-top:4px}
+.tri button.on{background:var(--creme);border-color:var(--encre)}
+.tri button.on b{color:var(--encre)}
+.tri button.on small{color:#c07f14}
+
+/* ---------- une ligne de cours ---------- */
+.co{display:flex;align-items:center;gap:13px;padding:14px 16px;
+  border-bottom:2px solid rgba(18,48,63,.1)}
+.co:last-child{border-bottom:0}
+/* la flèche du marché, à gauche : elle se lit avant le texte */
+.co .fl{flex:0 0 34px;height:34px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:800;border:2.5px solid var(--encre)}
+.co.monte .fl{background:rgba(47,138,92,.18);color:#1f6b45}
+.co.plat  .fl{background:rgba(18,48,63,.07);color:rgba(18,48,63,.42)}
+.co.tombe .fl{background:rgba(224,83,60,.16);color:#a8351f}
+.co .tx{flex:1;min-width:0}
+.co .tx b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:17px;
+  line-height:1.15}
+.co .tx span{display:block;font-size:10.5px;font-weight:700;
+  color:rgba(18,48,63,.5);margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.co .px{flex:0 0 auto;text-align:right}
+.co .px em{display:block;font-style:normal;font-family:'DM Serif Display',Georgia,serif;
+  font-size:19px;color:var(--encre)}
+.co .px span{display:block;font-size:9px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(18,48,63,.44);margin-top:2px}
+
+/* ce qui vient d'arriver là-bas, quand ça pèse sur le prix */
+.co .tx .ar{color:#a8351f}
+
+.mot{font-size:11.5px;font-weight:700;color:rgba(255,250,240,.72);
+  margin:12px 4px 0;line-height:1.55;text-shadow:0 1px 0 rgba(18,48,63,.2)}
+.rien{font-size:13px;font-weight:600;color:rgba(18,48,63,.5);line-height:1.55;
+  padding:18px 16px;text-align:center}
+
+/* ---------- l'aube ---------- */
+#charge{position:fixed;inset:0;z-index:90;background:var(--h1,#e8873f);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .45s ease}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-family:'DM Serif Display',Georgia,serif;
+  font-size:27px;color:#fffaf0;letter-spacing:.02em}
+#charge .fl{width:118px;height:3px;border-radius:2px;
+  background:rgba(255,250,240,.26);overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#fffaf0;
+  animation:houle 1.15s ease-in-out infinite}
+@keyframes houle{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div id="charge"><div class="ti">Battle Dock</div><div class="fl"><i></i></div></div>
+
+<div class="pont">
+  <div class="tete">
+    <span class="q"><b>Le cours du jour</b><span id="b-sous">—</span></span>
+    <button class="retour" id="retour">‹ Retour</button>
+  </div>
+
+  <div class="jour" id="b-jour"></div>
+  <div class="tri" id="b-tri">
+    <button data-t="tout" class="on"><b>Tout</b><small>La place</small></button>
+    <button data-t="monte"><b>Ça manque</b><small>On paie cher</small></button>
+    <button data-t="tombe"><b>C'est saturé</b><small>Ne charge pas</small></button>
+  </div>
+
+  <div id="liste" class="attend"></div>
+  <p class="pied">Battle Dock — Barcelone</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+/* ---------- l'aube ---------- */
+let AUBE = false;
+function leverAube(){
+  if (AUBE) return;
+  AUBE = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const c = document.getElementById('charge');
+    if (!c) return;
+    c.classList.add('parti');
+    setTimeout(() => c.remove(), 500);
+  }));
+}
+setTimeout(leverAube, 6000);
+
+/* ============================================================
+   LE COURS DU JOUR
+   Le carnet dit tes prix. La bourse dit le prix. C'est la
+   différence entre se souvenir et savoir.
+   ============================================================ */
+let COURS = [], VUE = 'tout';
+
+/* comment se porte une marchandise, en un mot */
+function humeur(c){
+  const d = Number(c.demande) || 1;
+  if (d >= 1.08) return { k:'monte', fl:'↑', dit:'On en manque' };
+  if (d <= 0.88) return { k:'tombe', fl:'↓', dit:'Le marché est plein' };
+  return { k:'plat', fl:'·', dit:'Cours ordinaire' };
+}
+
+function rendre(){
+  const L = document.getElementById('liste');
+  let V = COURS.slice();
+  if (VUE === 'monte') V = V.filter(c => humeur(c).k === 'monte');
+  if (VUE === 'tombe') V = V.filter(c => humeur(c).k === 'tombe');
+
+  if (!V.length){
+    L.innerHTML = '<div class="bloc"><p class="rien">'
+      + (VUE === 'monte' ? 'Rien ne manque nulle part aujourd\'hui.'
+       : VUE === 'tombe' ? 'Aucun marché n\'est saturé. C\'est un bon jour.'
+       : 'La place est muette.') + '</p></div>';
+    return;
+  }
+
+  L.innerHTML = '<div class="bloc">' + V.map(c => {
+    const h = humeur(c);
+    /* ce qui vient d'arriver là-bas explique ce qui tombe */
+    const ar = Number(c.arrive) || 0;
+    return '<div class="co ' + h.k + '">'
+      + '<span class="fl">' + h.fl + '</span>'
+      + '<span class="tx"><b>' + c.nom + '</b>'
+      + '<span>' + c.port + ' → ' + c.port_vers
+      + (ar > 0 ? ' · <span class="ar">' + ar
+          + (ar > 1 ? ' places arrivées' : ' place arrivée') + '</span>' : '')
+      + '</span></span>'
+      + '<span class="px"><em>' + Number(c.prix).toLocaleString('fr-FR') + ' €</em>'
+      + '<span>la place</span></span></div>';
+  }).join('') + '</div>'
+  + '<p class="mot">Le prix d\'une place, pour ta barque. Il retombe quand '
+  + 'trop de monde livre la même chose au même endroit — et remonte en '
+  + 'trois ou quatre jours.</p>';
+}
+
+document.getElementById('b-tri').onclick = e => {
+  const b = e.target.closest('[data-t]');
+  if (!b) return;
+  document.querySelectorAll('[data-t]').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  VUE = b.dataset.t;
+  rendre();
+};
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+
+(async () => {
+  try {
+    const d = await BD.charger();
+    if (!d){ location.href = 'index.html'; return; }
+    if (d.parti_le){ location.href = 'mer.html'; return; }
+    if (d.port !== 'barcelone'){ location.href = 'hub.html?v=3'; return; }
+
+    const r = await BD.agir('la_bourse');
+    if (!r || !r.ok){
+      document.getElementById('liste').innerHTML =
+        '<div class="bloc"><p class="rien">La place n\'a pas répondu.</p></div>';
+      leverAube();
+      return;
+    }
+    COURS = r.cours || [];
+
+    const manque = COURS.filter(c => humeur(c).k === 'monte').length;
+    const plein  = COURS.filter(c => humeur(c).k === 'tombe').length;
+    document.getElementById('b-sous').textContent =
+      COURS.length + ' marchandises cotées';
+    document.getElementById('b-jour').innerHTML =
+      '<p>Sur la place, on crie les prix depuis l\'aube. '
+      + '<b>' + manque + '</b> marchandise' + (manque > 1 ? 's manquent' : ' manque')
+      + ' quelque part, <b>' + plein + '</b> ' + (plein > 1 ? 'sont' : 'est')
+      + ' au plus bas.</p>'
+      + '<p>Les prix sont ceux d\'une place dans <b>ta</b> cale : '
+      + 'ils montent avec ta barque et ta négociation.</p>';
+
+    rendre();
+    document.getElementById('liste').classList.remove('attend');
+    document.getElementById('liste').classList.add('venu');
+    leverAube();
+  } catch(e){
+    console.warn(e);
+    document.getElementById('liste').innerHTML =
+      '<div class="bloc"><p class="rien">La place n\'a pas répondu.</p></div>';
+    leverAube();
+  }
+})();
+</script>
+</body>
+</html>
