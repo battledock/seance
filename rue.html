@@ -252,9 +252,27 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
   stroke-linecap:round;stroke-linejoin:round}
 .partir b{font-family:'DM Serif Display',Georgia,serif;font-weight:400;
   font-size:19px;color:#12303f;letter-spacing:.01em}
+
+/* ---------- l'aube ----------
+   Le temps que la page se pose. Elle prend le ciel du port, comme
+   partout ailleurs : plus de blanc ni de bascule de couleur. */
+#charge{position:fixed;inset:0;z-index:90;background:var(--h1,#f5a53a);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  transition:opacity .45s ease}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-family:'DM Serif Display',Georgia,serif;
+  font-size:27px;color:#fffaf0;letter-spacing:.02em}
+#charge .fl{width:118px;height:3px;border-radius:2px;
+  background:rgba(255,250,240,.26);overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#fffaf0;
+  animation:houle 1.15s ease-in-out infinite}
+@keyframes houle{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
 </style>
 </head>
 <body>
+
+<div id="charge"><div class="ti">Battle Dock</div><div class="fl"><i></i></div></div>
+
 
 <div id="rue"></div>
 <div id="teinte"></div>
@@ -1542,12 +1560,27 @@ function poserMiquel(vecue){
 }
 
 /* ---------- la fiche du joueur ---------- */
+/* ---------- l'aube ---------- */
+let AUBE = false;
+function leverAube(){
+  if (AUBE) return;
+  AUBE = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const c = document.getElementById('charge');
+    if (!c) return;
+    c.classList.add('parti');
+    setTimeout(() => c.remove(), 500);
+  }));
+}
+/* filet de sécurité : on n'enferme jamais le joueur derrière le voile */
+setTimeout(leverAube, 6000);
+
 (async () => {
   let d;
   try {
     d = await BD.charger();
     if (!d){ location.href = 'index.html'; return; }
-  } catch(e){ return; }
+  } catch(e){ leverAube(); return; }
 
   /* on n'est ici que si on a débarqué à Barcelone */
   if (d.parti_le){ location.href = 'mer.html'; return; }
@@ -1593,6 +1626,7 @@ function poserMiquel(vecue){
 
   /* le signe au-dessus de sa tête disparaît une fois la scène vécue */
   MOI = d;
+  leverAube();
   /* on retient le port : le hub s ouvrira du bon ciel */
   try { localStorage.setItem("bd-port", d.port || "anse"); } catch(e){}
   const vu = (d.rencontres || []).includes('miquel');
