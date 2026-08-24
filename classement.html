@@ -65,6 +65,46 @@
 .lg .eu small,.mar .eu small{display:block;font-family:'Nunito',sans-serif;
   font-size:9.5px;font-weight:700;color:rgba(18,48,63,.45);margin-top:2px}
 .mar .eu small{color:rgba(255,250,240,.6)}
+
+/* ---------- où tu en es ----------
+   Trois rangs d'un coup, et ce qui te sépare de celui qui te
+   précède. Un objectif vaut mieux qu'un constat. */
+.toi{padding:17px 18px;border-radius:20px;margin-bottom:18px;
+  background:var(--creme);border:3px solid var(--encre)}
+.toi .tt2{font-size:9.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(18,48,63,.46);margin-bottom:12px}
+.toi .trois{display:flex;gap:9px}
+.toi .trois div{flex:1;padding:11px 6px;border-radius:14px;text-align:center;
+  background:rgba(18,48,63,.05);border:2.5px solid rgba(18,48,63,.14);
+  cursor:pointer;transition:background .12s,border-color .12s}
+.toi .trois div.on{background:var(--or);border-color:var(--encre)}
+.toi .trois b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:22px;
+  line-height:1}
+.toi .trois span{display:block;font-size:8.5px;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(18,48,63,.5);margin-top:5px}
+/* le premier n'a personne devant : on le dit autrement */
+.toi .ec{font-size:12.5px;font-weight:700;line-height:1.5;margin-top:13px;
+  padding-top:12px;border-top:2.5px solid rgba(18,48,63,.1);
+  color:rgba(18,48,63,.62)}
+.toi .ec em{font-style:normal;font-family:'DM Serif Display',Georgia,serif;
+  font-size:16px;color:var(--encre)}
+.toi .ec.tete{color:#1f6b45}
+
+/* ---------- les records du port ---------- */
+.rec{margin-top:22px}
+.rec .li3{display:flex;align-items:center;gap:12px;padding:12px 16px;
+  border-bottom:2px solid rgba(18,48,63,.1)}
+.rec .li3:last-child{border-bottom:0}
+.rec .li3.moi{background:rgba(240,169,46,.14)}
+.rec .li3 .co{flex:1;min-width:0}
+.rec .li3 .co b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:16px;line-height:1.15}
+.rec .li3 .co span{display:block;font-size:11px;font-weight:700;
+  color:rgba(18,48,63,.5);margin-top:2px}
+.rec .li3 .pa{flex:0 0 auto;font-family:'DM Serif Display',Georgia,serif;
+  font-size:18px;color:var(--encre)}
+.rec .mot2{font-size:11.5px;font-weight:600;color:rgba(255,250,240,.72);
+  margin:10px 4px 0;line-height:1.5;text-shadow:0 1px 0 rgba(18,48,63,.2)}
 </style>
 </head>
 <body>
@@ -74,6 +114,8 @@
     <span class="q"><b>Le classement</b><span id="c-sous">—</span></span>
     <button class="retour" id="retour">‹ Retour</button>
   </div>
+  <div class="toi" id="toi"></div>
+
   <div class="onglets" id="onglets">
     <button data-c="fortune" class="on"><b>La fortune</b><small>En caisse</small></button>
     <button data-c="barque"><b>La barque</b><small>Le palier</small></button>
@@ -81,6 +123,7 @@
   </div>
   <div id="podium"></div>
   <div id="suite"></div>
+  <div class="rec" id="records"></div>
   <p class="pied">Battle Dock — Marseille</p>
 </div>
 
@@ -105,6 +148,64 @@ function valeurDe(x){
   if (VUE === 'barque')
     return 'Palier ' + x.valeur + (x.nom ? '<small>' + x.nom + '</small>' : '');
   return x.valeur + '<small>' + (x.valeur > 1 ? 'courses' : 'course') + '</small>';
+}
+
+/* ---------- où tu en es ---------- */
+const NOM_VUE = { fortune:'La fortune', barque:'La barque', courses:'Les courses' };
+const ORDINAL = n => n + (n === 1 ? 'er' : 'e');
+
+function blocToi(){
+  const el = document.getElementById('toi');
+  const M = TOUT && TOUT.moi_rangs;
+  if (!M){ el.style.display = 'none'; return; }
+  el.style.display = '';
+
+  const total = (TOUT.combien || 0);
+  const ec = (M.ecarts || []).filter(Boolean).find(x => x.quoi === VUE);
+
+  el.innerHTML = '<p class="tt2">Où tu en es</p>'
+    + '<div class="trois">'
+    + ['fortune','barque','courses'].map(k =>
+        '<div data-v="' + k + '"' + (k === VUE ? ' class="on"' : '') + '>'
+        + '<b>' + ORDINAL(M[k]) + '</b><span>' + NOM_VUE[k].replace('La ','')
+          .replace('Les ','') + '</span></div>').join('')
+    + '</div>'
+    /* ce qui te sépare du suivant, dans le classement affiché */
+    + (ec && ec.manque > 0
+        ? '<p class="ec">Il te manque <em>'
+          + Number(ec.manque).toLocaleString('fr-FR') + ' ' + ec.unite
+          + (ec.unite === 'course' && ec.manque > 1 ? 's' : '')
+          + '</em> pour passer ' + ec.qui + '.</p>'
+        : '<p class="ec tete">Personne devant toi sur ' + total
+          + ' dockers. Tiens la tête.</p>');
+
+  el.querySelectorAll('[data-v]').forEach(b =>
+    b.onclick = () => choisir(b.dataset.v));
+}
+
+/* ---------- les records du port ---------- */
+function blocRecords(){
+  const el = document.getElementById('records');
+  const R = (TOUT && TOUT.records) || [];
+  if (!R.length){ el.innerHTML = ''; return; }
+  const miens = R.filter(x => x.moi).length;
+  el.innerHTML = '<p class="sec">Les records du port</p>'
+    + '<div class="bloc">' + R.slice(0, 8).map(x =>
+        '<div class="li3' + (x.moi ? ' moi' : '') + '">'
+        + '<span class="co"><b>' + x.nom + '</b>'
+        + '<span>' + (x.moi ? 'Tu le tiens' : x.qui) + ' · ' + x.port + '</span></span>'
+        + '<span class="pa">' + Number(x.paie).toLocaleString('fr-FR') + ' €</span>'
+        + '</div>').join('') + '</div>'
+    + '<p class="mot2">Le plus gros chargement jamais livré pour chaque marchandise. '
+    + (miens ? 'Tu en tiens ' + miens + '.' : 'Tu n\'en tiens aucun.') + '</p>';
+}
+
+/* changer de classement, d'où qu'on le demande */
+function choisir(v){
+  VUE = v;
+  document.querySelectorAll('#onglets [data-c]').forEach(x =>
+    x.classList.toggle('on', x.dataset.c === v));
+  rendre();
 }
 
 function rendre(){
@@ -151,15 +252,14 @@ function rendre(){
 
   document.querySelectorAll('.av svg').forEach(s2 =>
     s2.setAttribute('preserveAspectRatio', 'xMidYMid slice'));
+
+  blocToi();
+  blocRecords();
 }
 
 document.getElementById('onglets').onclick = e => {
   const b = e.target.closest('[data-c]');
-  if (!b) return;
-  document.querySelectorAll('[data-c]').forEach(x => x.classList.remove('on'));
-  b.classList.add('on');
-  VUE = b.dataset.c;
-  rendre();
+  if (b) choisir(b.dataset.c);
 };
 
 (async () => {
