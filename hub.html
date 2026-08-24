@@ -321,13 +321,15 @@ function euro(v){
 
 /* Le hub est le même partout : c'est ton menu, pas celui d'un lieu.
    Seuls le bouton du haut, le chantier et le pied changent selon le port. */
-const PAGE_PORT = { anse:'jeu.html', barcelone:'barcelone.html',
+/* À Barcelone on revient dans la rue, pas sur le bassin : c'est là
+   qu'on vit. Le bassin n'est qu'un sas d'arrivée. */
+const PAGE_PORT = { anse:'jeu.html', barcelone:'rue.html',
                     palma:'palma.html', ajaccio:'ajaccio.html' };
 /* le bouton dit où il ramène : c'est plus court et plus juste
    que « retour au port », qui ne nommait rien. */
 const RADE = {
   anse:      'Retour à Marseille',
-  barcelone: 'Retour à Barcelone',
+  barcelone: 'Retour à la Barceloneta',
   palma:     'Retour à Palma',
   ajaccio:   'Retour à Ajaccio'
 };
