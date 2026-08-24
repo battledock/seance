@@ -45,6 +45,26 @@
   color:rgba(18,48,63,.5);margin-top:2px}
 .lg .eu{flex:0 0 auto;font-family:'DM Serif Display',Georgia,serif;font-size:18px}
 .lg.moi{background:var(--or)}
+
+/* ---------- les trois façons d'être premier ----------
+   L'argent en caisse baisse quand on joue bien : il fallait
+   d'autres mesures pour que construire ne fasse plus reculer. */
+.onglets{display:flex;gap:8px;margin-bottom:18px}
+.onglets button{flex:1;padding:11px 5px 12px;border-radius:15px;cursor:pointer;
+  background:rgba(253,246,230,.4);border:3px solid rgba(18,48,63,.3);
+  font-family:'Nunito',sans-serif;transition:background .14s,border-color .14s}
+.onglets button b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;line-height:1.1;color:rgba(18,48,63,.6)}
+.onglets button small{display:block;font-size:9px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(18,48,63,.4);margin-top:4px}
+.onglets button.on{background:var(--creme);border-color:var(--encre)}
+.onglets button.on b{color:var(--encre)}
+.onglets button.on small{color:#c07f14}
+
+/* le palier de barque tient sur deux lignes */
+.lg .eu small,.mar .eu small{display:block;font-family:'Nunito',sans-serif;
+  font-size:9.5px;font-weight:700;color:rgba(18,48,63,.45);margin-top:2px}
+.mar .eu small{color:rgba(255,250,240,.6)}
 </style>
 </head>
 <body>
@@ -53,6 +73,11 @@
   <div class="tete">
     <span class="q"><b>Le classement</b><span id="c-sous">—</span></span>
     <button class="retour" id="retour">‹ Retour</button>
+  </div>
+  <div class="onglets" id="onglets">
+    <button data-c="fortune" class="on"><b>La fortune</b><small>En caisse</small></button>
+    <button data-c="barque"><b>La barque</b><small>Le palier</small></button>
+    <button data-c="courses"><b>Les courses</b><small>Livrées</small></button>
   </div>
   <div id="podium"></div>
   <div id="suite"></div>
@@ -70,62 +95,80 @@ function euro(v){
   return Math.round(Number(v || 0)).toLocaleString('fr-FR') + ' €';
 }
 
+/* ---------- les trois classements ---------- */
+let TOUT = null, MOI = null, VUE = 'fortune';
+
+/* la valeur d'une ligne, dite selon le classement qu'on regarde */
+function valeurDe(x){
+  if (VUE === 'fortune')
+    return Math.round(Number(x.valeur || 0)).toLocaleString('fr-FR') + ' €';
+  if (VUE === 'barque')
+    return 'Palier ' + x.valeur + (x.nom ? '<small>' + x.nom + '</small>' : '');
+  return x.valeur + '<small>' + (x.valeur > 1 ? 'courses' : 'course') + '</small>';
+}
+
+function rendre(){
+  const L = (TOUT && TOUT[VUE]) || [];
+  const pod = document.getElementById('podium');
+  const suite = document.getElementById('suite');
+
+  if (!L.length){
+    pod.innerHTML = '';
+    suite.innerHTML = '<p class="rien">Le classement n\'a pas répondu.</p>';
+    return;
+  }
+
+  const rangMoi = (L.find(x => x.id === MOI) || {}).rang;
+  document.getElementById('c-sous').textContent = rangMoi
+    ? 'Tu es ' + rangMoi + (rangMoi === 1 ? 'er' : 'e') + ' sur ' + L.length
+    : L.length + ' dockers';
+
+  /* le podium : le premier au milieu */
+  const T = L.slice(0, 3);
+  pod.innerHTML = T.length >= 3
+    ? '<div class="pod">' + [T[1], T[0], T[2]].map((x, i) => {
+        const cl = ['deux', 'un', 'trois'][i];
+        return '<div class="mar ' + cl + '">'
+          + '<span class="rg">' + x.rang + '</span>'
+          + (cl === 'un' ? '<span class="cr">' + COURONNE + '</span>' : '')
+          + '<span class="av">' + BD.avatarSVG(x) + '</span>'
+          + '<span class="nm">' + x.pseudo + '</span>'
+          + '<span class="eu">' + valeurDe(x) + '</span></div>';
+      }).join('') + '</div>'
+    : '';
+
+  const R = T.length >= 3 ? L.slice(3) : L;
+  suite.innerHTML = R.length
+    ? '<p class="sec">' + (T.length >= 3 ? 'Et les autres' : 'Le classement') + '</p>'
+      + '<div class="bloc">' + R.map(x =>
+        '<div class="lg' + (x.id === MOI ? ' moi' : '') + '">'
+        + '<span class="rg">' + x.rang + '</span>'
+        + '<span class="av">' + BD.avatarSVG(x) + '</span>'
+        + '<span class="co"><b>' + x.pseudo + '</b>'
+        + '<span>Niveau ' + x.niveau + ' · ' + (PORTS[x.port] || 'en mer') + '</span></span>'
+        + '<span class="eu">' + valeurDe(x) + '</span></div>').join('') + '</div>'
+    : '';
+
+  document.querySelectorAll('.av svg').forEach(s2 =>
+    s2.setAttribute('preserveAspectRatio', 'xMidYMid slice'));
+}
+
+document.getElementById('onglets').onclick = e => {
+  const b = e.target.closest('[data-c]');
+  if (!b) return;
+  document.querySelectorAll('[data-c]').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  VUE = b.dataset.c;
+  rendre();
+};
+
 (async () => {
   try {
     const moi = await BD.charger();
     if (!moi){ location.href = 'index.html'; return; }
-
-    const c = await BD.client();
-    const { data } = await c.from('classement').select('*').order('rang').limit(50);
-    const L = data || [];
-
-    if (!L.length){
-      document.getElementById('suite').innerHTML =
-        '<p class="rien">Le classement n\'a pas répondu.</p>';
-      return;
-    }
-
-    /* où en es-tu ? */
-    const rangMoi = (L.find(x => x.id === moi.id) || {}).rang;
-    document.getElementById('c-sous').textContent = rangMoi
-      ? 'Tu es ' + rangMoi + (rangMoi === 1 ? 'er' : 'e') + ' sur ' + L.length
-      : L.length + ' dockers';
-
-    /* le podium : les trois premiers, le premier au milieu */
-    const T = L.slice(0, 3);
-    if (T.length >= 3){
-      const ordre = [T[1], T[0], T[2]];
-      const cl = ['deux', 'un', 'trois'];
-      document.getElementById('podium').innerHTML = '<div class="pod">'
-        + ordre.map((x, i) =>
-          '<div class="mar ' + cl[i] + '">'
-          + '<span class="rg">' + x.rang + '</span>'
-          + (cl[i] === 'un' ? '<span class="cr">' + COURONNE + '</span>' : '')
-          + '<span class="av">' + BD.avatarSVG(x) + '</span>'
-          + '<span class="nm">' + x.pseudo + '</span>'
-          + '<span class="eu">' + euro(x.euros) + '</span>'
-          + '</div>').join('') + '</div>';
-    }
-
-    /* le reste */
-    const R = T.length >= 3 ? L.slice(3) : L;
-    if (R.length){
-      document.getElementById('suite').innerHTML =
-        '<p class="sec">' + (T.length >= 3 ? 'Et les autres' : 'Le classement') + '</p>'
-        + '<div class="bloc">' + R.map(x =>
-          '<div class="lg' + (x.id === moi.id ? ' moi' : '') + '">'
-          + '<span class="rg">' + x.rang + '</span>'
-          + '<span class="av">' + BD.avatarSVG(x) + '</span>'
-          + '<span class="co"><b>' + x.pseudo + '</b>'
-          + '<span>Niveau ' + x.niveau + ' · ' + (PORTS[x.port] || 'en mer') + '</span></span>'
-          + '<span class="eu">' + euro(x.euros) + '</span>'
-          + '</div>').join('') + '</div>';
-    }
-
-    /* les avatars du podium doivent remplir leur cadre */
-    document.querySelectorAll('.av svg').forEach(s =>
-      s.setAttribute('preserveAspectRatio', 'xMidYMid slice'));
-
+    MOI = moi.id;
+    TOUT = await BD.agir('classements');
+    rendre();
   } catch(e){
     console.warn(e);
     document.getElementById('suite').innerHTML =
