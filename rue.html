@@ -225,6 +225,26 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
   50%{transform:translateY(-2.4px) scale(1.06)}}
 
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+/* ---------- reprendre la mer ----------
+   Le même geste qu'à Marseille : le grand bouton en bas, toujours là. */
+.partir{position:fixed;z-index:12;
+  left:14px;right:14px;
+  bottom:calc(env(safe-area-inset-bottom) + 16px);
+  height:62px;border-radius:16px;
+  background:#fdf6e6;border:3px solid #12303f;
+  box-shadow:0 6px 22px rgba(6,16,28,.44);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity .5s,transform .5s,background .15s}
+.partir.pret{opacity:1;transform:none;pointer-events:auto}
+.partir:active{background:#f2e7cf;transform:translateY(2px)}
+.partir svg{width:24px;height:24px;flex:0 0 24px;
+  fill:none;stroke:#12303f;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.partir b{font-family:'DM Serif Display',Georgia,serif;font-weight:400;
+  font-size:19px;color:#12303f;letter-spacing:.01em}
 </style>
 </head>
 <body>
@@ -233,11 +253,16 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 <div id="teinte"></div>
 
 <div class="tete">
-  <button class="ret" id="ret"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
   <span class="por" id="por"></span>
   <span class="ou"><b>La Barceloneta</b><span id="ou-h">Barcelone</span></span>
   <span class="eu" id="eu">—</span>
 </div>
+
+<button class="partir" id="partir">
+  <svg viewBox="0 0 24 24"><path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7z
+    M12 10V4M12 4l6 3-6 2"/></svg>
+  <b>Reprendre la mer</b>
+</button>
 
 <div class="voile" id="voile"></div>
 
@@ -1460,7 +1485,10 @@ function aborder(){
   setTimeout(() => location.href = 'miquel.html', 2900);
 }
 
-document.getElementById('ret').onclick = () => location.href = 'barcelone.html';
+/* le grand bouton du bas ramène au bassin, comme à Marseille */
+document.getElementById('partir').onclick = () => location.href = 'barcelone.html';
+requestAnimationFrame(() =>
+  document.getElementById('partir').classList.add('pret'));
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
 
 /* on peut toucher le type qui attend */
