@@ -830,29 +830,60 @@ html{font-size:calc(16px * var(--txt, 1))}
   flex:0 0 5px}
 .eti.charge i{background:#f0c46a}
 
-.fi{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 92px);
-  z-index:24;max-width:340px;margin:0 auto;
-  background:rgba(16,32,50,.96);border:2px solid rgba(255,255,255,.26);
-  border-radius:12px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  box-shadow:0 14px 44px rgba(6,16,28,.6);color:#fff;
+/* ---------- la fiche d'un autre docker ----------
+   Elle était restée au vieux langage — fond sombre, Courier Prime.
+   Elle passe au crème et à l'encre, comme tout le reste, et dit
+   enfin ce qui vous sépare et ce qu'il a fait de mieux. */
+.fi{position:fixed;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 92px);
+  z-index:24;max-width:360px;margin:0 auto;max-height:64vh;overflow-y:auto;
+  border-radius:20px;background:#fdf6e6;border:3px solid #12303f;
+  box-shadow:0 14px 44px rgba(6,16,28,.5);color:#12303f;
   opacity:0;transform:translateY(14px);pointer-events:none;
   transition:opacity .22s,transform .26s cubic-bezier(.2,.9,.3,1)}
 .fi.on{opacity:1;transform:none;pointer-events:auto}
-.fi .h{display:flex;align-items:center;gap:12px;padding:15px}
-.fi .h .em{flex:0 0 40px;height:40px;display:flex;align-items:center;justify-content:center}
-.fi .h .em svg{width:23px;height:23px}
+
+/* l'enseigne, en grand : c'est son identité, elle mérite la place */
+.fi .h{position:relative;display:flex;align-items:center;gap:14px;padding:17px 17px 15px}
+.fi .h .ec{flex:0 0 54px;height:54px;display:flex;align-items:center;
+  justify-content:center;border:3px solid #12303f}
+.fi .h .ec svg{width:28px;height:28px}
 .fi .h .tx{flex:1;min-width:0}
-.fi .h b{display:block;font-size:16px;font-weight:700;font-family:'Courier Prime',monospace}
-.fi .h span{display:block;font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;
-  font-family:system-ui,sans-serif}
-.fi .h .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.44);
-  font-size:20px;padding:2px}
-.fi ul{list-style:none;border-top:1px solid rgba(255,255,255,.12)}
-.fi li{display:flex;justify-content:space-between;padding:11px 15px;font-size:12px;
-  border-bottom:1px solid rgba(255,255,255,.07);font-family:system-ui,sans-serif}
-.fi li:last-child{border-bottom:0}
-.fi li span{color:rgba(255,255,255,.46)}
-.fi li b{font-family:'Courier Prime',monospace}
+.fi .h .tx b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:23px;line-height:1.05}
+.fi .h .tx .af{display:block;font-size:12px;font-weight:700;
+  color:rgba(18,48,63,.58);margin-top:4px}
+.fi .h .tx .qd{display:block;font-size:10px;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(18,48,63,.4);margin-top:5px}
+.fi .fer{position:absolute;top:11px;right:12px;width:32px;height:32px;
+  border-radius:11px;cursor:pointer;background:rgba(18,48,63,.07);
+  border:2.5px solid #12303f;color:#12303f;font-size:17px;line-height:1}
+
+/* ---------- ce qui vous sépare ---------- */
+.fi .vs{padding:0 17px 15px}
+.fi .vs .tt3{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(18,48,63,.42);margin-bottom:9px}
+.fi .vs .l4{display:flex;align-items:center;gap:10px;padding:8px 0;
+  font-size:12.5px;font-weight:700}
+.fi .vs .l4 + .l4{border-top:2px solid rgba(18,48,63,.09)}
+.fi .vs .l4 .q4{flex:1;color:rgba(18,48,63,.55)}
+.fi .vs .l4 .v4{flex:0 0 auto;font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;font-weight:400}
+/* il te devance / tu le devances */
+.fi .vs .l4.derriere .v4{color:#a8351f}
+.fi .vs .l4.devant .v4{color:#1f6b45}
+.fi .vs .l4.egal .v4{color:rgba(18,48,63,.4)}
+
+/* ---------- ses records ---------- */
+.fi .rc{border-top:2.5px solid rgba(18,48,63,.12);padding:14px 17px 16px}
+.fi .rc .tt3{font-size:9px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(18,48,63,.42);margin-bottom:10px}
+.fi .rc .l5{display:flex;align-items:baseline;gap:9px;padding:5px 0;font-size:12.5px}
+.fi .rc .l5 .n5{flex:1;min-width:0;font-weight:700;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi .rc .l5 .p5{flex:0 0 auto;font-family:'DM Serif Display',Georgia,serif;
+  font-size:15px;color:#c07f14}
+.fi .rc .rien5{font-size:12px;font-weight:600;color:rgba(18,48,63,.45);line-height:1.5}
+
 .amarre.a1{animation-duration:7.8s;animation-delay:-2s}
 .amarre.a2{animation-duration:5.6s;animation-delay:-3.4s}
 .amarre.a3{animation-duration:8.6s;animation-delay:-1.2s}
@@ -2809,19 +2840,62 @@ function ficheAutre(i){
   const c = COULEURS.find(x => x.k === j.couleur) || COULEURS[0];
   const f = (ECUSSONS.find(x => x.k === j.ecusson) || ECUSSONS[0]).r;
   const h = +j.depuis_h || 0;
+  const eur = n => Math.abs(Math.round(n)).toLocaleString('fr-FR');
+
+  /* ---- ce qui vous sépare, ligne par ligne ---- */
+  function duel(titre, ecart, dit) {
+    const cl = ecart > 0 ? 'derriere' : ecart < 0 ? 'devant' : 'egal';
+    return '<div class="l4 ' + cl + '"><span class="q4">' + titre + '</span>'
+      + '<span class="v4">' + dit + '</span></div>';
+  }
+
+  const de = +j.ecart_euros || 0;
+  const dc = (+j.ses_courses || 0) - (+j.mes_courses || 0);
+  const db = +j.ecart_barque || 0;
+
+  let vs = '<div class="vs"><p class="tt3">Vous deux</p>'
+    + duel('En caisse', de,
+        de > 0 ? 'il te devance de ' + eur(de) + ' €'
+      : de < 0 ? 'tu le devances de ' + eur(de) + ' €'
+      : 'à égalité')
+    + duel('Courses livrées', dc,
+        dc > 0 ? 'il en a ' + dc + ' de plus'
+      : dc < 0 ? 'tu en as ' + (-dc) + ' de plus'
+      : 'autant l\'un que l\'autre')
+    + duel('Sa barque', db,
+        db > 0 ? 'meilleure de ' + db + (db > 1 ? ' paliers' : ' palier')
+      : db < 0 ? 'la tienne devance de ' + (-db) + (db < -1 ? ' paliers' : ' palier')
+      : 'le même palier')
+    + duel('Sa cale', j.charge ? 1 : 0,
+        j.charge ? 'chargée — il va partir' : 'vide')
+    + '</div>';
+
+  /* ---- les records qu'il tient ---- */
+  const R = j.records || [];
+  const rc = '<div class="rc"><p class="tt3">Ce qu\'il a fait de mieux</p>'
+    + (R.length
+        ? R.slice(0, 5).map(r =>
+            '<div class="l5"><span class="n5">' + r.nom + '</span>'
+            + '<span class="p5">' + Number(r.paie).toLocaleString('fr-FR')
+            + ' €</span></div>').join('')
+          + (R.length > 5
+              ? '<p class="rien5" style="margin-top:8px">Et ' + (R.length - 5)
+                + ' autres records du port.</p>' : '')
+        : '<p class="rien5">Il ne tient aucun record du port. '
+          + 'Rien à lui reprendre pour l\'instant.</p>')
+    + '</div>';
+
   document.getElementById('fi').innerHTML =
-    '<div class="h"><span class="em" style="background:' + c.c
+    '<div class="h"><span class="ec" style="background:' + c.c
     + ';border-radius:' + f + '">' + (j.signe ? signe(j.signe, '#fff') : '') + '</span>'
     + '<span class="tx"><b>' + j.pseudo + '</b>'
-    + '<span>' + (j.nom ? j.nom + ' — ' + (MET_A[j.metier] || '') : 'Sans affaire')
-    + '</span></span><button class="fer" id="fi-x">×</button></div>'
-    + '<ul>'
-    + '<li><span>Niveau</span><b>' + (j.niveau || 1) + '</b></li>'
-    + '<li><span>Sa barque</span><b>' + (BARQ_A[j.barque] || '—') + '</b></li>'
-    + '<li><span>Au port depuis</span><b>'
-    + (h < 1 ? "moins d'une heure" : h + ' h') + '</b></li>'
-    + '<li><span>Sa cale</span><b style="color:' + (j.charge ? '#f0c46a' : '#8ce0a8')
-    + '">' + (j.charge ? 'chargée' : 'vide') + '</b></li></ul>';
+    + '<span class="af">' + (j.nom ? j.nom + ' — ' + (MET_A[j.metier] || '')
+        : 'Sans affaire') + '</span>'
+    + '<span class="qd">Niveau ' + (j.niveau || 1) + ' · au port depuis '
+    + (h < 1 ? "moins d'une heure" : h + ' h') + '</span></span>'
+    + '<button class="fer" id="fi-x">×</button></div>'
+    + vs + rc;
+
   document.getElementById('fi').classList.add('on');
   document.getElementById('fi-x').onclick = () =>
     document.getElementById('fi').classList.remove('on');
