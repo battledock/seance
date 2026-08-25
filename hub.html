@@ -458,6 +458,22 @@ const TUILES = [
     s:'Se rhabiller, et une chambre pour la nuit',
     f:() => location.href = 'tailleur.html' },
 
+  /* ---- Palma ---- */
+  { k:'pere', ou:'attend', ici:'palma', em:'🚪',
+    get t(){ return PALMA.pere ? 'Chez Pere' : "Le frère d'Ardit"; },
+    get s(){ return PALMA.aLettre
+      ? 'Une lettre à remettre en main propre'
+      : 'La maison derrière la Seu'; },
+    si:'palma_pere', sinon:'Personne ne t\'attend encore ici',
+    f:() => location.href = 'ardit.html' },
+  { k:'chargement_palma', ou:'attend', ici:'palma', em:'🧵', t:'Le chargement',
+    s:'Le drap que Pere te confie', si:'pere',
+    sinon:'Il faut d\'abord qu\'on te fasse confiance',
+    f:() => location.href = 'contrats.html' },
+  { k:'moulins', ou:'lieu', ici:'palma', em:'🌾', t:'Les moulins',
+    s:'Ils tournent au-dessus de la ville. Pas encore ouverts.',
+    ferme:true },
+
   /* ---- partout ---- */
   { k:'quetes', ou:'attend', em:'📓', t:'Ton carnet',
     s:'Les histoires en cours',
@@ -484,6 +500,8 @@ let VECU = [];
 
 
 let hubEtat = {}, D = null;
+/* où en est-on avec la maison derrière la Seu */
+let PALMA = { aLettre:false, pere:false };
 
 /* une tuile est close si le lieu n'existe pas encore,
    ou si l'histoire ne t'y a pas encore mené */
@@ -617,6 +635,18 @@ document.getElementById('ouv-ok').onclick = () => {
     VECU = (d.rencontres || []).slice();
     /* ouvrir une affaire chez Félix débloque la fabrique */
     if (d.affaire) VECU.push('affaire');
+    /* Palma ne se lit pas dans les rencontres mais dans l'histoire :
+       la lettre dans la sacoche, ou l'étape d'Ardit, ou Pere lui-même */
+    {
+      const Q = d.quetes || [];
+      const ardit = Q.find(q => q.k === 'ardit');
+      const pere  = Q.find(q => q.k === 'pere');
+      const aLettre = (d.sacoche || []).some(o => o && o.k === 'lettre');
+      const attendu = ardit && ardit.etape >= 2 && !pere && (d.niveau || 1) >= 4;
+      if (aLettre || pere || attendu) VECU.push('palma_pere');
+      if (pere) VECU.push('pere');
+      PALMA = { aLettre: aLettre, pere: !!pere };
+    }
     document.getElementById('rade-t').textContent = RADE[PORT] || RADE.anse;
     document.getElementById('pied').textContent =
       'Battle Dock — ' + (PORTS_N[PORT] || 'Marseille');
