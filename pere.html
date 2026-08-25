@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#17110b">
+<title>Battle Dock — L'atelier de Pere</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   L'ATELIER DE PERE — Palma
+   Une pièce basse derrière la Seu. Le métier prend toute la
+   largeur, la fenêtre est à gauche : c'est elle qui éclaire.
+   Le drap tendu renvoie la lumière ; le reste est dans l'ombre.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#17110b;
+  font-family:'Courier Prime',monospace;color:#fff}
+
+#sc{position:fixed;left:0;right:0;top:0;height:52%;overflow:hidden;
+  opacity:0;transition:opacity .5s}
+#sc.pret{opacity:1}
+#sc svg{display:block;width:100%;height:100%}
+#sc::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(23,17,11,.28) 0,rgba(23,17,11,0) 26%,
+    rgba(23,17,11,.72) 80%,rgba(23,17,11,.99) 100%)}
+
+.tete{position:fixed;left:0;right:0;top:0;z-index:6;
+  padding:calc(env(safe-area-inset-top) + 14px) 16px 0;display:flex;align-items:center;gap:11px}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:9px;
+  border:1.5px solid rgba(255,255,255,.24);background:rgba(30,20,12,.6);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tete .ret svg{width:18px;height:18px;stroke:#f0d0a0;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou{flex:1;min-width:0;background:rgba(30,20,12,.6);
+  border:1.5px solid rgba(255,255,255,.2);border-radius:9px;padding:7px 13px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.tete .ou b{display:block;font-size:14px;font-weight:700;color:#f6e4c8}
+.tete .ou span{display:block;font-size:8px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(246,228,200,.5);margin-top:2px}
+
+.w{position:fixed;left:0;right:0;top:47%;bottom:0;z-index:5;overflow-y:auto;
+  padding:0 20px calc(env(safe-area-inset-bottom) + 22px)}
+.w::-webkit-scrollbar{display:none}
+
+.dit{padding-top:22px;display:flex;flex-direction:column;gap:12px}
+.dit p{font-size:15px;line-height:1.72;color:rgba(246,232,208,.86);
+  font-family:system-ui,sans-serif;
+  opacity:0;transform:translateY(8px);animation:venir .6s forwards}
+.dit p.parle{color:#fff;font-size:16px;padding-left:14px;
+  border-left:2.5px solid rgba(200,150,80,.65)}
+@keyframes venir{to{opacity:1;transform:none}}
+
+.tt{font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(246,228,200,.4);margin:26px 2px 11px}
+.tt.dx{display:flex;align-items:baseline;justify-content:space-between}
+.tt.dx em{font-style:normal;color:#c8a05a;letter-spacing:.1em}
+
+/* ---------- sa part : la pièce maîtresse ----------
+   Un cartouche de drap, avec la mesure au milieu. */
+.part{background:rgba(30,22,14,.9);border:1.5px solid rgba(246,228,200,.18);
+  border-radius:11px;overflow:hidden;box-shadow:0 10px 30px rgba(6,4,2,.55)}
+.part .h{display:flex;align-items:flex-end;gap:14px;padding:18px 17px 14px}
+.part .h .g{flex:0 0 auto}
+.part .h .g b{display:block;font-size:40px;line-height:.9;color:#f0c46a;font-weight:700}
+.part .h .g span{display:block;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(246,228,200,.42);margin-top:6px}
+.part .h .d{flex:1;min-width:0;text-align:right;padding-bottom:4px}
+.part .h .d b{display:block;font-size:13px;color:rgba(246,232,208,.8)}
+.part .h .d span{display:block;font-size:10.5px;color:rgba(246,228,200,.44);margin-top:4px;
+  font-family:system-ui,sans-serif;line-height:1.5}
+
+/* la trame : quatre paliers, celui qu'on tient est plein */
+.trame{display:flex;gap:3px;padding:0 17px 4px}
+.trame i{flex:1;height:7px;border-radius:4px;background:rgba(246,228,200,.1);
+  position:relative;overflow:hidden}
+.trame i.eu{background:#c8a05a}
+.trame i.la{background:rgba(200,160,90,.28)}
+.trame i.la::after{content:"";position:absolute;inset:0;width:var(--p,0%);
+  background:#c8a05a;transition:width .8s}
+.paliers{display:flex;gap:3px;padding:7px 17px 16px}
+.paliers span{flex:1;font-size:8.5px;letter-spacing:.06em;text-align:center;
+  color:rgba(246,228,200,.3)}
+.paliers span.eu{color:#c8a05a;font-weight:700}
+
+.part .p{padding:13px 17px 15px;border-top:1px solid rgba(246,228,200,.09);
+  font-size:11.5px;line-height:1.65;color:rgba(246,228,200,.5);
+  font-family:system-ui,sans-serif}
+.part .p b{color:#c8a05a}
+
+/* ---------- les gestes du jour ---------- */
+.gestes{display:flex;flex-direction:column;gap:10px}
+.gestes button{width:100%;text-align:left;padding:15px 16px;
+  border:1.5px solid rgba(246,228,200,.18);border-radius:11px;
+  background:rgba(38,27,17,.75);cursor:pointer;
+  font-family:'Courier Prime',monospace;transition:transform .13s,border-color .2s}
+.gestes button:active{transform:scale(.987)}
+.gestes button:disabled{cursor:default;opacity:.9}
+.gestes .l1{display:flex;align-items:baseline;gap:10px}
+.gestes .l1 b{flex:1;font-size:15px;color:#f6e8d0;font-weight:700;line-height:1.35}
+.gestes .l1 .co{flex:0 0 auto;font-size:11px;color:rgba(246,228,200,.5);
+  white-space:nowrap}
+.gestes .no{display:block;font-size:12px;color:rgba(246,228,200,.5);margin-top:6px;
+  font-family:system-ui,sans-serif;line-height:1.55}
+.gestes .gn{display:inline-block;margin-top:10px;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;padding:4px 10px;border-radius:12px;
+  background:rgba(200,160,90,.16);color:#c8a05a}
+/* une fois fait : ce qu'il en dit reste à la place du bouton */
+.gestes .fait{border-color:rgba(140,224,168,.24);background:rgba(24,32,24,.6)}
+.gestes .fait .l1 b{color:rgba(246,232,208,.6)}
+.gestes .fait .mot{display:block;font-size:12.5px;line-height:1.65;margin-top:9px;
+  color:rgba(200,224,190,.82);font-family:system-ui,sans-serif;font-style:italic}
+
+/* ---------- le chargement ---------- */
+.charger{width:100%;margin-top:14px;padding:17px;border-radius:12px;cursor:pointer;
+  border:1.5px solid rgba(200,160,90,.5);background:rgba(52,38,20,.7);
+  font-family:'Courier Prime',monospace;display:flex;align-items:center;gap:13px;
+  transition:transform .13s}
+.charger:active{transform:scale(.99)}
+.charger .ic{flex:0 0 34px;height:34px}
+.charger .ic svg{display:block;width:100%;height:100%}
+.charger .tx{flex:1;text-align:left}
+.charger .tx b{display:block;font-size:15px;color:#f6e8d0;font-weight:700}
+.charger .tx span{display:block;font-size:11.5px;color:rgba(246,228,200,.5);margin-top:4px;
+  font-family:system-ui,sans-serif}
+.charger .fl{flex:0 0 auto;color:rgba(246,228,200,.4);font-size:18px}
+
+.mot{font-size:12px;line-height:1.75;color:rgba(246,228,200,.38);margin-top:24px;
+  font-family:system-ui,sans-serif;text-align:center;padding:0 6px}
+
+.rien{padding:30px 18px;text-align:center;font-size:13px;line-height:1.75;
+  color:rgba(246,228,200,.5);font-family:system-ui,sans-serif}
+
+/* ---------- ce qui vit dans la pièce ---------- */
+/* la navette va et vient */
+.navette{animation:passe 3.4s ease-in-out infinite}
+@keyframes passe{0%,100%{transform:translateX(0)}50%{transform:translateX(128px)}}
+/* le battant tasse la trame */
+.battant{animation:tasse 3.4s ease-in-out infinite;transform-origin:50% 0}
+@keyframes tasse{0%,42%,100%{transform:rotate(0)}
+  58%{transform:rotate(3.4deg)}72%{transform:rotate(0)}}
+/* ses bras suivent le battant */
+.bras{animation:tire 3.4s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:50% 4%}
+@keyframes tire{0%,42%,100%{transform:rotate(0)}58%{transform:rotate(6deg)}}
+/* la poussière dans le rai de lumière */
+.pou{animation:flotte 11s linear infinite}
+.p1{animation-duration:14s;animation-delay:-4s}
+.p2{animation-duration:9s;animation-delay:-7s}
+.p3{animation-duration:17s;animation-delay:-2s}
+@keyframes flotte{0%{transform:translate(0,0);opacity:0}
+  20%{opacity:.5}80%{opacity:.4}
+  100%{transform:translate(26px,-58px);opacity:0}}
+/* les fils de chaîne vibrent à peine */
+.chaine{animation:vibre 3.4s ease-in-out infinite}
+@keyframes vibre{0%,50%,100%{transform:translateY(0)}58%{transform:translateY(1.2px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+#charge{position:fixed;inset:0;z-index:90;background:#17110b;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  transition:opacity .45s ease}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-size:19px;color:#c8a05a;letter-spacing:.16em}
+#charge .fl{width:110px;height:3px;border-radius:2px;
+  background:rgba(200,160,90,.2);overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#c8a05a;
+  animation:va 1.15s ease-in-out infinite}
+@keyframes va{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+</style>
+</head>
+<body>
+
+<div id="charge"><div class="ti">L'ATELIER</div><div class="fl"><i></i></div></div>
+
+<div id="sc"></div>
+
+<div class="tete">
+  <button class="ret" id="ret" aria-label="Retour">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="ou"><b>L'atelier de Pere</b><span>Derrière la Seu — Palma</span></span>
+</div>
+
+<div class="w" id="w"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+/* ============================================================
+   LE DÉCOR
+   ============================================================ */
+const W = 480;
+function hx(c){ return [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]; }
+function ch(a){ return '#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join(''); }
+function mel(a,b,k){ const A=hx(a),B=hx(b); return ch([0,1,2].map(i=>A[i]+(B[i]-A[i])*k)); }
+const rnd = s => { const x = Math.sin(s*127.1)*43758.5; return x - Math.floor(x); };
+const rnd2 = (a,b) => { const x = Math.sin(a*127.1+b*311.7)*43758.5; return x - Math.floor(x); };
+
+const JOUR = '#ffe0a8', NUIT = '#17110b';
+const clair = (c,k) => mel(c, JOUR, k===undefined?.3:k);
+const noir  = (c,k) => mel(c, NUIT, k===undefined?.3:k);
+
+/* ---------- la pièce ----------
+   La fenêtre est en haut à gauche. Tout ce qui est à sa droite
+   est éclairé, tout ce qui lui tourne le dos est mangé d'ombre. */
+function atelier(){
+  const H = 900;
+  let s = `<defs>
+    <linearGradient id="p-mur" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#2e2318"/>
+      <stop offset="44%"  stop-color="#453424"/>
+      <stop offset="100%" stop-color="#241a10"/></linearGradient>
+    <linearGradient id="p-rai" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#ffe6b8" stop-opacity=".34"/>
+      <stop offset="60%"  stop-color="#e8bc78" stop-opacity=".1"/>
+      <stop offset="100%" stop-color="#c89a58" stop-opacity="0"/></linearGradient>
+    <radialGradient id="p-fen" cx="0.5" cy="0.5">
+      <stop offset="0%"   stop-color="#fff2d4" stop-opacity=".9"/>
+      <stop offset="100%" stop-color="#ffd898" stop-opacity=".2"/></radialGradient>
+    <linearGradient id="p-drap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#e8d8b0"/>
+      <stop offset="100%" stop-color="#b8a078"/></linearGradient>
+  </defs>`;
+
+  /* --- le mur du fond, en pierre crépie --- */
+  s += `<rect x="0" y="0" width="${W}" height="${H}" fill="url(#p-mur)"/>`;
+  for (let k = 0; k < 70; k++){
+    const x = rnd(k*7)*520-20, y = rnd(k*3)*560;
+    s += `<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}"
+      width="${(28+rnd(k)*54).toFixed(0)}" height="${(12+rnd(k+2)*11).toFixed(0)}" rx="3"
+      fill="${rnd(k+5) > .5 ? '#54402c' : '#302418'}" opacity=".26"/>`;
+  }
+
+  /* --- la fenêtre, haute et étroite, à gauche --- */
+  s += `<rect x="26" y="52" width="132" height="192" rx="6" fill="#1a1208"/>`;
+  s += `<rect x="34" y="60" width="116" height="176" rx="4" fill="url(#p-fen)"/>`;
+  /* le meneau */
+  s += `<rect x="88" y="60" width="8" height="176" fill="#3a2a1a"/>`;
+  s += `<rect x="34" y="140" width="116" height="7" fill="#3a2a1a"/>`;
+  /* ce qu'on aperçoit dehors : un bout de ville et de ciel */
+  s += `<rect x="34" y="60" width="116" height="72" fill="#cfe0e8" opacity=".5"/>`;
+  s += `<path d="M34 132 h34 v-26 h22 v26 h24 v-18 h20 v18 h-100 z"
+    fill="#c8a878" opacity=".55"/>`;
+  /* l'appui, blanchi de lumière */
+  s += `<rect x="20" y="238" width="146" height="12" rx="3" fill="#8a6c48"/>`;
+  s += `<rect x="20" y="238" width="146" height="4" rx="2" fill="#e0c088" opacity=".8"/>`;
+
+  /* --- le rai de lumière qui traverse la pièce --- */
+  s += `<path d="M34 66 L150 60 L470 442 L300 560 Z" fill="url(#p-rai)"/>`;
+  /* la poussière qui flotte dedans */
+  for (let k = 0; k < 22; k++){
+    const x = 90 + rnd(k*5)*280, y = 180 + rnd(k*9)*300;
+    s += `<circle class="pou p${k%4}" cx="${x.toFixed(0)}" cy="${y.toFixed(0)}"
+      r="${(1+rnd(k)*2).toFixed(1)}" fill="#ffeec8" opacity=".4"/>`;
+  }
+
+  /* --- les pièces de drap pendues au mur, à droite --- */
+  [[300,64,58],[368,52,74],[430,72,50]].forEach(([x,y,w],j) => {
+    const h = 210 + rnd(j*3)*60;
+    const c = ['#8a5a48','#5a6a58','#7a6a48'][j];
+    /* la tringle */
+    s += `<rect x="${x-6}" y="${y-8}" width="${w+12}" height="7" rx="3" fill="#4a3826"/>`;
+    /* le drap, qui ondule un peu en bas */
+    s += `<path d="M${x} ${y} h${w} v${h}
+      q${-w*.5} ${14} ${-w} 0 z" fill="${noir(c,.3)}"/>`;
+    /* le pli que la fenêtre atteint, côté gauche */
+    s += `<path d="M${x} ${y} h${(w*.32).toFixed(0)} v${h+6}
+      q${-w*.16} ${5} ${-(w*.32).toFixed(0)} 0 z" fill="${clair(c,.24)}" opacity=".7"/>`;
+    /* la trame, en lignes fines */
+    for (let q = 0; q < 9; q++)
+      s += `<path d="M${x} ${(y + 18 + q*22).toFixed(0)} h${w}" stroke="#000"
+        stroke-width="1" opacity=".1"/>`;
+  });
+
+  /* --- Pere, assis au métier --- */
+  s += pereGrand(196, 470);
+
+  /* --- LE MÉTIER À TISSER, au premier plan --- */
+  s += metier();
+
+  return s;
+}
+
+/* ---------- le métier à tisser ----------
+   Deux montants, l'ensouple devant, la chaîne qui file vers
+   le fond, le battant suspendu, la navette qui traverse. */
+function metier(){
+  const y0 = 596;          /* le haut du bâti */
+  const yb = 742;          /* la ligne du tissage */
+  let s = `<g>`;
+
+  /* la chaîne : des dizaines de fils tendus vers le fond */
+  s += `<g class="chaine">`;
+  for (let k = 0; k < 46; k++){
+    const x1 = 40 + k*9.4, x2 = 96 + k*6.4;
+    s += `<path d="M${x1.toFixed(0)} ${yb} L${x2.toFixed(0)} ${(yb-96).toFixed(0)}"
+      stroke="${k % 2 ? '#e0cba0' : '#c9b088'}" stroke-width="1.5"
+      opacity="${(.5 + rnd(k)*.4).toFixed(2)}"/>`;
+  }
+  s += `</g>`;
+
+  /* le drap déjà tissé, qui s'enroule vers nous */
+  s += `<path d="M-20 ${yb} h520 v42 h-520 z" fill="url(#p-drap)"/>`;
+  for (let k = 0; k < 30; k++)
+    s += `<path d="M-20 ${(yb + 4 + k*1.4).toFixed(1)} h520" stroke="#8a7452"
+      stroke-width=".7" opacity=".24"/>`;
+  /* l'ensouple : le rouleau de drap fini */
+  s += `<rect x="-20" y="${yb+42}" width="520" height="46" rx="20" fill="#a88c60"/>`;
+  s += `<rect x="-20" y="${yb+42}" width="520" height="14" rx="7" fill="#d8c298" opacity=".7"/>`;
+  s += `<rect x="-20" y="${yb+74}" width="520" height="10" fill="#6d5638" opacity=".5"/>`;
+
+  /* le battant, suspendu au-dessus de la trame */
+  s += `<g class="battant" style="transform-origin:240px ${y0}px">`;
+  s += `<rect x="-20" y="${yb-52}" width="520" height="15" rx="4" fill="#5c4229"/>`;
+  s += `<rect x="-20" y="${yb-52}" width="520" height="5" rx="2" fill="#8a6a42" opacity=".8"/>`;
+  /* les dents du peigne */
+  for (let k = 0; k < 54; k++)
+    s += `<path d="M${(-14 + k*9.2).toFixed(0)} ${yb-37} v20" stroke="#3e2c1a"
+      stroke-width="1.6" opacity=".55"/>`;
+  s += `</g>`;
+
+  /* la navette, qui traverse la foule des fils */
+  s += `<g class="navette">`;
+  s += `<path d="M118 ${yb-14} q30 -12 62 0 q-30 12 -62 0 z" fill="#6d4a28"/>`;
+  s += `<path d="M118 ${yb-14} q30 -12 62 0 q-30 4 -62 0 z" fill="#a8804c" opacity=".8"/>`;
+  s += `<circle cx="149" cy="${yb-15}" r="5" fill="#e8d8b0"/>`;
+  s += `</g>`;
+
+  /* les montants, tout au bord : ils encadrent la scène */
+  [[-16],[440]].forEach(([x]) => {
+    s += `<rect x="${x}" y="${y0-120}" width="56" height="${900-y0+120}" fill="#3e2c1a"/>`;
+    s += `<rect x="${x}" y="${y0-120}" width="14" height="${900-y0+120}"
+      fill="#5c4229" opacity=".7"/>`;
+    /* le grain du bois */
+    for (let k = 0; k < 12; k++)
+      s += `<path d="M${x+8} ${(y0-100+k*24).toFixed(0)} h40" stroke="#241810"
+        stroke-width="1.4" opacity=".3"/>`;
+  });
+  /* la traverse haute */
+  s += `<rect x="-20" y="${y0-120}" width="520" height="32" fill="#4a3524"/>`;
+  s += `<rect x="-20" y="${y0-120}" width="520" height="8" fill="#6d5238" opacity=".7"/>`;
+
+  return s + `</g>`;
+}
+
+/* ---------- Pere, penché sur son ouvrage ----------
+   Un homme de cinquante ans, sec, les mains larges. La fenêtre
+   est à sa droite à lui : elle prend sa joue et son épaule. */
+function pereGrand(x, y){
+  const peau = '#c08a5c', peauC = '#e0aa78', peauO = '#8a5a38';
+  const chev = '#6a6055', chevC = '#948a7c';   /* gris, pas blanc */
+  const blouse = '#5c6470', blouseC = '#8a94a0', blouseO = '#3a424c';
+  const gilet = '#6d4a30';
+  let s = `<g>`;
+
+  /* ---------- les épaules : larges, tombantes ---------- */
+  s += `<path d="M${x-150} ${y+250}
+    C${x-146} ${y+140} ${x-104} ${y+80} ${x-56} ${y+60}
+    q${56} ${-20} ${112} 0
+    C${x+104} ${y+80} ${x+146} ${y+140} ${x+150} ${y+250} Z" fill="${blouse}"/>`;
+  /* le côté que la fenêtre touche */
+  s += `<path d="M${x-56} ${y+60} C${x-104} ${y+80} ${x-146} ${y+140} ${x-150} ${y+250}
+    l38 0 q10 -104 50 -152 z" fill="${blouseC}" opacity=".55"/>`;
+  /* l'ombre sous le bras opposé */
+  s += `<path d="M${x+100} ${y+86} q36 50 42 164 l-34 0 q-6 -110 -38 -152 z"
+    fill="${blouseO}" opacity=".55"/>`;
+  /* les plis de la toile, en travers */
+  s += `<g stroke="${blouseO}" stroke-width="3" fill="none" opacity=".35">`;
+  [[-90,150],[-70,196],[62,160],[86,206]].forEach(([dx,dy]) =>
+    s += `<path d="M${x+dx} ${y+dy} q26 12 52 2"/>`);
+  s += `</g>`;
+
+  /* ---------- le gilet de cuir, ouvert ---------- */
+  s += `<path d="M${x-52} ${y+66} q18 22 18 60 l-6 124 l-42 0
+    q-4 -100 12 -172 z" fill="${gilet}"/>`;
+  s += `<path d="M${x+52} ${y+66} q-18 22 -18 60 l6 124 l42 0
+    q4 -100 -12 -172 z" fill="${noir(gilet,.28)}"/>`;
+  /* le col de la chemise, blanchi de lumière */
+  s += `<path d="M${x-34} ${y+62} q34 30 68 0 l8 20 q-42 34 -84 0 z" fill="#ded2b8"/>`;
+  s += `<path d="M${x-34} ${y+62} q17 15 34 22 v22 q-24 -12 -42 -24 z"
+    fill="#f2e8d0" opacity=".6"/>`;
+
+  /* ---------- les bras : tendus vers le battant ---------- */
+  [[-1, blouseC, .5], [1, blouseO, .5]].forEach(([sg, coul]) => {
+    s += `<g class="bras">`;
+    s += `<path d="M${x + sg*104} ${y+92}
+      C${x + sg*150} ${y+128} ${x + sg*168} ${y+188} ${x + sg*152} ${y+236}
+      l${-sg*46} ${-10}
+      C${x + sg*122} ${y+192} ${x + sg*112} ${y+140} ${x + sg*88} ${y+108} Z"
+      fill="${sg < 0 ? blouseC : blouse}" opacity="${sg < 0 ? .9 : 1}"/>`;
+    /* la manche retroussée */
+    s += `<path d="M${x + sg*140} ${y+206} l${sg*26} ${8} l${-sg*8} ${22} l${-sg*26} ${-8} z"
+      fill="${coul}" opacity=".8"/>`;
+    /* l'avant-bras nu, puis la main sur le battant */
+    s += `<path d="M${x + sg*148} ${y+228} q${sg*20} ${20} ${sg*18} ${44}
+      l${-sg*26} ${4} q${sg*2} ${-24} ${-sg*14} ${-40} z" fill="${sg < 0 ? peauC : peau}"/>`;
+    s += `<ellipse cx="${x + sg*152}" cy="${y+286}" rx="21" ry="15"
+      fill="${sg < 0 ? peauC : peauO}"/>`;
+    s += `</g>`;
+  });
+
+  /* ---------- le cou ---------- */
+  s += `<path d="M${x-23} ${y+14} q4 36 -10 52 q33 20 66 0 q-14 -16 -10 -52 z"
+    fill="${peauO}"/>`;
+  s += `<path d="M${x-23} ${y+14} q4 36 -10 52 q16 10 33 12 v-64 z"
+    fill="${peau}" opacity=".7"/>`;
+
+  /* ---------- le visage : carré, joues creusées ---------- */
+  s += `<path d="M${x-52} ${y-58}
+    C${x-52} ${y-124} ${x-30} ${y-150} ${x} ${y-150}
+    C${x+30} ${y-150} ${x+52} ${y-124} ${x+52} ${y-58}
+    C${x+52} ${y-22} ${x+38} ${y+18} ${x} ${y+22}
+    C${x-38} ${y+18} ${x-52} ${y-22} ${x-52} ${y-58} Z" fill="${peau}"/>`;
+  /* la moitié que la fenêtre prend */
+  s += `<path d="M${x} ${y-150} C${x-30} ${y-150} ${x-52} ${y-124} ${x-52} ${y-58}
+    C${x-52} ${y-22} ${x-38} ${y+18} ${x} ${y+22} Z" fill="${peauC}" opacity=".5"/>`;
+  /* les joues creuses, l'os saillant */
+  s += `<path d="M${x-46} ${y-52} q10 34 4 62" stroke="${peauO}" stroke-width="5"
+    fill="none" opacity=".26"/>`;
+  s += `<path d="M${x+46} ${y-52} q-10 34 -4 62" stroke="${peauO}" stroke-width="5"
+    fill="none" opacity=".34"/>`;
+
+  /* ---------- les cheveux gris, courts, dégarnis ---------- */
+  s += `<path d="M${x-54} ${y-84}
+    C${x-58} ${y-134} ${x-32} ${y-158} ${x} ${y-158}
+    C${x+32} ${y-158} ${x+58} ${y-134} ${x+54} ${y-84}
+    C${x+46} ${y-118} ${x+26} ${y-130} ${x+2} ${y-128}
+    C${x-26} ${y-126} ${x-44} ${y-114} ${x-54} ${y-84} Z" fill="${chev}"/>`;
+  /* les tempes, plus claires */
+  s += `<path d="M${x-54} ${y-98} q-6 38 2 68 q6 -34 12 -60 z" fill="${chevC}" opacity=".6"/>`;
+  s += `<path d="M${x+54} ${y-98} q8 40 0 72 q-8 -36 -12 -66 z" fill="${chev}"/>`;
+  /* le reflet de la fenêtre sur le crâne */
+  s += `<path d="M${x-40} ${y-130} C${x-24} ${y-148} ${x-2} ${y-152} ${x+12} ${y-148}
+    C${x-8} ${y-142} ${x-26} ${y-136} ${x-38} ${y-122} Z" fill="${chevC}" opacity=".55"/>`;
+
+  /* ---------- les sourcils : épais, froncés par l'attention ---------- */
+  s += `<path d="M${x-38} ${y-88} q18 -8 32 0" stroke="${chev}" stroke-width="5.5"
+    fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M${x+6} ${y-88} q14 -8 32 0" stroke="${chev}" stroke-width="5.5"
+    fill="none" stroke-linecap="round"/>`;
+
+  /* ---------- les yeux : baissés sur l'ouvrage ---------- */
+  [[-21],[21]].forEach(([dx]) => {
+    s += `<path d="M${x+dx-15} ${y-64} q15 -11 30 0 q-15 13 -30 0 z" fill="#efe2cc"/>`;
+    /* la pupille est basse : il regarde ses mains */
+    s += `<circle cx="${x+dx}" cy="${y-60}" r="6.5" fill="#4a3a26"/>`;
+    s += `<circle cx="${x+dx}" cy="${y-60}" r="3" fill="#180e08"/>`;
+    s += `<circle cx="${x+dx-2}" cy="${y-63}" r="1.9" fill="#fff" opacity=".85"/>`;
+    /* la paupière lourde */
+    s += `<path d="M${x+dx-16} ${y-66} q16 -12 32 0" stroke="${peauO}" stroke-width="3.4"
+      fill="none" stroke-linecap="round"/>`;
+    /* la patte d'oie */
+    s += `<path d="M${x+dx+(dx<0?-18:18)} ${y-58} l${dx<0?-8:8} 6"
+      stroke="${peauO}" stroke-width="2" opacity=".5"/>`;
+  });
+
+  /* ---------- le nez : fort, busqué ---------- */
+  s += `<path d="M${x-2} ${y-54} q10 22 -2 30 q-6 3 -11 0"
+    stroke="${peauO}" stroke-width="3.2" fill="none" stroke-linecap="round"
+    stroke-linejoin="round" opacity=".75"/>`;
+
+  /* ---------- la moustache grise et la bouche serrée ---------- */
+  s += `<path d="M${x-24} ${y-14} q24 -8 48 0 q-6 12 -24 12 q-18 0 -24 -12 z"
+    fill="${chev}" opacity=".85"/>`;
+  s += `<path d="M${x-16} ${y+2} q16 5 32 0" stroke="#6a3a30" stroke-width="2.6"
+    fill="none" stroke-linecap="round"/>`;
+  /* la barbe de trois jours sur le menton */
+  s += `<path d="M${x-30} ${y+6} q30 22 60 0 q-14 20 -30 20 q-16 0 -30 -20 z"
+    fill="${chev}" opacity=".3"/>`;
+
+  /* ---------- l'ombre sous le menton ---------- */
+  s += `<path d="M${x-28} ${y+14} q28 16 56 0 q-28 26 -56 0 z" fill="${peauO}" opacity=".3"/>`;
+
+  return s + `</g>`;
+}
+
+function decor(){
+  document.getElementById('sc').innerHTML =
+    '<svg viewBox="0 0 480 900" preserveAspectRatio="xMidYMax slice" '
+    + 'xmlns="http://www.w3.org/2000/svg">' + atelier() + '</svg>';
+  requestAnimationFrame(() => document.getElementById('sc').classList.add('pret'));
+}
+
+/* ============================================================
+   LA PAGE
+   ============================================================ */
+const eur = n => Math.round(Number(n) || 0).toLocaleString('fr-FR');
+const pc  = p => Math.round(Number(p) * 100) + ' %';
+
+/* ce qu'il pense de toi, en une phrase */
+function ceQuIlPense(lien){
+  if (lien >= 80) return "Il te confie son drap comme il le confierait à son frère.";
+  if (lien >= 50) return "Il te fait confiance. Ça lui a pris du temps.";
+  if (lien >= 20) return "Il commence à compter sur toi.";
+  return "Il te laisse porter son drap, sans plus.";
+}
+
+/* la phrase d'accueil tourne selon le jour */
+const ENTREES = [
+  "Il ne lève pas les yeux. Le battant tombe, remonte, retombe.",
+  "La pièce sent la laine mouillée et le bois chaud.",
+  "Il tisse depuis l'aube. Le rouleau a doublé.",
+  "Il te fait signe d'entrer d'un mouvement du menton, sans lâcher la navette.",
+  "Il s'arrête une seconde en te voyant, puis reprend."
+];
+
+const PALIERS = [
+  { l:0,  p:.60, n:'—'  },
+  { l:20, p:.68, n:'20' },
+  { l:50, p:.76, n:'50' },
+  { l:80, p:.85, n:'80' }
+];
+
+function partBloc(r){
+  /* où en est-on entre le palier tenu et le suivant */
+  let i = 0;
+  for (let k = 0; k < PALIERS.length; k++) if (r.lien >= PALIERS[k].l) i = k;
+  const bas = PALIERS[i].l;
+  const haut = r.suivant === null || r.suivant === undefined ? null : r.suivant;
+  const avance = haut === null ? 100
+    : Math.max(0, Math.min(100, (r.lien - bas) / (haut - bas) * 100));
+
+  let h = '<div class="part">'
+    + '<div class="h">'
+    +   '<span class="g"><b>' + pc(r.part) + '</b><span>Ta part sur le drap</span></span>'
+    +   '<span class="d"><b>Lien : ' + r.lien + '</b>'
+    +     '<span>' + ceQuIlPense(r.lien) + '</span></span>'
+    + '</div>';
+
+  h += '<div class="trame">'
+    + PALIERS.map((p, k) =>
+        '<i class="' + (k < i ? 'eu' : k === i ? 'eu' : k === i + 1 ? 'la' : '')
+        + '"' + (k === i + 1 ? ' style="--p:' + avance.toFixed(0) + '%"' : '')
+        + '></i>').join('')
+    + '</div>';
+
+  h += '<div class="paliers">'
+    + PALIERS.map((p, k) =>
+        '<span class="' + (k === i ? 'eu' : '') + '">' + pc(p.p) + '</span>').join('')
+    + '</div>';
+
+  h += '<p class="p">'
+    + (haut === null
+        ? 'Tu as tout ce qu\'il peut donner. <b>' + pc(r.part)
+          + '</b> de chaque pièce te reviennent.'
+        : 'Encore <b>' + r.manque + '</b> de lien et sa part passe à <b>'
+          + pc(r.part_suivante) + '</b>.')
+    + '</p></div>';
+  return h;
+}
+
+function gestesBloc(r){
+  const G = r.gestes || [];
+  const reste = G.filter(g => !g.fait).length;
+  let h = '<p class="tt dx">Ce que tu peux faire aujourd\'hui'
+    + (reste ? '<em>' + reste + ' sur ' + G.length + '</em>'
+             : '<em style="color:rgba(246,228,200,.34)">demain</em>')
+    + '</p><div class="gestes" id="gestes">';
+
+  h += G.map(g => {
+    const co = [];
+    if (g.energie) co.push(g.energie + ' d\'énergie');
+    if (g.prix) co.push(g.prix + ' €');
+    if (g.fait)
+      return '<div class="fait" style="padding:15px 16px;border:1.5px solid;border-radius:11px">'
+        + '<span class="l1"><b>' + g.nom + '</b>'
+        + '<span class="co" style="color:#8ce0a8">fait</span></span>'
+        + '<span class="mot">' + g.mot + '</span></div>';
+    const dur = (g.energie && r.energie < g.energie) || (g.prix && r.euros < g.prix);
+    return '<button data-g="' + g.k + '"' + (dur ? ' disabled' : '') + '>'
+      + '<span class="l1"><b>' + g.nom + '</b>'
+      + '<span class="co">' + (co.join(' · ') || 'gratuit') + '</span></span>'
+      + '<span class="no">' + g.note + '</span>'
+      + '<span class="gn">' + (dur
+          ? (g.prix && r.euros < g.prix ? 'Pas assez en poche' : 'Trop fatigué')
+          : '+' + g.lien + ' de lien') + '</span></button>';
+  }).join('');
+
+  return h + '</div>';
+}
+
+function chargerBloc(){
+  return '<button class="charger" id="charger">'
+    + '<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#c8a05a"'
+    + ' stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'
+    + '<path d="M3 7h18v13H3zM3 7l2-4h14l2 4M8 11h8"/></svg></span>'
+    + '<span class="tx"><b>Charger son drap</b>'
+    + '<span>Ce qu\'il te confie pour Barcelone</span></span>'
+    + '<span class="fl">›</span></button>';
+}
+
+function poser(r){
+  const n = Math.floor(Date.now() / 864e5) % ENTREES.length;
+  let s = '<div class="dit"><p style="animation-delay:.1s">' + ENTREES[n] + '</p></div>';
+  s += '<p class="tt">Votre arrangement</p>' + partBloc(r);
+  s += gestesBloc(r);
+  s += chargerBloc();
+  s += '<p class="mot">Sa part se joue sur la durée. Un geste par jour, pas plus — '
+    + 'il n\'aime pas qu\'on insiste.</p>';
+  document.getElementById('w').innerHTML = s;
+  brancher(r);
+}
+
+/* ---------- faire un geste ---------- */
+async function faire(b, r){
+  const k = b.dataset.g;
+  b.disabled = true;
+  b.querySelector('.gn').textContent = '…';
+
+  const x = await BD.agir('geste_pere', { p_k: k });
+  if (!x || !x.ok){
+    b.querySelector('.gn').textContent =
+      x && x.pourquoi === 'trop_fatigue' ? 'Trop fatigué'
+      : x && x.pourquoi === 'trop_cher' ? 'Pas assez en poche'
+      : x && x.pourquoi === 'deja_fait' ? 'Déjà fait aujourd\'hui'
+      : 'Pas maintenant';
+    return;
+  }
+
+  /* le bouton devient ce qu'il en a dit */
+  const nom = b.querySelector('b').textContent;
+  const d = document.createElement('div');
+  d.className = 'fait';
+  d.style.cssText = 'padding:15px 16px;border:1.5px solid;border-radius:11px';
+  d.innerHTML = '<span class="l1"><b>' + nom + '</b>'
+    + '<span class="co" style="color:#8ce0a8">fait</span></span>'
+    + '<span class="mot">' + x.mot + '</span>';
+  b.replaceWith(d);
+
+  /* sa part et le compte du jour suivent, sans recharger */
+  r.lien = x.lien; r.part = x.part;
+  r.euros = x.euros; r.energie = x.energie;
+  r.suivant = r.lien < 20 ? 20 : r.lien < 50 ? 50 : r.lien < 80 ? 80 : null;
+  r.part_suivante = r.suivant === null ? null
+    : r.suivant === 20 ? .68 : r.suivant === 50 ? .76 : .85;
+  r.manque = r.suivant === null ? null : r.suivant - r.lien;
+  (r.gestes || []).forEach(g => { if (g.k === k){ g.fait = true; g.mot = x.mot; } });
+
+  const p = document.querySelector('.part');
+  if (p) p.outerHTML = partBloc(r);
+  const t = document.querySelector('.tt.dx');
+  const reste = (r.gestes || []).filter(g => !g.fait).length;
+  if (t) t.innerHTML = 'Ce que tu peux faire aujourd\'hui'
+    + (reste ? '<em>' + reste + ' sur ' + (r.gestes || []).length + '</em>'
+             : '<em style="color:rgba(246,228,200,.34)">demain</em>');
+
+  /* ce qui est devenu trop cher se ferme tout seul */
+  document.querySelectorAll('#gestes [data-g]').forEach(o => {
+    const g = (r.gestes || []).find(z => z.k === o.dataset.g);
+    if (!g) return;
+    const dur = (g.energie && r.energie < g.energie) || (g.prix && r.euros < g.prix);
+    o.disabled = !!dur;
+    if (dur) o.querySelector('.gn').textContent =
+      g.prix && r.euros < g.prix ? 'Pas assez en poche' : 'Trop fatigué';
+  });
+
+  if (x.monte) secousse();
+}
+
+/* un palier franchi mérite qu'on le sente */
+function secousse(){
+  const p = document.querySelector('.part');
+  if (!p) return;
+  p.style.transition = 'box-shadow .5s';
+  p.style.boxShadow = '0 0 0 2px rgba(240,196,106,.7),0 10px 40px rgba(200,150,60,.4)';
+  setTimeout(() => p.style.boxShadow = '', 1400);
+  if (navigator.vibrate) navigator.vibrate([14, 60, 22]);
+}
+
+function brancher(r){
+  document.querySelectorAll('#gestes [data-g]').forEach(b =>
+    b.onclick = () => faire(b, r));
+  const c = document.getElementById('charger');
+  if (c) c.onclick = () => {
+    try { sessionStorage.setItem('bd-venu', 'pere'); } catch(e){}
+    location.href = 'contrats.html';
+  };
+}
+
+/* ---------- l'aube ---------- */
+let AUBE = false;
+function leverAube(){
+  if (AUBE) return;
+  AUBE = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const c = document.getElementById('charge');
+    if (!c) return;
+    c.classList.add('parti');
+    setTimeout(() => c.remove(), 500);
+  }));
+}
+setTimeout(leverAube, 6000);
+
+document.getElementById('ret').onclick = () => location.href = 'palma.html';
+
+(async () => {
+  decor();
+  let r;
+  try {
+    r = await BD.agir('chez_pere');
+  } catch(e){ leverAube(); return; }
+  leverAube();
+
+  if (!r || !r.ok){
+    document.getElementById('w').innerHTML = '<p class="rien">'
+      + (r && r.pourquoi === 'pas_ici'
+          ? "L'atelier est à Palma. Il faudra y retourner."
+          : r && r.pourquoi === 'pas_connu'
+            ? "Tu ne connais pas encore la maison derrière la Seu."
+            : "La porte est fermée.")
+      + '</p>';
+    if (r && r.pourquoi === 'pas_ici') setTimeout(() => location.href = 'jeu.html', 1800);
+    return;
+  }
+  poser(r);
+})();
+
+let t = null;
+addEventListener('resize', () => { clearTimeout(t); t = setTimeout(decor, 220); });
+</script>
+</body>
+</html>

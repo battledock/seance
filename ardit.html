@@ -1106,7 +1106,8 @@ async function terminer(quoi, n){
   document.getElementById('f-plus').innerHTML =
     P.map(t => '<span>' + t + '</span>').join('');
   document.getElementById('f-b').textContent =
-    monteNiveau ? 'Voir ton niveau' : 'Redescendre au port';
+    monteNiveau ? 'Voir ton niveau'
+    : SUITE ? 'Voir son atelier' : 'Redescendre au port';
   if (SUITE){
     const cs = document.getElementById('f-caisse');
     if (cs) cs.remove();
@@ -1127,7 +1128,9 @@ document.getElementById('a-ok').onclick = () => {
   setTimeout(() => jouer('debut'), 300);
 };
 document.getElementById('f-b').onclick = () => location.href =
-  (monteNiveau ? 'niveau.html' : 'palma.html');
+  monteNiveau ? 'niveau.html'
+  /* une fois l'arrangement pris, la porte donne sur son atelier */
+  : SUITE ? 'pere.html' : 'palma.html';
 
 (async () => {
   let d;

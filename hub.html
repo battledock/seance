@@ -465,7 +465,7 @@ const TUILES = [
       ? 'Une lettre à remettre en main propre'
       : 'La maison derrière la Seu'; },
     si:'palma_pere', sinon:'Personne ne t\'attend encore ici',
-    f:() => location.href = 'ardit.html' },
+    f:() => location.href = PALMA.pere ? 'pere.html' : 'ardit.html' },
   { k:'chargement_palma', ou:'attend', ici:'palma', em:'🧵', t:'Le chargement',
     s:'Le drap que Pere te confie', si:'pere',
     sinon:'Il faut d\'abord qu\'on te fasse confiance',
