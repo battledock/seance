@@ -1,36 +1,63 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#f5a53a" id="tc">
-<title>Battle Dock — En mer</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Battle Dock — la mer par tous les temps</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#12303f;font-family:'Nunito',system-ui,sans-serif;color:#fdf6e6;padding:26px 16px 56px}
+.tit{max-width:1040px;margin:0 auto 18px}
+.tit h1{font-family:'DM Serif Display',Georgia,serif;font-size:26px}
+.tit p{font-size:13px;color:rgba(253,246,230,.55);margin-top:6px;line-height:1.6}
+.barre{max-width:1040px;margin:0 auto 22px;display:flex;flex-wrap:wrap;gap:9px}
+.barre button{display:flex;align-items:center;gap:8px;padding:9px 16px 9px 11px;
+  border-radius:24px;cursor:pointer;font-size:13px;font-weight:900;
+  border:3px solid #fdf6e6;background:transparent;color:#fdf6e6;font-family:'Nunito',sans-serif}
+.barre button svg{width:20px;height:20px;overflow:visible}
+.barre button svg [stroke]{stroke:#fdf6e6}
+.barre button.on{background:#f0a92e;color:#12303f;border-color:#f0a92e}
+.barre button.on svg [stroke]{stroke:#12303f}
+.rang{max-width:1040px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+.tel{position:relative;isolation:isolate;width:340px;height:640px;border-radius:36px;
+  overflow:hidden;border:6px solid #fdf6e6;background:#2b6f92;flex:0 0 auto;
+  font-family:'Nunito',system-ui,sans-serif;color:#fdf6e6}
+.cote{flex:1;min-width:260px}
+.cote h3{font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(253,246,230,.55);margin-bottom:12px;font-weight:900}
+.fiche{border:3px solid #fdf6e6;border-radius:16px;overflow:hidden}
+.fiche div{display:flex;justify-content:space-between;gap:12px;padding:12px 15px;
+  font-size:13px;border-bottom:2px solid rgba(253,246,230,.2)}
+.fiche div:last-child{border-bottom:0}
+.fiche div span{color:rgba(253,246,230,.6);font-weight:700}
+.fiche div b{font-weight:900}
+.fiche div b.bon{color:#7fd8a0} .fiche div b.dur{color:#f0a92e}
+.jauge{margin-top:18px}
+.jauge label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(253,246,230,.5);font-weight:900}
+.jauge input{width:100%;margin-top:10px;accent-color:#f0a92e}
+.note{font-size:12.5px;color:rgba(253,246,230,.5);line-height:1.7;margin-top:18px}
+
 /* ============================================================
    EN MER — l'affiche
    Deux aplats francs séparés d'une ligne d'horizon nette. Le
    disque traverse le ciel : sa course EST la traversée. Pas de
    jauge, pas de carte posée par-dessus — le décor dit tout.
    ============================================================ */
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none}
+
 :root{
   --encre:#12303f; --creme:#fdf6e6; --or:#f0a92e;
   --ciel:#f0a94e; --eau:#2b6f92; --disque:#fff0c4;
 }
-html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
-  background:var(--eau);color:var(--creme)}
+
 
 /* ---------- le ciel ---------- */
-#ciel{position:fixed;left:0;right:0;top:0;height:62%;z-index:-3;
+#ciel{position:absolute;left:0;right:0;top:0;height:62%;z-index:-3;
   background:var(--ciel)}
 /* ---------- l'eau, et la ligne d'horizon qui les sépare ---------- */
-#eau{position:fixed;left:0;right:0;bottom:0;height:38%;z-index:-3;
+#eau{position:absolute;left:0;right:0;bottom:0;height:38%;z-index:-3;
   background:var(--eau);border-top:4px solid var(--encre)}
 
 /* ---------- les étoiles ---------- */
-#etoiles{position:fixed;left:0;right:0;top:0;height:62%;z-index:-2;opacity:0;
+#etoiles{position:absolute;left:0;right:0;top:0;height:62%;z-index:-2;opacity:0;
   pointer-events:none;transition:opacity .5s linear;
   background-image:
     radial-gradient(1.7px 1.7px at 11% 20%,#fff6e0 50%,transparent 51%),
@@ -47,13 +74,13 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
     radial-gradient(1.6px 1.6px at 96% 42%,#fff6e0 50%,transparent 51%)}
 
 /* ---------- le disque : sa course dit où tu en es ---------- */
-#disque{position:fixed;z-index:-2;width:26vw;max-width:132px;aspect-ratio:1;
+#disque{position:absolute;z-index:-2;width:26vw;max-width:132px;aspect-ratio:1;
   border-radius:50%;margin:-13vw 0 0 -13vw;pointer-events:none;
   background:var(--disque);border:4px solid var(--encre)}
 
 /* ---------- la houle : trois rangs de tirets ----------
    Son amplitude et sa vitesse suivent le temps qu'il fait. */
-.houle{position:fixed;left:-60%;right:-60%;z-index:-1;height:5px;border-radius:3px;
+.houle{position:absolute;left:-60%;right:-60%;z-index:-1;height:5px;border-radius:3px;
   background:repeating-linear-gradient(90deg,#fdf6e6 0 26px,transparent 26px 62px);
   will-change:transform;transition:opacity .8s,height .8s}
 .h1{bottom:29%;opacity:calc(.16 * var(--mer,1));animation:file calc(14s / var(--vit,1)) linear infinite}
@@ -65,7 +92,7 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
 
 /* ---------- la barque, posée sur l'horizon ----------
    Par gros temps elle monte plus haut et gîte davantage. */
-#barque{position:fixed;left:50%;bottom:34%;z-index:0;width:126px;margin-left:-63px;
+#barque{position:absolute;left:50%;bottom:34%;z-index:0;width:126px;margin-left:-63px;
   animation:souleve var(--bal,4.8s) ease-in-out infinite;will-change:transform}
 #barque svg{display:block;width:100%;height:auto;
   animation:penche var(--bal,4.8s) ease-in-out infinite;transform-origin:50% 88%}
@@ -85,7 +112,7 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
    ============================================================ */
 
 /* ---------- les nuages : des formes pleines qui dérivent ---------- */
-#nuages{position:fixed;left:0;right:0;top:0;height:62%;z-index:-1;
+#nuages{position:absolute;left:0;right:0;top:0;height:62%;z-index:-1;
   opacity:0;pointer-events:none;transition:opacity 1s}
 #nuages.on{opacity:1}
 #nuages i{position:absolute;display:block;will-change:transform}
@@ -103,7 +130,7 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
 
 /* ---------- la pluie : des traits francs, espacés, en biais ----------
    Peu de traits, bien visibles. Une averse, pas un grésil. */
-#grain{position:fixed;inset:-40% -40%;z-index:1;opacity:0;pointer-events:none;
+#grain{position:absolute;inset:-40% -40%;z-index:1;opacity:0;pointer-events:none;
   transition:opacity 1s;transform:rotate(15deg)}
 #grain.on{opacity:1}
 #grain i{position:absolute;left:0;right:0;top:0;height:200%;
@@ -121,13 +148,13 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
 /* ---------- la brume : elle ne se pose pas, elle efface ----------
    Pas de bandes grises par-dessus : l'horizon disparaît, la barque
    et le disque s'estompent. La brume, c'est du décor en moins. */
-body.noyee #eau{border-top-color:transparent}
-body.noyee #barque{opacity:.62;filter:blur(.6px)}
-body.noyee #disque{opacity:.34}
-body.noyee .houle{opacity:.07!important}
-body.noyee .haut .nom{opacity:.8}
+.tel.noyee #eau{border-top-color:transparent}
+.tel.noyee #barque{opacity:.62;filter:blur(.6px)}
+.tel.noyee #disque{opacity:.34}
+.tel.noyee .houle{opacity:.07!important}
+.tel.noyee .haut .nom{opacity:.8}
 /* un banc de brume unique, posé sur l'horizon, qui respire */
-#brume{position:fixed;left:-30%;right:-30%;top:44%;height:26%;z-index:2;
+#brume{position:absolute;left:-30%;right:-30%;top:44%;height:26%;z-index:2;
   border-radius:50%;background:#e4e2d6;opacity:0;pointer-events:none;
   filter:blur(22px);transition:opacity 1.4s;
   animation:respire 13s ease-in-out infinite}
@@ -136,7 +163,7 @@ body.noyee .haut .nom{opacity:.8}
   50%{transform:translateX(4%) scaleY(1.18)}}
 
 /* ---------- l'éclair : une forme découpée, pas une lueur ---------- */
-#foudre{position:fixed;left:0;right:0;top:0;height:70%;z-index:3;
+#foudre{position:absolute;left:0;right:0;top:0;height:70%;z-index:3;
   pointer-events:none;opacity:0}
 #foudre svg{position:absolute;top:0;width:26%;height:auto;overflow:visible}
 #foudre.frappe{animation:frappe .58s steps(1,end)}
@@ -144,7 +171,7 @@ body.noyee .haut .nom{opacity:.8}
   0%{opacity:0}8%{opacity:1}20%{opacity:0}30%{opacity:1}44%{opacity:0}
   54%{opacity:1}70%{opacity:0}100%{opacity:0}}
 /* le ciel blanchit une fraction de seconde avec lui */
-#jour{position:fixed;inset:0;z-index:2;background:#fffaf0;opacity:0;
+#jour{position:absolute;inset:0;z-index:2;background:#fffaf0;opacity:0;
   pointer-events:none}
 #jour.frappe{animation:blanchit .58s steps(1,end)}
 @keyframes blanchit{
@@ -152,7 +179,7 @@ body.noyee .haut .nom{opacity:.8}
   54%{opacity:.34}70%{opacity:0}100%{opacity:0}}
 
 /* ---------- le vent : les mêmes tirets que la houle, dans le ciel ---------- */
-#vent{position:fixed;left:0;right:0;top:0;height:60%;z-index:1;
+#vent{position:absolute;left:0;right:0;top:0;height:60%;z-index:1;
   opacity:0;pointer-events:none;transition:opacity 1s}
 #vent.on{opacity:.62}
 #vent i{position:absolute;left:-70%;right:-70%;height:4px;border-radius:3px;
@@ -165,7 +192,7 @@ body.noyee .haut .nom{opacity:.8}
 @keyframes souffle{to{transform:translateX(150px)}}
 
 /* ---------- le bandeau qui nomme le temps ---------- */
-.meteo{position:fixed;z-index:5;right:24px;top:calc(env(safe-area-inset-top) + 26px);
+.meteo{position:absolute;z-index:5;right:24px;top:calc(0px + 26px);
   display:flex;align-items:center;gap:9px;padding:9px 15px 9px 12px;border-radius:24px;
   background:var(--creme);border:4px solid var(--encre);
   opacity:0;transform:translateY(-10px);transition:opacity .6s,transform .6s}
@@ -175,8 +202,8 @@ body.noyee .haut .nom{opacity:.8}
   color:var(--encre);white-space:nowrap}
 
 /* ---------- le cap, écrit à même le ciel ---------- */
-.haut{position:fixed;left:24px;right:24px;z-index:3;
-  top:calc(env(safe-area-inset-top) + 26px)}
+.haut{position:absolute;left:24px;right:24px;z-index:3;
+  top:calc(0px + 26px)}
 .haut .de{font-size:10px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;
   color:rgba(253,246,230,.68)}
 .haut .nom{font-family:'DM Serif Display',Georgia,serif;
@@ -189,8 +216,8 @@ body.noyee .haut .nom{opacity:.8}
   color:rgba(253,246,230,.9);white-space:nowrap}
 
 /* ---------- le mot du moment, à même l'eau ---------- */
-.bas{position:fixed;left:24px;right:24px;z-index:4;
-  bottom:calc(env(safe-area-inset-bottom) + 24px);text-align:center}
+.bas{position:absolute;left:24px;right:24px;z-index:4;
+  bottom:calc(0px + 24px);text-align:center}
 .bas .mot{font-family:'DM Serif Display',Georgia,serif;font-size:20px;line-height:1.25;
   color:var(--creme);text-shadow:0 2px 12px rgba(8,24,38,.4)}
 .bas .reste{font-size:10.5px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
@@ -208,7 +235,7 @@ body.noyee .haut .nom{opacity:.8}
 :focus-visible{outline:3px solid #fffaf0;outline-offset:2px}
 
 /* ---------- l'aube, le temps que la page se pose ---------- */
-#charge{position:fixed;inset:0;z-index:90;background:#f0a94e;
+#charge{position:absolute;inset:0;z-index:90;background:#f0a94e;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
   transition:opacity .45s ease}
 #charge.parti{opacity:0;pointer-events:none}
@@ -218,11 +245,15 @@ body.noyee .haut .nom{opacity:.8}
 #charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#fffaf0;
   animation:vague 1.15s ease-in-out infinite}
 @keyframes vague{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
-</style>
-</head>
-<body>
 
-<div id="charge"><div class="ti">Battle Dock</div><div class="fl"><i></i></div></div>
+</style></head><body>
+<div class="tit"><h1>La mer, par tous les temps</h1>
+<p>Chaque ciel a sa palette choisie — plus de couleurs moyennées. Fais glisser la traversée.</p></div>
+<div class="barre" id="barre"></div>
+<div class="rang">
+  <div class="tel" id="tel">
+
+<div id="charge" class="parti" style="display:none"><div class="ti">Battle Dock</div><div class="fl"><i></i></div></div>
 
 <div id="ciel"></div>
 <div id="etoiles"></div>
@@ -287,9 +318,18 @@ body.noyee .haut .nom{opacity:.8}
   <button class="arriver" id="arriver">Débarquer</button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="bd.js?v=3"></script>
+</div>
+  <div class="cote">
+    <h3>Ce que ce ciel change</h3>
+    <div class="fiche" id="fiche"></div>
+    <div class="jauge"><label>Où en est la traversée</label>
+      <input type="range" id="av" min="0" max="100" value="20"></div>
+    <p class="note">Au milieu du parcours c'est la nuit : la palette du ciel s'assombrit
+      vers le bleu de nuit, puis revient.</p>
+  </div>
+</div>
 <script>
+
 /* ---------- mélanger deux couleurs ---------- */
 const hx = c => [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)];
 const ch = a => '#' + a.map(v => Math.round(v).toString(16).padStart(2,'0')).join('');
@@ -471,7 +511,7 @@ function poserLeTemps(k){
 
   document.getElementById('vent').className = T.vent ? 'on' : '';
   document.getElementById('brume').className = T.noyee ? 'on' : '';
-  document.body.classList.toggle('noyee', !!T.noyee);
+  document.getElementById('tel').classList.toggle('noyee', !!T.noyee);
   document.getElementById('grain').className = T.pluie ? 'on' : '';
 
   document.getElementById('mt-ic').innerHTML = SIGNES[T.k] || SIGNES.beau;
@@ -524,73 +564,7 @@ function poser(p){
     : 'Encore ' + Math.max(1, Math.round((100 - p) / 100 * JOURS * 24)) + ' h de mer';
 }
 
-(async () => {
-  let d;
-  try {
-    d = await BD.charger();
-    if (!d){ location.href = 'index.html'; return; }
-  } catch(e){ leverAube(); return; }
-
-  /* on n'est en mer que si le serveur l'a noté */
-  if (!d.parti_le){ location.href = 'jeu.html'; return; }
-
-  VERS = d.cap || 'barcelone';
-  DE = (d.port && d.port !== VERS) ? d.port : 'anse';
-  JOURS = ['palma','ajaccio'].includes(VERS) || ['palma','ajaccio'].includes(DE) ? 2 : 1;
-
-  document.getElementById('de').textContent = 'Cap sur';
-  document.getElementById('nom').textContent = GRAND[VERS] || VERS;
-
-  /* le ciel du jour : le même que celui annoncé au port */
-  BD.agir('le_temps').then(t => {
-    if (t && t.ok) poserLeTemps(t.k);
-  }).catch(() => {});
-
-  /* le temps déjà écoulé compte : on reprend la traversée où elle en est */
-  const ecoule = (Date.now() - new Date(d.parti_le).getTime()) / 1000;
-  /* le serveur laisse accoster au bout de 6 s : on en montre 8,
-     pour garder une marge et ne jamais tomber sur un « trop tôt ». */
-  const duree = 8000;
-  const debut = Date.now() - Math.min(duree, ecoule * 1000);
-
-  let fait = false, avance = 0;
-
-  function image(){
-    avance = Math.min(100, (Date.now() - debut) / duree * 100);
-    poser(avance);
-    if (avance >= 100 && !fait){ fait = true; arriver(); }
-  }
-
-  /* requestAnimationFrame s'arrête quand l'écran s'éteint et ne repart pas
-     toujours : on le relance au retour, et un minuteur veille par-dessus. */
-  let enCours = false;
-  function relancer(){
-    if (fait || enCours) return;
-    enCours = true;
-    requestAnimationFrame(function boucle(){
-      enCours = true;
-      image();
-      if (!fait) requestAnimationFrame(boucle); else enCours = false;
-    });
-  }
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden){ enCours = false; image(); relancer(); }
-  });
-  addEventListener('pageshow', () => { enCours = false; image(); relancer(); });
-  addEventListener('focus', () => { enCours = false; relancer(); });
-  const secours = setInterval(() => {
-    if (fait){ clearInterval(secours); return; }
-    if (document.hidden) return;
-    image();
-    if (!enCours) relancer();
-  }, 900);
-
-  image();
-  relancer();
-  leverAube();
-})();
-
-async function arriver(){
+async function arriver_X(){
   const bt = document.getElementById('arriver');
   const r = await BD.agir('accoster');
   if (r && r.ok){
@@ -621,6 +595,39 @@ async function arriver(){
     bt.onclick = () => location.href = 'jeu.html';
   }
 }
-</script>
-</body>
-</html>
+
+JOURS = 2; DE = 'anse'; VERS = 'palma';
+document.getElementById('de').textContent = 'Cap sur';
+document.getElementById('nom').textContent = 'Palma';
+document.getElementById('arriver').style.display = 'none';
+
+const CH = { beau:['—','—'], grand_bleu:['−10 % en mer','+12 % payé'],
+  mistral:['−15 % en mer','−5 % payé'], brume:['+15 % en mer','—'],
+  houle:['+25 % en mer','+8 % payé'], orage:['+40 % en mer','+22 % payé'] };
+const ORDRE = ['beau','grand_bleu','mistral','brume','houle','orage'];
+
+function fiche(k){
+  const T = METEO[k], c = CH[k];
+  const cl = v => v === '—' ? '' :
+    (v[0]==='−' && v.indexOf('mer')>0) || (v[0]==='+' && v.indexOf('payé')>0) ? 'bon':'dur';
+  const co = [T.nuages&&'nuages', T.vent&&'vent', T.pluie&&'pluie',
+    T.noyee&&'brume', T.foudre&&'foudre'].filter(Boolean).join(' + ');
+  document.getElementById('fiche').innerHTML =
+      '<div><span>Traversée</span><b class="'+cl(c[0])+'">'+c[0]+'</b></div>'
+    + '<div><span>Contrats</span><b class="'+cl(c[1])+'">'+c[1]+'</b></div>'
+    + '<div><span>Houle</span><b>×'+T.mer+'</b></div>'
+    + '<div><span>Roulis</span><b>×'+T.gite+'</b></div>'
+    + '<div><span>Au-dessus</span><b>'+(co||'rien')+'</b></div>';
+}
+function choisir(k){
+  poserLeTemps(k); fiche(k);
+  document.querySelectorAll('#barre button').forEach(b=>b.classList.toggle('on', b.dataset.k===k));
+  poser(+document.getElementById('av').value);
+}
+document.getElementById('barre').innerHTML = ORDRE.map(k =>
+  '<button data-k="'+k+'"><svg viewBox="0 0 40 40">'+SIGNES[k]+'</svg>'+METEO[k].nom+'</button>').join('');
+document.getElementById('barre').onclick = e => {
+  const b = e.target.closest('[data-k]'); if (b) choisir(b.dataset.k); };
+document.getElementById('av').oninput = e => poser(+e.target.value);
+choisir('orage');
+</script></body></html>

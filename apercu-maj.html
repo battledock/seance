@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Battle Dock — aperçu maj 3 & 4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--encre:#12303f;--creme:#fdf6e6;--creme2:#f7edd8;--or:#f0a92e;--vert:#2f8a5c}
+body{background:#0d1418;font-family:'Nunito',system-ui,sans-serif;padding:26px 16px 60px}
+.tit{max-width:920px;margin:0 auto 26px;color:#f6e8d0}
+.tit h1{font-family:'DM Serif Display',Georgia,serif;font-size:26px}
+.tit p{font-size:13px;color:rgba(246,232,208,.5);margin-top:6px;line-height:1.6}
+.grille{max-width:920px;margin:0 auto;display:grid;gap:26px;
+  grid-template-columns:repeat(auto-fit,minmax(330px,1fr));align-items:start}
+.carte{border-radius:20px;overflow:hidden;border:1px solid rgba(246,232,208,.12)}
+.carte>h2{font-size:10px;letter-spacing:.2em;text-transform:uppercase;padding:13px 16px;
+  color:rgba(246,232,208,.55);background:#141d22;border-bottom:1px solid rgba(246,232,208,.1)}
+.ecran{padding:18px}
+.ecran.clair{background:linear-gradient(180deg,#8fc7d8,#cfe4dd 62%,#f3e6cd)}
+.ecran.sombre{background:#150e09;color:#fff;font-family:'Courier Prime',monospace}
+.ecran.sombre .w2{max-height:none}
+.leg{font-size:11px;color:rgba(246,232,208,.42);padding:0 16px 14px;line-height:1.6}
+.choixt{display:flex;flex-wrap:wrap;gap:7px;padding:0 16px 16px}
+.choixt button{padding:7px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:800;
+  border:1.5px solid rgba(246,232,208,.2);background:rgba(246,232,208,.06);color:#f6e8d0;
+  font-family:'Nunito',sans-serif}
+.choixt button.on{background:var(--or);color:#12303f;border-color:var(--or)}
+
+/* ============================================================
+   LE TEMPS QU'IL FAIT
+   Le même pour tout le port, tiré du jour. On le voit en
+   arrivant, avant même de choisir où aller.
+   ============================================================ */
+.temps{display:flex;align-items:center;gap:13px;width:100%;margin-bottom:13px;
+  padding:14px 16px;border-radius:18px;cursor:pointer;text-align:left;
+  background:var(--creme);border:3px solid var(--encre);
+  font-family:'Nunito',sans-serif}
+.temps:active{transform:scale(.99)}
+.temps .ic{flex:0 0 44px;height:44px;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:22px;
+  background:var(--or);border:2.5px solid var(--encre)}
+.temps .tx{flex:1;min-width:0}
+.temps .tx b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:19px;line-height:1.15}
+.temps .tx span{display:block;font-size:12px;font-weight:600;margin-top:3px;
+  color:rgba(18,48,63,.58);line-height:1.4}
+.temps .ef{flex:0 0 auto;display:flex;flex-direction:column;gap:4px;
+  align-items:flex-end}
+.temps .ef i{font-style:normal;font-size:10.5px;font-weight:800;
+  padding:4px 9px;border-radius:10px;white-space:nowrap;
+  background:rgba(18,48,63,.07);border:2px solid rgba(18,48,63,.14)}
+.temps .ef i.bon{background:rgba(47,138,92,.14);border-color:rgba(47,138,92,.3);
+  color:#1f6b45}
+.temps .ef i.dur{background:rgba(190,76,58,.13);border-color:rgba(190,76,58,.3);
+  color:#9a3a2c}
+/* les gros temps se voient de loin */
+.temps.orage,.temps.houle{background:#efe6dc}
+.temps.orage .ic{background:#6f7c8a;color:#fff}
+.temps.houle .ic{background:#7fa6b4}
+.temps.brume .ic{background:#d8d4c8}
+.temps.mistral .ic{background:#bcd4d8}
+.temps.grand_bleu .ic{background:#5fb6d4;color:#fff}
+
+
+
+
+#sc{position:fixed;left:0;right:0;top:0;height:52%;overflow:hidden;
+  opacity:0;transition:opacity .5s}
+#sc.pret{opacity:1}
+#sc svg{display:block;width:100%;height:100%}
+#sc::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(21,14,9,.3) 0,rgba(21,14,9,0) 26%,
+    rgba(21,14,9,.72) 80%,rgba(21,14,9,.99) 100%)}
+
+.tete{position:fixed;left:0;right:0;top:0;z-index:6;
+  padding:calc(env(safe-area-inset-top) + 14px) 16px 0;display:flex;align-items:center;gap:11px}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:9px;
+  border:1.5px solid rgba(255,255,255,.24);background:rgba(28,18,11,.6);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tete .ret svg{width:18px;height:18px;stroke:#f0d0a0;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou{flex:1;min-width:0;background:rgba(28,18,11,.6);
+  border:1.5px solid rgba(255,255,255,.2);border-radius:9px;padding:7px 13px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.tete .ou b{display:block;font-size:14px;font-weight:700;color:#f6e4c8}
+.tete .ou span{display:block;font-size:8px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(246,228,200,.5);margin-top:2px}
+
+.w{position:fixed;left:0;right:0;top:47%;bottom:0;z-index:5;overflow-y:auto;
+  padding:0 20px calc(env(safe-area-inset-bottom) + 20px)}
+.w::-webkit-scrollbar{display:none}
+
+.dit{padding-top:22px;display:flex;flex-direction:column;gap:12px}
+.dit p{font-size:15px;line-height:1.72;color:rgba(246,232,208,.86);
+  font-family:system-ui,sans-serif;
+  opacity:0;transform:translateY(8px);animation:venir .6s forwards}
+.dit p.parle{color:#fff;font-size:16px;padding-left:14px;
+  border-left:2.5px solid rgba(240,196,106,.6)}
+@keyframes venir{to{opacity:1;transform:none}}
+
+.tt{font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(246,228,200,.4);margin:24px 2px 11px}
+
+/* le tableau des cours, comme une ardoise */
+.ard{background:rgba(24,20,16,.86);border:1.5px solid rgba(246,228,200,.16);
+  border-radius:9px;overflow:hidden;
+  box-shadow:0 8px 26px rgba(6,4,2,.5)}
+.ard .li{display:flex;align-items:center;gap:12px;padding:14px 15px;
+  border-bottom:1px solid rgba(246,228,200,.08)}
+.ard .li:last-child{border-bottom:0}
+.ard .li .nb{flex:0 0 20px;font-size:11px;color:rgba(246,228,200,.3)}
+.ard .li .nm{flex:1;font-size:14px;color:#f6e8d0;font-weight:700}
+.ard .li .mo{flex:0 0 auto;font-size:11.5px;font-family:system-ui,sans-serif;
+  text-align:right;line-height:1.4}
+.ard .li .mo em{display:block;font-style:normal;font-size:9.5px;
+  color:rgba(246,228,200,.34);margin-top:3px}
+
+.choix{display:flex;flex-direction:column;gap:10px;margin-top:22px;
+  opacity:0;animation:venir .6s forwards}
+.choix button{width:100%;text-align:left;padding:16px 17px;
+  border:1.5px solid rgba(246,228,200,.2);border-radius:11px;
+  background:rgba(38,26,17,.72);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;
+  font-family:'Courier Prime',monospace;transition:all .16s}
+.choix button:active{transform:scale(.987)}
+.choix button b{display:block;font-size:15.5px;color:#f6e8d0;font-weight:700;line-height:1.4}
+.choix button .s{display:block;font-size:12px;color:rgba(246,228,200,.5);margin-top:6px;
+  font-family:system-ui,sans-serif;line-height:1.5}
+.choix button .cle{display:inline-block;margin-top:9px;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;padding:4px 10px;border-radius:12px;
+  background:rgba(140,224,168,.16);color:#8ce0a8}
+.choix button.ferme{opacity:.44;cursor:default;border-style:dashed}
+.choix button.ferme .cle{background:rgba(224,138,106,.16);color:#e0a878}
+
+/* le port qui s'ouvre */
+.port{margin-top:22px;padding:20px;border-radius:12px;
+  border:1.5px solid rgba(240,196,106,.4);background:rgba(52,38,20,.7);
+  opacity:0;animation:venir .7s forwards;text-align:center}
+.port .su{font-size:8.5px;letter-spacing:.28em;text-transform:uppercase;color:#f0c46a}
+.port b{display:block;font-size:26px;font-weight:700;color:#f6e8d0;margin-top:10px}
+.port .q{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(246,228,200,.44);margin-top:6px}
+.port .d{display:flex;justify-content:center;gap:22px;margin-top:16px}
+.port .d span{font-size:11.5px;color:rgba(246,228,200,.62);font-family:system-ui,sans-serif}
+.port .d span b{display:block;font-size:16px;color:#f0c46a;margin-top:3px}
+.port button{width:100%;margin-top:18px;padding:15px;border:0;border-radius:9px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:13.5px;font-weight:700;letter-spacing:.06em}
+
+
+/* ============================================================
+   CE QU'ON FAIT DANS UNE TAVERNE
+   Manger, laisser un mot, jouer. Trois blocs, même ardoise.
+   ============================================================ */
+/* la barre du comptoir : ce qu'on a en poche, ce qu'il reste à faire */
+.bar{display:flex;gap:14px;margin-top:16px;padding:13px 15px;border-radius:9px;
+  background:rgba(24,20,16,.72);border:1.5px solid rgba(246,228,200,.14);
+  opacity:0;animation:venir .6s .3s forwards}
+.bar span{flex:1;min-width:0;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(246,228,200,.38)}
+.bar span+span{text-align:right}
+.bar span b{display:block;margin-top:5px;font-size:14px;letter-spacing:0;
+  text-transform:none;color:#f0c46a;font-weight:700}
+
+/* un titre de section peut porter un compte à droite */
+.tt.dx{display:flex;align-items:baseline;justify-content:space-between}
+.tt.dx em{font-style:normal;color:#8ce0a8;letter-spacing:.1em}
+
+.bl{background:rgba(24,20,16,.86);border:1.5px solid rgba(246,228,200,.16);
+  border-radius:9px;overflow:hidden;box-shadow:0 8px 26px rgba(6,4,2,.5)}
+.bl .in{padding:15px 16px}
+.bl .hd{display:flex;align-items:baseline;gap:10px}
+.bl .hd b{flex:1;font-size:16px;color:#f6e8d0;font-weight:700;line-height:1.3}
+.bl .hd .px{font-size:14px;color:#f0c46a;font-weight:700}
+.bl .no{font-size:12.5px;line-height:1.6;color:rgba(246,228,200,.52);
+  font-family:system-ui,sans-serif;margin-top:7px}
+.bl .ef{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.bl .ef span{font-size:10px;letter-spacing:.06em;padding:5px 9px;border-radius:11px;
+  background:rgba(140,224,168,.14);color:#8ce0a8}
+.bl .go{width:100%;margin-top:14px;padding:13px;border:0;border-radius:8px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:13px;font-weight:700;letter-spacing:.05em}
+.bl .go:disabled{background:rgba(246,228,200,.12);color:rgba(246,228,200,.4);cursor:default}
+.bl .fait{margin-top:13px;padding:11px 13px;border-radius:8px;
+  background:rgba(140,224,168,.1);border:1px solid rgba(140,224,168,.24);
+  font-size:12.5px;line-height:1.6;color:#a8dcb8;font-family:system-ui,sans-serif}
+
+/* ---------- le tableau ---------- */
+.bl .mt{display:flex;gap:11px;padding:13px 16px;
+  border-bottom:1px solid rgba(246,228,200,.08)}
+.bl .mt:last-child{border-bottom:0}
+.bl .mt .qi{flex:0 0 30px;height:30px;border-radius:8px;display:flex;
+  align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  background:rgba(240,196,106,.16);color:#f0c46a}
+.bl .mt .tx{flex:1;min-width:0}
+.bl .mt .tx b{display:block;font-size:12px;color:rgba(246,228,200,.62)}
+.bl .mt .tx p{font-size:13.5px;line-height:1.55;color:#f6e8d0;margin-top:4px;
+  font-family:system-ui,sans-serif;word-wrap:break-word}
+.bl .mt.neuf .qi{background:rgba(140,224,168,.2);color:#8ce0a8}
+/* ---------- tes propres mots, épinglés ---------- */
+.bl .poses:not(:empty){border-top:1px solid rgba(246,228,200,.08);
+  background:rgba(12,10,8,.35)}
+.bl .tt2{font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(246,228,200,.34);padding:14px 16px 2px}
+.bl .ps{display:flex;gap:11px;padding:11px 16px 13px}
+.bl .ps .ep{flex:0 0 22px;font-size:13px;line-height:1.4;
+  filter:grayscale(.3)}
+.bl .ps .tx{flex:1;min-width:0}
+.bl .ps .tx b{display:block;font-size:11.5px;color:rgba(246,228,200,.5)}
+.bl .ps .tx p{font-size:13px;line-height:1.5;color:rgba(246,232,208,.8);margin-top:3px;
+  font-family:system-ui,sans-serif;word-wrap:break-word}
+.bl .ps .tx .et{display:inline-block;margin-top:6px;font-size:9.5px;letter-spacing:.08em;
+  padding:3px 8px;border-radius:9px;
+  background:rgba(240,196,106,.14);color:#f0c46a}
+.bl .ps.lu .tx .et{background:rgba(140,224,168,.14);color:#8ce0a8}
+.bl .ps.lu .ep{color:#8ce0a8}
+
+.bl .vide2{padding:17px 16px;font-size:12.5px;color:rgba(246,228,200,.4);
+  font-family:system-ui,sans-serif;text-align:center;line-height:1.6}
+.bl select,.bl textarea{width:100%;margin-top:9px;padding:11px 12px;border-radius:8px;
+  background:rgba(12,10,8,.6);border:1.5px solid rgba(246,228,200,.18);
+  color:#f6e8d0;font-family:'Courier Prime',monospace;font-size:13.5px;resize:none}
+.bl textarea{height:74px;line-height:1.5}
+.bl .cpt{font-size:10.5px;color:rgba(246,228,200,.34);margin-top:6px;text-align:right}
+
+/* ---------- les dés ---------- */
+.de{display:flex;justify-content:center;gap:22px;margin-top:15px}
+.de .cot{text-align:center}
+.de .cot .qui{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(246,228,200,.4)}
+.de .cot .pr{display:flex;gap:8px;margin-top:8px}
+.de .cot .pr i{width:34px;height:34px;border-radius:8px;display:flex;
+  align-items:center;justify-content:center;font-style:normal;font-size:17px;
+  font-weight:700;background:#f2e6cc;color:#221c14}
+.de .cot .tot{font-size:11px;color:rgba(246,228,200,.5);margin-top:7px}
+.de .cot.perd .pr i{background:rgba(246,228,200,.22);color:rgba(246,228,200,.6)}
+.de .vs{align-self:center;font-size:11px;color:rgba(246,228,200,.3);margin-top:14px}
+.mise{display:flex;gap:8px;margin-top:14px}
+.mise button{flex:1;padding:12px 4px;border-radius:8px;cursor:pointer;
+  border:1.5px solid rgba(246,228,200,.2);background:rgba(38,26,17,.72);
+  color:#f6e8d0;font-family:'Courier Prime',monospace;font-size:14px;font-weight:700}
+.mise button:disabled{opacity:.35;cursor:default}
+.issue{margin-top:14px;padding:12px 14px;border-radius:8px;text-align:center;
+  font-size:13.5px;font-family:system-ui,sans-serif;line-height:1.55}
+.issue.g{background:rgba(140,224,168,.12);border:1px solid rgba(140,224,168,.28);color:#a8dcb8}
+.issue.p{background:rgba(224,138,106,.12);border:1px solid rgba(224,138,106,.28);color:#e0a878}
+
+.mot{font-size:11.5px;color:rgba(246,228,200,.44);line-height:1.7;
+  margin:20px 4px 4px;font-family:system-ui,sans-serif;font-style:italic;text-align:center}
+
+/* la porte fermée */
+.ferme{padding:30px 22px;text-align:center}
+.ferme .ic{width:52px;height:52px;border-radius:13px;margin:0 auto 18px;
+  background:rgba(246,228,200,.1);display:flex;align-items:center;justify-content:center}
+.ferme .ic svg{width:24px;height:24px;stroke:rgba(246,228,200,.6);fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.ferme b{display:block;font-size:18px;color:#f6e8d0;font-weight:700}
+.ferme p{font-size:13.5px;line-height:1.75;color:rgba(246,228,200,.56);margin-top:13px;
+  font-family:system-ui,sans-serif}
+.ferme .jau{height:7px;border-radius:4px;background:rgba(246,228,200,.12);margin:20px 0 9px;
+  overflow:hidden}
+.ferme .jau i{display:block;height:100%;border-radius:4px;
+  background:linear-gradient(90deg,#b8863a,#f0c46a)}
+.ferme .sous{font-size:10.5px;color:rgba(246,228,200,.4);font-family:system-ui,sans-serif}
+
+.lampe{animation:vacille 5s ease-in-out infinite}
+@keyframes vacille{0%,100%{opacity:.92}42%{opacity:1}68%{opacity:.88}}
+.nuria{animation:respire 7s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:50% 100%}
+@keyframes respire{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.4px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+/* l'aperçu : la taverne sans son plein écran */
+.ecran.sombre .dit{padding-top:0}
+.ecran.sombre .tt:first-child{margin-top:0}
+</style>
+</head><body>
+
+<div class="tit">
+  <h1>Battle Dock — ce qui a changé</h1>
+  <p>Aperçu statique des maj 3 et 4. Les styles sont ceux du jeu, les données sont fausses.</p>
+</div>
+
+<div class="grille">
+
+  <div class="carte">
+    <h2>Le hub — le temps qu'il fait</h2>
+    <div class="ecran clair"><div id="tp-zone"></div></div>
+    <div class="choixt" id="tp-ch"></div>
+    <p class="leg">Un bandeau au-dessus des tuiles. Une tape annonce le ciel de demain.
+      Le même pour tous les joueurs, tiré du jour.</p>
+  </div>
+
+  <div class="carte">
+    <h2>Le départ — ce que le ciel coûte</h2>
+    <div class="ecran clair"><div id="dp-zone"></div></div>
+    <p class="leg">La ligne sous la jauge d'énergie dit ce que le temps ajoute ou épargne
+      sur la traversée choisie.</p>
+  </div>
+
+  <div class="carte">
+    <h2>La taverne — le comptoir (Ardit réglé)</h2>
+    <div class="ecran sombre"><div id="tv-zone"></div></div>
+    <p class="leg">Plus de scène d'entrée, plus de tableau des cours : un salut, ta bourse,
+      et ce qu'il te reste à faire.</p>
+  </div>
+
+  <div class="carte">
+    <h2>Le tableau — tes mots épinglés</h2>
+    <div class="ecran sombre"><div id="mt-zone"></div></div>
+    <p class="leg">Sept jours au liège. On voit ce qu'on a envoyé, et si l'autre l'a lu.</p>
+  </div>
+
+</div>
+
+<script>
+/* ---------- le temps ---------- */
+const SIGNES = { soleil:'☀️', vent:'🌬️', brume:'🌫️', houle:'🌊', orage:'⛈️' };
+const TEMPS = [
+  {k:'beau',nom:'Beau fixe',signe:'soleil',energie:1,paie:1,
+   note:"Pas un souffle. La mer est un drap tendu."},
+  {k:'mistral',nom:'Mistral',signe:'vent',energie:.85,paie:.95,
+   note:"Il descend du nord et il pousse. On file, mais ça secoue."},
+  {k:'brume',nom:'Brume',signe:'brume',energie:1.15,paie:1,
+   note:"On ne voit pas la proue. On avance à l'oreille."},
+  {k:'houle',nom:'Houle',signe:'houle',energie:1.25,paie:1.08,
+   note:"La mer travaille. Les cales prennent l'eau et les patrons paient mieux."},
+  {k:'orage',nom:'Orage',signe:'orage',energie:1.4,paie:1.22,
+   note:"Le ciel est noir à midi. Ceux qui partent quand même sont payés pour ça."},
+  {k:'grand_bleu',nom:'Grand bleu',signe:'soleil',energie:.9,paie:1.12,
+   note:"Un de ces jours qu'on raconte l'hiver d'après."}
+];
+let T = TEMPS[4];
+
+function bandeau(t){
+  const e = Math.round((t.energie - 1) * 100), p = Math.round((t.paie - 1) * 100);
+  let h = '';
+  if (e) h += '<i class="' + (e < 0 ? 'bon' : 'dur') + '">'
+    + (e > 0 ? '+' : '−') + Math.abs(e) + ' % en mer</i>';
+  if (p) h += '<i class="' + (p > 0 ? 'bon' : 'dur') + '">'
+    + (p > 0 ? '+' : '−') + Math.abs(p) + ' % payé</i>';
+  if (!e && !p) h = '<i>Rien à signaler</i>';
+  return '<button class="temps ' + t.k + '" style="display:flex">'
+    + '<span class="ic">' + SIGNES[t.signe] + '</span>'
+    + '<span class="tx"><b>' + t.nom + '</b><span>' + t.note + '</span></span>'
+    + '<span class="ef">' + h + '</span></button>';
+}
+
+/* ---------- l'écran de départ ---------- */
+function depart(t){
+  const plein = 55, calme = 48;
+  const cout = Math.max(1, Math.round(plein * (calme / plein) * t.energie));
+  const du = cout - calme, nrj = 74, max = 100;
+  const reste = Math.max(nrj - cout, 0);
+  const assez = nrj >= cout;
+  return '<div class="dp">'
+    + '<div class="dp-h"><b>Palma</b><span>Majorque · 2 jours de mer</span></div>'
+    + '<div class="dp-j"><i class="r" style="width:' + (reste/max*100) + '%"></i>'
+    + '<i class="c" style="left:' + (reste/max*100) + '%;width:'
+    + (Math.min(cout,nrj)/max*100) + '%"></i></div>'
+    + '<p class="dp-s">' + (assez
+        ? 'La traversée te prend ' + cout + " points. Il t'en restera " + reste
+          + ' en arrivant. <span class="endur">Ton endurance t\'en épargne 7.</span>'
+          + (du ? ' <span class="' + (du > 0 ? 'gros' : 'endur') + '">'
+                  + SIGNES[t.signe] + ' ' + t.nom
+                  + (du > 0 ? " t'en coûte " + du : " t'en épargne " + (-du))
+                  + '.</span>' : '')
+        : 'Il te manque ' + (cout - nrj) + ' points.'
+          + ' <span class="gros">' + SIGNES[t.signe] + ' ' + t.nom
+          + ' alourdit la course de ' + du + '.</span>')
+    + '</p>'
+    + '<button class="dp-b"' + (assez ? '' : ' disabled') + '>'
+    + (assez ? 'Larguer les amarres' : 'Tu es trop fatigué') + '</button></div>';
+}
+
+/* ---------- la taverne ---------- */
+const tv = '<div class="dit"><p>Elle pousse un verre vers toi sans rien demander.</p></div>'
+  + '<div class="bar"><span>Ta bourse<b>6 982 €</b></span>'
+  + '<span>Il te reste<b>le plat, 2 mots, 3 coups</b></span></div>'
+
+  + '<p class="tt dx">Le plat du jour</p>'
+  + '<div class="bl"><div class="in">'
+  + '<div class="hd"><b>Escudella</b><span class="px">36 €</span></div>'
+  + '<p class="no">Le pot-au-feu du pays. On y met ce qui reste et ça tient au corps '
+  + "jusqu'au soir.</p>"
+  + '<div class="ef"><span>+22 d\'énergie</span></div>'
+  + '<button class="go">Manger</button></div></div>'
+
+  + '<p class="tt dx">Le tableau<em>2 pour toi</em></p>'
+  + '<div class="bl">'
+  + '<div class="mt neuf"><span class="qi">M</span><span class="tx">'
+  + '<b>Martin — il y a 2 h</b><p>Le lot cacheté ferme jeudi. J\'y vais pas, à toi de voir.</p>'
+  + '</span></div>'
+  + '<div class="in" style="border-top:1px solid rgba(246,228,200,.08)">'
+  + '<select><option>Martin</option></select>'
+  + '<textarea placeholder="Ce que tu veux lui dire…"></textarea>'
+  + '<p class="cpt">180</p><button class="go">Épingler ce mot</button></div></div>'
+
+  + '<p class="tt dx">Les dés</p>'
+  + '<div class="bl"><div class="in">'
+  + '<div class="de"><div class="cot"><span class="qui">Toi</span>'
+  + '<span class="pr"><i>5</i><i>4</i></span><span class="tot">9</span></div>'
+  + '<span class="vs">contre</span>'
+  + '<div class="cot perd"><span class="qui">Núria</span>'
+  + '<span class="pr"><i>3</i><i>3</i></span><span class="tot">6</span></div></div>'
+  + '<p class="issue g">Elle pousse 100 € vers toi sans commentaire.</p>'
+  + '<div class="mise"><button>20</button><button>50</button>'
+  + '<button>100</button><button>200</button></div>'
+  + '<p class="cpt" style="text-align:left">Il te reste 2 coups.</p></div></div>';
+
+/* ---------- le tableau, en détail ---------- */
+const mt = '<p class="tt dx">Le tableau<em>1 pour toi</em></p><div class="bl">'
+  + '<div class="mt neuf"><span class="qi">L</span><span class="tx">'
+  + '<b>Louplgr — hier</b><p>Tu me dois un verre. Je note.</p></span></div>'
+  + '<div class="mt"><span class="qi">M</span><span class="tx">'
+  + '<b>Martin — il y a 4 j</b><p>La laine se vend mieux à Palma en ce moment.</p></span></div>'
+  + '<div class="poses"><p class="tt2">Tes mots au tableau</p>'
+  + '<div class="ps"><span class="ep">📌</span><span class="tx">'
+  + '<b>Pour Martin — il y a 1 h</b><p>Je pars sous l\'orage, la paie vaut le coup.</p>'
+  + '<span class="et">Pas encore lu · tombe dans 7 j</span></span></div>'
+  + '<div class="ps lu"><span class="ep">✓</span><span class="tx">'
+  + '<b>Pour Louplgr — il y a 3 j</b><p>Garde-moi une place à la criée de jeudi.</p>'
+  + '<span class="et">Lu · tombe dans 4 j</span></span></div></div>'
+  + '<div class="in" style="border-top:1px solid rgba(246,228,200,.08)">'
+  + '<p class="cpt" style="text-align:left">Un mot tient sept jours au liège, '
+  + 'puis Núria le décroche.</p></div></div>';
+
+/* ---------- on pose tout ---------- */
+function poser(){
+  document.getElementById('tp-zone').innerHTML = bandeau(T);
+  document.getElementById('dp-zone').innerHTML = depart(T);
+  document.querySelectorAll('#tp-ch button').forEach(b =>
+    b.classList.toggle('on', b.dataset.k === T.k));
+}
+document.getElementById('tp-ch').innerHTML = TEMPS.map(t =>
+  '<button data-k="' + t.k + '">' + SIGNES[t.signe] + ' ' + t.nom + '</button>').join('');
+document.getElementById('tp-ch').onclick = e => {
+  const b = e.target.closest('[data-k]'); if (!b) return;
+  T = TEMPS.find(t => t.k === b.dataset.k); poser();
+};
+document.getElementById('tv-zone').innerHTML = tv;
+document.getElementById('mt-zone').innerHTML = mt;
+poser();
+</script>
+
+<style>
+/* l'écran de départ, en raccourci pour l'aperçu */
+.dp{background:var(--creme);border:3px solid var(--encre);border-radius:18px;padding:16px}
+.dp-h b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:22px}
+.dp-h span{display:block;font-size:12px;font-weight:700;color:rgba(18,48,63,.55);margin-top:3px}
+.dp-j{position:relative;height:12px;border-radius:7px;margin:14px 0 11px;
+  background:rgba(18,48,63,.1);border:2px solid var(--encre);overflow:hidden}
+.dp-j i{position:absolute;top:0;bottom:0;display:block}
+.dp-j .r{left:0;background:var(--vert)}
+.dp-j .c{background:repeating-linear-gradient(45deg,#e0a878 0 5px,#d08c60 5px 10px)}
+.dp-s{font-size:12.5px;line-height:1.65;color:rgba(18,48,63,.72);font-weight:600}
+.dp-s .endur{color:var(--vert);font-weight:800}
+.dp-s .gros{color:#c05a44;font-weight:800}
+.dp-b{width:100%;margin-top:14px;padding:14px;border-radius:12px;cursor:pointer;
+  background:var(--or);border:3px solid var(--encre);
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:var(--encre)}
+.dp-b:disabled{background:rgba(18,48,63,.12);color:rgba(18,48,63,.4)}
+</style>
+</body></html>
