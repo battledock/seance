@@ -190,11 +190,20 @@ async function dessiner(){
     + (OU[r.vers] || r.vers);
 
   const C = r.contrats || [];
-  const dejaPris = C.some(c => c.etat !== 'propose');
+  /* ce qui pèse, c'est la cale elle-même : un chargement pris hier y est
+     encore, même s'il n'apparaît pas dans les contrats du jour */
+  const libre = (r.libre === undefined)
+    ? (C.some(c => c.etat !== 'propose') ? 0 : r.places) : r.libre;
+  const dedans = r.dedans || [];
+  const dejaPris = libre <= 0;
   const cale = document.getElementById('c-cale');
   cale.style.display = 'flex';
   document.getElementById('c-cale-t').innerHTML = dejaPris
-    ? "Ta cale est prise. Va livrer avant d'en charger une autre."
+    ? (dedans.length
+        ? 'Ta cale porte déjà <b>' + dedans.map(x => x.nom).join(', ')
+          + '</b> pour ' + (OU[dedans[0].vers] || dedans[0].vers)
+          + '. Va livrer avant d\'en charger une autre.'
+        : "Ta cale est prise. Va livrer avant d'en charger une autre.")
     : 'Ta cale prend <b>' + r.places + ' place' + (r.places > 1 ? 's' : '')
       + '</b> — une course, un chargement.';
 
@@ -242,11 +251,15 @@ async function dessiner(){
   L.querySelectorAll('button[data-id]').forEach(b =>
     b.onclick = async () => {
       b.disabled = true; b.textContent = '…';
-      try {
-        const x = await BD.agir('prendre_contrat', { p_id: b.dataset.id });
-        if (x && (x.ok || x.pris)){ dessiner(); return; }
-      } catch(e){}
-      b.disabled = false; b.textContent = 'Charger';
+      let x = null;
+      try { x = await BD.agir('prendre_contrat', { p_id: b.dataset.id }); } catch(e){}
+      if (x && (x.ok || x.pris)){ dessiner(); return; }
+      /* dire pourquoi, plutôt que de remettre le bouton comme si de rien */
+      const P = { cale_pleine:'Cale pleine', en_mer:'Tu es en mer',
+                  pas_ici:'Pas depuis ce port', introuvable:'Offre expirée' };
+      b.textContent = (x && P[x.pourquoi]) || 'Impossible';
+      if (x && x.pourquoi === 'cale_pleine'){ setTimeout(dessiner, 900); return; }
+      setTimeout(() => { b.disabled = false; b.textContent = 'Charger'; }, 1400);
     });
 }
 
