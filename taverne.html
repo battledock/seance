@@ -146,6 +146,24 @@ html,body{height:100%;overflow:hidden;background:#150e09;
 .bl .mt .tx p{font-size:13.5px;line-height:1.55;color:#f6e8d0;margin-top:4px;
   font-family:system-ui,sans-serif;word-wrap:break-word}
 .bl .mt.neuf .qi{background:rgba(140,224,168,.2);color:#8ce0a8}
+/* ---------- tes propres mots, épinglés ---------- */
+.bl .poses:not(:empty){border-top:1px solid rgba(246,228,200,.08);
+  background:rgba(12,10,8,.35)}
+.bl .tt2{font-size:7.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(246,228,200,.34);padding:14px 16px 2px}
+.bl .ps{display:flex;gap:11px;padding:11px 16px 13px}
+.bl .ps .ep{flex:0 0 22px;font-size:13px;line-height:1.4;
+  filter:grayscale(.3)}
+.bl .ps .tx{flex:1;min-width:0}
+.bl .ps .tx b{display:block;font-size:11.5px;color:rgba(246,228,200,.5)}
+.bl .ps .tx p{font-size:13px;line-height:1.5;color:rgba(246,232,208,.8);margin-top:3px;
+  font-family:system-ui,sans-serif;word-wrap:break-word}
+.bl .ps .tx .et{display:inline-block;margin-top:6px;font-size:9.5px;letter-spacing:.08em;
+  padding:3px 8px;border-radius:9px;
+  background:rgba(240,196,106,.14);color:#f0c46a}
+.bl .ps.lu .tx .et{background:rgba(140,224,168,.14);color:#8ce0a8}
+.bl .ps.lu .ep{color:#8ce0a8}
+
 .bl .vide2{padding:17px 16px;font-size:12.5px;color:rgba(246,228,200,.4);
   font-family:system-ui,sans-serif;text-align:center;line-height:1.6}
 .bl select,.bl textarea{width:100%;margin-top:9px;padding:11px 12px;border-radius:8px;
@@ -898,16 +916,19 @@ function quand(iso){
 }
 
 function tableauBloc(r){
-  const M = r.mots || [], A = r.a_qui || [];
+  const M = r.mots || [], A = r.a_qui || [], P = r.poses || [];
   let h = '<p class="tt dx">Le tableau'
     + (r.mots_neufs ? '<em>' + r.mots_neufs + ' pour toi</em>' : '')
     + '</p><div class="bl" id="bl-mots">';
+
   h += M.length
-    ? M.map(m => '<div class="mt' + (m.neuf ? ' neuf' : '') + '">'
-        + '<span class="qi">' + (m.de || '?')[0].toUpperCase() + '</span>'
-        + '<span class="tx"><b>' + m.de + ' — ' + quand(m.quand) + '</b>'
-        + '<p>' + m.texte + '</p></span></div>').join('')
+    ? M.map(recu).join('')
     : '<p class="vide2">Personne ne t\'a rien laissé.</p>';
+
+  /* ce que tu as épinglé, et si on l'a lu */
+  h += '<div class="poses" id="poses">'
+    + (P.length ? '<p class="tt2">Tes mots au tableau</p>' + P.map(pose).join('') : '')
+    + '</div>';
 
   h += '<div class="in" style="border-top:1px solid rgba(246,228,200,.08)">'
     + (A.length
@@ -918,9 +939,28 @@ function tableauBloc(r){
           + 'placeholder="Ce que tu veux lui dire…"></textarea>'
           + '<p class="cpt" id="cpt">180</p>'
           + '<button class="go" id="poser-mot">Épingler ce mot</button>'
+          + '<p class="cpt" style="text-align:left">Un mot tient sept jours au liège, '
+          + 'puis Núria le décroche.</p>'
         : '<p class="vide2">Tu ne connais encore personne à qui écrire.</p>')
     + '</div></div>';
   return h;
+}
+
+function recu(m){
+  return '<div class="mt' + (m.neuf ? ' neuf' : '') + '">'
+    + '<span class="qi">' + (m.de || '?')[0].toUpperCase() + '</span>'
+    + '<span class="tx"><b>' + m.de + ' — ' + quand(m.quand) + '</b>'
+    + '<p>' + m.texte + '</p></span></div>';
+}
+
+/* un mot que tu as posé : à qui, et s'il a été décroché */
+function pose(m){
+  return '<div class="ps' + (m.lu ? ' lu' : '') + '">'
+    + '<span class="ep">' + (m.lu ? '✓' : '📌') + '</span>'
+    + '<span class="tx"><b>Pour ' + m.a + ' — ' + quand(m.quand) + '</b>'
+    + '<p>' + m.texte + '</p>'
+    + '<span class="et">' + (m.lu ? 'Lu' : 'Pas encore lu')
+    + ' · tombe dans ' + m.reste_j + ' j</span></span></div>';
 }
 
 async function poserMot(){
@@ -936,6 +976,13 @@ async function poserMot(){
     t.value = '';
     const c = document.getElementById('cpt');
     if (c) c.textContent = '180';
+    const z = document.getElementById('poses');
+    if (z){
+      if (!z.querySelector('.tt2'))
+        z.insertAdjacentHTML('afterbegin', '<p class="tt2">Tes mots au tableau</p>');
+      z.querySelector('.tt2').insertAdjacentHTML('afterend',
+        pose({ a:x.a, texte:x.texte, quand:x.quand, lu:false, reste_j:x.reste_j }));
+    }
     b.textContent = 'Épinglé pour ' + x.a;
     setTimeout(() => { b.disabled = false; b.textContent = 'Épingler ce mot'; }, 2200);
     return;
