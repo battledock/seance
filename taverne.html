@@ -96,6 +96,72 @@ html,body{height:100%;overflow:hidden;background:#150e09;
   background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
   font-family:'Courier Prime',monospace;font-size:13.5px;font-weight:700;letter-spacing:.06em}
 
+
+/* ============================================================
+   CE QU'ON FAIT DANS UNE TAVERNE
+   Manger, laisser un mot, jouer. Trois blocs, même ardoise.
+   ============================================================ */
+.bl{background:rgba(24,20,16,.86);border:1.5px solid rgba(246,228,200,.16);
+  border-radius:9px;overflow:hidden;box-shadow:0 8px 26px rgba(6,4,2,.5)}
+.bl .in{padding:15px 16px}
+.bl .hd{display:flex;align-items:baseline;gap:10px}
+.bl .hd b{flex:1;font-size:16px;color:#f6e8d0;font-weight:700;line-height:1.3}
+.bl .hd .px{font-size:14px;color:#f0c46a;font-weight:700}
+.bl .no{font-size:12.5px;line-height:1.6;color:rgba(246,228,200,.52);
+  font-family:system-ui,sans-serif;margin-top:7px}
+.bl .ef{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.bl .ef span{font-size:10px;letter-spacing:.06em;padding:5px 9px;border-radius:11px;
+  background:rgba(140,224,168,.14);color:#8ce0a8}
+.bl .go{width:100%;margin-top:14px;padding:13px;border:0;border-radius:8px;cursor:pointer;
+  background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
+  font-family:'Courier Prime',monospace;font-size:13px;font-weight:700;letter-spacing:.05em}
+.bl .go:disabled{background:rgba(246,228,200,.12);color:rgba(246,228,200,.4);cursor:default}
+.bl .fait{margin-top:13px;padding:11px 13px;border-radius:8px;
+  background:rgba(140,224,168,.1);border:1px solid rgba(140,224,168,.24);
+  font-size:12.5px;line-height:1.6;color:#a8dcb8;font-family:system-ui,sans-serif}
+
+/* ---------- le tableau ---------- */
+.bl .mt{display:flex;gap:11px;padding:13px 16px;
+  border-bottom:1px solid rgba(246,228,200,.08)}
+.bl .mt:last-child{border-bottom:0}
+.bl .mt .qi{flex:0 0 30px;height:30px;border-radius:8px;display:flex;
+  align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  background:rgba(240,196,106,.16);color:#f0c46a}
+.bl .mt .tx{flex:1;min-width:0}
+.bl .mt .tx b{display:block;font-size:12px;color:rgba(246,228,200,.62)}
+.bl .mt .tx p{font-size:13.5px;line-height:1.55;color:#f6e8d0;margin-top:4px;
+  font-family:system-ui,sans-serif;word-wrap:break-word}
+.bl .mt.neuf .qi{background:rgba(140,224,168,.2);color:#8ce0a8}
+.bl .vide2{padding:17px 16px;font-size:12.5px;color:rgba(246,228,200,.4);
+  font-family:system-ui,sans-serif;text-align:center;line-height:1.6}
+.bl select,.bl textarea{width:100%;margin-top:9px;padding:11px 12px;border-radius:8px;
+  background:rgba(12,10,8,.6);border:1.5px solid rgba(246,228,200,.18);
+  color:#f6e8d0;font-family:'Courier Prime',monospace;font-size:13.5px;resize:none}
+.bl textarea{height:74px;line-height:1.5}
+.bl .cpt{font-size:10.5px;color:rgba(246,228,200,.34);margin-top:6px;text-align:right}
+
+/* ---------- les dés ---------- */
+.de{display:flex;justify-content:center;gap:22px;margin-top:15px}
+.de .cot{text-align:center}
+.de .cot .qui{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(246,228,200,.4)}
+.de .cot .pr{display:flex;gap:8px;margin-top:8px}
+.de .cot .pr i{width:34px;height:34px;border-radius:8px;display:flex;
+  align-items:center;justify-content:center;font-style:normal;font-size:17px;
+  font-weight:700;background:#f2e6cc;color:#221c14}
+.de .cot .tot{font-size:11px;color:rgba(246,228,200,.5);margin-top:7px}
+.de .cot.perd .pr i{background:rgba(246,228,200,.22);color:rgba(246,228,200,.6)}
+.de .vs{align-self:center;font-size:11px;color:rgba(246,228,200,.3);margin-top:14px}
+.mise{display:flex;gap:8px;margin-top:14px}
+.mise button{flex:1;padding:12px 4px;border-radius:8px;cursor:pointer;
+  border:1.5px solid rgba(246,228,200,.2);background:rgba(38,26,17,.72);
+  color:#f6e8d0;font-family:'Courier Prime',monospace;font-size:14px;font-weight:700}
+.mise button:disabled{opacity:.35;cursor:default}
+.issue{margin-top:14px;padding:12px 14px;border-radius:8px;text-align:center;
+  font-size:13.5px;font-family:system-ui,sans-serif;line-height:1.55}
+.issue.g{background:rgba(140,224,168,.12);border:1px solid rgba(140,224,168,.28);color:#a8dcb8}
+.issue.p{background:rgba(224,138,106,.12);border:1px solid rgba(224,138,106,.28);color:#e0a878}
+
 .mot{font-size:11.5px;color:rgba(246,228,200,.44);line-height:1.7;
   margin:20px 4px 4px;font-family:system-ui,sans-serif;font-style:italic;text-align:center}
 
@@ -692,6 +758,9 @@ function poser(r){
   else if (AR.etape === 1)
     s += '<p class="mot">« Vous êtes encore là ? Il est à Majorque, pas dans ma salle. »</p>';
 
+  /* ce qu'on fait ici quand on ne vient pas pour les cours */
+  s += platBloc(r) + tableauBloc(r) + desBloc(r);
+
   s += '<p class="mot">'
     + (r.lien >= 30
        ? 'Elle t\'en dit plus qu\'aux autres. Ça se mérite, et ça se garde.'
@@ -702,6 +771,190 @@ function poser(r){
   if (p) p.onclick = poserArdit;
   const q = document.getElementById('rendre');
   if (q) q.onclick = poserRetour;
+  brancher(r);
+}
+
+/* ============================================================
+   LE PLAT DU JOUR
+   Un seul plat, le même pour tout le port, une fois par jour.
+   Il tient jusqu'à minuit et n'agit que sur une chose.
+   ============================================================ */
+const eur = n => Math.round(Number(n) || 0).toLocaleString('fr-FR');
+
+function ceQueCaFait(p){
+  if (!p.effet) return 'De quoi tenir la journée';
+  if (p.effet === 'places') return 'Une place de cale en plus, aujourd\'hui';
+  if (p.effet === 'paie')
+    return '+' + Math.round((p.force - 1) * 100) + ' % sur ce qu\'on te paie, aujourd\'hui';
+  if (p.effet === 'energie')
+    return '−' + Math.round((1 - p.force) * 100) + ' % d\'énergie en traversée, aujourd\'hui';
+  return '';
+}
+
+function platBloc(r){
+  const p = r.plat; if (!p || !p.k) return '';
+  const trop = !p.mange && r.euros < p.prix;
+  return '<p class="tt">Le plat du jour</p><div class="bl" id="bl-plat"><div class="in">'
+    + '<div class="hd"><b>' + p.nom + '</b><span class="px">' + eur(p.prix) + ' €</span></div>'
+    + '<p class="no">' + p.note + '</p>'
+    + '<div class="ef"><span>+' + p.energie + ' d\'énergie</span>'
+    +   (p.effet ? '<span>' + ceQueCaFait(p) + '</span>' : '') + '</div>'
+    + (p.mange
+        ? '<p class="fait">' + (p.mot || 'Tu as déjà mangé aujourd\'hui.') + '</p>'
+        : '<button class="go" id="manger"' + (trop ? ' disabled' : '') + '>'
+          + (trop ? 'Tu n\'as pas de quoi' : 'En prendre une assiette') + '</button>')
+    + '</div></div>';
+}
+
+async function manger(){
+  const b = document.getElementById('manger');
+  if (!b) return;
+  b.disabled = true; b.textContent = '…';
+  const x = await BD.agir('manger');
+  const bl = document.querySelector('#bl-plat .in');
+  if (x && x.ok){
+    b.remove();
+    const p = document.createElement('p');
+    p.className = 'fait';
+    p.textContent = x.mot + ' (+' + x.gagne + ' d\'énergie)';
+    bl.appendChild(p);
+    return;
+  }
+  const P = { deja_mange:'Tu as déjà mangé', trop_cher:'Tu n\'as pas de quoi',
+              pas_ici:'Pas d\'ici' };
+  b.textContent = (x && P[x.pourquoi]) || 'Elle n\'a plus rien';
+}
+
+/* ============================================================
+   LE TABLEAU
+   Un carré de liège près de la porte. On y laisse un mot à
+   quelqu'un ; il le trouvera en passant.
+   ============================================================ */
+function quand(iso){
+  const s = Math.max(0, (Date.now() - new Date(iso)) / 1000);
+  if (s < 5400) return 'il y a ' + Math.max(1, Math.round(s / 60)) + ' min';
+  if (s < 172800) return 'il y a ' + Math.round(s / 3600) + ' h';
+  return 'il y a ' + Math.round(s / 86400) + ' j';
+}
+
+function tableauBloc(r){
+  const M = r.mots || [], A = r.a_qui || [];
+  let h = '<p class="tt">Le tableau</p><div class="bl" id="bl-mots">';
+  h += M.length
+    ? M.map(m => '<div class="mt' + (m.neuf ? ' neuf' : '') + '">'
+        + '<span class="qi">' + (m.de || '?')[0].toUpperCase() + '</span>'
+        + '<span class="tx"><b>' + m.de + ' — ' + quand(m.quand) + '</b>'
+        + '<p>' + m.texte + '</p></span></div>').join('')
+    : '<p class="vide2">Personne ne t\'a rien laissé.</p>';
+
+  h += '<div class="in" style="border-top:1px solid rgba(246,228,200,.08)">'
+    + (A.length
+        ? '<select id="a-qui">'
+          + A.map(a => '<option value="' + a.id + '">' + a.qui + '</option>').join('')
+          + '</select>'
+          + '<textarea id="le-mot" maxlength="180" '
+          + 'placeholder="Ce que tu veux lui dire…"></textarea>'
+          + '<p class="cpt" id="cpt">180</p>'
+          + '<button class="go" id="poser-mot">Épingler ce mot</button>'
+        : '<p class="vide2">Tu ne connais encore personne à qui écrire.</p>')
+    + '</div></div>';
+  return h;
+}
+
+async function poserMot(){
+  const b = document.getElementById('poser-mot');
+  const t = document.getElementById('le-mot');
+  const q = document.getElementById('a-qui');
+  if (!b || !t || !q) return;
+  const texte = t.value.trim();
+  if (texte.length < 2){ t.focus(); return; }
+  b.disabled = true; b.textContent = '…';
+  const x = await BD.agir('poser_un_mot', { p_vers: q.value, p_texte: texte });
+  if (x && x.ok){
+    t.value = '';
+    b.textContent = 'Épinglé pour ' + x.a;
+    setTimeout(() => { b.disabled = false; b.textContent = 'Épingler ce mot'; }, 2200);
+    return;
+  }
+  const P = { trop_de_mots:'Il en a déjà trois de toi',
+              assez_pour_aujourdhui:'Assez pour aujourd\'hui',
+              vide:'Écris quelque chose', toi_meme:'À toi-même ?' };
+  b.textContent = (x && P[x.pourquoi]) || 'Le tableau est plein';
+  setTimeout(() => { b.disabled = false; b.textContent = 'Épingler ce mot'; }, 2200);
+}
+
+/* ============================================================
+   LES DÉS
+   Deux dés chacun, trois coups par jour. À égalité la maison
+   garde — c'est dit d'avance, personne ne crie au vol.
+   ============================================================ */
+const MISES = [20, 50, 100, 200];
+
+function desBloc(r){
+  const j = r.des || { reste:3, gagne:0, perdu:0 };
+  const net = (j.gagne || 0) - (j.perdu || 0);
+  return '<p class="tt">Les dés</p><div class="bl" id="bl-des"><div class="in">'
+    + '<div class="hd"><b>Deux dés contre la maison</b>'
+    + '<span class="px">' + j.reste + ' coup' + (j.reste > 1 ? 's' : '') + '</span></div>'
+    + '<p class="no">Le plus fort emporte la mise. À égalité, Núria garde. '
+    + 'Trois coups par jour, pas un de plus.</p>'
+    + (net ? '<div class="ef"><span>' + (net > 0 ? '+' : '−') + eur(Math.abs(net))
+             + ' € aujourd\'hui</span></div>' : '')
+    + '<div id="jet"></div>'
+    + '<div class="mise" id="mises">'
+    + MISES.map(m => '<button data-m="' + m + '"'
+        + (j.reste < 1 || r.euros < m ? ' disabled' : '') + '>' + m + ' €</button>').join('')
+    + '</div>'
+    + (j.reste < 1 ? '<p class="no" style="text-align:center;margin-top:12px">'
+        + 'Elle ramasse les dés. « Demain. »</p>' : '')
+    + '</div></div>';
+}
+
+async function jeter(mise){
+  const z = document.getElementById('mises');
+  z.querySelectorAll('button').forEach(b => b.disabled = true);
+  const x = await BD.agir('jouer_aux_des', { p_mise: mise });
+  const jet = document.getElementById('jet');
+  if (!x || !x.ok){
+    jet.innerHTML = '<p class="issue p">'
+      + (x && x.pourquoi === 'assez' ? 'Trois coups, c\'est trois coups.'
+         : x && x.pourquoi === 'trop_cher' ? 'Tu n\'as pas de quoi miser ça.'
+         : 'Les dés restent sur le comptoir.') + '</p>';
+    return;
+  }
+  const g = x.issue === 'gagne';
+  jet.innerHTML = '<div class="de">'
+    + '<div class="cot' + (g ? '' : ' perd') + '"><span class="qui">Toi</span>'
+    +   '<span class="pr">' + x.des_moi.map(v => '<i>' + v + '</i>').join('') + '</span>'
+    +   '<span class="tot">' + x.moi + '</span></div>'
+    + '<span class="vs">contre</span>'
+    + '<div class="cot' + (g ? ' perd' : '') + '"><span class="qui">Núria</span>'
+    +   '<span class="pr">' + x.des_elle.map(v => '<i>' + v + '</i>').join('') + '</span>'
+    +   '<span class="tot">' + x.elle + '</span></div></div>'
+    + '<p class="issue ' + (g ? 'g' : 'p') + '">'
+    + (g ? 'Tu ramasses ' + eur(x.mise) + ' €. Elle ne dit rien.'
+         : 'Elle prend tes ' + eur(x.mise) + ' € sans lever les yeux.')
+    + ' — il te reste ' + x.reste + ' coup' + (x.reste > 1 ? 's' : '') + '</p>';
+
+  z.querySelectorAll('button').forEach(b =>
+    b.disabled = x.reste < 1 || x.euros < +b.dataset.m);
+}
+
+/* ---------- on branche tout ce petit monde ---------- */
+function brancher(r){
+  const m = document.getElementById('manger');
+  if (m) m.onclick = manger;
+
+  const b = document.getElementById('poser-mot');
+  if (b) b.onclick = poserMot;
+  const t = document.getElementById('le-mot'), c = document.getElementById('cpt');
+  if (t && c) t.oninput = () => { c.textContent = 180 - t.value.length; };
+
+  document.querySelectorAll('#mises button').forEach(x =>
+    x.onclick = () => jeter(+x.dataset.m));
+
+  /* les mots affichés sont lus : ils ne clignoteront plus demain */
+  if ((r.mots_neufs || 0) > 0) BD.agir('mots_lus').catch(() => {});
 }
 
 document.getElementById('ret').onclick = () => location.href = 'rue.html';
