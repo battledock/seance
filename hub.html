@@ -288,12 +288,54 @@ body::before{background:linear-gradient(180deg,
     </button>
   </div>
 
+  <button class="temps attend" id="temps" style="display:none">
+    <span class="ic" id="tp-ic"></span>
+    <span class="tx"><b id="tp-n">—</b><span id="tp-s">—</span></span>
+    <span class="ef" id="tp-e"></span>
+  </button>
+
   <button class="rade attend" id="rade">
     <b id="rade-t">Retour à Marseille</b>
     <span class="tr"></span>
   </button>
 
-  <div id="tuiles" class="attend"></div>
+  <style>
+/* ============================================================
+   LE TEMPS QU'IL FAIT
+   Le même pour tout le port, tiré du jour. On le voit en
+   arrivant, avant même de choisir où aller.
+   ============================================================ */
+.temps{display:flex;align-items:center;gap:13px;width:100%;margin-bottom:13px;
+  padding:14px 16px;border-radius:18px;cursor:pointer;text-align:left;
+  background:var(--creme);border:3px solid var(--encre);
+  font-family:'Nunito',sans-serif}
+.temps:active{transform:scale(.99)}
+.temps .ic{flex:0 0 44px;height:44px;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;font-size:22px;
+  background:var(--or);border:2.5px solid var(--encre)}
+.temps .tx{flex:1;min-width:0}
+.temps .tx b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:19px;line-height:1.15}
+.temps .tx span{display:block;font-size:12px;font-weight:600;margin-top:3px;
+  color:rgba(18,48,63,.58);line-height:1.4}
+.temps .ef{flex:0 0 auto;display:flex;flex-direction:column;gap:4px;
+  align-items:flex-end}
+.temps .ef i{font-style:normal;font-size:10.5px;font-weight:800;
+  padding:4px 9px;border-radius:10px;white-space:nowrap;
+  background:rgba(18,48,63,.07);border:2px solid rgba(18,48,63,.14)}
+.temps .ef i.bon{background:rgba(47,138,92,.14);border-color:rgba(47,138,92,.3);
+  color:#1f6b45}
+.temps .ef i.dur{background:rgba(190,76,58,.13);border-color:rgba(190,76,58,.3);
+  color:#9a3a2c}
+/* les gros temps se voient de loin */
+.temps.orage,.temps.houle{background:#efe6dc}
+.temps.orage .ic{background:#6f7c8a;color:#fff}
+.temps.houle .ic{background:#7fa6b4}
+.temps.brume .ic{background:#d8d4c8}
+.temps.mistral .ic{background:#bcd4d8}
+.temps.grand_bleu .ic{background:#5fb6d4;color:#fff}
+</style>
+<div id="tuiles" class="attend"></div>
   <p class="pied attend" id="pied">Battle Dock — Marseille</p>
 </div>
 
@@ -485,6 +527,45 @@ let VECU = [];
 
 let hubEtat = {}, D = null;
 
+/* ============================================================
+   LE TEMPS QU'IL FAIT
+   Un bandeau en haut du pont : ce que le ciel fait aujourd'hui,
+   et ce que ça change pour toi. Tout le monde a le même.
+   ============================================================ */
+const SIGNES = { soleil:'☀️', vent:'🌬️', brume:'🌫️', houle:'🌊', orage:'⛈️' };
+
+async function poserLeTemps(){
+  let t;
+  try { t = await BD.agir('le_temps'); } catch(e){ return; }
+  if (!t || !t.ok) return;
+
+  const b = document.getElementById('temps');
+  b.className = 'temps venu ' + t.k;
+  b.style.display = 'flex';
+  document.getElementById('tp-ic').textContent = SIGNES[t.signe] || '☀️';
+  document.getElementById('tp-n').textContent = t.nom;
+  document.getElementById('tp-s').textContent = t.note;
+
+  /* deux chiffres, ceux qui changent ta journée */
+  const e = Math.round((t.energie - 1) * 100);
+  const p = Math.round((t.paie - 1) * 100);
+  let h = '';
+  if (e) h += '<i class="' + (e < 0 ? 'bon' : 'dur') + '">'
+    + (e > 0 ? '+' : '−') + Math.abs(e) + ' % en mer</i>';
+  if (p) h += '<i class="' + (p > 0 ? 'bon' : 'dur') + '">'
+    + (p > 0 ? '+' : '−') + Math.abs(p) + ' % payé</i>';
+  if (!e && !p) h = '<i>Rien à signaler</i>';
+  document.getElementById('tp-e').innerHTML = h;
+
+  /* d'une tape : ce qui vient demain */
+  b.onclick = () => {
+    const d = t.demain || {};
+    document.getElementById('tp-s').textContent =
+      'Demain : ' + (SIGNES[d.signe] || '') + ' ' + (d.nom || '—')
+      + '. Prépare ta cale en conséquence.';
+  };
+}
+
 /* une tuile est close si le lieu n'existe pas encore,
    ou si l'histoire ne t'y a pas encore mené */
 function close(t){
@@ -653,6 +734,9 @@ document.getElementById('ouv-ok').onclick = () => {
       if (st >= 1) hubEtat.fabrique = st;
       dessinerTuiles();
     }
+
+    /* le temps qu'il fait : le même pour tout le port */
+    poserLeTemps();
 
     /* ce que tu n'as pas encore lu, et le numéro de la dernière mise à jour */
     try {

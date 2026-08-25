@@ -101,6 +101,8 @@ body::before{background:linear-gradient(180deg,var(--h1) 0%,var(--h2) 26%,
 .nrj2 .sous{font-size:12px;font-weight:600;color:rgba(18,48,63,.56);margin-top:10px}
 /* ce que tes compétences t'épargnent : on le dit, sinon ça ne se voit pas */
 .nrj2 .sous .endur{color:var(--vert);font-weight:800}
+/* ce que le gros temps ajoute à la course */
+.nrj2 .sous .gros{color:#c05a44;font-weight:800}
 
 /* ---------- larguer ---------- */
 .largue{width:100%;padding:20px;border-radius:18px;cursor:pointer;
@@ -255,14 +257,29 @@ function poserCap(){
   /* ce que ton endurance t'épargne sur cette course */
   const plein = Number(CAP.energie_plein || cout);
   const gagne = Math.max(0, plein - cout);
+  /* ce que le ciel ajoute ou retire à la course, aujourd'hui */
+  const T = CAP.temps || {};
+  const calme = Number(CAP.energie_calme || cout);
+  const duTemps = cout - calme;
+  const SG = { soleil:'☀️', vent:'🌬️', brume:'🌫️', houle:'🌊', orage:'⛈️' };
+
   document.getElementById('n-sous').innerHTML = assez
     ? 'La traversée te prend ' + cout + " points. Il t'en restera "
       + Math.round(reste) + ' en arrivant.'
       + (gagne > 0
           ? ' <span class="endur">Ton endurance t\'en épargne '
             + gagne + '.</span>' : '')
+      + (duTemps
+          ? ' <span class="' + (duTemps > 0 ? 'gros' : 'endur') + '">'
+            + (SG[T.signe] || '') + ' ' + (T.nom || 'Le temps')
+            + (duTemps > 0 ? ' t\'en coûte ' + duTemps
+                           : ' t\'en épargne ' + (-duTemps)) + '.</span>'
+          : '')
     : 'Il te manque ' + Math.round(cout - nrj) + ' points — '
-      + Math.round(cout - nrj) + ' minutes de repos.';
+      + Math.round(cout - nrj) + ' minutes de repos.'
+      + (duTemps > 0
+          ? ' <span class="gros">' + (SG[T.signe] || '') + ' ' + (T.nom || '')
+            + ' alourdit la course de ' + duTemps + '.</span>' : '');
 
   const bt = document.getElementById('partir');
   bt.disabled = !assez;
