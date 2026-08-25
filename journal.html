@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f5a53a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Le journal de bord — Battle Dock</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chaud.css?v=2">
+<script>
+/* ---------- le ciel du port où l'on se trouve ---------- */
+(function(){
+  const C = { anse:['#f5a53a','#eeb455','#c9b978','#3f87a6','#2b6f92'],
+    barcelone:['#e8873f','#c9686a','#8a5f84','#3f5f82','#1c3350'],
+    palma:['#f6d97a','#e8b45c','#88b8a8','#2f92a4','#14566a'],
+    ajaccio:['#e8a8a0','#c98fa0','#8f8fa8','#3f7f92','#17475c'] };
+  let p = 'anse';
+  try { p = localStorage.getItem('bd-port') || 'anse'; } catch(e){}
+  const ci = C[p] || C.anse;
+  const R = document.documentElement.style;
+  ci.forEach((v, i) => R.setProperty('--h' + (i + 1), v));
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', ci[0]);
+})();
+
+/* le pied dit le port où l'on est */
+(function(){
+  const N = { anse:'Marseille', barcelone:'Barcelone',
+              palma:'Palma', ajaccio:'Ajaccio' };
+  let p = 'anse';
+  try { p = localStorage.getItem('bd-port') || 'anse'; } catch(e){}
+  const el = document.querySelector('.pied');
+  if (el) el.textContent = 'Battle Dock — ' + (N[p] || 'Marseille');
+})();
+</script>
+<style>
+/* on recouvre le dégradé commun de chaud.css */
+html{background:var(--h5,#2b6f92)}
+body::before{background:linear-gradient(180deg,
+  var(--h1,#f5a53a) 0%, var(--h2,#eeb455) 16%, var(--h3,#c9b978) 38%,
+  var(--h4,#3f87a6) 70%, var(--h5,#2b6f92) 100%)}
+</style>
+<style>
+/* ---------- une journée ----------
+   Le journal se lit par jour : une date, puis ce qui a changé ce
+   jour-là. On ne numérote pas les versions, on date les gestes. */
+.jour{display:flex;align-items:center;gap:11px;margin:22px 0 12px}
+.jour:first-child{margin-top:0}
+.jour b{font-family:'DM Serif Display',Georgia,serif;font-size:19px;
+  color:var(--creme);text-shadow:0 1px 0 rgba(18,48,63,.35)}
+.jour .tr{flex:1;height:3px;border-radius:3px;background:rgba(253,246,230,.3)}
+.jour .cpt{font-size:11px;font-weight:800;letter-spacing:.08em;
+  color:rgba(253,246,230,.72)}
+
+/* ---------- une nouvelle ---------- */
+.nv{position:relative;padding:15px 16px;margin-bottom:11px;border-radius:18px;
+  background:var(--creme);border:3px solid var(--encre)}
+.nv .l1{display:flex;align-items:flex-start;gap:11px;margin-bottom:8px}
+.nv .em{flex:0 0 40px;height:40px;border-radius:13px;display:flex;
+  align-items:center;justify-content:center;font-size:19px;
+  background:var(--or);border:2.5px solid var(--encre)}
+.nv .co{flex:1;min-width:0}
+.nv .co b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:19px;line-height:1.18}
+.nv .co .g{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:9px;
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(18,48,63,.08);border:2px solid rgba(18,48,63,.16)}
+.nv p{font-size:13.5px;font-weight:600;line-height:1.55;
+  color:rgba(18,48,63,.72)}
+.nv .ou{display:inline-flex;align-items:center;gap:6px;margin-top:11px;
+  padding:5px 11px;border-radius:10px;font-size:11.5px;font-weight:800;
+  background:rgba(18,48,63,.06);border:2px solid rgba(18,48,63,.14)}
+
+/* chaque genre a sa teinte : on voit d'un coup ce qui est neuf,
+   ce qui a été réglé, et ce qui était cassé */
+.nv.ajout .em{background:var(--or)}
+.nv.reglage{background:#f4f1e2}
+.nv.reglage .em{background:#cdd3c0}
+.nv.correction{background:#eaf6ee}
+.nv.correction .em{background:var(--vert);color:#fff}
+.nv.correction .co .g{background:rgba(47,138,92,.14);
+  border-color:rgba(47,138,92,.32);color:#1f6b45}
+
+/* ce que tu n'as pas encore lu */
+.nv.neuf{box-shadow:0 0 0 3px rgba(240,169,46,.55)}
+.nv.neuf .ban{position:absolute;top:-3px;right:-3px;padding:5px 12px;
+  border-radius:0 15px 0 14px;font-size:10px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;background:var(--or);border:3px solid var(--encre)}
+.nv.neuf .l1{padding-right:78px}
+</style>
+</head>
+<body>
+
+<div class="pont">
+  <div class="tete">
+    <span class="q"><b>Le journal de bord</b><span id="j-sous">—</span></span>
+    <button class="retour" id="retour">‹ Retour</button>
+  </div>
+  <div id="liste" class="attend"></div>
+  <p class="pied">Battle Dock — Marseille</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+function paraitre(){
+  const e = document.getElementById('liste');
+  if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
+}
+
+const GENRE = {
+  ajout:      { em:'✦', t:'Nouveau' },
+  reglage:    { em:'⚖', t:'Réglage' },
+  correction: { em:'✓', t:'Réparé' }
+};
+
+/* jusqu'où tu avais lu la dernière fois */
+const VU = 'bd-journal-vu';
+function dejaVu(){
+  try { return Number(localStorage.getItem(VU) || 0); } catch(e){ return 0; }
+}
+
+function leJour(iso){
+  const d = new Date(iso + 'T12:00:00');
+  const h = new Date();
+  const j = (a) => a.toISOString().slice(0, 10);
+  const hier = new Date(h.getTime() - 864e5);
+  if (iso === j(h)) return "Aujourd'hui";
+  if (iso === j(hier)) return 'Hier';
+  return d.toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+}
+
+function carte(n, neuf){
+  const g = GENRE[n.genre] || GENRE.ajout;
+  return '<div class="nv ' + n.genre + (neuf ? ' neuf' : '') + '">'
+    + (neuf ? '<span class="ban">À lire</span>' : '')
+    + '<div class="l1">'
+    +   '<span class="em">' + g.em + '</span>'
+    +   '<span class="co"><b>' + n.titre + '</b>'
+    +   '<span class="g">' + g.t + '</span></span>'
+    + '</div>'
+    + (n.texte ? '<p>' + n.texte + '</p>' : '')
+    + (n.ou ? '<span class="ou">⚓ ' + n.ou + '</span>' : '')
+    + '</div>';
+}
+
+(async () => {
+  const L = document.getElementById('liste');
+  try {
+    const c = await BD.client();
+    const { data, error } = await c.from('nouvelles')
+      .select('id, le_jour, genre, titre, texte, ou')
+      .order('le_jour', { ascending:false })
+      .order('id', { ascending:false })
+      .limit(120);
+    if (error) throw error;
+    const N = data || [];
+
+    if (!N.length){
+      document.getElementById('j-sous').textContent = 'Rien à signaler';
+      L.innerHTML = '<p class="rien">Le journal est vide pour le moment.</p>';
+      paraitre(); return;
+    }
+
+    const vu = dejaVu();
+    const neufs = N.filter(n => n.id > vu).length;
+    document.getElementById('j-sous').textContent = neufs
+      ? neufs + (neufs > 1 ? ' nouveautés' : ' nouveauté')
+      : N.length + ' entrées';
+
+    /* on regroupe par journée, dans l'ordre où c'est arrivé */
+    let h = '', jour = null;
+    N.forEach(n => {
+      if (n.le_jour !== jour){
+        jour = n.le_jour;
+        const combien = N.filter(x => x.le_jour === jour).length;
+        h += '<div class="jour"><b>' + leJour(jour) + '</b>'
+          + '<span class="tr"></span>'
+          + '<span class="cpt">' + combien + '</span></div>';
+      }
+      h += carte(n, n.id > vu);
+    });
+    L.innerHTML = h; paraitre();
+
+    /* lu : la prochaine visite ne signalera que ce qui est venu après */
+    try { localStorage.setItem(VU, String(Math.max(...N.map(n => n.id)))); } catch(e){}
+
+  } catch(e){
+    console.warn(e);
+    L.innerHTML = '<p class="rien">Le journal n\'a pas répondu.</p>'; paraitre();
+  }
+})();
+
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+</script>
+</body>
+</html>
