@@ -101,6 +101,20 @@ html,body{height:100%;overflow:hidden;background:#150e09;
    CE QU'ON FAIT DANS UNE TAVERNE
    Manger, laisser un mot, jouer. Trois blocs, même ardoise.
    ============================================================ */
+/* la barre du comptoir : ce qu'on a en poche, ce qu'il reste à faire */
+.bar{display:flex;gap:14px;margin-top:16px;padding:13px 15px;border-radius:9px;
+  background:rgba(24,20,16,.72);border:1.5px solid rgba(246,228,200,.14);
+  opacity:0;animation:venir .6s .3s forwards}
+.bar span{flex:1;min-width:0;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(246,228,200,.38)}
+.bar span+span{text-align:right}
+.bar span b{display:block;margin-top:5px;font-size:14px;letter-spacing:0;
+  text-transform:none;color:#f0c46a;font-weight:700}
+
+/* un titre de section peut porter un compte à droite */
+.tt.dx{display:flex;align-items:baseline;justify-content:space-between}
+.tt.dx em{font-style:normal;color:#8ce0a8;letter-spacing:.1em}
+
 .bl{background:rgba(24,20,16,.86);border:1.5px solid rgba(246,228,200,.16);
   border-radius:9px;overflow:hidden;box-shadow:0 8px 26px rgba(6,4,2,.5)}
 .bl .in{padding:15px 16px}
@@ -702,32 +716,15 @@ async function conclureRetour(quoi){
 
 function poser(r){
   LA = true; decor();
-  const C = r.cours || [];
-  let s = '<div class="dit">'
-    + '<p style="animation-delay:.1s">Elle te voit entrer et elle ne bouge pas. '
-    + 'Elle attend que tu arrives jusqu\'à elle.</p>'
-    + '<p class="parle" style="animation-delay:.7s">« Alors. Qu\'est-ce qui t\'amène ? »</p>'
-    + '<p style="animation-delay:1.3s">Tu demandes ce qui se vend en ce moment. '
-    + 'Elle essuie un verre, sans se presser.</p>'
-    + '<p class="parle" style="animation-delay:1.9s">'
-    + (r.lien >= 30
-       ? '« Approche. Je vais te dire exactement où ça en est. »'
-       : '« Je peux te dire ce que j\'entends. Le reste, tu le verras bien. »')
-    + '</p></div>';
-
-  s += '<p class="tt">Ce qui se dit au port</p><div class="ard">'
-    + C.map((c, i) => {
-        const [t, coul, note] = mot(+c.demande, +c.pression, c.precis);
-        return '<div class="li"><span class="nb">' + (i+1) + '</span>'
-          + '<span class="nm">' + c.nom + '</span>'
-          + '<span class="mo" style="color:' + coul + '">' + t
-          + (c.precis && note ? '<em>' + note + '</em>' : '') + '</span></div>';
-      }).join('') + '</div>';
+  AR = r.ardit;
+  /* une fois Ardit réglé, on ne rejoue plus la scène d'entrée :
+     on connaît la maison, on va droit au comptoir */
+  const chezSoi = AR && AR.etat === 'finie';
 
   /* elle est revenue de Majorque : elle a quelque chose à dire */
   if (r.revenue && !localStorage.getItem('bd-nuria-revenue')){
     try { localStorage.setItem('bd-nuria-revenue', '1'); } catch(e){}
-    s = '<div class="dit">'
+    document.getElementById('w').innerHTML = '<div class="dit">'
       + '<p style="animation-delay:.1s">La taverne a rouvert. Elle est derrière '
       + 'son comptoir comme si elle n\'était jamais partie.</p>'
       + '<p style="animation-delay:.7s">Elle te voit. Elle ne dit rien tout de suite.</p>'
@@ -739,39 +736,96 @@ function poser(r){
       + 'et elle va servir quelqu\'un d\'autre.</p></div>'
       + '<p class="mot" style="animation-delay:3.7s">Elle ne t\'a pas remercié. '
       + 'Elle n\'aura pas à le faire.</p>';
-    document.getElementById('w').innerHTML = s;
     return;
   }
 
-  /* selon où on en est avec Ardit */
-  AR = r.ardit;
-  if (!AR)
-    s += '<div class="choix" style="animation-delay:2.6s">'
-      + '<button id="parler"><b>« Tu as l\'air d\'avoir quelque chose à dire. »</b>'
-      + '<span class="s">Elle t\'a regardé deux fois depuis que tu es entré.</span>'
-      + '</button></div>';
-  else if (AR.etape === 2 && AR.etat !== 'finie')
-    s += '<div class="choix" style="animation-delay:2.6s">'
-      + '<button id="rendre"><b>« Je reviens de Majorque. »</b>'
-      + '<span class="s">Elle attend cette phrase depuis que tu es parti.</span>'
-      + '</button></div>';
-  else if (AR.etape === 1)
-    s += '<p class="mot">« Vous êtes encore là ? Il est à Majorque, pas dans ma salle. »</p>';
+  let s = '';
 
-  /* ce qu'on fait ici quand on ne vient pas pour les cours */
+  if (!chezSoi){
+    /* tant qu'on n'est pas de la maison : elle jauge, et elle parle des cours */
+    const C = r.cours || [];
+    s += '<div class="dit">'
+      + '<p style="animation-delay:.1s">Elle te voit entrer et elle ne bouge pas. '
+      + 'Elle attend que tu arrives jusqu\'à elle.</p>'
+      + '<p class="parle" style="animation-delay:.7s">« Alors. Qu\'est-ce qui t\'amène ? »</p>'
+      + '<p style="animation-delay:1.3s">Tu demandes ce qui se vend en ce moment. '
+      + 'Elle essuie un verre, sans se presser.</p>'
+      + '<p class="parle" style="animation-delay:1.9s">'
+      + (r.lien >= 30
+         ? '« Approche. Je vais te dire exactement où ça en est. »'
+         : '« Je peux te dire ce que j\'entends. Le reste, tu le verras bien. »')
+      + '</p></div>';
+
+    s += '<p class="tt">Ce qui se dit au port</p><div class="ard">'
+      + C.map((c, i) => {
+          const [t, coul, note] = mot(+c.demande, +c.pression, c.precis);
+          return '<div class="li"><span class="nb">' + (i+1) + '</span>'
+            + '<span class="nm">' + c.nom + '</span>'
+            + '<span class="mo" style="color:' + coul + '">' + t
+            + (c.precis && note ? '<em>' + note + '</em>' : '') + '</span></div>';
+        }).join('') + '</div>';
+
+    if (!AR)
+      s += '<div class="choix" style="animation-delay:2.6s">'
+        + '<button id="parler"><b>« Tu as l\'air d\'avoir quelque chose à dire. »</b>'
+        + '<span class="s">Elle t\'a regardé deux fois depuis que tu es entré.</span>'
+        + '</button></div>';
+    else if (AR.etape === 2 && AR.etat !== 'finie')
+      s += '<div class="choix" style="animation-delay:2.6s">'
+        + '<button id="rendre"><b>« Je reviens de Majorque. »</b>'
+        + '<span class="s">Elle attend cette phrase depuis que tu es parti.</span>'
+        + '</button></div>';
+    else if (AR.etape === 1)
+      s += '<p class="mot">« Vous êtes encore là ? Il est à Majorque, pas dans ma salle. »</p>';
+
+  } else {
+    /* de la maison : un signe de tête, et le comptoir */
+    s += comptoir(r);
+  }
+
   s += platBloc(r) + tableauBloc(r) + desBloc(r);
 
-  s += '<p class="mot">'
-    + (r.lien >= 30
-       ? 'Elle t\'en dit plus qu\'aux autres. Ça se mérite, et ça se garde.'
-       : 'Elle te jauge encore. Reviens souvent, elle finira par en dire davantage.')
-    + '</p>';
+  if (!chezSoi)
+    s += '<p class="mot">'
+      + (r.lien >= 30
+         ? 'Elle t\'en dit plus qu\'aux autres. Ça se mérite, et ça se garde.'
+         : 'Elle te jauge encore. Reviens souvent, elle finira par en dire davantage.')
+      + '</p>';
+
   document.getElementById('w').innerHTML = s;
   const p = document.getElementById('parler');
   if (p) p.onclick = poserArdit;
   const q = document.getElementById('rendre');
   if (q) q.onclick = poserRetour;
   brancher(r);
+}
+
+/* ============================================================
+   LE COMPTOIR
+   Quand la maison te connaît : pas de scène, pas de cours.
+   Un salut d'une ligne, ta bourse, et ce qu'il reste à faire.
+   ============================================================ */
+const SALUTS = [
+  'Elle lève le menton quand tu entres. C\'est tout, et c\'est déjà beaucoup.',
+  'Elle pousse un verre vers toi sans rien demander.',
+  'Elle t\'a vu de dos et elle a su que c\'était toi.',
+  'Elle continue sa phrase avec un autre, mais elle t\'a fait signe.',
+  'Elle te montre la chaise du bout, celle qui ne boite pas.'
+];
+
+function comptoir(r){
+  const j = (r.des || {}), p = (r.plat || {});
+  const reste = [];
+  if (!p.mange) reste.push('le plat');
+  if (r.mots_neufs) reste.push(r.mots_neufs + ' mot' + (r.mots_neufs > 1 ? 's' : ''));
+  if ((j.reste || 0) > 0) reste.push(j.reste + ' coup' + (j.reste > 1 ? 's' : ''));
+
+  const n = Math.floor(Date.now() / 864e5) % SALUTS.length;
+  return '<div class="dit"><p style="animation-delay:.1s">' + SALUTS[n] + '</p></div>'
+    + '<div class="bar">'
+    +   '<span>Ta bourse<b>' + eur(r.euros) + ' €</b></span>'
+    +   '<span>Il te reste<b>' + (reste.length ? reste.join(', ') : 'rien à faire') + '</b></span>'
+    + '</div>';
 }
 
 /* ============================================================
@@ -794,7 +848,9 @@ function ceQueCaFait(p){
 function platBloc(r){
   const p = r.plat; if (!p || !p.k) return '';
   const trop = !p.mange && r.euros < p.prix;
-  return '<p class="tt">Le plat du jour</p><div class="bl" id="bl-plat"><div class="in">'
+  return '<p class="tt dx">Le plat du jour'
+    + (p.mange ? '<em>servi</em>' : '') + '</p>'
+    + '<div class="bl" id="bl-plat"><div class="in">'
     + '<div class="hd"><b>' + p.nom + '</b><span class="px">' + eur(p.prix) + ' €</span></div>'
     + '<p class="no">' + p.note + '</p>'
     + '<div class="ef"><span>+' + p.energie + ' d\'énergie</span>'
@@ -818,6 +874,10 @@ async function manger(){
     p.className = 'fait';
     p.textContent = x.mot + ' (+' + x.gagne + ' d\'énergie)';
     bl.appendChild(p);
+    bourse(x.euros);
+    const t = document.querySelector('#bl-plat')
+      && document.querySelector('#bl-plat').previousElementSibling;
+    if (t && t.classList.contains('dx')) t.innerHTML = 'Le plat du jour<em>servi</em>';
     return;
   }
   const P = { deja_mange:'Tu as déjà mangé', trop_cher:'Tu n\'as pas de quoi',
@@ -839,7 +899,9 @@ function quand(iso){
 
 function tableauBloc(r){
   const M = r.mots || [], A = r.a_qui || [];
-  let h = '<p class="tt">Le tableau</p><div class="bl" id="bl-mots">';
+  let h = '<p class="tt dx">Le tableau'
+    + (r.mots_neufs ? '<em>' + r.mots_neufs + ' pour toi</em>' : '')
+    + '</p><div class="bl" id="bl-mots">';
   h += M.length
     ? M.map(m => '<div class="mt' + (m.neuf ? ' neuf' : '') + '">'
         + '<span class="qi">' + (m.de || '?')[0].toUpperCase() + '</span>'
@@ -872,6 +934,8 @@ async function poserMot(){
   const x = await BD.agir('poser_un_mot', { p_vers: q.value, p_texte: texte });
   if (x && x.ok){
     t.value = '';
+    const c = document.getElementById('cpt');
+    if (c) c.textContent = '180';
     b.textContent = 'Épinglé pour ' + x.a;
     setTimeout(() => { b.disabled = false; b.textContent = 'Épingler ce mot'; }, 2200);
     return;
@@ -893,7 +957,9 @@ const MISES = [20, 50, 100, 200];
 function desBloc(r){
   const j = r.des || { reste:3, gagne:0, perdu:0 };
   const net = (j.gagne || 0) - (j.perdu || 0);
-  return '<p class="tt">Les dés</p><div class="bl" id="bl-des"><div class="in">'
+  return '<p class="tt dx">Les dés'
+    + (j.reste > 0 ? '' : '<em style="color:rgba(246,228,200,.34)">demain</em>')
+    + '</p><div class="bl" id="bl-des"><div class="in">'
     + '<div class="hd"><b>Deux dés contre la maison</b>'
     + '<span class="px">' + j.reste + ' coup' + (j.reste > 1 ? 's' : '') + '</span></div>'
     + '<p class="no">Le plus fort emporte la mise. À égalité, Núria garde. '
@@ -936,8 +1002,17 @@ async function jeter(mise){
          : 'Elle prend tes ' + eur(x.mise) + ' € sans lever les yeux.')
     + ' — il te reste ' + x.reste + ' coup' + (x.reste > 1 ? 's' : '') + '</p>';
 
+  bourse(x.euros);
   z.querySelectorAll('button').forEach(b =>
     b.disabled = x.reste < 1 || x.euros < +b.dataset.m);
+  const t = document.querySelector('#bl-des').previousElementSibling;
+  if (t && x.reste < 1) t.innerHTML = 'Les dés<em style="color:rgba(246,228,200,.34)">demain</em>';
+}
+
+/* l'argent affiché au comptoir suit ce qui vient de se passer */
+function bourse(e){
+  const b = document.querySelector('.bar span b');
+  if (b && e !== undefined) b.textContent = eur(e) + ' €';
 }
 
 /* ---------- on branche tout ce petit monde ---------- */
