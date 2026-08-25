@@ -473,7 +473,8 @@ const TUILES = [
   { k:'classement', ou:'autres', em:'🏆', t:'Le classement', s:'Qui mène la danse',
     f:() => location.href = 'classement.html' },
   /* le journal de bord : ce qui a changé dans le jeu depuis ta dernière visite */
-  { k:'journal', ou:'autres', em:'📰', t:'Le journal de bord', s:'Ce qui a changé',
+  { k:'journal', ou:'autres', em:'📰', t:'Nouveautés ajoutées',
+    s:'Ce qui a changé dans le jeu',
     f:() => location.href = 'journal.html' }
 ];
 
@@ -653,14 +654,20 @@ document.getElementById('ouv-ok').onclick = () => {
       dessinerTuiles();
     }
 
-    /* ce que tu n'as pas encore lu du journal de bord */
+    /* ce que tu n'as pas encore lu, et le numéro de la dernière mise à jour */
     try {
       let vu = 0;
       try { vu = Number(localStorage.getItem('bd-journal-vu') || 0); } catch(e){}
       const c = await BD.client();
       const { count } = await c.from('nouvelles')
         .select('id', { count:'exact', head:true }).gt('id', vu);
-      if (count){ hubEtat.journal = count; dessinerTuiles(); }
+      const { data: der } = await c.from('nouvelles')
+        .select('maj').order('id', { ascending:false }).limit(1);
+      const t = TUILES.find(x => x.k === 'journal');
+      const n = der && der[0] && der[0].maj;
+      if (t && n) t.sv = count ? 'Maj ' + n + ' — ' + count + ' à lire' : 'Maj ' + n;
+      if (count) hubEtat.journal = count;
+      dessinerTuiles();
     } catch(e){}
   } catch(e){
     console.warn(e);

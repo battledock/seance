@@ -150,7 +150,7 @@ function carte(n, neuf){
   try {
     const c = await BD.client();
     const { data, error } = await c.from('nouvelles')
-      .select('id, le_jour, genre, titre, texte, ou')
+      .select('id, le_jour, genre, titre, texte, ou, maj')
       .order('le_jour', { ascending:false })
       .order('id', { ascending:false })
       .limit(120);
@@ -169,15 +169,16 @@ function carte(n, neuf){
       ? neufs + (neufs > 1 ? ' nouveautés' : ' nouveauté')
       : N.length + ' entrées';
 
-    /* on regroupe par journée, dans l'ordre où c'est arrivé */
-    let h = '', jour = null;
+    /* on regroupe par mise à jour : un numéro, une date, ce qu'elle apporte */
+    let h = '', maj = null;
     N.forEach(n => {
-      if (n.le_jour !== jour){
-        jour = n.le_jour;
-        const combien = N.filter(x => x.le_jour === jour).length;
-        h += '<div class="jour"><b>' + leJour(jour) + '</b>'
+      const m = n.maj || n.le_jour;
+      if (m !== maj){
+        maj = m;
+        const lot = N.filter(x => (x.maj || x.le_jour) === maj);
+        h += '<div class="jour"><b>Maj ' + (n.maj || '—') + '</b>'
           + '<span class="tr"></span>'
-          + '<span class="cpt">' + combien + '</span></div>';
+          + '<span class="cpt">' + leJour(n.le_jour) + ' — ' + lot.length + '</span></div>';
       }
       h += carte(n, n.id > vu);
     });
