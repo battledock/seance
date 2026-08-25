@@ -52,6 +52,11 @@ body::before{background:linear-gradient(180deg,
   font-size:24px;line-height:1.1;margin-top:5px}
 .lot .co p{font-size:12.5px;font-weight:600;line-height:1.55;
   color:rgba(18,48,63,.6);margin-top:8px}
+/* le lot cacheté : on dit franchement qu'on ne dit rien */
+.lot .co p.cache{display:flex;align-items:center;gap:8px;margin-top:11px;
+  padding:9px 12px;border-radius:12px;font-weight:800;color:#2c5b3c;
+  background:rgba(63,122,82,.1);border:2px solid rgba(63,122,82,.28)}
+.lot .co p.cache::before{content:'✦'}
 
 /* ---------- la mise ---------- */
 .mise{padding:17px 18px;border-radius:20px;margin-bottom:11px;
@@ -228,6 +233,18 @@ function objetSVG(k){
         fill="#e0cf9a" opacity=".4"/>
       <path d="M22 10l2-6 2 6z" fill="#8a7a48"/>`,
 
+    /* le lot cacheté : un carton plié, un cachet de cire, et rien d'autre */
+    sceau: `<path d="M10 8h28v24H10z" fill="#efe4c8"/>
+      <path d="M10 8h28v24H10z" fill="none" stroke="#c9bda0" stroke-width="1"/>
+      <path d="M24 8v24" stroke="#d8ccae" stroke-width="1.2"/>
+      <path d="M15 14h6M15 18h5M28 22h5M27 26h6" stroke="#c4b898" stroke-width="1.2"
+        stroke-linecap="round"/>
+      <circle cx="24" cy="20" r="6.4" fill="#3f7a52"/>
+      <circle cx="24" cy="20" r="6.4" fill="none" stroke="#2c5b3c" stroke-width=".9"/>
+      <path d="M24 16.6v6.8M21.4 20h5.2" stroke="#e8f0e6" stroke-width="1.5"
+        stroke-linecap="round"/>
+      <path d="M18 8a6 6 0 0 0 12 0" fill="#e0d4b4"/>`,
+
     carnet: `<path d="M9 7h28q2 0 2 2v22q0 2-2 2H9z" fill="#7a5c3a"/>
       <path d="M11 7h26v26H11z" fill="#e4d8bc"/>
       <path d="M11 7h26v26H11z" fill="none" stroke="#c4b494" stroke-width=".8"/>
@@ -313,7 +330,11 @@ function rendre(){
     + duree(C.reste_s) + '</span></div>'
     + '<div class="co"><span class="su2">' + (C.su || 'Au tréteau') + '</span>'
     + '<b>' + C.nom + '</b>'
-    + '<p>' + (C.note || '') + (C.detail ? ' ' + C.detail : '') + '</p></div></div>'
+    + '<p>' + (C.note || '') + (C.detail ? ' ' + C.detail : '') + '</p>'
+    + (C.mystere
+        ? '<p class="cache">Tu ne sauras ce que c\'est qu\'une fois le marteau tombé.</p>'
+        : '')
+    + '</div></div>'
 
     + '<div class="mise ' + (jeMene ? 'moi' : (C.qui ? 'repris' : '')) + '">'
     + '<div class="h"><span>' + (personne ? 'Mise à prix' : 'Enchère en cours')
