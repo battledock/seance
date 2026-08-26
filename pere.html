@@ -138,6 +138,8 @@ html,body{height:100%;overflow:hidden;background:#17110b;
 .navette{animation:passe 3.4s ease-in-out infinite}
 @keyframes passe{0%,100%{transform:translateX(0)}50%{transform:translateX(128px)}}
 /* le battant tasse la trame */
+/* le battant pivote sur un point de la scène, donné en clair dans
+   le SVG : il ne faut surtout pas le rapporter à sa propre boîte. */
 .battant{animation:tasse 3.4s ease-in-out infinite;transform-origin:50% 0}
 @keyframes tasse{0%,42%,100%{transform:rotate(0)}
   58%{transform:rotate(3.4deg)}72%{transform:rotate(0)}}

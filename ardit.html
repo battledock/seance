@@ -130,7 +130,8 @@ html,body{height:100%;overflow:hidden;background:#0c1830;
 /* ================= le décor ================= */
 .linge{animation:flotte 9s ease-in-out infinite}
 @keyframes flotte{0%,100%{transform:skewX(-2.4deg)}50%{transform:skewX(2.4deg)}}
-.platane{animation:souffle 15s ease-in-out infinite;transform-origin:50% 100%}
+.platane{animation:souffle 15s ease-in-out infinite;
+  transform-box:fill-box;transform-origin:50% 100%}
 @keyframes souffle{0%,100%{transform:rotate(-.26deg)}50%{transform:rotate(.26deg)}}
 .lampe{animation:veilleuse 6s ease-in-out infinite}
 @keyframes veilleuse{0%,100%{opacity:.86}48%{opacity:1}}

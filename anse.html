@@ -242,7 +242,8 @@ html,body{height:100%;overflow:hidden;background:#f4efe3;
 .o2{animation:v0 52s linear infinite}.o3{animation:v1 64s linear infinite}
 @keyframes v0{to{transform:translateX(50px)}}
 @keyframes v1{to{transform:translateX(-50px)}}
-.pin{animation:brise 15s ease-in-out infinite;transform-origin:50% 100%}
+.pin{animation:brise 15s ease-in-out infinite;
+  transform-box:fill-box;transform-origin:50% 100%}
 @keyframes brise{0%,100%{transform:rotate(-.4deg)}50%{transform:rotate(.4deg)}}
 .fumee{animation:monte 9s ease-in-out infinite}
 .vapeur{animation:monte 6s ease-in-out infinite}

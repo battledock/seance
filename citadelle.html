@@ -127,9 +127,18 @@ h2 em{font-style:normal;color:#c9a24a;letter-spacing:.1em}
   color:rgba(232,224,208,.5)}
 
 /* ---------- ce qui bouge dans le noir ---------- */
-.flamme{animation:vacille 1.9s ease-in-out infinite;transform-origin:50% 100%}
-@keyframes vacille{0%,100%{transform:scaleY(1) skewX(0)}
-  30%{transform:scaleY(1.1) skewX(-4deg)}60%{transform:scaleY(.94) skewX(3deg)}}
+/* La flamme est ancrée sur sa propre base, sinon elle pivote autour
+   d'un point de la scène et part en vrille. Elle s'étire, se pince,
+   penche à peine — elle ne se promène pas. */
+.flamme{animation:vacille 1.7s ease-in-out infinite;
+  transform-box:fill-box;transform-origin:50% 100%}
+@keyframes vacille{
+  0%,100%{transform:scale(1,1) rotate(0)}
+  22%{transform:scale(.94,1.08) rotate(-1.6deg)}
+  46%{transform:scale(1.05,.95) rotate(1.4deg)}
+  70%{transform:scale(.97,1.04) rotate(-.8deg)}}
+/* la seconde flamme, plus petite, ne suit pas exactement la première */
+.flamme + .flamme{animation-duration:1.15s;animation-delay:-.4s}
 .lueur{animation:pulse 2.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:.78}}
 .goutte2{animation:tombe3 3.4s linear infinite}
