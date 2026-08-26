@@ -71,6 +71,15 @@ html,body{height:100%;overflow:hidden;background:#0e1c2e}
 @keyframes rentre{from{transform:translateX(560px)}to{transform:translateX(-260px)}}
 @keyframes tangue{0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.4deg)}}
 
+/* la chèvre à bord : sa queue remue, sa clochette sonne au roulis */
+.queue{animation:remue 2.2s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:0 50%}
+@keyframes remue{0%,100%{transform:rotate(0)}50%{transform:rotate(-17deg)}}
+.cloche{animation:sonne 4.6s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:50% 0}
+@keyframes sonne{0%,100%{transform:rotate(0)}
+  46%{transform:rotate(12deg)}54%{transform:rotate(-9deg)}62%{transform:rotate(0)}}
+
 @media (prefers-reduced-motion:reduce){
   .vol,.cargo,.aile{animation:none}}
 
@@ -2434,6 +2443,36 @@ function barqueQ(n, route){
 /* le palier du joueur : 0 tant qu'on ne sait pas, et tant qu'il n'a rien */
 let NIVEAU_BARQUE = 0;
 
+/* ---------- Rosine à bord ----------
+   Quand la chèvre du cirque voyage avec toi, on la voit dans la
+   barque, dans tous les ports. */
+let CHEVRE = false;
+
+function rosineSurLePont(x, y, e){
+  const c = '#d8cfc0', f = '#3a2a22';
+  let s = `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${e.toFixed(4)})">`;
+  s += `<path d="M-20 -26 v26 M-9 -26 v27 M9 -26 v27 M20 -26 v26" stroke="${f}"
+    stroke-width="6" stroke-linecap="round"/>`;
+  s += `<ellipse cx="0" cy="-38" rx="30" ry="18" fill="${c}"/>`;
+  s += `<ellipse cx="-6" cy="-42" rx="21" ry="10" fill="#ffffff" opacity=".22"/>`;
+  s += `<path class="queue" d="M28 -44 l10 -8 l-2 9 z" fill="${c}"/>`;
+  s += `<path d="M-24 -44 q-14 -6 -20 -20 l12 -6 q8 12 16 16 z" fill="${c}"/>`;
+  s += `<ellipse cx="-46" cy="-70" rx="14" ry="10" fill="${c}"/>`;
+  s += `<ellipse cx="-58" cy="-64" rx="7" ry="6" fill="#efe6da"/>`;
+  s += `<circle cx="-61" cy="-65" r="1.8" fill="${f}"/>`;
+  s += `<path d="M-40 -78 q-10 -8 -18 -4 q8 6 16 8 z" fill="${c}"/>`;
+  s += `<path d="M-44 -80 q-6 -18 6 -24 q-4 10 0 22 M-36 -80 q-4 -16 8 -20
+    q-6 8 -2 18" stroke="${f}" stroke-width="4.4" fill="none" stroke-linecap="round"/>`;
+  s += `<ellipse cx="-50" cy="-73" rx="4.6" ry="4.2" fill="#efe6da"/>`;
+  s += `<circle cx="-50" cy="-73" r="2.6" fill="${f}"/>`;
+  s += `<path d="M-56 -56 q-2 10 2 14 q4 -6 3 -14 z" fill="${c}"/>`;
+  s += `<path d="M-34 -56 q10 6 20 2" stroke="#8a2420" stroke-width="3.4" fill="none"/>`;
+  s += `<g class="cloche"><path d="M-26 -50 q-4 8 4 10 q8 -2 4 -10 z" fill="#d4a03a"
+    stroke="#8a6a20" stroke-width="1.8"/>
+    <circle cx="-22" cy="-39" r="2.2" fill="#8a6a20"/></g>`;
+  return s + '</g>';
+}
+
 function barque(){
   /* pas de bateau : le mouillage reste vide */
   if (!NIVEAU_BARQUE) return '';
@@ -2448,7 +2487,8 @@ function barque(){
   const x = 202;
   return `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${k.toFixed(4)})">`
     + `<g class="barque" transform="translate(-150,-122)">`
-    + barqueQ(niveau, false) + `</g></g>`;
+    + barqueQ(niveau, false) + `</g>`
+    + (CHEVRE ? rosineSurLePont(-14, -8, .78) : '') + `</g>`;
 }
 
 
@@ -4437,6 +4477,7 @@ setTimeout(leverAube, 6000);
 (async () => {
   try {
     const d = await BD.charger();
+    if (d) CHEVRE = (d.cale || []).some(e => e && e.k === 'rosine');
     if (!d){ location.href = 'index.html'; return; }
     /* si le joueur n'a pas fini son inscription, on le renvoie où il en est */
     if (d.etape && d.etape !== 'jeu' && BD.PAGES[d.etape]){
