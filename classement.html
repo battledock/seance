@@ -65,6 +65,19 @@ body::before{background:linear-gradient(180deg,
 .mar.un .rg{background:var(--creme);width:34px;height:34px;margin-left:-17px;
   font-size:18px;top:-13px}
 .mar.un .cr{position:absolute;top:6px;right:9px;font-size:19px}
+/* ---------- capitaines et joueurs ----------
+   Un capitaine n'est pas quelqu'un : sa ligne est en retrait, son
+   avatar porte un liseré, et son nom le dit. On ne le déguise pas
+   en joueur — mais il tient sa place dans le classement. */
+.lg.cap{background:rgba(18,48,63,.035)}
+.lg.cap .co b{color:rgba(18,48,63,.72)}
+.co b em{font-style:normal;font-size:8px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:800;color:rgba(18,48,63,.42);border:1.5px solid rgba(18,48,63,.18);
+  border-radius:8px;padding:1px 6px;margin-left:7px;vertical-align:1px}
+.av.cap{box-shadow:0 0 0 2.5px #8aa0ac inset}
+.mar .cape{display:block;font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:800;color:rgba(18,48,63,.4);margin-top:2px}
+
 .lg{display:flex;align-items:center;gap:13px;padding:14px 16px;
   border-bottom:2px solid rgba(18,48,63,.1)}
 .lg:last-child{border-bottom:0}
@@ -255,9 +268,11 @@ function rendre(){
   }
 
   const rangMoi = (L.find(x => x.id === MOI) || {}).rang;
+  var vrais = TOUT.joueurs || L.length;
   document.getElementById('c-sous').textContent = rangMoi
     ? 'Tu es ' + rangMoi + (rangMoi === 1 ? 'er' : 'e') + ' sur ' + L.length
-    : L.length + ' dockers';
+      + ' — dont ' + vrais + ' joueur' + (vrais > 1 ? 's' : '')
+    : L.length + ' dockers, dont ' + vrais + ' joueur' + (vrais > 1 ? 's' : '');
 
   /* le podium : le premier au milieu */
   const T = L.slice(0, 3);
@@ -267,8 +282,10 @@ function rendre(){
         return '<div class="mar ' + cl + '">'
           + '<span class="rg">' + x.rang + '</span>'
           + (cl === 'un' ? '<span class="cr">' + COURONNE + '</span>' : '')
-          + '<span class="av">' + BD.avatarSVG(x) + '</span>'
+          + '<span class="av' + (x.capitaine ? ' cap' : '') + '">'
+          +   BD.avatarSVG(x) + '</span>'
           + '<span class="nm">' + x.pseudo + '</span>'
+          + (x.capitaine ? '<span class="cape">capitaine</span>' : '')
           + '<span class="eu">' + valeurDe(x) + '</span></div>';
       }).join('') + '</div>'
     : '';
@@ -277,10 +294,13 @@ function rendre(){
   suite.innerHTML = R.length
     ? '<p class="sec">' + (T.length >= 3 ? 'Et les autres' : 'Le classement') + '</p>'
       + '<div class="bloc">' + R.map(x =>
-        '<div class="lg' + (x.id === MOI ? ' moi' : '') + '">'
+        '<div class="lg' + (x.id === MOI ? ' moi' : '')
+        + (x.capitaine ? ' cap' : '') + '">'
         + '<span class="rg">' + x.rang + '</span>'
-        + '<span class="av">' + BD.avatarSVG(x) + '</span>'
-        + '<span class="co"><b>' + x.pseudo + '</b>'
+        + '<span class="av' + (x.capitaine ? ' cap' : '') + '">'
+        +   BD.avatarSVG(x) + '</span>'
+        + '<span class="co"><b>' + x.pseudo
+        +   (x.capitaine ? '<em>capitaine</em>' : '') + '</b>'
         + '<span>Niveau ' + x.niveau + ' · ' + (PORTS[x.port] || 'en mer') + '</span></span>'
         + '<span class="eu">' + valeurDe(x) + '</span></div>').join('') + '</div>'
     : '';
