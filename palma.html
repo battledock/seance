@@ -1243,12 +1243,23 @@ document.getElementById('voile').onclick = () => basculerContrats(false);
   /* le frère t'attend si tu as porté la lettre et que tu es niveau 4 */
   const suite = !aLettre && ardit && ardit.etape >= 2 && !pere && (d.niveau || 1) >= 4;
 
+  /* Ce qu'on se dit en débarquant. Une fois qu'on connaît la ville,
+     la phrase tourne selon le jour — le port n'est pas figé. */
+  const CHEZ_SOI = [
+    "Palma sent la laine mouillée et le pain chaud. On te reconnaît sur le quai.",
+    "La Seu prend le soleil du matin. Derrière, la ruelle t'attend.",
+    "Il y a du monde au port aujourd'hui. Les paniers remontent pleins.",
+    "Le vent de terre descend des moulins. Il sent l'amande.",
+    "Un gamin te fait signe. Il croit que tu es quelqu'un d'important."
+  ];
+  const n = Math.floor(Date.now() / 864e5) % CHEZ_SOI.length;
+
   document.getElementById('d-t').textContent =
     aLettre
       ? "La cathédrale te regarde arriver. Quelque part derrière, il y a un homme "
         + "qui ne t'attend pas."
       : pere
-        ? "Tu connais le chemin de la ruelle, maintenant. Il y a du drap qui t'attend."
+        ? CHEZ_SOI[n]
         : suite
           ? "La maison derrière la Seu. Tu ne sais pas s'il y a encore quelqu'un dedans."
           : "Le port sent la résine et le poisson. Personne ne fait attention à toi.";
