@@ -439,6 +439,11 @@ const TUILES = [
   { k:'chantier', ou:'lieu', ici:'anse', em:'🔨', t:'Le chantier',
     s:'Toussaint et ta barque', teinte:'chantier',
     f:() => location.href = 'chantier.html' },
+  /* elle n'apparaît que si tu portes une chèvre : personne d'autre
+     n'a de raison d'aller voir le vétérinaire du port */
+  { k:'veto', ou:'attend', ici:'anse', em:'🩺', t:'Le vétérinaire',
+    s:'Il faut lui montrer la chèvre', si:'chevre_a_bord',
+    f:() => location.href = 'cirque-veto.html' },
 
   /* ---- Barcelone ---- */
   { k:'chargement', ou:'attend', ici:'barcelone', em:'🏷️', t:'Le chargement',
@@ -477,8 +482,9 @@ const TUILES = [
   { k:'chargement_ajaccio', ou:'attend', ici:'ajaccio', em:'🏷️', t:'Le chargement',
     s:'Ce que la Corse envoie sur le continent',
     f:() => location.href = 'contrats.html' },
-  { k:'ville_ajaccio', ou:'lieu', ici:'ajaccio', em:'🏘️', t:'La ville',
-    s:'Personne ne te connaît encore ici.', ferme:true },
+  { k:'ville_ajaccio', ou:'lieu', ici:'ajaccio', em:'🎪', t:'La ville',
+    s:'Un chapiteau sur la place, qui ne repart pas',
+    f:() => location.href = 'cirque.html' },
   { k:'citadelle', ou:'lieu', ici:'ajaccio', em:'🏰', t:'La citadelle',
     s:'On n\'y monte pas. Pas encore.', ferme:true },
 
@@ -653,6 +659,9 @@ document.getElementById('ouv-ok').onclick = () => {
       const attendu = ardit && ardit.etape >= 2 && !pere && (d.niveau || 1) >= 4;
       if (aLettre || pere || attendu) VECU.push('palma_pere');
       if (pere) VECU.push('pere');
+      /* une chèvre dans la cale ouvre la porte du vétérinaire */
+      if ((d.cale || []).some(e => e && e.k === 'rosine'))
+        VECU.push('chevre_a_bord');
       PALMA = { aLettre: aLettre, pere: !!pere };
     }
     document.getElementById('rade-t').textContent = RADE[PORT] || RADE.anse;

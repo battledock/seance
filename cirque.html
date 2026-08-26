@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2a1420" id="tc">
+<title>Battle Dock — Le cirque</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   LE CIRQUE BATTAGLINI — Ajaccio
+   Rouge et or, une toile qui s'affaisse, des ampoules qui ne
+   marchent pas toutes. Le luxe fatigué d'une troupe qui n'est
+   jamais repartie.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{min-height:100%;background:#2a1420;color:#f6e6d8;
+  font-family:'Nunito',system-ui,sans-serif}
+
+#sc{position:fixed;left:0;right:0;top:0;height:42%;overflow:hidden;
+  opacity:0;transition:opacity .6s}
+#sc.pret{opacity:1}
+#sc svg{display:block;width:100%;height:100%}
+#sc::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(42,20,32,.2) 0,rgba(42,20,32,0) 32%,
+    rgba(42,20,32,.76) 82%,rgba(42,20,32,1) 100%)}
+
+.tete{position:fixed;left:0;right:0;top:0;z-index:8;display:flex;align-items:center;
+  gap:10px;padding:calc(env(safe-area-inset-top) + 14px) 14px 0}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:11px;cursor:pointer;
+  border:3px solid #f6e6d8;background:rgba(42,20,32,.5);display:flex;
+  align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.tete .ret svg{width:17px;height:17px;stroke:#f6e6d8;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou{flex:1;min-width:0}
+.tete .ou b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px;
+  line-height:1.1;text-shadow:0 2px 12px rgba(20,6,14,.7)}
+.tete .ou span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(246,230,216,.6);font-weight:800;margin-top:3px}
+
+.w{position:fixed;left:0;right:0;top:37%;bottom:0;z-index:5;overflow-y:auto;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 28px)}
+.w::-webkit-scrollbar{display:none}
+
+/* ---------- ce qui se dit ---------- */
+.dit{padding-top:16px;display:flex;flex-direction:column;gap:13px}
+.dit p{font-size:15px;line-height:1.72;color:rgba(246,230,216,.86);
+  opacity:0;transform:translateY(8px);animation:venir .55s forwards}
+.dit p.parle{color:#fff;font-size:16px;padding-left:14px;
+  border-left:3px solid #d4a03a}
+.dit p.mamma{color:#e8c8a8;font-style:italic;padding-left:14px;
+  border-left:3px solid rgba(246,230,216,.3)}
+@keyframes venir{to{opacity:1;transform:none}}
+
+h2{font-size:9px;letter-spacing:.22em;text-transform:uppercase;font-weight:900;
+  color:rgba(246,230,216,.42);margin:24px 2px 11px;
+  display:flex;justify-content:space-between;align-items:baseline}
+h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
+
+/* ---------- les choix ---------- */
+.choix{display:flex;flex-direction:column;gap:9px}
+.choix button{width:100%;text-align:left;padding:15px 16px;border-radius:13px;
+  cursor:pointer;font-family:inherit;
+  border:2.5px solid rgba(246,230,216,.24);background:rgba(70,26,44,.6);
+  transition:transform .13s,border-color .2s}
+.choix button:active{transform:scale(.987)}
+.choix button:disabled{opacity:.45;cursor:default}
+.choix button b{display:block;font-size:15px;color:#f6e6d8;font-weight:700;
+  line-height:1.4}
+.choix button span{display:block;font-size:12px;color:rgba(246,230,216,.5);
+  margin-top:6px;line-height:1.55}
+.choix button.vif{border-color:#d4a03a;background:rgba(120,58,20,.5)}
+
+.go{width:100%;padding:15px;border-radius:13px;cursor:pointer;margin-top:6px;
+  border:3px solid #2a1420;background:#d4a03a;color:#2a1420;
+  font-family:inherit;font-size:16px;font-weight:900}
+.go:disabled{background:rgba(246,230,216,.14);color:rgba(246,230,216,.4);
+  border-color:transparent;cursor:default}
+.go:active:not(:disabled){transform:translateY(2px)}
+
+/* ---------- la troupe ---------- */
+.gens{display:flex;flex-direction:column;gap:9px}
+.p{display:flex;gap:12px;padding:13px 14px;border-radius:13px;
+  background:rgba(70,26,44,.5);border:2px solid rgba(246,230,216,.14)}
+.p .f{flex:0 0 44px;height:44px;border-radius:11px;overflow:hidden;
+  background:#3e1c2e;border:2px solid rgba(246,230,216,.24)}
+.p .f svg{display:block;width:100%;height:100%}
+.p .t{flex:1;min-width:0}
+.p .t b{display:block;font-size:14.5px}
+.p .t i{display:block;font-style:normal;font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:#d4a03a;font-weight:800;margin-top:2px}
+.p .t span{display:block;font-size:12px;color:rgba(246,230,216,.55);margin-top:6px;
+  line-height:1.55}
+
+/* ---------- les cinq chèvres ---------- */
+.rang{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.ch{border-radius:11px;overflow:hidden;cursor:pointer;background:#3e1c2e;
+  border:2.5px solid rgba(246,230,216,.2);transition:transform .13s,border-color .2s}
+.ch:active{transform:scale(.95)}
+.ch.regardee{border-color:#d4a03a;box-shadow:0 0 0 3px rgba(212,160,58,.25)}
+.ch.non{opacity:.35}
+.ch svg{display:block;width:100%;height:auto}
+.ch b{display:block;text-align:center;font-size:11px;padding:4px 0 6px;
+  color:rgba(246,230,216,.6);font-weight:800}
+
+.mot{font-size:12.5px;line-height:1.7;color:rgba(246,230,216,.45);margin-top:18px;
+  text-align:center;padding:0 6px}
+.fait{padding:14px 16px;border-radius:13px;background:rgba(46,74,46,.5);
+  border:2px solid rgba(140,224,168,.34);font-size:13.5px;line-height:1.65;
+  color:#bfe8c8}
+.rien{padding:24px 16px;text-align:center;font-size:13px;line-height:1.7;
+  color:rgba(246,230,216,.5)}
+
+/* ---------- ce qui bouge sous la toile ---------- */
+.ampoule{animation:clignote 4s ease-in-out infinite}
+.a1{animation-delay:-1.2s} .a2{animation-delay:-2.6s} .a3{animation-delay:-3.4s}
+.a4{animation-duration:6s} .a5{animation-delay:-.6s;animation-duration:5s}
+@keyframes clignote{0%,100%{opacity:1}44%{opacity:1}48%{opacity:.35}52%{opacity:1}}
+.fanion{animation:flotte 3.6s ease-in-out infinite;transform-origin:top left}
+.f2{animation-delay:-1.1s} .f3{animation-delay:-2.2s} .f4{animation-delay:-.5s}
+@keyframes flotte{0%,100%{transform:rotate(0)}50%{transform:rotate(4deg)}}
+.fumee{animation:monte 9s ease-out infinite}
+@keyframes monte{0%{transform:translate(0,0);opacity:0}
+  20%{opacity:.4}100%{transform:translate(14px,-70px);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+#charge{position:fixed;inset:0;z-index:90;background:#2a1420;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  transition:opacity .45s}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-family:'DM Serif Display',Georgia,serif;font-size:22px;color:#d4a03a;
+  letter-spacing:.06em}
+#charge .fl{width:110px;height:3px;border-radius:2px;background:rgba(212,160,58,.2);
+  overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;background:#d4a03a;
+  animation:va 1.15s ease-in-out infinite}
+@keyframes va{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+</style>
+</head>
+<body>
+
+<div id="charge"><div class="ti">LE CIRQUE</div><div class="fl"><i></i></div></div>
+
+<div id="sc"></div>
+
+<div class="tete">
+  <button class="ret" id="ret" aria-label="Retour">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="ou"><b>Le cirque Battaglini</b><span>La place — Ajaccio</span></span>
+</div>
+
+<div class="w" id="w"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+function rnd(s){ var x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); }
+
+/* ============================================================
+   LE DÉCOR — le chapiteau, un soir
+   ============================================================ */
+function chapiteau(){
+  var W = 480, H = 620;
+  var s = '<defs>'
+    + '<linearGradient id="c-ciel" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0%" stop-color="#1e1030"/>'
+    +   '<stop offset="52%" stop-color="#4a2038"/>'
+    +   '<stop offset="100%" stop-color="#8a4030"/></linearGradient>'
+    + '<radialGradient id="c-halo" cx="0.5" cy="0.5">'
+    +   '<stop offset="0%" stop-color="#ffd88a" stop-opacity=".5"/>'
+    +   '<stop offset="100%" stop-color="#ffd88a" stop-opacity="0"/></radialGradient>'
+    + '</defs>';
+
+  s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="url(#c-ciel)"/>';
+
+  /* quelques étoiles, du côté sombre */
+  for (var e = 0; e < 26; e++)
+    s += '<circle cx="' + (rnd(e * 3) * W).toFixed(0) + '" cy="'
+      + (rnd(e * 7) * 210).toFixed(0) + '" r="' + (0.8 + rnd(e) * 1.2).toFixed(1)
+      + '" fill="#fff4d8" opacity="' + (.2 + rnd(e * 5) * .5).toFixed(2) + '"/>';
+
+  /* les toits de la ville, derrière */
+  for (var t = 0; t < 40; t++){
+    var tx = -10 + t * 13, th = 26 + rnd(t * 3) * 44;
+    s += '<rect x="' + tx.toFixed(0) + '" y="' + (438 - th).toFixed(0) + '" width="'
+      + (12 + rnd(t) * 5).toFixed(0) + '" height="' + (th + 40).toFixed(0) + '" fill="'
+      + ['#3a2030','#472838','#2e1a28'][t % 3] + '" opacity=".9"/>';
+    /* une fenêtre éclairée de temps en temps */
+    if (rnd(t * 11) > .68)
+      s += '<rect x="' + (tx + 4).toFixed(0) + '" y="' + (452 - th).toFixed(0)
+        + '" width="5" height="7" fill="#ffcf78" opacity=".75"/>';
+  }
+
+  /* ---------- le chapiteau ---------- */
+  var cx = 240, base = 470, haut = 168, larg = 208;
+
+  /* le halo des ampoules autour */
+  s += '<ellipse cx="' + cx + '" cy="' + (base - 90) + '" rx="250" ry="180"'
+    + ' fill="url(#c-halo)"/>';
+
+  /* le mât et son fanion */
+  s += '<path d="M' + cx + ' ' + haut + ' v-38" stroke="#6d4028" stroke-width="5"/>';
+  s += '<path class="fanion" d="M' + cx + ' ' + (haut - 38) + ' l34 11 l-34 11 z"'
+    + ' fill="#d4a03a" stroke="#3e1c2e" stroke-width="2.4"/>';
+
+  /* la toile : des fuseaux rouges et crème, un peu affaissés */
+  for (var q = 0; q < 8; q++){
+    var a1 = -Math.PI / 2 + (q - 4) * .2, a2 = -Math.PI / 2 + (q - 3) * .2;
+    var x1 = cx + Math.cos(a1) * larg, x2 = cx + Math.cos(a2) * larg;
+    /* le bord du bas ondule : la toile pend entre les mâts */
+    var creux = 16 + Math.abs(q - 3.5) * 3;
+    s += '<path d="M' + cx + ' ' + haut
+      + ' Q' + ((cx + x1) / 2).toFixed(0) + ' ' + (haut + 120)
+      + ' ' + x1.toFixed(0) + ' ' + base
+      + ' q' + ((x2 - x1) / 2).toFixed(0) + ' ' + creux + ' ' + (x2 - x1).toFixed(0) + ' 0'
+      + ' Q' + ((cx + x2) / 2).toFixed(0) + ' ' + (haut + 120) + ' ' + cx + ' ' + haut
+      + ' Z" fill="' + (q % 2 ? '#c9302c' : '#f2e2c4') + '"/>';
+  }
+  /* la couture du sommet */
+  s += '<ellipse cx="' + cx + '" cy="' + haut + '" rx="16" ry="7" fill="#8a2420"/>';
+
+  /* le galon d'or, en festons */
+  var fest = 'M' + (cx - larg) + ' ' + base;
+  for (var f = 0; f < 8; f++){
+    var xa = cx - larg + f * (larg * 2 / 8);
+    fest += ' q' + (larg / 8).toFixed(0) + ' 20 ' + (larg * 2 / 8).toFixed(0) + ' 0';
+  }
+  s += '<path d="' + fest + '" stroke="#d4a03a" stroke-width="6" fill="none"/>';
+
+  /* les ampoules du pourtour, dont certaines lâchent */
+  for (var b = 0; b < 15; b++){
+    var bx = cx - larg + 8 + b * ((larg * 2 - 16) / 14);
+    var by = base + 12 + Math.sin(b / 14 * Math.PI * 8) * 6;
+    s += '<circle class="ampoule a' + (b % 6) + '" cx="' + bx.toFixed(0) + '" cy="'
+      + by.toFixed(0) + '" r="4.6" fill="' + (b === 4 || b === 11 ? '#6d5a3a' : '#ffe08a')
+      + '"/>';
+    if (b !== 4 && b !== 11)
+      s += '<circle class="ampoule a' + (b % 6) + '" cx="' + bx.toFixed(0) + '" cy="'
+        + by.toFixed(0) + '" r="11" fill="#ffe08a" opacity=".2"/>';
+  }
+
+  /* l'entrée : deux pans écartés, et le noir dedans */
+  s += '<path d="M' + (cx - 46) + ' ' + base + ' v-96 q46 -30 92 0 v96 z" fill="#20101c"/>';
+  s += '<path d="M' + (cx - 46) + ' ' + base + ' v-96 q-22 -6 -34 6 l6 90 z"'
+    + ' fill="#c9302c"/>';
+  s += '<path d="M' + (cx + 46) + ' ' + base + ' v-96 q22 -6 34 6 l-6 90 z"'
+    + ' fill="#a82420"/>';
+  /* la lumière qui sort de l'entrée */
+  s += '<path d="M' + (cx - 40) + ' ' + base + ' l14 -70 h52 l14 70 z"'
+    + ' fill="#ffcf78" opacity=".2"/>';
+
+  /* l'enseigne */
+  s += '<rect x="' + (cx - 92) + '" y="' + (base - 148) + '" width="184" height="40"'
+    + ' rx="8" fill="#3e1c2e" stroke="#d4a03a" stroke-width="3.4"/>';
+  s += '<text x="' + cx + '" y="' + (base - 120) + '" text-anchor="middle"'
+    + ' font-family="Georgia,serif" font-size="22" fill="#d4a03a"'
+    + ' letter-spacing="2">BATTAGLINI</text>';
+
+  /* ---------- la place, devant ---------- */
+  s += '<rect x="0" y="' + base + '" width="' + W + '" height="' + (H - base)
+    + '" fill="#4a3028"/>';
+  for (var p = 0; p < 90; p++)
+    s += '<ellipse cx="' + (rnd(p * 3) * W).toFixed(0) + '" cy="'
+      + (base + 6 + rnd(p * 7) * (H - base)).toFixed(0) + '" rx="'
+      + (3 + rnd(p) * 7).toFixed(0) + '" ry="' + (1.6 + rnd(p * 5) * 2.6).toFixed(0)
+      + '" fill="' + ['#54382e','#3e2822','#5e4034'][p % 3] + '" opacity=".7"/>';
+
+  /* la roulotte, à gauche */
+  s += '<g>';
+  s += '<rect x="14" y="' + (base - 74) + '" width="104" height="66" rx="6"'
+    + ' fill="#2e5a4a" stroke="#1a2e26" stroke-width="3"/>';
+  s += '<path d="M8 ' + (base - 74) + ' h116 l-10 -16 h-96 z" fill="#c9302c"/>';
+  for (var w = 0; w < 3; w++)
+    s += '<rect x="' + (26 + w * 30) + '" y="' + (base - 62) + '" width="20" height="22"'
+      + ' rx="3" fill="#ffcf78" opacity="' + (w === 1 ? '.85' : '.3') + '"/>';
+  s += '<circle cx="40" cy="' + (base - 4) + '" r="13" fill="#3e2820"'
+    + ' stroke="#6d4a30" stroke-width="3"/>';
+  s += '<circle cx="96" cy="' + (base - 4) + '" r="13" fill="#3e2820"'
+    + ' stroke="#6d4a30" stroke-width="3"/>';
+  /* la cheminée et sa fumée */
+  s += '<rect x="94" y="' + (base - 104) + '" width="12" height="22" fill="#4a3028"/>';
+  for (var m = 0; m < 3; m++)
+    s += '<circle class="fumee" cx="100" cy="' + (base - 108) + '" r="'
+      + (5 + m * 2) + '" fill="#e8d8c8" opacity=".3"'
+      + ' style="animation-delay:-' + (m * 3) + 's"/>';
+  s += '</g>';
+
+  /* les fanions tendus entre la roulotte et le chapiteau */
+  for (var g = 0; g < 6; g++){
+    var gx = 120 + g * 20, gy = base - 108 + Math.sin(g / 5 * Math.PI) * 12;
+    s += '<path class="fanion f' + (g % 4) + '" d="M' + gx + ' ' + gy.toFixed(0)
+      + ' l13 0 l-6.5 15 z" fill="' + ['#d4a03a','#c9302c','#2e5a4a'][g % 3] + '"/>';
+  }
+
+  /* Rosine, attachée à un piquet, qui mange quelque chose */
+  s += chevre(392, base - 6, 1.15, '#d8cfc0');
+  s += '<path d="M370 ' + (base - 4) + ' v-26" stroke="#6d4a30" stroke-width="4"/>';
+  s += '<path d="M370 ' + (base - 26) + ' q12 8 18 -2" stroke="#8a7050"'
+    + ' stroke-width="2" fill="none"/>';
+
+  return s;
+}
+
+/* ---------- une chèvre ----------
+   robe, cornes, œil et clochette varient : c'est ce qui permet
+   de les distinguer au concours. */
+function chevre(x, y, e, robe, cornes, oeil, clochette){
+  var c = robe || '#d8cfc0';
+  var f = '#3a2a22';
+  var s = '<g transform="translate(' + x + ',' + y + ') scale(' + (e || 1) + ')">';
+
+  /* l'ombre */
+  s += '<ellipse cx="0" cy="2" rx="34" ry="6" fill="#20101c" opacity=".3"/>';
+  /* les pattes */
+  [[-20,0],[-9,1],[9,1],[20,0]].forEach(function(p){
+    s += '<path d="M' + p[0] + ' -26 v' + (24 + p[1]) + '" stroke="' + f
+      + '" stroke-width="5" stroke-linecap="round"/>';
+    s += '<path d="M' + p[0] + ' ' + (-2 + p[1]) + ' h4" stroke="#1e1410"'
+      + ' stroke-width="5" stroke-linecap="round"/>';
+  });
+  /* le corps */
+  s += '<ellipse cx="0" cy="-38" rx="30" ry="18" fill="' + c + '"/>';
+  s += '<ellipse cx="-6" cy="-42" rx="22" ry="11" fill="#ffffff" opacity=".22"/>';
+  /* la queue, relevée */
+  s += '<path d="M28 -44 l10 -8 l-2 9 z" fill="' + c + '"/>';
+  /* le cou et la tête */
+  s += '<path d="M-24 -44 q-14 -6 -20 -20 l12 -6 q8 12 16 16 z" fill="' + c + '"/>';
+  s += '<ellipse cx="-46" cy="-70" rx="14" ry="10" fill="' + c + '"/>';
+  /* le museau */
+  s += '<ellipse cx="-58" cy="-64" rx="7" ry="6" fill="#efe6da"/>';
+  s += '<circle cx="-61" cy="-65" r="1.6" fill="' + f + '"/>';
+  /* l'oreille tombante */
+  s += '<path d="M-40 -78 q-10 -8 -18 -4 q8 6 16 8 z" fill="' + c + '"/>';
+  s += '<path d="M-40 -78 q-10 -8 -18 -4 q8 6 16 8 z" fill="#00000018"/>';
+
+  /* les cornes : droites, recourbées, ou pas de cornes */
+  var k = cornes === undefined ? 1 : cornes;
+  if (k === 0)
+    s += '<path d="M-44 -80 q-2 -16 4 -22 M-36 -80 q0 -16 6 -20" stroke="' + f
+      + '" stroke-width="4" fill="none" stroke-linecap="round"/>';
+  if (k === 1)
+    s += '<path d="M-44 -80 q-6 -18 6 -24 q-4 10 0 22 M-36 -80 q-4 -16 8 -20'
+      + ' q-6 8 -2 18" stroke="' + f + '" stroke-width="4" fill="none"'
+      + ' stroke-linecap="round"/>';
+
+  /* l'œil : rond, mi-clos, ou fermé */
+  var o = oeil === undefined ? 0 : oeil;
+  if (o === 0){
+    s += '<ellipse cx="-50" cy="-73" rx="4" ry="3.4" fill="#efe6da"/>';
+    s += '<rect x="-52" y="-74.4" width="4" height="2.6" rx="1.3" fill="' + f + '"/>';
+  } else if (o === 1){
+    s += '<path d="M-54 -73 q4 -3 8 0" stroke="' + f + '" stroke-width="2.6"'
+      + ' fill="none" stroke-linecap="round"/>';
+  } else {
+    s += '<ellipse cx="-50" cy="-73" rx="4.4" ry="4" fill="#efe6da"/>';
+    s += '<circle cx="-50" cy="-73" r="2.4" fill="' + f + '"/>';
+  }
+
+  /* la barbiche */
+  s += '<path d="M-56 -56 q-2 10 2 14 q4 -6 3 -14 z" fill="' + c + '"/>';
+
+  /* la clochette, pour celles qui en portent une */
+  if (clochette){
+    s += '<path d="M-34 -56 q10 6 20 2" stroke="#8a2420" stroke-width="3" fill="none"/>';
+    s += '<path d="M-26 -50 q-4 8 4 10 q8 -2 4 -10 z" fill="#d4a03a"'
+      + ' stroke="#8a6a20" stroke-width="1.6"/>';
+    s += '<circle cx="-22" cy="-39" r="2" fill="#8a6a20"/>';
+  }
+  return s + '</g>';
+}
+
+/* ---------- les portraits de la troupe ---------- */
+function portrait(k){
+  var s = '<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">';
+  s += '<rect width="60" height="60" fill="#3e1c2e"/>';
+  if (k === 'don'){
+    /* costume, nœud papillon, et le nez rouge */
+    s += '<path d="M8 60 q4 -22 22 -24 q18 2 22 24 z" fill="#241820"/>';
+    s += '<path d="M22 40 h16 l-8 20 z" fill="#f2e8dc"/>';
+    s += '<path d="M30 44 l-7 -4 v8 z M30 44 l7 -4 v8 z" fill="#c9302c"/>';
+    s += '<ellipse cx="30" cy="26" rx="15" ry="17" fill="#c9925e"/>';
+    s += '<path d="M15 22 q0 -16 15 -16 q15 0 15 16 q-4 -9 -15 -9 q-11 0 -15 9 z"'
+      + ' fill="#2e2028"/>';
+    s += '<circle cx="24" cy="26" r="2.4" fill="#241820"/>';
+    s += '<circle cx="36" cy="26" r="2.4" fill="#241820"/>';
+    s += '<path d="M22 20 q4 -3 8 -1 M32 19 q4 -2 8 1" stroke="#2e2028"'
+      + ' stroke-width="2.4" fill="none" stroke-linecap="round"/>';
+    /* la moustache et le nez rouge */
+    s += '<path d="M22 35 q8 -4 16 0 q-4 4 -8 4 q-4 0 -8 -4 z" fill="#2e2028"/>';
+    s += '<circle cx="30" cy="31" r="5" fill="#e0352c" stroke="#8a2420" stroke-width="1.6"/>';
+  }
+  if (k === 'mamma'){
+    s += '<path d="M6 60 q6 -20 24 -22 q18 2 24 22 z" fill="#2a1a24"/>';
+    s += '<ellipse cx="30" cy="28" rx="14" ry="16" fill="#c9a88e"/>';
+    /* le fichu noir */
+    s += '<path d="M14 26 q2 -18 16 -18 q14 0 16 18 q-2 -8 -16 -8 q-14 0 -16 8 z"'
+      + ' fill="#1a1218"/>';
+    s += '<path d="M14 26 q-4 20 6 30 h20 q10 -10 6 -30 q-4 12 -16 12 q-12 0 -16 -12 z"'
+      + ' fill="#1a1218"/>';
+    /* les yeux, très petits, très attentifs */
+    s += '<path d="M22 28 q3 -2 6 0 M32 28 q3 -2 6 0" stroke="#241820"'
+      + ' stroke-width="2" fill="none" stroke-linecap="round"/>';
+    s += '<path d="M25 37 q5 2 10 0" stroke="#8a6058" stroke-width="1.8" fill="none"/>';
+    /* les rides */
+    s += '<path d="M18 22 h6 M36 22 h6" stroke="#a8846a" stroke-width="1.4"/>';
+  }
+  if (k === 'ghjuvanni'){
+    /* le clown blanc : maquillage complet, et l'air éteint */
+    s += '<path d="M6 60 q6 -20 24 -22 q18 2 24 22 z" fill="#f2e8dc"/>';
+    s += '<circle cx="18" cy="46" r="4" fill="#c9302c"/>';
+    s += '<circle cx="42" cy="46" r="4" fill="#2e5a4a"/>';
+    s += '<ellipse cx="30" cy="26" rx="15" ry="17" fill="#f6f0e6"/>';
+    /* le sourcil peint, très haut : c'est ça qui fait le clown blanc */
+    s += '<path d="M20 16 q4 -6 9 -2" stroke="#2e2028" stroke-width="2.6"'
+      + ' fill="none" stroke-linecap="round"/>';
+    s += '<path d="M31 14 q5 -4 9 2" stroke="#2e2028" stroke-width="2.6"'
+      + ' fill="none" stroke-linecap="round"/>';
+    /* les yeux baissés, avec la larme peinte */
+    s += '<path d="M20 27 q4 3 8 0 M32 27 q4 3 8 0" stroke="#2e2028"'
+      + ' stroke-width="2.2" fill="none" stroke-linecap="round"/>';
+    s += '<path d="M24 31 l-1.4 6" stroke="#3a6a9a" stroke-width="2.4"'
+      + ' stroke-linecap="round"/>';
+    /* la bouche : le trait descend */
+    s += '<path d="M23 39 q7 -4 14 0" stroke="#c9302c" stroke-width="3"'
+      + ' fill="none" stroke-linecap="round"/>';
+    s += '<circle cx="30" cy="33" r="4" fill="#e0352c"/>';
+    /* la houppe */
+    s += '<path d="M30 9 q-4 -7 2 -8 q6 1 2 8 z" fill="#c9302c"/>';
+  }
+  if (k === 'surveillant'){
+    s += '<path d="M8 60 q4 -20 22 -22 q18 2 22 22 z" fill="#4a5a44"/>';
+    s += '<ellipse cx="30" cy="27" rx="14" ry="16" fill="#c9925e"/>';
+    s += '<path d="M14 20 q4 -12 16 -12 q12 0 16 12 z" fill="#3e3428"/>';
+    /* il louche à force de surveiller */
+    s += '<circle cx="24" cy="27" r="2.6" fill="#241820"/>';
+    s += '<circle cx="35" cy="27" r="2.6" fill="#241820"/>';
+    s += '<path d="M24 39 h12" stroke="#8a6058" stroke-width="2"/>';
+    /* son carnet */
+    s += '<rect x="38" y="42" width="14" height="18" rx="2" fill="#e8dcc8"'
+      + ' stroke="#3a2a22" stroke-width="1.6"/>';
+    s += '<path d="M41 47 h8 M41 51 h8 M41 55 h5" stroke="#8a7a68" stroke-width="1.2"/>';
+  }
+  if (k === 'rosine'){
+    s += '<rect width="60" height="60" fill="#4a3028"/>';
+    s += '<g transform="translate(46,52) scale(0.62)">'
+      + chevre(0, 0, 1, '#d8cfc0', 1, 0, true) + '</g>';
+  }
+  return s + '</svg>';
+}
+
+function decor(){
+  document.getElementById('sc').innerHTML =
+    '<svg viewBox="0 0 480 620" preserveAspectRatio="xMidYMax slice"'
+    + ' xmlns="http://www.w3.org/2000/svg">' + chapiteau() + '</svg>';
+  requestAnimationFrame(function(){
+    document.getElementById('sc').classList.add('pret');
+  });
+}
+
+/* ============================================================
+   LA PAGE
+   ============================================================ */
+var C = null, AL = null, VISE = null;
+
+function eur(n){ return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+
+function dits(L){
+  return '<div class="dit">' + L.map(function(p, i){
+    var cl = p[0] === '«' ? ' class="parle"' : (p[0] === '~' ? ' class="mamma"' : '');
+    return '<p' + cl + ' style="animation-delay:' + (.1 + i * .55).toFixed(2) + 's">'
+      + (p[0] === '~' ? p.slice(1) : p) + '</p>';
+  }).join('') + '</div>';
+}
+
+/* ---------- l'entrée : on te présente la maison ---------- */
+function scenePremiere(){
+  return dits([
+    "Le chapiteau est planté au milieu de la place depuis trois mois. La toile "
+      + "s'affaisse d'un côté. Deux ampoules sur quinze ne marchent plus.",
+    "Un homme en costume trois-pièces sort de la roulotte. Il porte un nez rouge. "
+      + "Il ne l'enlève pas pour te parler.",
+    "« Tu débarques. Tout le monde débarque, ici. » Il ouvre les bras. "
+      + "« Moi, je ne débarque plus. Je reste. »",
+    "Il te fait asseoir sur une caisse et te sert quelque chose de trouble.",
+    "« Je vais être franc avec toi, parce que tu as une tête honnête. "
+      + "Nous avons un problème avec une chèvre. »"
+  ])
+  + '<div class="choix" style="margin-top:20px">'
+  + '<button class="vif" id="c-ecouter"><b>« Je vous écoute. »</b>'
+  + '<span>De toute façon, il a déjà commencé.</span></button></div>';
+}
+
+function sceneProbleme(){
+  return dits([
+    "« Rosine a mangé un papier. » Il laisse le silence faire son travail.",
+    "« Ce papier était l'acte de propriété d'un terrain, au port. Ou un contrat. "
+      + "Ou une reconnaissance de dette. Les avis divergent. »",
+    "« Une autre famille le réclame. Nous, nous attendons que Rosine le rende. "
+      + "Nous attendons depuis trois mois. »",
+    "Derrière lui, un homme en veste verte tient un registre. Il n'a pas quitté "
+      + "la chèvre des yeux depuis douze semaines.",
+    "« Il nous faudrait un avis. Un vrai. Un vétérinaire de Marseille. "
+      + "Mais si on la met sur un bateau d'ici, toute la ville le saura demain. »",
+    "Il se retourne vers le premier rang. Une très vieille femme est assise là, "
+      + "dans un fauteuil, face au chapiteau vide. Elle hoche la tête, une fois.",
+    "« Voilà. C'est décidé. »"
+  ]);
+}
+
+/* ---------- les blocs d'action, selon où on en est ---------- */
+function blocEmbarquer(){
+  if (C.chevre)
+    return '<h2>Rosine</h2><div class="fait">Elle est dans ta cale. Elle occupe une '
+      + 'place et elle mange ce qu\'elle trouve. Le vétérinaire est à Marseille.</div>';
+  if (C.vet) return '';
+  var dur = C.cale_libre < 1;
+  return '<h2>Ce qu\'on te demande</h2><div class="choix">'
+    + '<button class="vif" id="c-embarquer"' + (dur ? ' disabled' : '') + '>'
+    + '<b>Embarquer Rosine pour Marseille</b><span>'
+    + (dur ? 'Ta cale est pleine. Il lui faut une place.'
+           : 'Une place de cale. Discrètement. Elle mangera un peu de ta cargaison.')
+    + '</span></button></div>';
+}
+
+function blocRendre(){
+  if (!C.vet || !C.chevre) return '';
+  return '<h2>De retour</h2><div class="choix">'
+    + '<button class="vif" id="c-rendre"><b>Rendre la chèvre et le verdict</b>'
+    + '<span>Don Battaglini attend sous le chapiteau.</span></button></div>';
+}
+
+function blocConcours(){
+  if (!C.vet || C.chevre || C.concours_gagne) return '';
+  if (!AL) return '';
+  var g = AL.chevres || [];
+  return '<h2 class="dx">Le concours de sosies'
+    + '<em>' + AL.reste + ' essai' + (AL.reste > 1 ? 's' : '') + '</em></h2>'
+    + '<p class="mot" style="margin:0 0 12px;text-align:left">'
+    + AL.dits[Math.min(2, AL.essais)] + '</p>'
+    + '<div class="rang">' + g.map(function(z){
+        return '<div class="ch' + (AL.mamma === z.n ? ' regardee' : '')
+          + '" data-n="' + z.n + '">'
+          + '<svg viewBox="-70 -100 140 110" xmlns="http://www.w3.org/2000/svg">'
+          + chevre(0, 0, .82, ['#d8cfc0','#a89078','#6d5c4e','#efe6da'][z.robe],
+              z.cornes, z.oeil, z.clochette) + '</svg>'
+          + '<b>' + z.n + '</b></div>';
+      }).join('') + '</div>'
+    + (AL.mamma
+        ? '<p class="mot">La Mamma regarde quelque part dans la rangée. '
+          + 'C\'est le seul indice qui vaille.</p>'
+        : '<p class="mot">Cinq bêtes. Une seule est Rosine. Regarde bien avant '
+          + 'de poser la main.</p>');
+}
+
+function blocRire(){
+  if (!C.vu_don || C.rire) return C.rire
+    ? '<h2>Ghjuvanni</h2><div class="fait">Il a ri. Une fois. '
+      + 'Depuis, il te salue de la tête quand tu passes.</div>'
+    : '';
+  return '<h2>Ghjuvanni le Triste</h2>'
+    + '<p class="mot" style="margin:0 0 12px;text-align:left">Le clown blanc est assis '
+    + 'sur une caisse, derrière le chapiteau. Huit ans qu\'il n\'a pas ri. '
+    + 'Il te regarde arriver sans espoir.</p>'
+    + '<div class="choix">'
+    + '<button data-r="blague"><b>Lui raconter une blague</b>'
+    + '<span>Tu en connais une bonne.</span></button>'
+    + '<button data-r="tomber"><b>Te prendre les pieds dans une corde</b>'
+    + '<span>Le classique. Ça marche toujours.</span></button>'
+    + '<button data-r="chevre"><b>Mettre le nez rouge sur la chèvre</b>'
+    + '<span>Personne n\'a jamais essayé.</span></button>'
+    + '<button data-r="rien"><b>T\'asseoir à côté de lui sans rien dire</b>'
+    + '<span>Et regarder le chapiteau avec lui.</span></button>'
+    + '</div>';
+}
+
+function blocFinal(){
+  if (!C.concours_gagne || C.fin) return '';
+  return '<h2>Sous le chapiteau</h2>'
+    + '<p class="mot" style="margin:0 0 12px;text-align:left">Toute la troupe est là. '
+    + 'La Mamma au premier rang. Don Battaglini te fait signe d\'avancer au centre '
+    + 'de la piste. « Alors ? Dis-nous. »</p>'
+    + '<div class="choix">'
+    + '<button data-f="verite"><b>Dire le verdict du vétérinaire</b>'
+    + '<span>Cette chèvre n\'a rien avalé. Et elle n\'est même pas corse.</span></button>'
+    + '<button data-f="silence"><b>Ne rien dire</b>'
+    + '<span>Les laisser à leur attente. Ils y tiennent plus qu\'au terrain.</span></button>'
+    + '<button data-f="chevre"><b>Demander la chèvre</b>'
+    + '<span>Rien d\'autre. Juste la chèvre.</span></button>'
+    + '</div>';
+}
+
+function blocTroupe(){
+  return '<h2>La troupe</h2><div class="gens">'
+    + (C.gens || []).map(function(g){
+        return '<div class="p"><span class="f">' + portrait(g.k) + '</span>'
+          + '<span class="t"><b>' + g.nom + '</b><i>' + g.quoi + '</i>'
+          + '<span>' + g.note + '</span></span></div>';
+      }).join('') + '</div>';
+}
+
+function poser(){
+  var s = '';
+  if (!C.vu_don){
+    s = scenePremiere();
+    document.getElementById('w').innerHTML = s;
+    document.getElementById('c-ecouter').onclick = entrer;
+    return;
+  }
+  if (C.etape === 1 && !C.chevre && !C.vet) s += sceneProbleme();
+  s += blocEmbarquer() + blocRendre() + blocConcours() + blocFinal() + blocRire();
+  if (C.fin)
+    s += '<h2>Ce qui s\'est passé</h2><div class="fait">'
+      + { verite:'Tu as dit la vérité. La Mamma s\'est levée.',
+          silence:'Tu n\'as rien dit. La maison Battaglini te doit quelque chose.',
+          chevre:'Tu as demandé la chèvre. Tu l\'as eue.' }[C.fin] + '</div>';
+  s += blocTroupe();
+  document.getElementById('w').innerHTML = s;
+  brancher();
+}
+
+function brancher(){
+  var e = document.getElementById('c-embarquer');
+  if (e) e.onclick = embarquer;
+  var r = document.getElementById('c-rendre');
+  if (r) r.onclick = rendre;
+  document.querySelectorAll('[data-n]').forEach(function(b){
+    b.onclick = function(){ designer(+b.dataset.n); };
+  });
+  document.querySelectorAll('[data-r]').forEach(function(b){
+    b.onclick = function(){ faireRire(b.dataset.r); };
+  });
+  document.querySelectorAll('[data-f]').forEach(function(b){
+    b.onclick = function(){ final(b.dataset.f); };
+  });
+}
+
+/* ---------- ce qu'on demande au serveur ---------- */
+async function entrer(){
+  var b = document.getElementById('c-ecouter');
+  b.disabled = true;
+  document.getElementById('w').innerHTML = sceneProbleme();
+  try { await BD.agir('cirque_entrer'); } catch(e){}
+  setTimeout(charger, 4200);
+}
+
+async function embarquer(){
+  var b = document.getElementById('c-embarquer');
+  b.disabled = true;
+  var x;
+  try { x = await BD.agir('cirque_embarquer'); } catch(e){ x = null; }
+  if (x && x.ok) await charger();
+  else b.querySelector('span').textContent = 'Pas maintenant.';
+}
+
+async function rendre(){
+  var b = document.getElementById('c-rendre');
+  b.disabled = true;
+  var x;
+  try { x = await BD.agir('cirque_rendre'); } catch(e){ x = null; }
+  if (!x || !x.ok){ b.querySelector('span').textContent = 'Pas maintenant.'; return; }
+  document.getElementById('w').innerHTML = dits([x.mot]);
+  setTimeout(charger, 3400);
+}
+
+async function designer(n){
+  var x;
+  try { x = await BD.agir('cirque_designer', { p_n: n }); } catch(e){ x = null; }
+  if (!x || !x.ok) return;
+  document.getElementById('w').innerHTML = dits([x.mot]);
+  setTimeout(charger, x.bon ? 3600 : 2400);
+}
+
+async function faireRire(quoi){
+  var x;
+  try { x = await BD.agir('cirque_faire_rire', { p_quoi: quoi }); } catch(e){ x = null; }
+  if (!x || !x.ok) return;
+  document.getElementById('w').innerHTML = dits([x.mot]);
+  if (x.ri && navigator.vibrate) navigator.vibrate([18, 70, 18, 70, 30]);
+  setTimeout(charger, x.ri ? 4200 : 2600);
+}
+
+async function final(quoi){
+  var x;
+  try { x = await BD.agir('cirque_final', { p_choix: quoi }); } catch(e){ x = null; }
+  if (!x || !x.ok) return;
+  document.getElementById('w').innerHTML = dits([x.mot, '~' + x.gain]);
+  setTimeout(charger, 5200);
+}
+
+async function charger(){
+  var r;
+  try { r = await BD.agir('au_cirque'); } catch(e){ leverAube(); return; }
+  leverAube();
+  if (!r || !r.ok){
+    document.getElementById('w').innerHTML = '<p class="rien">'
+      + (r && r.pourquoi === 'pas_ici'
+          ? 'Le chapiteau est à Ajaccio. Il n\'a pas bougé depuis trois mois.'
+          : 'Le rideau est baissé.') + '</p>';
+    return;
+  }
+  C = r;
+  /* le concours ne s'ouvre qu'une fois la chèvre revenue */
+  if (C.vet && !C.chevre && !C.concours_gagne){
+    try { AL = await BD.agir('cirque_alignee'); } catch(e){ AL = null; }
+    if (AL && !AL.ok) AL = null;
+  } else AL = null;
+  poser();
+}
+
+var AUBE = false;
+function leverAube(){
+  if (AUBE) return;
+  AUBE = true;
+  var c = document.getElementById('charge');
+  if (!c) return;
+  c.classList.add('parti');
+  setTimeout(function(){ c.remove(); }, 500);
+}
+setTimeout(leverAube, 6000);
+
+document.getElementById('ret').onclick = function(){ location.href = 'hub.html?v=3'; };
+
+decor();
+charger();
+
+var t = null;
+addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(decor, 240); });
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1c2a2e" id="tc">
+<title>Battle Dock — Le vétérinaire</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{min-height:100%;background:#1c2a2e;color:#eee4d4;
+  font-family:'Nunito',system-ui,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 14px) 15px
+  calc(env(safe-area-inset-bottom) + 30px)}
+
+.tete{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:11px;cursor:pointer;
+  border:3px solid #eee4d4;background:transparent;display:flex;
+  align-items:center;justify-content:center}
+.tete .ret svg{width:17px;height:17px;stroke:#eee4d4;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:22px}
+.tete .ou span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(238,228,212,.45);font-weight:800;margin-top:3px}
+
+.vue{border-radius:16px;overflow:hidden;border:3px solid #eee4d4;background:#243a3e;
+  margin-bottom:18px}
+.vue svg{display:block;width:100%;height:auto}
+
+.dit{display:flex;flex-direction:column;gap:13px}
+.dit p{font-size:15px;line-height:1.72;color:rgba(238,228,212,.86);
+  opacity:0;transform:translateY(8px);animation:venir .55s forwards}
+.dit p.parle{color:#fff;font-size:16px;padding-left:14px;
+  border-left:3px solid #6ab0a0}
+@keyframes venir{to{opacity:1;transform:none}}
+
+.go{width:100%;margin-top:20px;padding:15px;border-radius:13px;cursor:pointer;
+  border:3px solid #1c2a2e;background:#6ab0a0;color:#0e1a1c;
+  font-family:inherit;font-size:16px;font-weight:900}
+.go:disabled{background:rgba(238,228,212,.14);color:rgba(238,228,212,.4);
+  border-color:transparent;cursor:default}
+.go:active:not(:disabled){transform:translateY(2px)}
+.rien{padding:26px 16px;text-align:center;font-size:13.5px;line-height:1.7;
+  color:rgba(238,228,212,.5)}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <button class="ret" id="ret" aria-label="Retour">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="ou"><b>Le vétérinaire</b><span>Marseille — près des halles</span></span>
+</div>
+
+<div class="vue" id="vue"></div>
+<div id="w"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+/* ---------- le cabinet : une table, une lampe, et la chèvre dessus ---------- */
+function cabinet(){
+  var s = '<rect x="0" y="0" width="480" height="260" fill="#2e4a4e"/>';
+  /* le carrelage du mur */
+  for (var i = 0; i < 12; i++)
+    for (var j = 0; j < 5; j++)
+      s += '<rect x="' + (i * 41) + '" y="' + (j * 30) + '" width="39" height="28"'
+        + ' rx="2" fill="' + ((i + j) % 2 ? '#33525a' : '#2c464c') + '"/>';
+  /* l'étagère et ses bocaux */
+  s += '<rect x="18" y="72" width="150" height="7" fill="#5c4a34"/>';
+  ['#8ab0a0','#c9a86a','#a88a9a'].forEach(function(c, k){
+    s += '<rect x="' + (28 + k * 46) + '" y="42" width="26" height="30" rx="4"'
+      + ' fill="' + c + '" opacity=".7"/>';
+    s += '<rect x="' + (32 + k * 46) + '" y="38" width="18" height="6" rx="2"'
+      + ' fill="#6d5a42"/>';
+  });
+  /* la lampe au-dessus de la table */
+  s += '<path d="M340 0 v40" stroke="#3a2e24" stroke-width="4"/>';
+  s += '<path d="M316 40 h48 l-10 20 h-28 z" fill="#4a3a2a"/>';
+  s += '<ellipse cx="340" cy="62" rx="14" ry="5" fill="#ffe8a8"/>';
+  s += '<path d="M300 62 L380 62 L420 200 L260 200 Z" fill="#ffe8a8" opacity=".14"/>';
+
+  /* la table d'examen */
+  s += '<rect x="150" y="186" width="300" height="14" rx="4" fill="#c9c0ae"/>';
+  s += '<rect x="168" y="200" width="12" height="60" fill="#8a8478"/>';
+  s += '<rect x="420" y="200" width="12" height="60" fill="#8a8478"/>';
+
+  /* Rosine, debout dessus, pas rassurée */
+  s += '<g transform="translate(300,186) scale(1.1)">'
+    + '<ellipse cx="0" cy="2" rx="34" ry="5" fill="#101a1c" opacity=".3"/>'
+    + '<path d="M-20 -26 v26 M-9 -26 v27 M9 -26 v27 M20 -26 v26" stroke="#3a2a22"'
+    + ' stroke-width="5" stroke-linecap="round"/>'
+    + '<ellipse cx="0" cy="-38" rx="30" ry="18" fill="#d8cfc0"/>'
+    + '<path d="M-24 -44 q-14 -6 -20 -20 l12 -6 q8 12 16 16 z" fill="#d8cfc0"/>'
+    + '<ellipse cx="-46" cy="-70" rx="14" ry="10" fill="#d8cfc0"/>'
+    + '<ellipse cx="-58" cy="-64" rx="7" ry="6" fill="#efe6da"/>'
+    + '<circle cx="-61" cy="-65" r="1.6" fill="#3a2a22"/>'
+    + '<path d="M-44 -80 q-6 -18 6 -24 q-4 10 0 22 M-36 -80 q-4 -16 8 -20 q-6 8 -2 18"'
+    + ' stroke="#3a2a22" stroke-width="4" fill="none" stroke-linecap="round"/>'
+    + '<ellipse cx="-50" cy="-73" rx="4.4" ry="4" fill="#efe6da"/>'
+    + '<circle cx="-50" cy="-73" r="2.4" fill="#3a2a22"/>'
+    + '<path d="M-56 -56 q-2 10 2 14 q4 -6 3 -14 z" fill="#d8cfc0"/>'
+    + '</g>';
+
+  /* le vétérinaire, de dos, penché */
+  s += '<g>';
+  s += '<path d="M96 260 q10 -70 44 -74 q34 4 44 74 z" fill="#e8e4da"/>';
+  s += '<circle cx="140" cy="164" r="26" fill="#c9925e"/>';
+  s += '<path d="M114 158 q4 -26 26 -26 q22 0 26 26 q-6 -12 -26 -12 q-20 0 -26 12 z"'
+    + ' fill="#6d6058"/>';
+  /* son bras tendu vers la bête */
+  s += '<path d="M180 206 q52 -14 96 -8" stroke="#e8e4da" stroke-width="17"'
+    + ' fill="none" stroke-linecap="round"/>';
+  s += '<circle cx="282" cy="198" r="9" fill="#c9925e"/>';
+  s += '</g>';
+  return s;
+}
+
+var ETAT = null;
+
+function dits(L){
+  return '<div class="dit">' + L.map(function(p, i){
+    return '<p' + (p[0] === '«' ? ' class="parle"' : '')
+      + ' style="animation-delay:' + (.1 + i * .6).toFixed(2) + 's">' + p + '</p>';
+  }).join('') + '</div>';
+}
+
+async function ausculter(){
+  var b = document.getElementById('go');
+  b.disabled = true; b.textContent = 'Il l\'ausculte…';
+  var x;
+  try { x = await BD.agir('cirque_veterinaire'); } catch(e){ x = null; }
+  if (!x || !x.ok){ b.textContent = 'Pas maintenant'; return; }
+  document.getElementById('w').innerHTML = dits([
+    "Il l'ausculte vingt minutes. Il palpe, il écoute, il regarde sous la paupière. "
+      + "Rosine se laisse faire avec une dignité de reine.",
+    "Puis il relève la tête.",
+    "« Cette chèvre n'a jamais rien avalé de tel. »",
+    "Il vous regarde tous les deux, longtemps.",
+    "« Et ce n'est pas une chèvre corse. »"
+  ]) + '<button class="go" id="rentrer">Remonter à bord</button>';
+  document.getElementById('rentrer').onclick = function(){
+    location.href = 'hub.html?v=3';
+  };
+}
+
+async function charger(){
+  document.getElementById('vue').innerHTML =
+    '<svg viewBox="0 0 480 260" xmlns="http://www.w3.org/2000/svg">' + cabinet() + '</svg>';
+  var r;
+  try { r = await BD.agir('au_cirque'); } catch(e){ r = null; }
+  /* au_cirque ne répond qu'à Ajaccio : ici on lit l'état par la cale */
+  var d = null;
+  try { d = await BD.charger(); } catch(e){}
+  var aBord = d && (d.cale || []).some(function(e){ return e && e.k === 'rosine'; });
+
+  if (!d || d.port !== 'anse' || d.parti_le){
+    document.getElementById('w').innerHTML =
+      '<p class="rien">Le cabinet est à Marseille, près des halles.</p>';
+    return;
+  }
+  if (!aBord){
+    document.getElementById('w').innerHTML =
+      '<p class="rien">Le vétérinaire lève les yeux de son registre. '
+      + '« Vous m\'amenez quelque chose, ou vous venez vous asseoir ? »</p>';
+    return;
+  }
+  document.getElementById('w').innerHTML = dits([
+    "Le cabinet sent l'éther et le foin. Un homme en blouse écrit dans un registre "
+      + "sans lever la tête.",
+    "« Posez-la sur la table. »",
+    "Tu expliques que c'est délicat, qu'il ne faut pas que ça se sache, qu'il y a "
+      + "une histoire de papier. Il ne t'écoute pas. Il regarde déjà la bête."
+  ]) + '<button class="go" id="go">La poser sur la table</button>';
+  document.getElementById('go').onclick = ausculter;
+}
+
+document.getElementById('ret').onclick = function(){ location.href = 'hub.html?v=3'; };
+charger();
+</script>
+</body>
+</html>
