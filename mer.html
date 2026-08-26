@@ -61,6 +61,24 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
 @keyframes file{to{transform:translateX(62px)}}
 
 /* ---------- la barque, posée sur l'horizon ---------- */
+/* ---------- le convoi ----------
+   Trois barques plus petites et plus loin, donc plus haut sur
+   l'écran et plus lentes. Elles arrivent l'une après l'autre. */
+#convoi{position:fixed;left:0;right:0;bottom:34%;height:200px;z-index:-1;
+  pointer-events:none}
+#convoi i{position:absolute;display:block;opacity:0}
+#convoi i svg{display:block;width:100%;height:auto}
+#convoi .v1{left:14%;bottom:64px;width:62px;animation:venir1 2.2s .4s forwards,
+  tangue 5.6s .4s ease-in-out infinite}
+#convoi .v2{right:12%;bottom:88px;width:50px;animation:venir1 2.2s 1.5s forwards,
+  tangue 6.4s 1.5s ease-in-out infinite}
+#convoi .v3{left:34%;bottom:116px;width:38px;animation:venir1 2.2s 2.7s forwards,
+  tangue 7.2s 2.7s ease-in-out infinite}
+@keyframes venir1{from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:none}}
+@keyframes tangue{0%,100%{transform:translateY(0) rotate(-1.6deg)}
+  50%{transform:translateY(-5px) rotate(1.6deg)}}
+
 #barque{position:fixed;left:50%;bottom:34%;z-index:0;width:126px;margin-left:-63px;
   animation:souleve 4.8s ease-in-out infinite;will-change:transform}
 #barque svg{display:block;width:100%;height:auto;
@@ -140,6 +158,8 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
 <div id="eau"></div>
 <i class="houle h1"></i><i class="houle h2"></i><i class="houle h3"></i>
 
+<div id="convoi"></div>
+
 <div id="barque">
   <svg viewBox="0 0 126 76" xmlns="http://www.w3.org/2000/svg">
     <path d="M63 6 L100 54 L65 54 Z" fill="#fdf6e6" stroke="#12303f"
@@ -204,6 +224,8 @@ const AVEC_ROSINE = [
 function moment(p){
   const i = p < 8 ? 0 : p < 24 ? 1 : p < 42 ? 2 : p < 58 ? 3
           : p < 76 ? 4 : p < 92 ? 5 : 6;
+  /* le convoi raconte les deux premiers moments, puis s'efface */
+  if (CONVOI && i < 2) return CONVOI[i];
   if (ROSINE) return AVEC_ROSINE[i];
   if (i === 3) return JOURS > 1 ? 'Deux nuits à tenir' : 'La nuit, seul à la barre';
   return ["Le port s'efface derrière toi", "Plus rien que de l'eau",
@@ -243,7 +265,7 @@ function peindre(p){
   }
 }
 
-let ROSINE = false;
+let ROSINE = false, CONVOI = null;
 
 /* ============================================================
    LA PASSAGÈRE
@@ -285,6 +307,62 @@ function rosineAbord(){
 }
 
 /* ============================================================
+   LE CONVOI DU CIRQUE
+   Trois barques, une par personnage. On les reconnaît à ce
+   qu'elles portent : un nez rouge, un registre, un fichu noir.
+   ============================================================ */
+function barqueDeLoin(qui){
+  var s = '<svg viewBox="0 0 100 74" xmlns="http://www.w3.org/2000/svg">';
+  /* la coque, sombre à contre-jour */
+  s += '<path d="M8 52 q42 18 84 0 l-10 14 q-33 10 -64 0 z" fill="#12303f"/>';
+  s += '<path d="M8 52 q42 18 84 0" stroke="#3a5c70" stroke-width="2.4" fill="none"/>';
+  /* le mât et la voile, en crème */
+  s += '<rect x="47" y="10" width="4" height="42" rx="2" fill="#12303f"/>';
+  s += '<path d="M51 14 L74 50 L51 50 Z" fill="#fdf6e6" opacity=".92"/>';
+
+  if (qui === 'don'){
+    /* lui est debout à l'avant, bras ouverts, le nez rouge visible */
+    s += '<path d="M26 52 v-16 q0 -7 6 -7 q6 0 6 7 v16 z" fill="#241820"/>';
+    s += '<path d="M26 38 q-8 4 -10 12 M38 38 q8 4 10 12" stroke="#241820"'
+      + ' stroke-width="3.4" fill="none" stroke-linecap="round"/>';
+    s += '<circle cx="32" cy="27" r="6" fill="#c9925e"/>';
+    s += '<circle cx="32" cy="28" r="2.4" fill="#e0352c"/>';
+  }
+  if (qui === 'pasquale'){
+    /* lui rame, et il a son registre coincé sous le bras */
+    s += '<path d="M28 52 v-14 q0 -6 5 -6 q5 0 5 6 v14 z" fill="#4a5a44"/>';
+    s += '<circle cx="33" cy="29" r="5.4" fill="#c9925e"/>';
+    s += '<path d="M20 44 l-12 8" stroke="#8a6a48" stroke-width="2.6"'
+      + ' stroke-linecap="round"/>';
+    s += '<rect x="38" y="36" width="8" height="10" rx="1.4" fill="#e8dcc8"/>';
+  }
+  if (qui === 'mamma'){
+    /* elle est assise, immobile, et elle regarde droit devant */
+    s += '<path d="M30 52 q-2 -18 8 -18 q10 0 8 18 z" fill="#1a1218"/>';
+    s += '<circle cx="38" cy="30" r="6" fill="#1a1218"/>';
+    s += '<path d="M32 30 q6 -8 12 0 q-2 -8 -6 -8 q-4 0 -6 8 z" fill="#141018"/>';
+  }
+  /* son sillage */
+  s += '<path d="M6 66 q44 8 88 0" stroke="#fdf6e6" stroke-width="2"'
+    + ' opacity=".22" fill="none"/>';
+  return s + '</svg>';
+}
+
+/* on ne le voit qu'une fois : c'est le serveur qui le dit */
+async function peutEtreLeConvoi(){
+  var x;
+  try { x = await BD.agir('cirque_convoi'); } catch(e){ return; }
+  if (!x || !x.ok) return;
+
+  var z = document.getElementById('convoi');
+  z.innerHTML = '<i class="v1">' + barqueDeLoin('don') + '</i>'
+    + '<i class="v2">' + barqueDeLoin('pasquale') + '</i>'
+    + '<i class="v3">' + barqueDeLoin('mamma') + '</i>';
+  CONVOI = [x.mot, x.suite];
+  if (navigator.vibrate) navigator.vibrate([14, 90, 14]);
+}
+
+/* ============================================================
    LA TRAVERSÉE
    ============================================================ */
 let AUBE = false;
@@ -323,6 +401,9 @@ function poser(p){
     var g = document.getElementById('passagere');
     if (g){ g.innerHTML = rosineAbord(); g.style.display = ''; }
     ROSINE = true;
+    /* et la première fois qu'on quitte la Corse avec elle,
+       tout le cirque sort en mer derrière nous */
+    if (d.port === 'ajaccio' && d.cap === 'anse') peutEtreLeConvoi();
   }
 
   VERS = d.cap || 'barcelone';
