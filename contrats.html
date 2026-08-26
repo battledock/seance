@@ -94,7 +94,12 @@ body::before{background:linear-gradient(180deg,
 .mk .mo.moy{color:rgba(18,48,63,.6)}
 .mk .mo.mal{color:var(--rouge)}
 .of .l2{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.of .et{padding:6px 11px;border-radius:11px;font-size:11px;font-weight:800;
+.of /* une offre qu'on ne peut charger qu'en partie le dit franchement */
+.et.part{background:rgba(240,169,46,.16);border-color:rgba(240,169,46,.5);
+  color:#8a5a10}
+.prix .sur{font-size:12px;font-weight:800;color:#a8763a;line-height:1.4}
+
+.et{padding:6px 11px;border-radius:11px;font-size:11px;font-weight:800;
   white-space:nowrap;background:rgba(18,48,63,.08);
   border:2px solid rgba(18,48,63,.16)}
 .of button{margin-left:auto;padding:12px 22px;border-radius:13px;cursor:pointer;
@@ -240,7 +245,10 @@ async function dessiner(){
       + '<div class="l1"><b>' + c.nom + '</b></div>'
       + (c.note ? '<p class="no">' + c.note + '</p>' : '')
       + '<div class="prix"><span class="mnt">' + c.paie + ' €</span>'
-      +   ecartPrix(c.demande) + '</div>'
+      +   (c.reduit
+            ? '<span class="sur">au lieu de ' + c.paie_pleine
+              + ' € — ta cale n\'est pas vide</span>'
+            : ecartPrix(c.demande)) + '</div>'
       + '<div class="mk">'
       +   '<div class="tt"><span>Le marché à ' + (OU[c.vers] || c.vers) + '</span>'
       +   '<span>' + m.titre + '</span></div>'
@@ -249,9 +257,14 @@ async function dessiner(){
       + '</div>'
       + '<div class="l2">'
       +   '<span class="et">' + c.kg + ' kg</span>'
-      +   '<span class="et">Toute ta cale</span>'
+      +   '<span class="et' + (c.reduit ? ' part' : '') + '">'
+      +     (c.places >= r.places ? 'Toute ta cale'
+             : c.places + ' place' + (c.places > 1 ? 's' : '')
+               + (c.reduit ? ' sur ' + c.places_offert : '')) + '</span>'
       +   (pris ? '<span class="fait">Chargé</span>'
-           : hors ? '' : '<button data-id="' + c.id + '">Charger</button>')
+           : hors ? ''
+           : c.places < 1 ? '<span class="fait">Cale pleine</span>'
+           : '<button data-id="' + c.id + '">Charger</button>')
       + '</div></div></div>';
   }).join('')
   + '<p class="apprend"><b>Le marché bouge.</b> Chaque caisse livrée quelque part y '
