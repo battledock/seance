@@ -141,8 +141,12 @@ const LONGUEUR = { ardit:3, miquel_2:2, pere:2, titou:2 };
 /* ---------- où se joue chaque histoire ----------
    Le carnet ne se contente plus de dire « ça t'attend ici » :
    il t'y emmène. Chaque personnage a sa page. */
-const CHEZ = { nuria:'barcelone.html', miquel:'rue.html',
-               pere:'palma.html', titou:'jeu.html', ardit:'ardit.html' };
+/* Chaque histoire a son lieu qui dure. Les scènes ne se jouent
+   qu'une fois : on renvoie donc vers l'endroit où le personnage
+   se tient tous les jours, pas vers la scène déjà passée.
+   Titou n'a pas encore de lieu à lui : on redescend au port. */
+const CHEZ = { nuria:'taverne.html', miquel:'miquel.html',
+               pere:'pere.html', titou:'jeu.html', ardit:'ardit.html' };
 const PORT_DE = { Marseille:'anse', Barcelone:'barcelone',
                   Palma:'palma', Ajaccio:'ajaccio' };
 
