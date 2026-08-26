@@ -2943,27 +2943,35 @@ function etiquettes(v){
 const SU_E = {};
 let SU_TOUR = 0, SU_TUYAUX = null;
 
+/* quand on a demandé la connaissance de chacun, pour la dernière fois */
+const SU_QUAND = {};
+
 async function ficheAutre(i){
   const j = POS_A[i].j;
   const tour = ++SU_TOUR;
 
-  /* on va chercher la connaissance AVANT de dessiner : la fiche
-     paraît d'un seul tenant, au lieu de grandir en trois fois */
+  /* on dessine tout de suite avec ce qu'on sait déjà : la fiche
+     s'ouvre sans attendre le serveur, même la première fois */
   let E = SU_E[j.id] || null;
-  if (!E && j.id){
-    try { E = await BD.agir('entre_vous', { p_avec: j.id }); } catch(e){}
-    if (tour !== SU_TOUR) return;   /* on a touché quelqu'un d'autre entre-temps */
-    if (E) SU_E[j.id] = E;
-  }
   dessinerFiche(j, E);
-  if (SU_E[j.id]){
-    /* on rafraîchit en fond, sans faire bouger ce qui est déjà à l'écran */
-    BD.agir('entre_vous', { p_avec: j.id }).then(f => {
-      if (tour !== SU_TOUR || !f || !f.ok) return;
-      SU_E[j.id] = f;
-      majConnaissance(f);
-    }).catch(() => {});
-  }
+
+  if (!j.id) return;
+
+  /* et on ne redemande au serveur que si ce qu'on a est vieux.
+     Rouvrir trois fois la même fiche ne fait plus trois appels. */
+  const age = Date.now() - (SU_QUAND[j.id] || 0);
+  if (E && age < 45000) return;
+
+  let f = null;
+  try { f = await BD.agir('entre_vous', { p_avec: j.id }); } catch(e){}
+  if (tour !== SU_TOUR || !f || !f.ok) return;
+  SU_E[j.id] = f;
+  SU_QUAND[j.id] = Date.now();
+
+  /* si la fiche était vide au moment du dessin, on la refait ;
+     sinon on se contente de mettre les chiffres à jour */
+  if (!E) dessinerFiche(j, f);
+  else majConnaissance(f);
 }
 
 function dessinerFiche(j, E){
@@ -3038,7 +3046,10 @@ function dessinerFiche(j, E){
     + vs + ges + rc;
 
   document.getElementById('fi').classList.add('on');
-  poserGestes(j);
+  /* la connaissance et les gestes ont besoin du même état : sans lui,
+     le bloc restait vide et « Salué » ne s'affichait jamais */
+  poserConnaissance(E);
+  poserGestes(j, E);
   document.getElementById('fi-x').onclick = () =>
     document.getElementById('fi').classList.remove('on');
 }
@@ -3129,22 +3140,35 @@ function poserGestes(j, E){
 
   bs.onclick = async () => {
     bs.disabled = true; bs.textContent = '…';
-    const r = await BD.agir('saluer', { p_vers: j.id });
-    if (!r || !r.ok){ bs.textContent = 'Déjà fait'; return; }
+    let r = null;
+    try { r = await BD.agir('saluer', { p_vers: j.id }); } catch(e){}
+    if (!r || !r.ok){
+      var q = r && r.pourquoi;
+      bs.textContent = q === 'deja_salue' ? 'Déjà salué' : 'Trop tard';
+      dit.textContent =
+          q === 'deja_salue' ? 'Tu l\'as déjà salué aujourd\'hui.'
+        : q === 'pas_la' ? 'Il a repris la mer pendant que tu regardais.'
+        : 'Il n\'a pas entendu.';
+      dit.classList.add('fait');
+      /* il n'est plus là : la rade a changé, on la relit */
+      if (q === 'pas_la') chercherLesAutres().then(function(){ dessiner(); });
+      return;
+    }
     bs.textContent = 'Salué';
     dit.textContent = (r.lien && r.lien.monte)
       ? 'Vous voilà « ' + r.lien.palier.nom + ' ». +' + r.energie + ' d\'énergie.'
       : '+' + r.energie + " d'énergie pour vous deux.";
     dit.classList.add('fait');
-    /* on met à jour ce qu'on sait, sans refaire la fiche */
-    if (E){
-      E.valeur = (r.lien && r.lien.apres) ?? E.valeur;
-      E.saluts = (E.saluts || 0) + 1;
-      E.salue_aujourdhui = true;
-      if (r.lien && r.lien.palier) E.palier = r.lien.palier;
-      SU_E[j.id] = E;
-      majConnaissance(E);
-    }
+
+    /* on tient l'état à jour, qu'on l'ait eu d'avance ou non */
+    const F = E || SU_E[j.id] || { ok:true, valeur:0, saluts:0, tuyaux:0 };
+    F.valeur = (r.lien && r.lien.apres) != null ? r.lien.apres : F.valeur;
+    F.saluts = (F.saluts || 0) + 1;
+    F.salue_aujourdhui = true;
+    if (r.lien && r.lien.palier) F.palier = r.lien.palier;
+    if (r.lien && r.lien.prochain) F.prochain = r.lien.prochain;
+    SU_E[j.id] = F;
+    majConnaissance(F);
   };
 
   /* les tuyaux : on les tient d'avance, la liste s'ouvre sans attendre */
@@ -3169,19 +3193,31 @@ function poserGestes(j, E){
         b.disabled = true;
         const r = await BD.agir('donner_tuyau',
           { p_vers: j.id, p_k: b.dataset.k, p_ou: b.dataset.ou });
-        b.querySelector('.p6').textContent = (r && r.ok) ? 'dit' : 'déjà dit';
+        var q2 = r && r.pourquoi;
+        b.querySelector('.p6').textContent = (r && r.ok) ? 'dit'
+          : q2 === 'deja_dit' ? 'déjà dit'
+          : q2 === 'pas_la' ? 'parti' : 'non';
+        if (q2 === 'pas_la'){
+          dit.textContent = 'Il a repris la mer pendant que tu regardais.';
+          dit.classList.add('fait');
+          chercherLesAutres().then(function(){ dessiner(); });
+        }
         if (r && r.ok){
           if (r.lien && r.lien.monte){
             dit.textContent = 'Vous voilà « ' + r.lien.palier.nom + ' ».';
             dit.classList.add('fait');
+          } else {
+            dit.textContent = 'Il note le tuyau. Il s\'en souviendra.';
+            dit.classList.add('fait');
           }
-          if (E){
-            E.valeur = (r.lien && r.lien.apres) ?? E.valeur;
-            E.tuyaux = (E.tuyaux || 0) + 1;
-            if (r.lien && r.lien.palier) E.palier = r.lien.palier;
-            SU_E[j.id] = E;
-            majConnaissance(E);
-          }
+          const F = E || SU_E[j.id] || { ok:true, valeur:0, saluts:0, tuyaux:0 };
+          F.valeur = (r.lien && r.lien.apres) != null ? r.lien.apres : F.valeur;
+          F.tuyaux = (F.tuyaux || 0) + 1;
+          if (r.lien && r.lien.palier) F.palier = r.lien.palier;
+          SU_E[j.id] = F;
+          majConnaissance(F);
+          /* la liste des tuyaux a changé : on la redemandera */
+          SU_TUYAUX = null;
         }
       });
   };
