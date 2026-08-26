@@ -77,6 +77,23 @@ html,body{min-height:100%;background:#14161a;color:#e8e0d0;
   color:rgba(232,224,208,.45);margin-top:3px}
 .salle .a button.vif small{color:rgba(26,28,32,.6)}
 
+/* ---------- les zones connues et le noir en dessous ---------- */
+.zones{display:flex;flex-direction:column;gap:5px}
+.zn{display:flex;gap:11px;padding:9px 12px;border-radius:10px;
+  background:rgba(40,44,52,.6)}
+.zn i{font-style:normal;flex:0 0 26px;color:#c9a24a;font-weight:900;font-size:13px}
+.zn span{flex:1;min-width:0}
+.zn span b{display:block;font-size:13.5px}
+.zn span em{display:block;font-style:normal;font-size:11.5px;
+  color:rgba(232,224,208,.45);margin-top:3px;line-height:1.45}
+.zn.noir{opacity:.42}
+.zn.noir i{color:rgba(232,224,208,.3)}
+
+/* le palier gardé se voit avant qu'on le touche */
+.salle.garde{border-color:#b8443a;box-shadow:0 0 0 2px rgba(184,68,58,.2)}
+.ban2{display:block;background:#b8443a;color:#f6e6d8;font-size:9.5px;font-weight:900;
+  letter-spacing:.16em;text-transform:uppercase;padding:6px 16px}
+
 .dit2{padding:14px 16px;background:rgba(52,58,66,.6);
   border-top:1px solid rgba(232,224,208,.1);font-size:13.5px;line-height:1.6}
 .dit2.mal{color:#e8927c} .dit2.bien{color:#8ce0a8}
@@ -239,14 +256,107 @@ function souterrain(etage, quoi){
   return s;
 }
 
+/* ---------- l'entrée : la citadelle vue d'en bas ----------
+   Un fortin trapu au bout de la jetée, une poterne étroite, et
+   deux torches qui n'éclairent que le seuil. */
+function laPoterne(){
+  var W = 480, H = 560;
+  var s = '<defs>'
+    + '<linearGradient id="e-ciel" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0%" stop-color="#141a28"/>'
+    +   '<stop offset="60%" stop-color="#2a2c38"/>'
+    +   '<stop offset="100%" stop-color="#4a3c38"/></linearGradient>'
+    + '<radialGradient id="e-t" cx="0.5" cy="0.5">'
+    +   '<stop offset="0%" stop-color="#ffca7a" stop-opacity=".45"/>'
+    +   '<stop offset="100%" stop-color="#ffca7a" stop-opacity="0"/></radialGradient>'
+    + '</defs>';
+  s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="url(#e-ciel)"/>';
+  /* les étoiles, et la mer au loin, en bas à droite */
+  for (var e = 0; e < 30; e++)
+    s += '<circle cx="' + (rnd(e * 3) * W).toFixed(0) + '" cy="'
+      + (rnd(e * 7) * 200).toFixed(0) + '" r="' + (0.7 + rnd(e) * 1.2).toFixed(1)
+      + '" fill="#dfe8f0" opacity="' + (.2 + rnd(e * 5) * .5).toFixed(2) + '"/>';
+  s += '<rect x="0" y="330" width="' + W + '" height="80" fill="#1c2a34"/>';
+  for (var v = 0; v < 14; v++)
+    s += '<path d="M' + (rnd(v * 3) * 460).toFixed(0) + ' ' + (338 + rnd(v) * 64).toFixed(0)
+      + ' h' + (12 + rnd(v * 5) * 34).toFixed(0) + '" stroke="#5c7a8a"'
+      + ' stroke-width="1.6" opacity=".3"/>';
+
+  /* la masse du fortin : un bastion en éperon */
+  s += '<path d="M-20 410 L60 210 L200 176 L340 196 L440 226 L500 410 Z"'
+    + ' fill="#2e323a"/>';
+  s += '<path d="M-20 410 L60 210 L200 176 L200 410 Z" fill="#363b44"/>';
+  /* les assises de pierre */
+  for (var a = 0; a < 7; a++)
+    s += '<path d="M' + (10 + a * 4) + ' ' + (400 - a * 30) + ' h' + (460 - a * 12)
+      + '" stroke="#22262c" stroke-width="2.6" opacity=".6"/>';
+  /* le cordon et le parapet */
+  s += '<path d="M40 218 L200 184 L350 202 L452 232" stroke="#4a5058"'
+    + ' stroke-width="7" fill="none"/>';
+  for (var c = 0; c < 11; c++){
+    var cx2 = 54 + c * 38, cy2 = 214 - Math.sin(c / 10 * Math.PI) * 30;
+    s += '<rect x="' + cx2 + '" y="' + (cy2 - 22).toFixed(0) + '" width="22"'
+      + ' height="24" fill="#3a404a"/>';
+  }
+  /* une meurtrière éclairée, tout en haut */
+  s += '<rect x="252" y="228" width="12" height="30" rx="5" fill="#ffca7a"'
+    + ' opacity=".55" class="lueur"/>';
+
+  /* la poterne : l'arc, la herse, et le noir dedans */
+  s += '<path d="M196 410 v-92 q44 -40 88 0 v92 z" fill="#12151a"/>';
+  s += '<path d="M196 410 v-92 q44 -40 88 0 v92" stroke="#4a5058" stroke-width="8"'
+    + ' fill="none"/>';
+  /* les claveaux de l'arc */
+  for (var k = 0; k < 9; k++){
+    var an = Math.PI * (k / 8);
+    s += '<path d="M' + (240 - Math.cos(an) * 44).toFixed(0) + ' '
+      + (318 - Math.sin(an) * 30).toFixed(0) + ' l'
+      + (-Math.cos(an) * 12).toFixed(0) + ' ' + (-Math.sin(an) * 10).toFixed(0)
+      + '" stroke="#5a6068" stroke-width="5"/>';
+  }
+  /* la herse relevée, dents visibles */
+  for (var d2 = 0; d2 < 7; d2++)
+    s += '<path d="M' + (204 + d2 * 12) + ' 318 v22 l-4 8 l-4 -8 v-22 z"'
+      + ' fill="#3a3630"/>';
+  /* l'escalier qu'on devine dedans */
+  s += '<path d="M212 410 h56 l10 -34 h-76 z" fill="#0c0f14"/>';
+
+  /* les deux torches du seuil */
+  [166, 314].forEach(function(tx){
+    s += '<ellipse cx="' + tx + '" cy="330" rx="86" ry="76" fill="url(#e-t)"'
+      + ' class="lueur"/>';
+    s += '<rect x="' + (tx - 5) + '" y="326" width="10" height="52" rx="4"'
+      + ' fill="#4a3628"/>';
+    s += '<path class="flamme" d="M' + tx + ' 326 q-16 -18 -3 -36 q2 13 10 16'
+      + ' q8 -10 5 -24 q18 20 6 44 z" fill="#ffb347"/>';
+    s += '<path class="flamme" d="M' + tx + ' 324 q-9 -11 -2 -22 q2 8 6 10'
+      + ' q4 -6 2 -14 q10 13 3 26 z" fill="#ffe9a8"/>';
+  });
+
+  /* le pavé du seuil, au premier plan */
+  s += '<rect x="0" y="404" width="' + W + '" height="' + (H - 404) + '" fill="#3a332c"/>';
+  for (var p2 = 0; p2 < 70; p2++)
+    s += '<ellipse cx="' + (rnd(p2 * 3) * W).toFixed(0) + '" cy="'
+      + (412 + rnd(p2 * 7) * 140).toFixed(0) + '" rx="' + (4 + rnd(p2) * 9).toFixed(0)
+      + '" ry="' + (2 + rnd(p2 * 5) * 3).toFixed(0) + '" fill="'
+      + ['#443c34','#322c26','#4e463c'][p2 % 3] + '" opacity=".8"/>';
+  /* de l'herbe entre les pavés */
+  for (var hh = 0; hh < 9; hh++)
+    s += '<path d="M' + (30 + hh * 52) + ' ' + (470 + (hh % 3) * 26)
+      + ' q4 -14 9 -18 q-2 12 -3 18 z" fill="#3e4a34" opacity=".7"/>';
+  return s;
+}
+
 var SC_ETAT = null;
 function decor(etage, quoi){
   var cle = etage + '/' + quoi;
   if (cle === SC_ETAT) return;
   SC_ETAT = cle;
+  /* dehors, on voit la citadelle ; dedans, la pierre */
+  var d = etage ? souterrain(etage, quoi) : laPoterne();
   document.getElementById('sc').innerHTML =
     '<svg viewBox="0 0 480 560" preserveAspectRatio="xMidYMid slice"'
-    + ' xmlns="http://www.w3.org/2000/svg">' + souterrain(etage || 0, quoi) + '</svg>';
+    + ' xmlns="http://www.w3.org/2000/svg">' + d + '</svg>';
   requestAnimationFrame(function(){
     document.getElementById('sc').classList.add('pret');
   });
@@ -278,7 +388,9 @@ function jauges(){
 function laSalle(){
   var s = D.salle;
   if (!s) return '';
-  var h = '<div class="salle"><div class="h"><b>' + s.titre + '</b>'
+  var h = '<div class="salle' + (s.garde ? ' garde' : '') + '">'
+    + (s.garde ? '<span class="ban2">Le passage est gardé</span>' : '')
+    + '<div class="h"><b>' + s.titre + '</b>'
     + '<p>' + s.texte + '</p></div>';
 
   if (s.quoi === 'rencontre'){
@@ -323,7 +435,8 @@ function poser(){
 
   if (D.dedans){
     document.getElementById('t-t').textContent = 'Étage −' + D.etage;
-    document.getElementById('t-s').textContent = 'Les souterrains';
+    document.getElementById('t-s').textContent =
+      (D.zone && D.zone.nom) ? D.zone.nom : 'Les souterrains';
     decor(D.etage, D.salle ? D.salle.quoi : 'vide');
     s += jauges() + laSalle();
     if ((D.trouvailles || []).length)
@@ -362,10 +475,26 @@ function poser(){
       + '<span class="jg2"><i>Souffle</i><b>' + D.toi.souffle + '</b></span>'
       + '</div>';
 
+    /* ce qu'il y a là-dessous : on ne nomme que ce qu'on a vu */
+    var Z = D.zones || [];
+    if (Z.length)
+      s += '<h2 class="dx">Ce qu\'il y a là-dessous'
+        + (D.record ? '<em>vu jusqu\'à −' + D.record + '</em>' : '')
+        + '</h2><div class="zones">'
+        + Z.map(function(z){
+            return '<div class="zn' + (z.connue ? '' : ' noir') + '">'
+              + '<i>−' + z.depuis + '</i>'
+              + '<span><b>' + (z.connue ? z.nom : '?')
+              + '</b><em>' + (z.connue ? z.note : 'Tu n\'es jamais descendu si bas.')
+              + '</em></span></div>';
+          }).join('') + '</div>';
+
     if (D.record)
-      s += '<p class="mot">Tu es descendu jusqu\'à l\'étage −' + D.record
-        + ', en ' + D.descentes + ' descente'
-        + (D.descentes > 1 ? 's' : '') + '.</p>';
+      s += '<p class="mot">' + D.descentes + ' descente'
+        + (D.descentes > 1 ? 's' : '') + '. Un gardien barre le passage '
+        + 'tous les cinq étages.</p>';
+    else
+      s += '<p class="mot">Un gardien barre le passage tous les cinq étages.</p>';
 
     var P = D.profonds || [];
     if (P.length)
