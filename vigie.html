@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#8fb4c4" id="tc">
+<title>Battle Dock — La vigie</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   LA VIGIE DU MOULIN — Palma
+   On monte à la galerie. En bas, la baie. Autour, la mer, et
+   ce qu'on peut en apprendre quand on prend la peine de regarder.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{min-height:100%;background:#12303f;color:#fdf6e6;
+  font-family:'Nunito',system-ui,sans-serif}
+
+/* ---------- le décor, en haut ---------- */
+#sc{position:fixed;left:0;right:0;top:0;height:44%;overflow:hidden;
+  opacity:0;transition:opacity .6s}
+#sc.pret{opacity:1}
+#sc svg{display:block;width:100%;height:100%}
+#sc::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(18,48,63,.18) 0,rgba(18,48,63,0) 34%,
+    rgba(18,48,63,.72) 82%,rgba(18,48,63,1) 100%)}
+
+.tete{position:fixed;left:0;right:0;top:0;z-index:8;display:flex;align-items:center;
+  gap:10px;padding:calc(env(safe-area-inset-top) + 14px) 14px 0}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:11px;cursor:pointer;
+  border:3px solid #fdf6e6;background:rgba(18,48,63,.4);display:flex;
+  align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.tete .ret svg{width:17px;height:17px;stroke:#fdf6e6;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou{flex:1;min-width:0}
+.tete .ou b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px;
+  line-height:1.1;text-shadow:0 2px 12px rgba(8,24,38,.6)}
+.tete .ou span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(253,246,230,.6);font-weight:800;margin-top:3px}
+.tete .eu{flex:0 0 auto;padding:8px 13px;border-radius:20px;background:#fdf6e6;
+  color:#12303f;font-size:14px;font-weight:900}
+
+.w{position:fixed;left:0;right:0;top:39%;bottom:0;z-index:5;overflow-y:auto;
+  padding:0 14px calc(env(safe-area-inset-bottom) + 26px)}
+.w::-webkit-scrollbar{display:none}
+
+.dit{padding-top:14px}
+.dit p{font-size:14.5px;line-height:1.7;color:rgba(253,246,230,.82);
+  text-shadow:0 2px 10px rgba(8,24,38,.5)}
+
+h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
+  color:rgba(253,246,230,.45);margin:22px 2px 10px;
+  display:flex;justify-content:space-between;align-items:baseline}
+h2 em{font-style:normal;color:#f0c46a;letter-spacing:.1em}
+
+/* ---------- la lunette ---------- */
+.lunette{width:100%;padding:14px;border-radius:14px;cursor:pointer;
+  border:3px solid #12303f;background:#f0a92e;color:#12303f;
+  font-family:inherit;font-size:15px;font-weight:900;margin-top:6px}
+.lunette:disabled{background:rgba(253,246,230,.12);color:rgba(253,246,230,.4);
+  border-color:transparent;cursor:default}
+.lunette:active:not(:disabled){transform:translateY(2px)}
+
+/* ---------- les gens ---------- */
+.gens{display:flex;flex-direction:column;gap:8px}
+.g{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:13px;
+  background:rgba(253,246,230,.07);border:2px solid rgba(253,246,230,.14)}
+.g.mer{border-color:rgba(240,196,106,.4);background:rgba(240,169,46,.1)}
+.g .av{flex:0 0 42px;height:42px;border-radius:9px;overflow:hidden;background:#dfe8ee;
+  border:2px solid rgba(253,246,230,.5)}
+.g .av svg{display:block;width:100%;height:100%}
+.g .t{flex:1;min-width:0}
+.g .t b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.g .t span{display:block;font-size:11px;color:rgba(253,246,230,.55);margin-top:3px}
+.g .t .cale{display:block;font-size:11.5px;color:#f0c46a;margin-top:5px;font-weight:700}
+.g .n{flex:0 0 auto;font-size:10px;font-weight:900;letter-spacing:.08em;
+  padding:4px 9px;border-radius:12px;background:rgba(253,246,230,.14);
+  color:rgba(253,246,230,.7)}
+
+/* ---------- ce qui a été débarqué ---------- */
+.arr{display:flex;flex-direction:column;gap:6px}
+.a{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:11px;
+  background:rgba(253,246,230,.06);border:2px solid rgba(253,246,230,.1)}
+.a .p{flex:0 0 6px;height:30px;border-radius:4px}
+.a .t{flex:1;min-width:0}
+.a .t b{display:block;font-size:13.5px}
+.a .t span{display:block;font-size:10.5px;color:rgba(253,246,230,.5);margin-top:2px}
+.a .q{flex:0 0 auto;text-align:right}
+.a .q b{display:block;font-size:15px;font-weight:900}
+.a .q span{display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(253,246,230,.42);font-weight:800;margin-top:2px}
+
+/* ---------- les ports ---------- */
+.ports{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.p2{padding:11px 5px;border-radius:11px;text-align:center;
+  background:rgba(253,246,230,.07);border:2px solid rgba(253,246,230,.14)}
+.p2.plein{border-color:#f0c46a}
+.p2 b{display:block;font-size:19px;font-weight:900}
+.p2 span{display:block;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(253,246,230,.5);font-weight:800;margin-top:3px}
+
+.mot{font-size:12px;line-height:1.7;color:rgba(253,246,230,.4);margin-top:20px;
+  text-align:center;padding:0 8px}
+.rien{padding:22px 16px;text-align:center;font-size:13px;line-height:1.7;
+  color:rgba(253,246,230,.5)}
+
+/* ---------- les ailes tournent ---------- */
+.ailes{animation:tourne 14s linear infinite;transform-origin:240px 300px}
+@keyframes tourne{to{transform:rotate(360deg)}}
+.mouette{animation:plane 22s linear infinite}
+.m2{animation-duration:31s;animation-delay:-9s}
+.m3{animation-duration:17s;animation-delay:-14s}
+@keyframes plane{0%{transform:translate(-60px,0)}100%{transform:translate(560px,-30px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+#charge{position:fixed;inset:0;z-index:90;background:#12303f;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  transition:opacity .45s}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-family:'DM Serif Display',Georgia,serif;font-size:21px;color:#f0c46a}
+#charge .fl{width:110px;height:3px;border-radius:2px;background:rgba(240,196,106,.2);
+  overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;background:#f0c46a;
+  animation:va 1.15s ease-in-out infinite}
+@keyframes va{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+</style>
+</head>
+<body>
+
+<div id="charge"><div class="ti">La vigie</div><div class="fl"><i></i></div></div>
+
+<div id="sc"></div>
+
+<div class="tete">
+  <button class="ret" id="ret" aria-label="Retour">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="ou"><b>La vigie</b><span>Les moulins — Palma</span></span>
+  <span class="eu" id="eu">—</span>
+</div>
+
+<div class="w" id="w"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+/* ============================================================
+   LE DÉCOR — la galerie du moulin
+   ============================================================ */
+function rnd(s){ var x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); }
+
+function moulin(){
+  var W = 480, H = 640;
+  var s = '<defs>'
+    + '<linearGradient id="v-ciel" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0%" stop-color="#2f6ba0"/>'
+    +   '<stop offset="42%" stop-color="#8ab4cc"/>'
+    +   '<stop offset="78%" stop-color="#d8d4c0"/>'
+    +   '<stop offset="100%" stop-color="#efd6a8"/></linearGradient>'
+    + '<linearGradient id="v-mer" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0%" stop-color="#5e9aa8"/>'
+    +   '<stop offset="100%" stop-color="#24597a"/></linearGradient>'
+    + '</defs>';
+
+  s += '<rect x="0" y="0" width="' + W + '" height="360" fill="url(#v-ciel)"/>';
+  s += '<circle cx="384" cy="112" r="130" fill="#ffd98a" opacity=".22"/>';
+  s += '<circle cx="384" cy="112" r="19" fill="#fff4d8" opacity=".85"/>';
+
+  /* des nuages étirés, très haut */
+  for (var i = 0; i < 7; i++)
+    s += '<ellipse cx="' + (rnd(i * 11) * 560 - 40).toFixed(0) + '" cy="'
+      + (30 + rnd(i * 7) * 150).toFixed(0) + '" rx="' + (44 + rnd(i * 3) * 110).toFixed(0)
+      + '" ry="' + (3 + rnd(i * 5) * 7).toFixed(0) + '" fill="#fff6e0" opacity="'
+      + (.14 + rnd(i) * .2).toFixed(2) + '"/>';
+
+  /* la mer, jusqu'à l'horizon */
+  s += '<rect x="0" y="252" width="' + W + '" height="150" fill="url(#v-mer)"/>';
+  for (var k = 0; k < 26; k++)
+    s += '<path d="M' + (rnd(k * 3) * 460).toFixed(0) + ' '
+      + (258 + rnd(k * 5) * 130).toFixed(0) + ' h' + (14 + rnd(k * 7) * 48).toFixed(0)
+      + '" stroke="#fdf6e6" stroke-width="1.6" opacity="'
+      + (.1 + rnd(k) * .2).toFixed(2) + '"/>';
+
+  /* la ville en contrebas, et la Seu */
+  s += '<rect x="0" y="392" width="' + W + '" height="34" fill="#a8845e" opacity=".9"/>';
+  for (var t = 0; t < 56; t++){
+    var tx = -8 + t * 9, th = 8 + rnd(t * 3) * 20;
+    s += '<rect x="' + tx.toFixed(0) + '" y="' + (402 - th).toFixed(0) + '" width="'
+      + (8 + rnd(t) * 4).toFixed(0) + '" height="' + (th + 28).toFixed(0) + '" fill="'
+      + ['#c9a882','#b8926a','#d4b48c','#a8845e'][t % 4] + '" opacity="'
+      + (.75 + rnd(t * 5) * .25).toFixed(2) + '"/>';
+    s += '<path d="M' + (tx - 1).toFixed(0) + ' ' + (402 - th).toFixed(0) + ' h'
+      + (10 + rnd(t) * 4).toFixed(0) + ' l-2 -4 h-6 z" fill="#a05a3a" opacity=".85"/>';
+  }
+  s += '<path d="M60 402 v-70 q0 -15 13 -15 h60 q13 0 13 15 v70 z" fill="#e0cba0"/>';
+  for (var c = 0; c < 5; c++)
+    s += '<rect x="' + (64 + c * 18) + '" y="342" width="7" height="60" fill="#c4ac82"/>';
+  s += '<rect x="140" y="306" width="19" height="96" fill="#d8c49a"/>';
+  s += '<path d="M138 306 h23 l-11 -17 z" fill="#a8896a"/>';
+
+  /* ---------- le moulin, au premier plan ---------- */
+  /* le fût, tronconique, chaulé */
+  s += '<path d="M170 640 L196 336 h88 l26 304 z" fill="#efe6d4"/>';
+  s += '<path d="M170 640 L196 336 h30 l-14 304 z" fill="#fdf8ec"/>';
+  s += '<path d="M284 336 l26 304 h-32 l-16 -304 z" fill="#d6ccb8"/>';
+  /* les rangs de pierre */
+  for (var r = 0; r < 9; r++){
+    var y = 372 + r * 30;
+    s += '<path d="M' + (192 - r * 1.2).toFixed(0) + ' ' + y + ' L'
+      + (288 + r * 1.6).toFixed(0) + ' ' + y + '" stroke="#c9bfa8" stroke-width="2"'
+      + ' opacity=".55"/>';
+  }
+  /* la porte et une fenêtre */
+  s += '<path d="M224 640 v-74 q16 -12 32 0 v74 z" fill="#6d5238"/>';
+  s += '<rect x="228" y="440" width="24" height="30" rx="4" fill="#5c4a34"/>';
+  s += '<rect x="231" y="443" width="18" height="24" rx="3" fill="#8fb4c4" opacity=".7"/>';
+
+  /* la galerie où l'on se tient */
+  s += '<path d="M158 344 h164 v14 h-164 z" fill="#8a6a48"/>';
+  s += '<path d="M158 344 h164 v5 h-164 z" fill="#b09070"/>';
+  for (var b = 0; b < 15; b++)
+    s += '<rect x="' + (162 + b * 11) + '" y="322" width="4" height="22" rx="2"'
+      + ' fill="#8a6a48"/>';
+  s += '<path d="M158 320 h164 v5 h-164 z" fill="#a08058"/>';
+
+  /* le toit conique */
+  s += '<path d="M188 336 L240 262 L292 336 z" fill="#8a5a3a"/>';
+  s += '<path d="M188 336 L240 262 L240 336 z" fill="#a86a44"/>';
+  for (var q = 0; q < 7; q++)
+    s += '<path d="M' + (196 + q * 13) + ' 336 L240 ' + (268 + q * 2)
+      + '" stroke="#6d4630" stroke-width="1.6" opacity=".4"/>';
+
+  /* l'arbre et les quatre ailes */
+  s += '<g class="ailes">';
+  for (var a = 0; a < 4; a++){
+    var an = a * 90;
+    s += '<g transform="rotate(' + an + ' 240 300)">';
+    /* le bras */
+    s += '<rect x="236" y="140" width="8" height="160" rx="3" fill="#6d5238"/>';
+    /* la toile tendue sur le cadre */
+    s += '<path d="M244 152 h44 v128 h-44 z" fill="#f4ecd8" opacity=".92"/>';
+    s += '<path d="M244 152 h44 v128 h-44 z" fill="none" stroke="#6d5238"'
+      + ' stroke-width="3"/>';
+    for (var l = 0; l < 5; l++)
+      s += '<path d="M' + (250 + l * 8) + ' 152 v128" stroke="#c9b48a"'
+        + ' stroke-width="1.6" opacity=".8"/>';
+    s += '</g>';
+  }
+  s += '<circle cx="240" cy="300" r="13" fill="#5c4229"/>';
+  s += '<circle cx="240" cy="300" r="6" fill="#8a6a42"/>';
+  s += '</g>';
+
+  /* trois mouettes, qui passent */
+  for (var m = 0; m < 3; m++)
+    s += '<path class="mouette m' + (m + 1) + '" d="M' + (40 + m * 30) + ' '
+      + (120 + m * 46) + ' q9 -8 18 0 q9 -8 18 0" stroke="#fdf6e6"'
+      + ' stroke-width="2.6" fill="none" opacity=".7" stroke-linecap="round"/>';
+
+  return s;
+}
+
+function decor(){
+  document.getElementById('sc').innerHTML =
+    '<svg viewBox="0 0 480 640" preserveAspectRatio="xMidYMax slice"'
+    + ' xmlns="http://www.w3.org/2000/svg">' + moulin() + '</svg>';
+  requestAnimationFrame(function(){
+    document.getElementById('sc').classList.add('pret');
+  });
+}
+
+/* ============================================================
+   LA PAGE
+   ============================================================ */
+var V = null;
+var PORTS = { anse:'Marseille', barcelone:'Barcelone', palma:'Palma', ajaccio:'Ajaccio' };
+function eur(n){ return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+
+/* la pression colore la marchandise : beaucoup débarqué, prix qui tombe */
+function couleurPression(p){
+  return p >= 12 ? '#e08a7a' : p >= 6 ? '#e0b070' : '#8ce0a8';
+}
+
+function ilYA(min){
+  if (min === null || min === undefined) return 'jamais vu';
+  if (min < 3) return 'à l\'instant';
+  if (min < 60) return 'il y a ' + Math.round(min) + ' min';
+  if (min < 1440) return 'il y a ' + Math.round(min / 60) + ' h';
+  return 'il y a ' + Math.round(min / 1440) + ' j';
+}
+
+function poser(){
+  document.getElementById('eu').textContent = eur(V.euros) + ' €';
+  var s = '';
+
+  s += '<div class="dit"><p>Le meunier te laisse monter. D\'ici, on voit la baie, '
+    + 'et plus loin que la baie.</p></div>';
+
+  /* ---- les ports ---- */
+  s += '<h2>Où sont les gens</h2><div class="ports">'
+    + (V.ports || []).map(function(p){
+        return '<div class="p2' + (p.gens ? ' plein' : '') + '"><b>' + p.gens + '</b>'
+          + '<span>' + p.nom + '</span></div>';
+      }).join('') + '</div>';
+
+  /* ---- la lunette ---- */
+  if (!V.lunette)
+    s += '<button class="lunette" id="lun">Emprunter la lunette — '
+      + eur(V.prix) + ' €</button>'
+      + '<p class="mot">Sans elle, tu vois les silhouettes. Avec elle, tu vois '
+      + 'ce qu\'il y a dans les cales.</p>';
+
+  /* ---- les gens ---- */
+  var G = V.gens || [];
+  s += '<h2>Ce que tu distingues' + (V.lunette ? '<em>à la lunette</em>' : '')
+    + '</h2>';
+  s += G.length
+    ? '<div class="gens">' + G.map(function(g){
+        var enMer = g.ou === 'mer';
+        var lieu = enMer
+          ? 'En mer, cap sur ' + (PORTS[g.cap] || g.cap)
+          : 'À ' + (PORTS[g.ou] || g.ou);
+        var cale = '';
+        if (V.lunette){
+          cale = (g.cale && g.cale.length)
+            ? '<span class="cale">Dans sa cale : '
+              + g.cale.map(function(e){
+                  return e.nom + ' (' + e.places + ')';
+                }).join(', ') + '</span>'
+            : '<span class="cale" style="color:rgba(253,246,230,.4)">Cale vide</span>';
+        }
+        return '<div class="g' + (enMer ? ' mer' : '') + '">'
+          + '<span class="av">' + BD.avatarSVG({ avatar: g.avatar }) + '</span>'
+          + '<span class="t"><b>' + g.qui + '</b>'
+          + '<span>' + lieu + ' · ' + ilYA(g.vu) + '</span>' + cale + '</span>'
+          + '<span class="n">nv ' + g.niveau + '</span></div>';
+      }).join('') + '</div>'
+    : '<p class="rien">La mer est vide. Tu es seul dehors aujourd\'hui.</p>';
+
+  /* ---- ce qui a été débarqué ---- */
+  var A = V.arrivages || [];
+  s += '<h2>Ce qu\'on a débarqué<em>4 derniers jours</em></h2>';
+  s += A.length
+    ? '<div class="arr">' + A.map(function(a){
+        return '<div class="a">'
+          + '<span class="p" style="background:' + couleurPression(a.pression) + '"></span>'
+          + '<span class="t"><b>' + a.nom + '</b>'
+          + '<span>' + (PORTS[a.ou] || a.ou) + ' · ' + a.quand + '</span></span>'
+          + '<span class="q"><b>' + a.places + '</b><span>places</span></span></div>';
+      }).join('') + '</div>'
+      + '<p class="mot">Le trait de gauche dit la pression du marché : vert, il y a '
+      + 'de la place ; rouge, le port est saturé et les prix tombent.</p>'
+    : '<p class="rien">Rien n\'a été débarqué ces jours-ci.</p>';
+
+  document.getElementById('w').innerHTML = s;
+  var l = document.getElementById('lun');
+  if (l) l.onclick = prendre;
+}
+
+async function prendre(){
+  var b = document.getElementById('lun');
+  b.disabled = true; b.textContent = 'Le meunier la décroche…';
+  var x;
+  try { x = await BD.agir('prendre_la_lunette'); } catch(e){ x = null; }
+  if (!x || !x.ok){
+    b.disabled = false;
+    b.textContent = x && x.pourquoi === 'trop_cher'
+      ? 'Pas assez en poche' : 'Pas maintenant';
+    return;
+  }
+  await charger();
+}
+
+async function charger(){
+  var r;
+  try { r = await BD.agir('la_vigie'); } catch(e){ leverAube(); return; }
+  leverAube();
+  if (!r || !r.ok){
+    document.getElementById('w').innerHTML = '<p class="rien">'
+      + (r && r.pourquoi === 'pas_ici'
+          ? 'Le moulin est à Palma. Il faudra y monter en personne.'
+          : 'La porte de la galerie est fermée.') + '</p>';
+    return;
+  }
+  V = r; poser();
+}
+
+var AUBE = false;
+function leverAube(){
+  if (AUBE) return;
+  AUBE = true;
+  var c = document.getElementById('charge');
+  if (!c) return;
+  c.classList.add('parti');
+  setTimeout(function(){ c.remove(); }, 500);
+}
+setTimeout(leverAube, 6000);
+
+document.getElementById('ret').onclick = function(){ location.href = 'hub.html?v=3'; };
+
+decor();
+charger();
+
+var t = null;
+addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(decor, 240); });
+</script>
+</body>
+</html>
