@@ -189,6 +189,20 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 .pi-m{font-size:12.5px;line-height:1.55;color:rgba(246,230,216,.5);
   text-align:center;margin:11px 0}
 
+/* ---------- le rideau, avant le vrai passage ---------- */
+.rideau{position:absolute;inset:0;overflow:hidden;background:#2a0c14}
+.rideau i{position:absolute;top:0;bottom:0;width:52%;
+  background:repeating-linear-gradient(90deg,#a8323a 0 14px,#7d1a20 14px 28px);
+  border-bottom:5px solid #d4a03a}
+.rideau .rg{left:0;animation:ouvreG 1.2s .25s cubic-bezier(.5,0,.3,1) forwards}
+.rideau .rd{right:0;animation:ouvreD 1.2s .25s cubic-bezier(.5,0,.3,1) forwards}
+@keyframes ouvreG{to{transform:translateX(-100%)}}
+@keyframes ouvreD{to{transform:translateX(100%)}}
+.rideau b{position:absolute;left:0;right:0;top:44%;text-align:center;
+  font-family:'DM Serif Display',Georgia,serif;font-size:23px;color:#f0d69a;
+  z-index:2;opacity:0;animation:annonce 1.5s forwards}
+@keyframes annonce{0%{opacity:0}22%{opacity:1}72%{opacity:1}100%{opacity:0}}
+
 /* ---------- l'affiche de la semaine ---------- */
 .aff{margin-top:12px;border-radius:13px;overflow:hidden;
   border:2px solid rgba(212,160,58,.4)}
@@ -1492,7 +1506,8 @@ function lancerMassue(J){
     x0: 50 + g * (14 + Math.random() * 16),
     x1: 50 - g * (14 + Math.random() * 16),
     h: .52 + Math.random() * .3,
-    v: 2450 - Math.min(1100, J.attrapes * 42),
+    /* devant le public, ça va plus vite : on ne répète plus */
+    v: (REPETITION ? 2600 : 2200) - Math.min(1200, J.attrapes * 46),
     ne: J.t, prise:false, ratee:false,
     c: ['#d4a03a','#c9302c','#e8dcc0','#6ab0a0'][Math.floor(Math.random() * 4)]
   });
@@ -1500,17 +1515,128 @@ function lancerMassue(J){
 
 function ouEnEst(m, t){ return (t - m.ne) / m.v; }
 
+/* ---------- le chapiteau vide, en plein jour ----------
+   La répétition se fait la porte ouverte : lumière plate, gradins
+   nus, la piste pas balayée. Rien pour t'aider, rien pour te porter. */
+function fondRepetition(w, h, J){
+  var s = '<defs><linearGradient id="r-toile" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="#4a3a34"/>'
+    + '<stop offset="100%" stop-color="#6d5648"/></linearGradient>'
+    + '<radialGradient id="r-sol" cx="0.5" cy="1">'
+    + '<stop offset="0%" stop-color="#c9ac80"/>'
+    + '<stop offset="100%" stop-color="#8a6c48"/></radialGradient></defs>';
+  s += '<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="url(#r-toile)"/>';
+  /* le jour qui entre par l'ouverture, à gauche */
+  s += '<path d="M0 0 L' + (w*.34).toFixed(0) + ' 0 L' + (w*.62).toFixed(0) + ' ' + h
+    + ' L0 ' + h + ' Z" fill="#f0e2c0" opacity=".08"/>';
+  /* les fuseaux de toile, à peine lisibles */
+  for (var q = 0; q < 7; q++)
+    s += '<path d="M' + (w/2) + ' -30 L' + (q * w / 6).toFixed(0) + ' ' + h
+      + '" stroke="#000" stroke-width="2" opacity=".1"/>';
+  /* les bancs vides */
+  for (var b = 0; b < 3; b++)
+    s += '<rect x="-10" y="' + (h * (.3 + b * .07)).toFixed(0) + '" width="'
+      + (w + 20) + '" height="' + (h * .035).toFixed(0) + '" fill="#3e3028"'
+      + ' opacity=".5"/>';
+  s += '<ellipse cx="' + (w/2) + '" cy="' + (h + h*.18).toFixed(0) + '" rx="'
+    + (w*.78).toFixed(0) + '" ry="' + (h*.34).toFixed(0) + '" fill="url(#r-sol)"/>';
+  return s;
+}
+
+/* ---------- le vrai passage : le chapiteau plein, le soir ----------
+   Deux poursuites croisées, la toile rouge et or, la piste cerclée,
+   et trois rangs de public qui se lèvent quand ça monte. */
+function fondPassage(w, h, J){
+  var s = '<defs>'
+    + '<linearGradient id="p-toile" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0%" stop-color="#2a0c14"/>'
+    +   '<stop offset="100%" stop-color="#5c1420"/></linearGradient>'
+    + '<radialGradient id="p-sol" cx="0.5" cy="1">'
+    +   '<stop offset="0%" stop-color="#f0d49a"/>'
+    +   '<stop offset="70%" stop-color="#c9a068"/>'
+    +   '<stop offset="100%" stop-color="#7d5230"/></radialGradient>'
+    + '<radialGradient id="p-halo" cx="0.5" cy="0.5">'
+    +   '<stop offset="0%" stop-color="#ffe8b8" stop-opacity=".4"/>'
+    +   '<stop offset="100%" stop-color="#ffe8b8" stop-opacity="0"/></radialGradient>'
+    + '</defs>';
+  s += '<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="url(#p-toile)"/>';
+
+  /* les fuseaux rouge et crème, qui convergent tout en haut */
+  for (var q = 0; q < 9; q++){
+    var x1 = -w * .3 + q * (w * 1.6 / 9), x2 = -w * .3 + (q + 1) * (w * 1.6 / 9);
+    s += '<path d="M' + (w/2) + ' -40 L' + x1.toFixed(0) + ' ' + (h * .52).toFixed(0)
+      + ' L' + x2.toFixed(0) + ' ' + (h * .52).toFixed(0) + ' Z" fill="'
+      + (q % 2 ? '#7d1a20' : '#a8323a') + '" opacity=".9"/>';
+  }
+  s += '<ellipse cx="' + (w/2) + '" cy="-34" rx="' + (w*.09).toFixed(0)
+    + '" ry="14" fill="#3a0c14"/>';
+
+  /* les guirlandes d'ampoules, en festons */
+  for (var g = 0; g < 12; g++){
+    var gx = -6 + g * (w + 12) / 11;
+    var gy = h * .2 + Math.sin(g / 11 * Math.PI * 3) * h * .035;
+    var on = (g + Math.floor(J.t / 260)) % 3 !== 0;
+    s += '<circle cx="' + gx.toFixed(0) + '" cy="' + gy.toFixed(0) + '" r="3.6"'
+      + ' fill="' + (on ? '#ffe08a' : '#8a6a3a') + '"/>';
+    if (on)
+      s += '<circle cx="' + gx.toFixed(0) + '" cy="' + gy.toFixed(0) + '" r="10"'
+        + ' fill="#ffe08a" opacity=".18"/>';
+  }
+
+  /* le public : trois rangs, qui se lèvent avec la suite */
+  var lev = Math.min(1, J.suite / 20);
+  for (var r = 0; r < 3; r++){
+    var ry = h * (.3 + r * .062) + Math.sin(J.t / 400 + r) * lev * 3;
+    var n = 11 + r * 2;
+    for (var i = 0; i < n; i++){
+      var px = -8 + i * (w + 16) / (n - 1);
+      var rr = (h * .026) * (1 - r * .1);
+      s += '<circle cx="' + px.toFixed(0) + '" cy="' + ry.toFixed(0) + '" r="'
+        + rr.toFixed(1) + '" fill="' + ['#2a1620','#361c28','#241420'][i % 3] + '"/>';
+      s += '<path d="M' + (px - rr * 1.5).toFixed(0) + ' ' + (ry + rr * 3.4).toFixed(0)
+        + ' q' + (rr * 1.5).toFixed(0) + ' -' + (rr * 3).toFixed(0) + ' '
+        + (rr * 3).toFixed(0) + ' 0 z" fill="#2a1620"/>';
+      /* quelques visages attrapent la lumière */
+      if ((i + r) % 4 === 0)
+        s += '<circle cx="' + (px - rr * .3).toFixed(0) + '" cy="'
+          + (ry - rr * .2).toFixed(0) + '" r="' + (rr * .5).toFixed(1)
+          + '" fill="#c9925e" opacity="' + (.3 + lev * .4).toFixed(2) + '"/>';
+    }
+  }
+
+  /* les deux poursuites, croisées sur la main */
+  var mx = w / 2, my = h * .74;
+  [[w * .12, -1], [w * .88, 1]].forEach(function(o){
+    s += '<path d="M' + o[0].toFixed(0) + ' 0 L' + (mx - w * .2).toFixed(0) + ' '
+      + (my + h * .1).toFixed(0) + ' L' + (mx + w * .2).toFixed(0) + ' '
+      + (my + h * .1).toFixed(0) + ' Z" fill="#ffe8b8" opacity=".07"/>';
+  });
+  s += '<ellipse cx="' + mx + '" cy="' + my.toFixed(0) + '" rx="' + (w*.44).toFixed(0)
+    + '" ry="' + (h*.3).toFixed(0) + '" fill="url(#p-halo)"/>';
+
+  /* la piste, cerclée de rouge et or */
+  s += '<ellipse cx="' + (w/2) + '" cy="' + (h + h*.16).toFixed(0) + '" rx="'
+    + (w*.82).toFixed(0) + '" ry="' + (h*.36).toFixed(0) + '" fill="url(#p-sol)"/>';
+  s += '<ellipse cx="' + (w/2) + '" cy="' + (h + h*.16).toFixed(0) + '" rx="'
+    + (w*.82).toFixed(0) + '" ry="' + (h*.36).toFixed(0) + '" fill="none"'
+    + ' stroke="#a8323a" stroke-width="9"/>';
+  s += '<ellipse cx="' + (w/2) + '" cy="' + (h + h*.16 + 7).toFixed(0) + '" rx="'
+    + (w*.82).toFixed(0) + '" ry="' + (h*.36).toFixed(0) + '" fill="none"'
+    + ' stroke="#d4a03a" stroke-width="3.4" opacity=".8"/>';
+
+  /* la poussière dans les faisceaux */
+  for (var d = 0; d < 12; d++){
+    var dx = mx + Math.sin(J.t / 2600 + d * 2.1) * w * .3;
+    var dy = h * .18 + ((J.t / 26 + d * 90) % (h * .7));
+    s += '<circle cx="' + dx.toFixed(0) + '" cy="' + dy.toFixed(0) + '" r="1.7"'
+      + ' fill="#ffeec8" opacity=".4"/>';
+  }
+  return s;
+}
+
 function dessinerPiste(J, w, h){
   var my = h * .74, mx = w / 2;
-  var s = '<defs><radialGradient id="p-sol" cx="0.5" cy="1">'
-    + '<stop offset="0%" stop-color="#e8c890"/>'
-    + '<stop offset="100%" stop-color="#7d5230"/></radialGradient></defs>';
-  s += '<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="#2a1018"/>';
-  s += '<ellipse cx="' + (w/2) + '" cy="' + (h + h*.18).toFixed(0) + '" rx="'
-    + (w*.78).toFixed(0) + '" ry="' + (h*.34).toFixed(0) + '" fill="url(#p-sol)"/>';
-  s += '<path d="M' + (w*.46).toFixed(0) + ' 0 L' + (w*.12).toFixed(0) + ' ' + h
-    + ' L' + (w*.88).toFixed(0) + ' ' + h + ' L' + (w*.54).toFixed(0)
-    + ' 0 Z" fill="#ffe0a0" opacity=".08"/>';
+  var s = REPETITION ? fondRepetition(w, h, J) : fondPassage(w, h, J);
 
   /* Le cercle de la main. Il s'allume quand une massue entre dans la
      fenêtre, et l'anneau se referme à mesure qu'elle approche du
@@ -1557,9 +1683,23 @@ function dessinerPiste(J, w, h){
     var a = p * 720 + (m.x1 > m.x0 ? 0 : 180);
     s += '<g transform="translate(' + x.toFixed(1) + ',' + y.toFixed(1)
       + ') rotate(' + a.toFixed(0) + ')">';
+    /* devant le public, les massues portent des rubans qui traînent */
+    if (!REPETITION){
+      for (var tr = 1; tr < 4; tr++){
+        var pt = p - tr * .022;
+        if (pt < 0) continue;
+        var tx = (m.x0 + (m.x1 - m.x0) * pt) / 100 * w;
+        var ty = my - Math.sin(Math.PI * Math.min(1, pt)) * h * m.h;
+        s += '<circle cx="' + (tx - x).toFixed(1) + '" cy="' + (ty - y).toFixed(1)
+          + '" r="' + (5 - tr).toFixed(1) + '" fill="' + m.c + '" opacity="'
+          + (.26 - tr * .06).toFixed(2) + '"/>';
+      }
+    }
     s += '<path d="M0 14 L0 -6" stroke="#e8dcc0" stroke-width="5" stroke-linecap="round"/>';
     s += '<ellipse cx="0" cy="-13" rx="7" ry="10" fill="' + m.c
       + '" stroke="#2a1018" stroke-width="2.4"/>';
+    if (!REPETITION)
+      s += '<ellipse cx="-2" cy="-16" rx="2.6" ry="4" fill="#ffffff" opacity=".45"/>';
     s += '<circle cx="0" cy="16" r="3.4" fill="#c9b48a"/>';
     s += '</g>';
     if (m.ratee)
@@ -1572,6 +1712,22 @@ function dessinerPiste(J, w, h){
       + (w*.17 + J.eclat*26).toFixed(0) + '" fill="none" stroke="#ffe08a"'
       + ' stroke-width="' + (5*J.eclat).toFixed(1) + '" opacity="'
       + J.eclat.toFixed(2) + '"/>';
+
+  /* les confettis : ils tombent quand la suite devient sérieuse,
+     et seulement devant le public. On les mérite. */
+  if (!REPETITION && J.suite >= 10){
+    var n = Math.min(26, 6 + J.suite);
+    for (var cf = 0; cf < n; cf++){
+      var vit = 60 + (cf % 7) * 26;
+      var cy = ((J.t / 1000 * vit) + cf * 137) % (h + 60) - 30;
+      var cx2 = ((cf * 89) % 100) / 100 * w + Math.sin(J.t / 700 + cf) * 14;
+      s += '<rect x="' + cx2.toFixed(0) + '" y="' + cy.toFixed(0) + '" width="5"'
+        + ' height="9" rx="1.4" fill="'
+        + ['#d4a03a','#c9302c','#f2e8dc','#6ab0a0'][cf % 4] + '" opacity=".8"'
+        + ' transform="rotate(' + ((J.t / 4 + cf * 40) % 360).toFixed(0) + ' '
+        + (cx2 + 2).toFixed(0) + ' ' + (cy + 4).toFixed(0) + ')"/>';
+    }
+  }
 
   /* le mot du jugé, qui monte et s'efface */
   if (J.juge && J.t - J.jugeT < 620){
@@ -1590,18 +1746,6 @@ function dessinerPiste(J, w, h){
     s += '<text x="' + (w - 16) + '" y="30" text-anchor="end"'
       + ' font-family="Georgia,serif" font-size="' + (20 + Math.min(14, J.suite / 4)).toFixed(0)
       + '" fill="#d4a03a" opacity=".85">' + J.suite + ' d\'affilée</text>';
-
-  /* le public, en ombres au premier plan : il se lève quand ça monte */
-  var lev = Math.min(1, J.suite / 22);
-  for (var q = 0; q < 9; q++){
-    var px = 14 + q * (w - 28) / 8;
-    var ph = h * (.055 + lev * .022) * (1 + (q % 3) * .12);
-    s += '<circle cx="' + px.toFixed(0) + '" cy="' + (h - ph * 2.1).toFixed(0)
-      + '" r="' + (ph * .62).toFixed(0) + '" fill="#180a12" opacity=".9"/>';
-    s += '<path d="M' + (px - ph).toFixed(0) + ' ' + h + ' q' + ph.toFixed(0)
-      + ' -' + (ph * 1.7).toFixed(0) + ' ' + (ph * 2).toFixed(0)
-      + ' 0 z" fill="#180a12" opacity=".9"/>';
-  }
 
   var reste = Math.max(0, 1 - (performance.now() - J.debut) / J.duree);
   var final = J.t > J.duree - 10000;
@@ -1625,8 +1769,10 @@ function boucleJeu(){
   var final = JEU.t > JEU.duree - 10000;
   if (JEU.t > JEU.suivante){
     lancerMassue(JEU);
-    var ecart = Math.max(560, 1250 - JEU.attrapes * 26);
-    JEU.suivante = JEU.t + (final ? ecart * .62 : ecart);
+    var ecart = REPETITION
+      ? Math.max(620, 1350 - JEU.attrapes * 24)
+      : Math.max(500, 1150 - JEU.attrapes * 30);
+    JEU.suivante = JEU.t + (final ? ecart * .58 : ecart);
   }
   JEU.massues.forEach(function(m){
     if (!m.prise && !m.ratee && ouEnEst(m, JEU.t) > 1.1){
@@ -1721,10 +1867,22 @@ function ouvrirPiste(repet){
 }
 
 function demarrerNumero(){
-  JEU = jeuNeuf();
+  var el = document.getElementById('pi-sc');
   document.getElementById('pi-go').style.display = 'none';
   document.getElementById('pi-m').textContent =
     'Touche quand une massue passe dans le cercle.';
+
+  /* devant le public, le rideau s'ouvre avant qu'on lance */
+  if (!REPETITION){
+    el.innerHTML = '<div class="rideau"><i class="rg"></i><i class="rd"></i>'
+      + '<b>Mesdames, messieurs…</b></div>';
+    setTimeout(function(){
+      JEU = jeuNeuf();
+      requestAnimationFrame(boucleJeu);
+    }, 1500);
+    return;
+  }
+  JEU = jeuNeuf();
   requestAnimationFrame(boucleJeu);
 }
 
