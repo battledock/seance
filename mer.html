@@ -100,6 +100,20 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
 .arriver.on{opacity:1;transform:none;pointer-events:auto}
 .arriver:active{background:#d9962a}
 
+/* la chèvre sur le pont : elle broute, elle remue la queue,
+   et sa clochette sonne quand la barque pique du nez */
+.qq{animation:queue2 2.1s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:0 50%}
+@keyframes queue2{0%,100%{transform:rotate(0)}50%{transform:rotate(-18deg)}}
+.tetee{animation:broute 6.5s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:80% 30%}
+@keyframes broute{0%,58%,100%{transform:rotate(0)}
+  68%{transform:rotate(16deg)}78%{transform:rotate(14deg)}88%{transform:rotate(0)}}
+.cloche{animation:sonne 4.8s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:50% 0}
+@keyframes sonne{0%,100%{transform:rotate(0)}
+  46%{transform:rotate(11deg)}54%{transform:rotate(-9deg)}62%{transform:rotate(0)}}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 :focus-visible{outline:3px solid #fffaf0;outline-offset:2px}
 
@@ -134,6 +148,7 @@ html,body{height:100%;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
       stroke-width="4" stroke-linejoin="round"/>
     <rect x="59" y="4" width="5" height="52" rx="2.5" fill="#12303f"/>
     <path d="M10 54 q53 22 106 0 l-12 16 q-42 12 -82 0 Z" fill="#12303f"/>
+    <g id="passagere" style="display:none"></g>
   </svg>
 </div>
 
@@ -174,14 +189,26 @@ const MOT  = { barcelone:'Débarquer à Barcelone', palma:'Débarquer à Palma',
 
 let DE = 'anse', VERS = 'barcelone', JOURS = 1;
 
+/* quand on voyage avec la chèvre, la traversée n'est plus la même :
+   elle s'occupe, et elle s'occupe de ta cargaison */
+const AVEC_ROSINE = [
+  "Le port s'efface. Elle regarde derrière, elle.",
+  "Elle a trouvé le sac de cordages. Elle mange le sac.",
+  "La lumière baisse. Elle s'est couchée contre la voile.",
+  "Elle bêle une fois dans la nuit, sans raison. Puis plus rien.",
+  "Le ciel pâlit. Elle t'a pris ta place à l'abri du vent.",
+  "Une côte, là-bas. Elle la voit avant toi.",
+  "On entre dans le port. Elle descend la première."
+];
+
 function moment(p){
-  if (p < 8)  return "Le port s'efface derrière toi";
-  if (p < 24) return "Plus rien que de l'eau";
-  if (p < 42) return 'La lumière baisse';
-  if (p < 58) return JOURS > 1 ? 'Deux nuits à tenir' : 'La nuit, seul à la barre';
-  if (p < 76) return "Le ciel pâlit à l'avant";
-  if (p < 92) return 'Une côte, là-bas';
-  return 'On entre dans le port';
+  const i = p < 8 ? 0 : p < 24 ? 1 : p < 42 ? 2 : p < 58 ? 3
+          : p < 76 ? 4 : p < 92 ? 5 : 6;
+  if (ROSINE) return AVEC_ROSINE[i];
+  if (i === 3) return JOURS > 1 ? 'Deux nuits à tenir' : 'La nuit, seul à la barre';
+  return ["Le port s'efface derrière toi", "Plus rien que de l'eau",
+    'La lumière baisse', '', "Le ciel pâlit à l'avant", 'Une côte, là-bas',
+    'On entre dans le port'][i];
 }
 
 function heureDe(p){
@@ -214,6 +241,47 @@ function peindre(p){
     document.getElementById('tc').setAttribute('content', c);
     dernierTc = c;
   }
+}
+
+let ROSINE = false;
+
+/* ============================================================
+   LA PASSAGÈRE
+   Quand on porte la chèvre du cirque, elle est sur le pont.
+   Elle broute la cargaison, elle regarde la mer, elle bêle
+   quand la barque tangue. Elle ne sert à rien : c'est le but.
+   ============================================================ */
+function rosineAbord(){
+  var c = '#d8cfc0', f = '#3a2a22';
+  var s = '<g transform="translate(40,40) scale(0.30)">';
+  /* les pattes, plantées sur le pont */
+  s += '<path d="M-20 -26 v26 M-9 -26 v27 M9 -26 v27 M20 -26 v26" stroke="' + f
+    + '" stroke-width="6" stroke-linecap="round"/>';
+  /* le corps */
+  s += '<ellipse cx="0" cy="-38" rx="30" ry="18" fill="' + c + '"/>';
+  s += '<ellipse cx="-6" cy="-42" rx="21" ry="10" fill="#ffffff" opacity=".22"/>';
+  /* la queue, qui remue avec la houle */
+  s += '<path class="qq" d="M28 -44 l10 -8 l-2 9 z" fill="' + c + '"/>';
+  /* le cou et la tête, tournés vers l'avant du bateau */
+  s += '<g class="tetee">';
+  s += '<path d="M-24 -44 q-14 -6 -20 -20 l12 -6 q8 12 16 16 z" fill="' + c + '"/>';
+  s += '<ellipse cx="-46" cy="-70" rx="14" ry="10" fill="' + c + '"/>';
+  s += '<ellipse cx="-58" cy="-64" rx="7" ry="6" fill="#efe6da"/>';
+  s += '<circle cx="-61" cy="-65" r="1.8" fill="' + f + '"/>';
+  s += '<path d="M-40 -78 q-10 -8 -18 -4 q8 6 16 8 z" fill="' + c + '"/>';
+  s += '<path d="M-44 -80 q-6 -18 6 -24 q-4 10 0 22 M-36 -80 q-4 -16 8 -20'
+    + ' q-6 8 -2 18" stroke="' + f + '" stroke-width="4.4" fill="none"'
+    + ' stroke-linecap="round"/>';
+  s += '<ellipse cx="-50" cy="-73" rx="4.6" ry="4.2" fill="#efe6da"/>';
+  s += '<circle cx="-50" cy="-73" r="2.6" fill="' + f + '"/>';
+  s += '<path d="M-56 -56 q-2 10 2 14 q4 -6 3 -14 z" fill="' + c + '"/>';
+  s += '</g>';
+  /* la clochette, qui sonne à chaque creux */
+  s += '<path d="M-34 -56 q10 6 20 2" stroke="#8a2420" stroke-width="3.4" fill="none"/>';
+  s += '<g class="cloche"><path d="M-26 -50 q-4 8 4 10 q8 -2 4 -10 z" fill="#d4a03a"'
+    + ' stroke="#8a6a20" stroke-width="1.8"/>'
+    + '<circle cx="-22" cy="-39" r="2.2" fill="#8a6a20"/></g>';
+  return s + '</g>';
 }
 
 /* ============================================================
@@ -249,6 +317,13 @@ function poser(p){
 
   /* on n'est en mer que si le serveur l'a noté */
   if (!d.parti_le){ location.href = 'jeu.html'; return; }
+
+  /* la chèvre du cirque monte sur le pont, si elle est du voyage */
+  if ((d.cale || []).some(function(e){ return e && e.k === 'rosine'; })){
+    var g = document.getElementById('passagere');
+    if (g){ g.innerHTML = rosineAbord(); g.style.display = ''; }
+    ROSINE = true;
+  }
 
   VERS = d.cap || 'barcelone';
   DE = (d.port && d.port !== VERS) ? d.port : 'anse';

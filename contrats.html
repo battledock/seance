@@ -198,14 +198,24 @@ async function dessiner(){
   const dejaPris = libre <= 0;
   const cale = document.getElementById('c-cale');
   cale.style.display = 'flex';
+  /* la chèvre n'est pas une marchandise : on la nomme à part */
+  const laChevre = dedans.some(x => x.nom === 'Rosine');
+  const marchand = dedans.filter(x => x.nom !== 'Rosine');
   document.getElementById('c-cale-t').innerHTML = dejaPris
-    ? (dedans.length
-        ? 'Ta cale porte déjà <b>' + dedans.map(x => x.nom).join(', ')
-          + '</b> pour ' + (OU[dedans[0].vers] || dedans[0].vers)
+    ? (marchand.length
+        ? 'Ta cale porte déjà <b>' + marchand.map(x => x.nom).join(', ')
+          + '</b> pour ' + (OU[marchand[0].vers] || marchand[0].vers)
+          + (laChevre ? ', et une chèvre' : '')
           + '. Va livrer avant d\'en charger une autre.'
-        : "Ta cale est prise. Va livrer avant d'en charger une autre.")
-    : 'Ta cale prend <b>' + r.places + ' place' + (r.places > 1 ? 's' : '')
-      + '</b> — une course, un chargement.';
+        : laChevre
+          ? 'Il y a une chèvre dans ta cale. Elle prend de la place, '
+            + 'et elle mange ce qu\'elle trouve.'
+          : "Ta cale est prise. Va livrer avant d'en charger une autre.")
+    : (laChevre
+        ? 'Une chèvre occupe une place. Il t\'en reste <b>' + libre
+          + '</b> — elle mangera un peu de ce que tu mets à côté.'
+        : 'Ta cale prend <b>' + r.places + ' place' + (r.places > 1 ? 's' : '')
+          + '</b> — une course, un chargement.');
 
   if (!C.length){
     L.innerHTML = '<p class="rien">Le quai est vide aujourd\'hui.<br>'
