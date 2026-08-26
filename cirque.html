@@ -1234,18 +1234,45 @@ function blocRendre(){
 function blocConcours(){
   if (!C.vet || C.chevre || C.concours_gagne) return '';
   if (!AL) return '';
-  var g = AL.chevres || [];
-  return '<h2 class="dx">Laquelle est Rosine ?'
-    + '<em>' + AL.reste + ' essai' + (AL.reste > 1 ? 's' : '') + '</em></h2>'
-    + '<div class="rang">' + g.map(function(z){
-        return '<div class="ch' + (AL.mamma === z.n ? ' regardee' : '')
-          + '" data-n="' + z.n + '">'
-          + '<svg viewBox="-70 -100 140 110" xmlns="http://www.w3.org/2000/svg">'
-          + chevre(0, 0, .82, ['#d8cfc0','#a89078','#6d5c4e','#efe6da'][z.robe],
-              z.cornes, z.oeil, z.clochette) + '</svg>'
-          + '<b>' + z.n + '</b></div>';
-      }).join('') + '</div>'
-    + (AL.mamma ? '<p class="mot">La Mamma en regarde une.</p>' : '');
+  var g = AL.chevres || [], hors = AL.ecartees || [];
+  var fini = AL.reste < 1;
+
+  var h = '<h2 class="dx">Laquelle est Rosine ?'
+    + (fini ? '<em style="color:rgba(246,230,216,.4)">demain</em>'
+            : '<em>' + AL.reste + ' essai' + (AL.reste > 1 ? 's' : '') + '</em>')
+    + '</h2>';
+
+  h += '<div class="rang">' + g.map(function(z){
+      var barree = hors.indexOf(z.n) >= 0;
+      return '<div class="ch' + (AL.mamma === z.n ? ' regardee' : '')
+        + (barree || fini ? ' non' : '') + '"'
+        + (barree || fini ? '' : ' data-n="' + z.n + '"') + '>'
+        + '<svg viewBox="-70 -100 140 110" xmlns="http://www.w3.org/2000/svg">'
+        + chevre(0, 0, .82, ['#d8cfc0','#a89078','#6d5c4e','#efe6da'][z.robe],
+            z.cornes, z.oeil, z.clochette)
+        + (barree
+            ? '<path d="M-52 -78 L44 -6 M44 -78 L-52 -6" stroke="#c9302c"'
+              + ' stroke-width="7" stroke-linecap="round" opacity=".8"/>'
+            : '')
+        + '</svg><b>' + z.n + '</b></div>';
+    }).join('') + '</div>';
+
+  /* trois essais ratés ne doivent pas fermer la porte sans un mot */
+  if (fini){
+    h += AL.rachat
+      ? '<p class="mot">Elles sont rentrées à l\'étable. Reviens demain.</p>'
+      : '<div class="choix" style="margin-top:14px">'
+        + '<button class="vif" id="c-registre"'
+        + (AL.euros < AL.prix_registre ? ' disabled' : '') + '>'
+        + '<b>Consulter le registre de Pasquale</b>'
+        + '<span>' + (AL.euros < AL.prix_registre
+            ? 'Il en veut ' + AL.prix_registre + ' €'
+            : AL.prix_registre + ' € — trois mois de notes sur ces bêtes') + '</span>'
+        + '</button></div>';
+  } else if (AL.mamma){
+    h += '<p class="mot">La Mamma en regarde une.</p>';
+  }
+  return h;
 }
 
 /* aller derrière le chapiteau est un déplacement : le décor change */
@@ -1334,6 +1361,8 @@ function brancher(){
   document.querySelectorAll('[data-n]').forEach(function(b){
     b.onclick = function(){ designer(+b.dataset.n); };
   });
+  var reg = document.getElementById('c-registre');
+  if (reg) reg.onclick = registre;
   document.querySelectorAll('[data-r]').forEach(function(b){
     b.onclick = function(){ faireRire(b.dataset.r); };
   });
@@ -1381,6 +1410,16 @@ async function designer(n){
   if (!x || !x.ok) return;
   document.getElementById('w').innerHTML = dits([x.mot]);
   setTimeout(charger, x.bon ? 3600 : 2400);
+}
+
+async function registre(){
+  var b = document.getElementById('c-registre');
+  b.disabled = true;
+  var x;
+  try { x = await BD.agir('cirque_registre'); } catch(e){ x = null; }
+  if (!x || !x.ok){ b.querySelector('span').textContent = 'Pas maintenant.'; return; }
+  document.getElementById('w').innerHTML = dits([x.mot]);
+  setTimeout(charger, 3200);
 }
 
 async function faireRire(quoi){
