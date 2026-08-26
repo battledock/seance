@@ -647,6 +647,11 @@ document.getElementById('ouv-ok').onclick = () => {
     const tc = document.querySelector('meta[name="theme-color"]');
     if (tc) tc.setAttribute('content', ci[0]);
     try { localStorage.setItem('bd-port', PORT); } catch(e){}
+    /* le monde continue de tourner entre deux connexions : les
+       capitaines naviguent et livrent. Le serveur ne les réveille
+       qu'une fois toutes les six minutes, quoi qu'on demande. */
+    BD.agir('faire_vivre_les_ports').catch(function(){});
+
     VECU = (d.rencontres || []).slice();
     /* ouvrir une affaire chez Félix débloque la fabrique */
     if (d.affaire) VECU.push('affaire');

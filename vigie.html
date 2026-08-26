@@ -78,6 +78,12 @@ h2 em{font-style:normal;color:#f0c46a;letter-spacing:.1em}
 .g .t{flex:1;min-width:0}
 .g .t b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;
   text-overflow:ellipsis}
+/* un capitaine n'est pas un joueur : on le dit, discrètement */
+.g .t b em{font-style:normal;font-size:8.5px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:800;color:rgba(253,246,230,.4);
+  border:1px solid rgba(253,246,230,.24);border-radius:9px;padding:1px 6px;
+  margin-left:7px;vertical-align:1px}
+.g.cap{background:rgba(253,246,230,.04)}
 .g .t span{display:block;font-size:11px;color:rgba(253,246,230,.55);margin-top:3px}
 .g .t .cale{display:block;font-size:11.5px;color:#f0c46a;margin-top:5px;font-weight:700}
 .g .n{flex:0 0 auto;font-size:10px;font-weight:900;letter-spacing:.08em;
@@ -779,9 +785,11 @@ function poser(){
                 }).join(', ') + '</span>'
             : '<span class="cale" style="color:rgba(253,246,230,.4)">Cale vide</span>';
         }
-        return '<div class="g' + (enMer ? ' mer' : '') + '">'
+        return '<div class="g' + (enMer ? ' mer' : '')
+          + (g.capitaine ? ' cap' : '') + '">'
           + '<span class="av">' + BD.avatarSVG({ avatar: g.avatar }) + '</span>'
-          + '<span class="t"><b>' + g.qui + '</b>'
+          + '<span class="t"><b>' + g.qui
+          + (g.capitaine ? '<em>capitaine</em>' : '') + '</b>'
           + '<span>' + lieu + ' · ' + ilYA(g.vu) + '</span>' + cale + '</span>'
           + '<span class="n">nv ' + g.niveau + '</span></div>';
       }).join('') + '</div>'
