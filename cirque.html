@@ -249,7 +249,7 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
   <div class="pi-b">
     <span class="pi-s"><i>Attrapées</i><b id="pi-a">0</b></span>
     <span class="pi-s"><i>Suite</i><b id="pi-l">0</b></span>
-    <span class="pi-s"><i>Record</i><b id="pi-r">0</b></span>
+    <span class="pi-s"><i>Belles prises</i><b id="pi-r">0</b></span>
   </div>
   <p class="pi-m" id="pi-m">Touche l'écran quand une massue passe dans le cercle.</p>
   <button class="go" id="pi-go">Commencer</button>
@@ -1482,7 +1482,8 @@ var JEU = null, MEILLEUR = 0, REPETITION = false;
 
 function jeuNeuf(){
   return { t:0, massues:[], suivante:900, attrapes:0, suite:0, plusLong:0,
-    ratees:0, fini:false, debut:performance.now(), duree:62000, eclat:0 };
+    ratees:0, parfaites:0, juge:null, jugeT:-9999, secousse:0,
+    fini:false, debut:performance.now(), duree:62000, eclat:0 };
 }
 
 function lancerMassue(J){
@@ -1511,14 +1512,42 @@ function dessinerPiste(J, w, h){
     + ' L' + (w*.88).toFixed(0) + ' ' + h + ' L' + (w*.54).toFixed(0)
     + ' 0 Z" fill="#ffe0a0" opacity=".08"/>';
 
-  var chaud = J.massues.some(function(m){
-    var p = ouEnEst(m, J.t); return !m.prise && !m.ratee && p > .82 && p < 1.06; });
-  s += '<circle cx="' + mx + '" cy="' + my.toFixed(0) + '" r="' + (w*.17).toFixed(0)
-    + '" fill="none" stroke="' + (chaud ? '#ffe08a' : 'rgba(246,230,216,.28)')
-    + '" stroke-width="' + (chaud ? 6 : 3) + '"/>';
-  if (chaud)
-    s += '<circle cx="' + mx + '" cy="' + my.toFixed(0) + '" r="' + (w*.17).toFixed(0)
-      + '" fill="#ffe08a" opacity=".14"/>';
+  /* Le cercle de la main. Il s'allume quand une massue entre dans la
+     fenêtre, et l'anneau se referme à mesure qu'elle approche du
+     point parfait : on voit venir le bon moment, on ne le devine pas. */
+  var proche = null, best = 9;
+  J.massues.forEach(function(m){
+    if (m.prise || m.ratee) return;
+    var p = ouEnEst(m, J.t);
+    if (p > .74 && p < 1.12){
+      var d = Math.abs(p - .94);
+      if (d < best){ best = d; proche = m; }
+    }
+  });
+  var R = w * .17;
+  s += '<circle cx="' + mx + '" cy="' + my.toFixed(0) + '" r="' + R.toFixed(0)
+    + '" fill="none" stroke="rgba(246,230,216,.22)" stroke-width="3"/>';
+  if (proche){
+    /* l'anneau de visée : plus il est petit, plus c'est l'instant */
+    var pr = 1 - Math.min(1, best / .2);
+    s += '<circle cx="' + mx + '" cy="' + my.toFixed(0) + '" r="'
+      + (R + 30 * (1 - pr)).toFixed(0) + '" fill="none" stroke="#ffe08a"'
+      + ' stroke-width="' + (2 + 4 * pr).toFixed(1) + '" opacity="'
+      + (.3 + .6 * pr).toFixed(2) + '"/>';
+    if (pr > .55)
+      s += '<circle cx="' + mx + '" cy="' + my.toFixed(0) + '" r="' + R.toFixed(0)
+        + '" fill="#ffe08a" opacity="' + (.16 * pr).toFixed(2) + '"/>';
+  }
+  /* les deux mains du jongleur, de part et d'autre du cercle */
+  [-1, 1].forEach(function(g){
+    var hx = mx + g * R * .96;
+    s += '<ellipse cx="' + hx.toFixed(0) + '" cy="' + (my + R * .5).toFixed(0)
+      + '" rx="' + (R * .26).toFixed(0) + '" ry="' + (R * .19).toFixed(0)
+      + '" fill="#e8dcc0" stroke="#2a1018" stroke-width="2.4"/>';
+    s += '<path d="M' + hx.toFixed(0) + ' ' + (my + R * .68).toFixed(0)
+      + ' v' + (h * .1).toFixed(0) + '" stroke="#f2e8dc" stroke-width="'
+      + (R * .3).toFixed(0) + '" stroke-linecap="round"/>';
+  });
 
   J.massues.forEach(function(m){
     var p = ouEnEst(m, J.t);
@@ -1544,9 +1573,43 @@ function dessinerPiste(J, w, h){
       + ' stroke-width="' + (5*J.eclat).toFixed(1) + '" opacity="'
       + J.eclat.toFixed(2) + '"/>';
 
+  /* le mot du jugé, qui monte et s'efface */
+  if (J.juge && J.t - J.jugeT < 620){
+    var k = (J.t - J.jugeT) / 620;
+    var coul = J.juge === 'Belle prise' ? '#ffe08a'
+             : J.juge === 'Bien' ? '#8ce0a8'
+             : J.juge === 'De justesse' ? '#e8dcc0' : '#c9302c';
+    s += '<text x="' + mx + '" y="' + (my - R - 18 - k * 26).toFixed(0) + '"'
+      + ' text-anchor="middle" font-family="Georgia,serif" font-size="'
+      + (22 - k * 3).toFixed(0) + '" fill="' + coul + '" opacity="'
+      + (1 - k).toFixed(2) + '">' + J.juge + '</text>';
+  }
+
+  /* la suite en cours, quand elle vaut la peine d'être vue */
+  if (J.suite >= 5)
+    s += '<text x="' + (w - 16) + '" y="30" text-anchor="end"'
+      + ' font-family="Georgia,serif" font-size="' + (20 + Math.min(14, J.suite / 4)).toFixed(0)
+      + '" fill="#d4a03a" opacity=".85">' + J.suite + ' d\'affilée</text>';
+
+  /* le public, en ombres au premier plan : il se lève quand ça monte */
+  var lev = Math.min(1, J.suite / 22);
+  for (var q = 0; q < 9; q++){
+    var px = 14 + q * (w - 28) / 8;
+    var ph = h * (.055 + lev * .022) * (1 + (q % 3) * .12);
+    s += '<circle cx="' + px.toFixed(0) + '" cy="' + (h - ph * 2.1).toFixed(0)
+      + '" r="' + (ph * .62).toFixed(0) + '" fill="#180a12" opacity=".9"/>';
+    s += '<path d="M' + (px - ph).toFixed(0) + ' ' + h + ' q' + ph.toFixed(0)
+      + ' -' + (ph * 1.7).toFixed(0) + ' ' + (ph * 2).toFixed(0)
+      + ' 0 z" fill="#180a12" opacity=".9"/>';
+  }
+
   var reste = Math.max(0, 1 - (performance.now() - J.debut) / J.duree);
+  var final = J.t > J.duree - 10000;
   s += '<rect x="0" y="' + (h-6) + '" width="' + (w*reste).toFixed(0)
-    + '" height="6" fill="#d4a03a" opacity=".7"/>';
+    + '" height="6" fill="' + (final ? '#c9302c' : '#d4a03a') + '" opacity=".8"/>';
+  if (final)
+    s += '<text x="16" y="30" font-family="Georgia,serif" font-size="19"'
+      + ' fill="#c9302c" opacity=".9">Le final</text>';
   return s;
 }
 
@@ -1557,9 +1620,13 @@ function boucleJeu(){
   var maintenant = performance.now();
   JEU.t = maintenant - JEU.debut;
 
+  /* le rythme se resserre avec les prises, et le final accélère
+     franchement : les dix dernières secondes sont un morceau à part */
+  var final = JEU.t > JEU.duree - 10000;
   if (JEU.t > JEU.suivante){
     lancerMassue(JEU);
-    JEU.suivante = JEU.t + Math.max(560, 1250 - JEU.attrapes * 26);
+    var ecart = Math.max(560, 1250 - JEU.attrapes * 26);
+    JEU.suivante = JEU.t + (final ? ecart * .62 : ecart);
   }
   JEU.massues.forEach(function(m){
     if (!m.prise && !m.ratee && ouEnEst(m, JEU.t) > 1.1){
@@ -1573,6 +1640,7 @@ function boucleJeu(){
     + ' xmlns="http://www.w3.org/2000/svg">' + dessinerPiste(JEU, w, h) + '</svg>';
   document.getElementById('pi-a').textContent = JEU.attrapes;
   document.getElementById('pi-l').textContent = JEU.suite;
+  document.getElementById('pi-r').textContent = JEU.parfaites;
 
   if (maintenant - JEU.debut > JEU.duree){ finirNumero(); return; }
   requestAnimationFrame(boucleJeu);
@@ -1591,8 +1659,16 @@ function attraper(){
     JEU.attrapes++; JEU.suite++;
     JEU.plusLong = Math.max(JEU.plusLong, JEU.suite);
     JEU.eclat = 1;
-    if (navigator.vibrate) navigator.vibrate(8);
-  } else JEU.suite = 0;
+    /* le jugé : au centre de la fenêtre, c'est une belle prise,
+       et le public le sent avant de le savoir */
+    if (mieux < .035){ JEU.parfaites++; JEU.juge = 'Belle prise'; JEU.jugeT = JEU.t; }
+    else if (mieux < .085){ JEU.juge = 'Bien'; JEU.jugeT = JEU.t; }
+    else { JEU.juge = 'De justesse'; JEU.jugeT = JEU.t; }
+    if (navigator.vibrate) navigator.vibrate(mieux < .035 ? [6, 20, 10] : 8);
+  } else {
+    JEU.suite = 0;
+    JEU.juge = 'Dans le vide'; JEU.jugeT = JEU.t;
+  }
 }
 
 async function finirNumero(){
@@ -1601,10 +1677,10 @@ async function finirNumero(){
   var a = JEU.attrapes, l = JEU.plusLong;
 
   if (REPETITION){
-    MEILLEUR = Math.max(MEILLEUR, a * 10 + l * 5);
-    document.getElementById('pi-r').textContent = MEILLEUR;
+    MEILLEUR = Math.max(MEILLEUR, a * 10 + l * 10);
     document.getElementById('pi-m').innerHTML = 'Répétition finie — <b>' + a
-      + '</b> attrapées, plus longue suite : <b>' + l + '</b>.';
+      + '</b> attrapées, suite de <b>' + l + '</b> — ' + (a * 10 + l * 10)
+      + ' points. Ton meilleur : ' + MEILLEUR + '.';
     var g = document.getElementById('pi-go');
     g.style.display = ''; g.disabled = false; g.textContent = 'Recommencer';
     g.onclick = demarrerNumero;
@@ -1632,7 +1708,7 @@ function ouvrirPiste(repet){
   REPETITION = !!repet;
   document.getElementById('piste').className = 'on';
   document.getElementById('pi-tt').textContent = repet ? 'Répétition' : 'Ton numéro';
-  document.getElementById('pi-r').textContent = MEILLEUR;
+  document.getElementById('pi-r').textContent = '0';
   document.getElementById('pi-a').textContent = '0';
   document.getElementById('pi-l').textContent = '0';
   document.getElementById('pi-m').textContent = repet
