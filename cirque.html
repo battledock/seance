@@ -83,10 +83,10 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 .choix button.vif::after{color:#d4a03a}
 .choix button:active{transform:scale(.987)}
 .choix button:disabled{opacity:.45;cursor:default}
-.choix button b{display:block;font-size:15.5px;color:#f6e6d8;font-weight:700;
-  line-height:1.4;padding-right:20px}
-.choix button span{display:block;font-size:12px;color:rgba(246,230,216,.46);
-  margin-top:5px;line-height:1.5;padding-right:20px}
+.choix button b{display:block;font-size:16px;color:#f6e6d8;font-weight:700;
+  line-height:1.35;padding-right:22px}
+.choix button span{display:block;font-size:11.5px;color:rgba(246,230,216,.42);
+  margin-top:4px;line-height:1.45;padding-right:22px}
 .choix button.vif{border-color:#d4a03a;background:rgba(120,58,20,.5)}
 
 .go{width:100%;padding:15px;border-radius:13px;cursor:pointer;margin-top:6px;
@@ -98,15 +98,15 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 
 /* ---------- la troupe ---------- */
 .gens{display:flex;flex-direction:column;gap:9px}
-.p{display:flex;gap:12px;padding:13px 14px;border-radius:13px;
-  background:rgba(70,26,44,.5);border:2px solid rgba(246,230,216,.14)}
-.p .f{flex:0 0 44px;height:44px;border-radius:11px;overflow:hidden;
+.p{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:12px;
+  background:rgba(70,26,44,.45);border:2px solid rgba(246,230,216,.12)}
+.p .f{flex:0 0 38px;height:38px;border-radius:10px;overflow:hidden;
   background:#3e1c2e;border:2px solid rgba(246,230,216,.24)}
 .p .f svg{display:block;width:100%;height:100%}
 .p .t{flex:1;min-width:0}
-.p .t b{display:block;font-size:14.5px}
-.p .t i{display:block;font-style:normal;font-size:9.5px;letter-spacing:.14em;
-  text-transform:uppercase;color:#d4a03a;font-weight:800;margin-top:2px}
+.p .t b{display:block;font-size:13.5px}
+.p .t i{display:block;font-style:normal;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(212,160,58,.75);font-weight:800;margin-top:2px}
 .p .t span{display:block;font-size:12px;color:rgba(246,230,216,.55);margin-top:6px;
   line-height:1.55}
 
@@ -1192,27 +1192,20 @@ function dits(L){
 /* ---------- l'entrée : on te présente la maison ---------- */
 function scenePremiere(){
   return dits([
-    "Le chapiteau est planté au milieu de la place depuis trois mois. "
-      + "Deux ampoules sur quinze ne marchent plus.",
-    "Un homme en costume trois-pièces sort de la roulotte. Il porte un nez rouge, "
-      + "et il ne l'enlève pas pour te parler.",
+    "Trois mois que le chapiteau est planté là. Un homme en costume sort de la "
+      + "roulotte, un nez rouge sur le visage.",
     "« Nous avons un problème avec une chèvre. »"
   ])
   + '<div class="choix" style="margin-top:22px">'
-  + '<button class="vif" id="c-ecouter"><b>Je vous écoute</b>'
-  + '<span>De toute façon, il a déjà commencé.</span></button></div>';
+  + '<button class="vif" id="c-ecouter"><b>Je vous écoute</b></button></div>';
 }
 
 function sceneProbleme(){
   return dits([
-    "« Rosine a mangé un papier. Un acte de propriété. Ou un contrat. "
-      + "Les avis divergent. »",
-    "Derrière lui, un homme en veste verte n'a pas quitté la chèvre des yeux "
-      + "depuis douze semaines.",
-    "« Il nous faudrait un vétérinaire de Marseille. Mais si on la met sur un bateau "
+    "« Rosine a mangé un acte de propriété. Ou un contrat. Les avis divergent. »",
+    "« Il nous faudrait un vétérinaire de Marseille. Mais si elle monte sur un bateau "
       + "d'ici, toute la ville le saura demain. »",
-    "Il se retourne. Au premier rang du chapiteau vide, une très vieille femme "
-      + "hoche la tête, une fois.",
+    "Il se retourne. Au premier rang, sa mère hoche la tête, une fois.",
     "« Voilà. C'est décidé. »"
   ]);
 }
@@ -1220,15 +1213,14 @@ function sceneProbleme(){
 /* ---------- les blocs d'action, selon où on en est ---------- */
 function blocEmbarquer(){
   if (C.chevre)
-    return '<h2>Rosine</h2><div class="fait">Elle est dans ta cale. Elle occupe une '
-      + 'place et elle mange ce qu\'elle trouve. Le vétérinaire est à Marseille.</div>';
+    return '<h2>Rosine</h2><div class="fait">Elle est dans ta cale. '
+      + 'Le vétérinaire est à Marseille.</div>';
   if (C.vet) return '';
   var dur = C.cale_libre < 1;
   return '<h2>Ce qu\'on te demande</h2><div class="choix">'
     + '<button class="vif" id="c-embarquer"' + (dur ? ' disabled' : '') + '>'
-    + '<b>Embarquer Rosine pour Marseille</b><span>'
-    + (dur ? 'Ta cale est pleine. Il lui faut une place.'
-           : 'Une place de cale. Discrètement. Elle mangera un peu de ta cargaison.')
+    + '<b>Embarquer Rosine</b><span>'
+    + (dur ? 'Ta cale est pleine' : 'Une place de cale, discrètement')
     + '</span></button></div>';
 }
 
@@ -1236,17 +1228,15 @@ function blocRendre(){
   if (!C.vet || !C.chevre) return '';
   return '<h2>De retour</h2><div class="choix">'
     + '<button class="vif" id="c-rendre"><b>Rendre la chèvre et le verdict</b>'
-    + '<span>Don Battaglini attend sous le chapiteau.</span></button></div>';
+    + '</button></div>';
 }
 
 function blocConcours(){
   if (!C.vet || C.chevre || C.concours_gagne) return '';
   if (!AL) return '';
   var g = AL.chevres || [];
-  return '<h2 class="dx">Le concours de sosies'
+  return '<h2 class="dx">Laquelle est Rosine ?'
     + '<em>' + AL.reste + ' essai' + (AL.reste > 1 ? 's' : '') + '</em></h2>'
-    + '<p class="mot" style="margin:0 0 12px;text-align:left">'
-    + AL.dits[Math.min(2, AL.essais)] + '</p>'
     + '<div class="rang">' + g.map(function(z){
         return '<div class="ch' + (AL.mamma === z.n ? ' regardee' : '')
           + '" data-n="' + z.n + '">'
@@ -1255,11 +1245,7 @@ function blocConcours(){
               z.cornes, z.oeil, z.clochette) + '</svg>'
           + '<b>' + z.n + '</b></div>';
       }).join('') + '</div>'
-    + (AL.mamma
-        ? '<p class="mot">La Mamma regarde quelque part dans la rangée. '
-          + 'C\'est le seul indice qui vaille.</p>'
-        : '<p class="mot">Cinq bêtes. Une seule est Rosine. Regarde bien avant '
-          + 'de poser la main.</p>');
+    + (AL.mamma ? '<p class="mot">La Mamma en regarde une.</p>' : '');
 }
 
 /* aller derrière le chapiteau est un déplacement : le décor change */
@@ -1267,43 +1253,27 @@ var DERRIERE = false;
 
 function blocRire(){
   if (!C.vu_don || C.rire) return C.rire
-    ? '<h2>Ghjuvanni</h2><div class="fait">Il a ri. Une fois. '
-      + 'Depuis, il te salue de la tête quand tu passes.</div>'
+    ? '<h2>Ghjuvanni</h2><div class="fait">Il a ri. Une fois.</div>'
     : '';
   if (!DERRIERE)
     return '<h2>Derrière le chapiteau</h2><div class="choix">'
-      + '<button id="c-derriere"><b>Aller voir Ghjuvanni</b>'
-      + '<span>Il est assis sur une caisse, de l\'autre côté de la toile.</span>'
-      + '</button></div>';
-  return '<h2>Ghjuvanni le Triste</h2>'
-    + '<p class="mot" style="margin:0 0 12px;text-align:left">Il est assis sur une caisse, '
-    + 'les coudes sur les genoux. Huit ans qu\'il n\'a pas ri. '
-    + 'Il te regarde arriver sans espoir.</p>'
+      + '<button id="c-derriere"><b>Aller voir Ghjuvanni</b></button></div>';
+  return '<h2 class="dx">Huit ans qu\'il n\'a pas ri<em>une seule marche</em></h2>'
     + '<div class="choix">'
-    + '<button data-r="blague"><b>Lui raconter une blague</b>'
-    + '<span>Tu en connais une bonne.</span></button>'
-    + '<button data-r="tomber"><b>Te prendre les pieds dans une corde</b>'
-    + '<span>Le classique. Ça marche toujours.</span></button>'
-    + '<button data-r="chevre"><b>Mettre le nez rouge sur la chèvre</b>'
-    + '<span>Personne n\'a jamais essayé.</span></button>'
-    + '<button data-r="rien"><b>T\'asseoir à côté de lui sans rien dire</b>'
-    + '<span>Et regarder le chapiteau avec lui.</span></button>'
+    + '<button data-r="blague"><b>Lui raconter une blague</b></button>'
+    + '<button data-r="tomber"><b>Te prendre les pieds dans une corde</b></button>'
+    + '<button data-r="chevre"><b>Mettre le nez rouge sur la chèvre</b></button>'
+    + '<button data-r="rien"><b>T\'asseoir sans rien dire</b></button>'
     + '</div>';
 }
 
 function blocFinal(){
   if (!C.concours_gagne || C.fin) return '';
-  return '<h2>Sous le chapiteau</h2>'
-    + '<p class="mot" style="margin:0 0 12px;text-align:left">Toute la troupe est là. '
-    + 'La Mamma au premier rang. Don Battaglini te fait signe d\'avancer au centre '
-    + 'de la piste. « Alors ? Dis-nous. »</p>'
-    + '<div class="choix">'
-    + '<button data-f="verite"><b>Dire le verdict du vétérinaire</b>'
-    + '<span>Cette chèvre n\'a rien avalé. Et elle n\'est même pas corse.</span></button>'
-    + '<button data-f="silence"><b>Ne rien dire</b>'
-    + '<span>Les laisser à leur attente. Ils y tiennent plus qu\'au terrain.</span></button>'
-    + '<button data-f="chevre"><b>Demander la chèvre</b>'
-    + '<span>Rien d\'autre. Juste la chèvre.</span></button>'
+  return dits(['« Alors ? Dis-nous. »'])
+    + '<div class="choix" style="margin-top:18px">'
+    + '<button data-f="verite"><b>Dire le verdict</b></button>'
+    + '<button data-f="silence"><b>Ne rien dire</b></button>'
+    + '<button data-f="chevre"><b>Demander la chèvre</b></button>'
     + '</div>';
 }
 
@@ -1313,8 +1283,7 @@ function blocTroupe(){
   return '<details class="troupe"><summary>La troupe</summary><div class="gens">'
     + (C.gens || []).map(function(g){
         return '<div class="p"><span class="f">' + portrait(g.k) + '</span>'
-          + '<span class="t"><b>' + g.nom + '</b><i>' + g.quoi + '</i>'
-          + '<span>' + g.note + '</span></span></div>';
+          + '<span class="t"><b>' + g.nom + '</b><i>' + g.quoi + '</i></span></div>';
       }).join('') + '</div></details>';
 }
 
