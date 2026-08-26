@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#14161a" id="tc">
+<title>Battle Dock — Les souterrains</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   LES SOUTERRAINS DE LA CITADELLE
+   Pierre humide, torche, et le noir juste derrière. Tout est
+   sombre sauf ce que la flamme atteint.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{min-height:100%;background:#14161a;color:#e8e0d0;
+  font-family:'Nunito',system-ui,sans-serif}
+
+#sc{position:fixed;left:0;right:0;top:0;height:40%;overflow:hidden;
+  opacity:0;transition:opacity .5s}
+#sc.pret{opacity:1}
+#sc svg{display:block;width:100%;height:100%}
+#sc::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 96% 78% at 50% 46%,
+      rgba(10,10,14,0) 34%, rgba(10,10,14,.72) 100%),
+    linear-gradient(180deg,rgba(20,22,26,.3) 0,rgba(20,22,26,0) 30%,
+      rgba(20,22,26,.8) 82%,#14161a 100%)}
+
+.tete{position:fixed;left:0;right:0;top:0;z-index:8;display:flex;align-items:center;
+  gap:10px;padding:calc(env(safe-area-inset-top) + 14px) 14px 0}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:11px;cursor:pointer;
+  border:3px solid #e8e0d0;background:rgba(20,22,26,.5);display:flex;
+  align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+.tete .ret svg{width:17px;height:17px;stroke:#e8e0d0;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:22px;
+  text-shadow:0 2px 12px rgba(0,0,0,.8)}
+.tete .ou span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(232,224,208,.55);font-weight:800;margin-top:3px}
+
+.w{position:fixed;left:0;right:0;top:35%;bottom:0;z-index:5;overflow-y:auto;
+  padding:0 15px calc(env(safe-area-inset-bottom) + 26px)}
+.w::-webkit-scrollbar{display:none}
+
+/* ---------- la ligne de vie ---------- */
+.jauges{display:flex;gap:8px;padding-top:14px}
+.jg2{flex:1;padding:9px 11px;border-radius:12px;background:rgba(40,44,52,.7);
+  border:2px solid rgba(232,224,208,.14)}
+.jg2 i{display:block;font-style:normal;font-size:8px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(232,224,208,.42);font-weight:800}
+.jg2 b{display:block;font-size:18px;margin-top:3px}
+.jg2 .ba{height:5px;border-radius:3px;background:rgba(232,224,208,.12);margin-top:6px;
+  overflow:hidden}
+.jg2 .ba i{display:block;height:100%;background:#b8443a;transition:width .4s}
+
+/* ---------- la salle ---------- */
+.salle{margin-top:16px;border-radius:15px;overflow:hidden;
+  border:2.5px solid rgba(232,224,208,.2);background:rgba(34,38,44,.8)}
+.salle .h{padding:15px 16px 0}
+.salle .h b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:22px}
+.salle .h p{font-size:13.5px;line-height:1.65;color:rgba(232,224,208,.6);margin-top:7px}
+.salle .v{display:flex;align-items:center;gap:10px;padding:13px 16px 0}
+.salle .v .ba{flex:1;height:8px;border-radius:5px;background:rgba(232,224,208,.12);
+  overflow:hidden}
+.salle .v .ba i{display:block;height:100%;background:#b8443a;transition:width .35s}
+.salle .v span{font-size:11.5px;font-weight:800;color:rgba(232,224,208,.55)}
+.salle .a{display:flex;flex-wrap:wrap;gap:7px;padding:14px 16px 16px}
+.salle .a button{flex:1 1 30%;min-width:96px;padding:12px 8px;border-radius:11px;
+  cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:800;
+  border:2px solid rgba(232,224,208,.24);background:rgba(52,58,66,.8);color:#e8e0d0}
+.salle .a button.vif{background:#c9a24a;color:#1a1c20;border-color:#c9a24a}
+.salle .a button.sortir{background:transparent;border-color:rgba(140,224,168,.5);
+  color:#8ce0a8}
+.salle .a button:disabled{opacity:.35;cursor:default}
+.salle .a button small{display:block;font-size:9.5px;font-weight:700;
+  color:rgba(232,224,208,.45);margin-top:3px}
+.salle .a button.vif small{color:rgba(26,28,32,.6)}
+
+.dit2{padding:14px 16px;background:rgba(52,58,66,.6);
+  border-top:1px solid rgba(232,224,208,.1);font-size:13.5px;line-height:1.6}
+.dit2.mal{color:#e8927c} .dit2.bien{color:#8ce0a8}
+
+h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
+  color:rgba(232,224,208,.4);margin:22px 2px 10px;display:flex;
+  justify-content:space-between;align-items:baseline}
+h2 em{font-style:normal;color:#c9a24a;letter-spacing:.1em}
+
+.sacs{display:flex;flex-direction:column;gap:5px}
+.sac{display:flex;gap:10px;padding:8px 12px;border-radius:10px;
+  background:rgba(40,44,52,.6);font-size:12.5px}
+.sac b{flex:1;min-width:0;font-weight:600;color:rgba(232,224,208,.8)}
+.sac span{font-weight:900;color:#c9a24a}
+
+.prof{display:flex;flex-direction:column;gap:5px}
+.pr2{display:flex;gap:10px;padding:8px 12px;border-radius:10px;
+  background:rgba(40,44,52,.6);font-size:13px}
+.pr2 i{font-style:normal;flex:0 0 18px;color:#c9a24a;font-weight:900}
+.pr2 b{flex:1;font-weight:700}
+.pr2 span{color:rgba(232,224,208,.5);font-weight:800}
+
+.go{width:100%;padding:15px;border-radius:13px;cursor:pointer;margin-top:8px;
+  border:3px solid #14161a;background:#c9a24a;color:#1a1c20;
+  font-family:inherit;font-size:16px;font-weight:900}
+.go:disabled{background:rgba(232,224,208,.12);color:rgba(232,224,208,.4);
+  border-color:transparent;cursor:default}
+.mot{font-size:12.5px;line-height:1.7;color:rgba(232,224,208,.42);margin-top:16px;
+  text-align:center}
+.rien{padding:24px 16px;text-align:center;font-size:13.5px;line-height:1.7;
+  color:rgba(232,224,208,.5)}
+
+/* ---------- ce qui bouge dans le noir ---------- */
+.flamme{animation:vacille 1.9s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes vacille{0%,100%{transform:scaleY(1) skewX(0)}
+  30%{transform:scaleY(1.1) skewX(-4deg)}60%{transform:scaleY(.94) skewX(3deg)}}
+.lueur{animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:.78}}
+.goutte2{animation:tombe3 3.4s linear infinite}
+.g2{animation-delay:-1.7s} .g3{animation-delay:-2.6s;animation-duration:4.2s}
+@keyframes tombe3{0%{transform:translateY(0);opacity:0}
+  12%{opacity:.7}88%{opacity:.7}100%{transform:translateY(90px);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+#charge{position:fixed;inset:0;z-index:90;background:#14161a;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  transition:opacity .45s}
+#charge.parti{opacity:0;pointer-events:none}
+#charge .ti{font-family:'DM Serif Display',Georgia,serif;font-size:20px;color:#c9a24a;
+  letter-spacing:.08em}
+#charge .fl{width:110px;height:3px;border-radius:2px;background:rgba(201,162,74,.2);
+  overflow:hidden}
+#charge .fl i{display:block;width:38%;height:100%;background:#c9a24a;
+  animation:va 1.15s ease-in-out infinite}
+@keyframes va{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+</style>
+</head>
+<body>
+
+<div id="charge"><div class="ti">LES SOUTERRAINS</div><div class="fl"><i></i></div></div>
+
+<div id="sc"></div>
+
+<div class="tete">
+  <button class="ret" id="ret" aria-label="Retour">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="ou"><b id="t-t">La citadelle</b><span id="t-s">Ajaccio</span></span>
+</div>
+
+<div class="w" id="w"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+function rnd(s){ var x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); }
+
+/* ============================================================
+   LE DÉCOR
+   Une voûte de pierre. Plus on descend, plus elle se referme
+   et plus la torche est seule.
+   ============================================================ */
+function souterrain(etage, quoi){
+  var W = 480, H = 560;
+  var noir = Math.min(.62, .12 + etage * .06);
+  var s = '<defs>'
+    + '<radialGradient id="d-t" cx="0.28" cy="0.42" r="0.72">'
+    +   '<stop offset="0%" stop-color="#ffca7a" stop-opacity=".5"/>'
+    +   '<stop offset="55%" stop-color="#c98a3a" stop-opacity=".14"/>'
+    +   '<stop offset="100%" stop-color="#000000" stop-opacity="0"/></radialGradient>'
+    + '</defs>';
+  s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#20232a"/>';
+
+  /* l'appareillage de pierre */
+  for (var r = 0; r < 9; r++){
+    for (var c = 0; c < 8; c++){
+      var bx = -30 + c * 68 + (r % 2 ? 34 : 0), by = r * 62;
+      s += '<rect x="' + bx + '" y="' + by + '" width="64" height="58" rx="4" fill="'
+        + ['#343a44','#2e343e','#3a4049','#2a3038'][(r + c) % 4] + '"/>';
+      /* le joint, et l'humidité qui coule */
+      s += '<rect x="' + bx + '" y="' + (by + 54) + '" width="64" height="4"'
+        + ' fill="#1c2028" opacity=".8"/>';
+      if (rnd(r * 8 + c) > .78)
+        s += '<path d="M' + (bx + 12 + rnd(c) * 30).toFixed(0) + ' ' + (by + 6)
+          + ' v46" stroke="#4a5560" stroke-width="3" opacity=".4"/>';
+    }
+  }
+
+  /* la voûte, en arc */
+  s += '<path d="M0 0 h480 v120 q-240 -96 -480 0 z" fill="#1a1e26"/>';
+  s += '<path d="M0 118 q240 -96 480 0" stroke="#3e4650" stroke-width="5" fill="none"/>';
+
+  /* l'escalier qui descend, au fond */
+  s += '<path d="M188 320 h104 l24 240 h-152 z" fill="#171b22"/>';
+  for (var m = 0; m < 7; m++)
+    s += '<path d="M' + (190 + m * 2) + ' ' + (334 + m * 32) + ' h'
+      + (100 - m * 4) + '" stroke="#2e343e" stroke-width="7"/>';
+  s += '<path d="M188 320 h104 v-18 q-52 -22 -104 0 z" fill="#0e1116"/>';
+
+  /* la torche, à gauche */
+  s += '<ellipse cx="86" cy="238" rx="230" ry="200" fill="url(#d-t)" class="lueur"/>';
+  s += '<rect x="78" y="196" width="14" height="72" rx="5" fill="#4a3628"/>';
+  s += '<path class="flamme" d="M85 196 q-20 -22 -4 -44 q2 16 12 20 q10 -12 6 -30'
+    + ' q22 24 8 54 z" fill="#ffb347"/>';
+  s += '<path class="flamme" d="M85 194 q-11 -14 -2 -28 q2 10 7 12 q5 -8 3 -18'
+    + ' q13 16 4 34 z" fill="#ffe9a8"/>';
+
+  /* l'eau qui goutte de la voûte */
+  for (var g = 0; g < 3; g++)
+    s += '<circle class="goutte2 g' + (g + 1) + '" cx="' + (168 + g * 96) + '" cy="'
+      + (120 + g * 14) + '" r="3" fill="#8ab0c0" opacity=".7"/>';
+
+  /* et, selon la salle, ce qui s'y trouve */
+  if (quoi === 'rencontre'){
+    /* deux yeux dans le noir, au bas de l'escalier */
+    s += '<ellipse cx="240" cy="392" rx="76" ry="52" fill="#0c0f14" opacity=".9"/>';
+    s += '<circle cx="222" cy="380" r="6" fill="#e8a04a" class="lueur"/>';
+    s += '<circle cx="258" cy="380" r="6" fill="#e8a04a" class="lueur"/>';
+  }
+  if (quoi === 'butin'){
+    s += '<ellipse cx="316" cy="452" rx="54" ry="16" fill="#0c0f14" opacity=".5"/>';
+    s += '<path d="M280 448 h72 v-34 q-36 -14 -72 0 z" fill="#5c4630"'
+      + ' stroke="#2a2018" stroke-width="3"/>';
+    s += '<path d="M280 430 h72" stroke="#c9a24a" stroke-width="4"/>';
+    s += '<circle cx="316" cy="440" r="5" fill="#c9a24a"/>';
+  }
+  if (quoi === 'puits'){
+    s += '<path d="M330 0 L302 200 L396 200 L410 0 Z" fill="#dfe8f0" opacity=".13"/>';
+    s += '<rect x="336" y="34" width="46" height="70" rx="6" fill="#8ab0c0" opacity=".3"/>';
+  }
+  if (quoi === 'piege'){
+    s += '<path d="M164 470 l60 -22 l96 12 l-40 60 z" fill="#0c0f14"/>';
+    s += '<path d="M164 470 l60 -22 l96 12" stroke="#4a5560" stroke-width="4"'
+      + ' fill="none"/>';
+  }
+
+  /* le noir gagne à mesure qu'on descend */
+  s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#05070a"'
+    + ' opacity="' + noir.toFixed(2) + '"/>';
+  return s;
+}
+
+var SC_ETAT = null;
+function decor(etage, quoi){
+  var cle = etage + '/' + quoi;
+  if (cle === SC_ETAT) return;
+  SC_ETAT = cle;
+  document.getElementById('sc').innerHTML =
+    '<svg viewBox="0 0 480 560" preserveAspectRatio="xMidYMid slice"'
+    + ' xmlns="http://www.w3.org/2000/svg">' + souterrain(etage || 0, quoi) + '</svg>';
+  requestAnimationFrame(function(){
+    document.getElementById('sc').classList.add('pret');
+  });
+}
+
+/* ============================================================
+   LA PAGE
+   ============================================================ */
+var D = null, DERNIER = null;
+function eur(n){ return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+
+var GESTES = {
+  force: { n:'Frapper', s:'à la force du bras' },
+  ruse:  { n:'Ruser',   s:'le prendre à revers' },
+  calme: { n:'Tenir',   s:'ne pas bouger d\u2019un pouce' }
+};
+
+function jauges(){
+  var pc = D.souffle_max ? Math.max(0, D.souffle / D.souffle_max * 100) : 0;
+  return '<div class="jauges">'
+    + '<span class="jg2"><i>Étage</i><b>−' + D.etage + '</b></span>'
+    + '<span class="jg2"><i>Souffle</i><b>' + D.souffle + '</b>'
+    +   '<span class="ba"><i style="width:' + pc.toFixed(0) + '%"></i></span></span>'
+    + '<span class="jg2"><i>Butin</i><b>' + eur(D.butin) + '</b></span>'
+    + '<span class="jg2"><i>Torche</i><b>' + D.torche + '</b></span>'
+    + '</div>';
+}
+
+function laSalle(){
+  var s = D.salle;
+  if (!s) return '';
+  var h = '<div class="salle"><div class="h"><b>' + s.titre + '</b>'
+    + '<p>' + s.texte + '</p></div>';
+
+  if (s.quoi === 'rencontre'){
+    var pc = Math.max(0, s.vie / s.vie_max * 100);
+    h += '<div class="v"><span class="ba"><i style="width:' + pc.toFixed(0)
+      + '%"></i></span><span>' + s.vie + '</span></div>';
+    h += '<div class="a">'
+      + ['force','ruse','calme'].map(function(g){
+          return '<button data-g="' + g + '"><b>' + GESTES[g].n + '</b>'
+            + '<small>' + D.toi[g] + '</small></button>';
+        }).join('')
+      + '</div>';
+  } else {
+    h += '<div class="a">';
+    h += '<button class="vif" data-g="prendre"><b>'
+      + (s.quoi === 'butin' ? 'Ramasser'
+         : s.quoi === 'puits' ? 'Souffler'
+         : s.quoi === 'piege' ? 'Franchir' : 'Avancer') + '</b>'
+      + (s.ecus ? '<small>' + eur(s.ecus) + ' écus</small>'
+         : s.soin ? '<small>+' + s.soin + ' de souffle</small>'
+         : s.degats ? '<small>ça va faire mal</small>' : '') + '</button>';
+    h += '<button data-g="descendre"><b>Descendre</b><small>étage −'
+      + (D.etage + 1) + '</small></button>';
+    h += '<button class="sortir" data-g="remonter"><b>Remonter</b><small>'
+      + eur(D.butin) + ' écus</small></button>';
+    h += '</div>';
+  }
+
+  if (DERNIER)
+    h += '<p class="dit2' + (DERNIER.mal ? ' mal' : DERNIER.bien ? ' bien' : '')
+      + '">' + DERNIER.t + '</p>';
+  return h + '</div>';
+}
+
+function poser(){
+  if (!D.ici){
+    document.getElementById('w').innerHTML =
+      '<p class="rien">La citadelle est à Ajaccio, en haut de la ville.</p>';
+    return;
+  }
+  var s = '';
+
+  if (D.dedans){
+    document.getElementById('t-t').textContent = 'Étage −' + D.etage;
+    document.getElementById('t-s').textContent = 'Les souterrains';
+    decor(D.etage, D.salle ? D.salle.quoi : 'vide');
+    s += jauges() + laSalle();
+    if ((D.trouvailles || []).length)
+      s += '<h2 class="dx">Dans ta besace<em>' + eur(D.butin) + ' écus</em></h2>'
+        + '<div class="sacs">' + D.trouvailles.map(function(t){
+            return '<div class="sac"><b>' + t.nom + '</b><span>'
+              + eur(t.ecus) + '</span></div>';
+          }).join('') + '</div>';
+    s += '<p class="mot">Tout ce que tu portes est perdu si tu tombes.</p>';
+  } else {
+    document.getElementById('t-t').textContent = 'La citadelle';
+    document.getElementById('t-s').textContent = 'Ajaccio';
+    decor(0, 'vide');
+    s += '<div class="salle"><div class="h">'
+      + '<b>La poterne</b><p>Un escalier descend sous le fortin. '
+      + 'En bas, des casemates, des citernes, et des choses qu\'on n\'a jamais '
+      + 'fini d\'inventorier.</p></div>'
+      + '<div class="a">'
+      + '<button class="vif" id="entrer"' + (D.peut_entrer && D.energie >= D.cout
+          ? '' : ' disabled') + '><b>'
+      + (!D.peut_entrer ? 'Tu y es déjà descendu aujourd\'hui'
+         : D.energie < D.cout ? 'Il faut ' + D.cout + ' d\'énergie'
+         : 'Descendre') + '</b>'
+      + (D.peut_entrer && D.energie >= D.cout
+          ? '<small>' + D.cout + ' d\'énergie</small>' : '') + '</button>'
+      + '</div>';
+    if (DERNIER)
+      s += '<p class="dit2' + (DERNIER.mal ? ' mal' : DERNIER.bien ? ' bien' : '')
+        + '">' + DERNIER.t + '</p>';
+    s += '</div>';
+
+    s += '<h2 class="dx">Ce que tu vaux là-dessous</h2><div class="jauges">'
+      + '<span class="jg2"><i>Force</i><b>' + D.toi.force + '</b></span>'
+      + '<span class="jg2"><i>Ruse</i><b>' + D.toi.ruse + '</b></span>'
+      + '<span class="jg2"><i>Calme</i><b>' + D.toi.calme + '</b></span>'
+      + '<span class="jg2"><i>Souffle</i><b>' + D.toi.souffle + '</b></span>'
+      + '</div>';
+
+    if (D.record)
+      s += '<p class="mot">Tu es descendu jusqu\'à l\'étage −' + D.record
+        + ', en ' + D.descentes + ' descente'
+        + (D.descentes > 1 ? 's' : '') + '.</p>';
+
+    var P = D.profonds || [];
+    if (P.length)
+      s += '<h2>Les plus profonds</h2><div class="prof">'
+        + P.map(function(z, i){
+            return '<div class="pr2"><i>' + (i + 1) + '</i><b>' + z.qui
+              + '</b><span>−' + z.etage + '</span></div>';
+          }).join('') + '</div>';
+  }
+
+  document.getElementById('w').innerHTML = s;
+  brancher();
+}
+
+function brancher(){
+  var e = document.getElementById('entrer');
+  if (e) e.onclick = entrer;
+  document.querySelectorAll('[data-g]').forEach(function(b){
+    b.onclick = function(){ agir(b.dataset.g, b); };
+  });
+}
+
+async function entrer(){
+  var b = document.getElementById('entrer');
+  b.disabled = true;
+  var x;
+  try { x = await BD.agir('donjon_entrer'); } catch(e){ x = null; }
+  if (!x || !x.ok){
+    DERNIER = { t: x && x.pourquoi === 'trop_fatigue'
+      ? 'Tu n\'as pas les jambes pour ça aujourd\'hui.'
+      : 'La poterne est fermée.', mal:true };
+    await charger(); return;
+  }
+  DERNIER = null;
+  await charger();
+}
+
+async function agir(quoi, b){
+  document.querySelectorAll('[data-g]').forEach(function(z){ z.disabled = true; });
+  var x;
+  try { x = await BD.agir('donjon_agir', { p_quoi: quoi }); } catch(e){ x = null; }
+  if (!x || !x.ok){
+    DERNIER = { t: x && x.pourquoi === 'pas_seul'
+      ? 'Pas devant lui. Il faudra passer d\'abord.'
+      : 'Rien à faire ici.', mal:true };
+    await charger(); return;
+  }
+
+  var t = x.mot || '';
+  if (x.touche) t += ' (−' + x.touche + ')';
+  if (x.riposte) t += ' Il te touche : −' + x.riposte + ' de souffle.';
+  if (x.degats) t += ' −' + x.degats + ' de souffle.';
+  if (x.gagne) t += ' Tu ramasses ' + eur(x.gagne) + ' écus.';
+  if (x.soin) t += ' +' + x.soin + '.';
+  DERNIER = { t: t, bien: !!(x.vaincu || x.gagne || x.soin),
+    mal: !!(x.riposte || x.degats) };
+
+  if (x.vaincu && navigator.vibrate) navigator.vibrate([12, 50, 22]);
+
+  /* la fin d'une descente, dans un sens ou dans l'autre */
+  if (x.fin && x.fin.perdu){
+    DERNIER = { t: x.fin.mot + (x.fin.perdu_ecus
+      ? ' Tu y laisses ' + eur(x.fin.perdu_ecus) + ' écus.' : ''), mal:true };
+    if (navigator.vibrate) navigator.vibrate([30, 90, 30, 90, 60]);
+  }
+  if (x.sorti)
+    DERNIER = { t: x.mot + ' Tu remontes ' + eur(x.butin) + ' écus de l\'étage −'
+      + x.etage + '.', bien:true };
+
+  await charger();
+}
+
+async function charger(){
+  var r;
+  try { r = await BD.agir('le_donjon'); } catch(e){ leverAube(); return; }
+  leverAube();
+  if (!r || !r.ok){
+    document.getElementById('w').innerHTML =
+      '<p class="rien">La porte ne s\'ouvre pas.</p>';
+    return;
+  }
+  D = r; poser();
+}
+
+var AUBE = false;
+function leverAube(){
+  if (AUBE) return;
+  AUBE = true;
+  var c = document.getElementById('charge');
+  if (!c) return;
+  c.classList.add('parti');
+  setTimeout(function(){ c.remove(); }, 500);
+}
+setTimeout(leverAube, 6000);
+
+document.getElementById('ret').onclick = function(){ location.href = 'hub.html?v=3'; };
+charger();
+</script>
+</body>
+</html>
