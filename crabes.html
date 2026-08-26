@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#12222c" id="tc">
+<title>Battle Dock — Les crabes</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   LES CRABES DE PALMA
+   Le sable, le vivier, et la piste. Même langue que le reste du
+   jeu : des aplats, des contours d'encre, du crème.
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{min-height:100%;background:#12222c;color:#f2e6cf;
+  font-family:'Nunito',system-ui,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 14px) 14px
+  calc(env(safe-area-inset-bottom) + 30px)}
+
+.tete{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:11px;cursor:pointer;
+  border:3px solid #f2e6cf;background:transparent;display:flex;
+  align-items:center;justify-content:center}
+.tete .ret svg{width:17px;height:17px;stroke:#f2e6cf;fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .ou{flex:1;min-width:0}
+.tete .ou b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:22px;
+  line-height:1.1}
+.tete .ou span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(242,230,207,.45);font-weight:800;margin-top:3px}
+.tete .eu{flex:0 0 auto;padding:8px 13px;border-radius:20px;background:#f2e6cf;
+  color:#12222c;font-size:14px;font-weight:900}
+
+/* ---------- ce qu'il te reste aujourd'hui ---------- */
+.reste{display:flex;gap:7px;margin-bottom:14px}
+.reste span{flex:1;padding:9px 6px;border-radius:11px;text-align:center;
+  background:#1a3140;border:2px solid rgba(242,230,207,.16)}
+.reste span i{display:block;font-style:normal;font-size:8px;letter-spacing:.13em;
+  text-transform:uppercase;color:rgba(242,230,207,.45);font-weight:800}
+.reste span b{display:block;font-size:17px;margin-top:3px}
+.reste span.vide b{color:rgba(242,230,207,.3)}
+
+/* ---------- le panier ---------- */
+.panier{width:100%;padding:15px;border-radius:14px;cursor:pointer;margin-bottom:16px;
+  border:3px solid #12222c;background:#e8c07a;color:#12222c;
+  font-family:inherit;font-size:16px;font-weight:900}
+.panier:disabled{background:#24404e;color:rgba(242,230,207,.35);
+  border-color:#24404e;cursor:default}
+.panier:active:not(:disabled){transform:translateY(2px)}
+
+h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
+  color:rgba(242,230,207,.45);margin:20px 2px 10px}
+
+/* ---------- le vivier ---------- */
+.vivier{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.bete{border-radius:14px;overflow:hidden;border:2.5px solid rgba(242,230,207,.22);
+  background:#1a3140;cursor:pointer;transition:border-color .15s,transform .12s}
+.bete.on{border-color:#e8c07a}
+.bete:active{transform:scale(.985)}
+.bete.dort{opacity:.5}
+.bete .v{height:110px;background:#22414f;position:relative}
+.bete .v svg{display:block;width:100%;height:100%}
+.bete .v .q{position:absolute;left:7px;top:7px;padding:3px 8px;border-radius:11px;
+  font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.bete .n{padding:9px 10px 10px}
+.bete .n b{display:block;font-size:13px;line-height:1.2;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.bete .n span{display:block;font-size:10px;color:rgba(242,230,207,.45);margin-top:3px}
+.bete .tr{display:flex;flex-wrap:wrap;gap:4px;padding:0 10px 10px}
+.bete .tr i{font-style:normal;font-size:8.5px;font-weight:700;padding:2px 7px;
+  border-radius:9px;background:rgba(232,192,122,.14);color:#e8c07a}
+
+.rien{padding:26px 16px;text-align:center;font-size:13px;line-height:1.7;
+  color:rgba(242,230,207,.5);border:2px dashed rgba(242,230,207,.2);border-radius:14px}
+
+/* ---------- miser ---------- */
+.miser{margin-top:16px;border-radius:14px;overflow:hidden;border:3px solid #e8c07a;
+  display:none}
+.miser.on{display:block}
+.miser .h{background:#e8c07a;color:#12222c;padding:9px 13px;font-size:11px;
+  font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.miser .c{padding:13px}
+.miser .c p{font-size:12.5px;color:rgba(242,230,207,.6);margin-bottom:11px;
+  line-height:1.55}
+.mises{display:flex;gap:7px}
+.mises button{flex:1;padding:12px 4px;border-radius:11px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:900;
+  border:2.5px solid rgba(242,230,207,.3);background:transparent;color:#f2e6cf}
+.mises button.on{background:#e8c07a;color:#12222c;border-color:#e8c07a}
+.mises button:disabled{opacity:.3;cursor:default}
+.courir{width:100%;margin-top:11px;padding:14px;border-radius:12px;cursor:pointer;
+  font-family:inherit;font-size:15px;font-weight:900;
+  border:3px solid #12222c;background:#e8c07a;color:#12222c}
+.courir:disabled{background:#24404e;color:rgba(242,230,207,.35);border-color:#24404e}
+
+/* ---------- la piste, en plein écran ---------- */
+#piste{position:fixed;inset:0;z-index:60;background:#12222c;display:none;
+  flex-direction:column;padding:calc(env(safe-area-inset-top) + 12px) 12px
+  calc(env(safe-area-inset-bottom) + 14px)}
+#piste.on{display:flex}
+#piste .sable{flex:0 0 auto;border-radius:16px;overflow:hidden;border:4px solid #f2e6cf}
+#piste .sable svg{display:block;width:100%;height:auto}
+#piste .liste{flex:1;min-height:0;overflow-y:auto;margin-top:10px}
+#piste .liste::-webkit-scrollbar{display:none}
+.pl{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:10px;
+  background:#1a3140;margin-bottom:5px;font-size:12.5px}
+.pl.moi{background:#2c4c3a;border:2px solid #8ce0a8}
+.pl i{font-style:normal;flex:0 0 20px;font-weight:900;color:#e8c07a}
+.pl b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl span{flex:0 0 auto;font-weight:900;color:rgba(242,230,207,.55)}
+
+.issue{margin-top:10px;border-radius:14px;overflow:hidden;border:3px solid #e8c07a;
+  display:none}
+.issue.on{display:block}
+.issue .l{display:flex;gap:9px;padding:8px 12px;background:#1a3140;font-size:13px;
+  border-bottom:1px solid rgba(242,230,207,.08)}
+.issue .l i{font-style:normal;flex:0 0 20px;font-weight:900;color:#e8c07a}
+.issue .l b{flex:1}
+.issue .g{padding:11px 13px;background:#22412c;color:#8ce0a8;font-size:13.5px;
+  font-weight:800}
+.issue .g.perdu{background:#3f2224;color:#e89a8a}
+.issue .b{display:flex;gap:8px;padding:10px 12px;background:#1a3140}
+.issue .b button{flex:1;padding:11px;border-radius:11px;cursor:pointer;
+  font-family:inherit;font-size:13px;font-weight:900;
+  border:2.5px solid #f2e6cf;background:transparent;color:#f2e6cf}
+.issue .b button.vif{background:#e8c07a;color:#12222c;border-color:#e8c07a}
+
+#mot{position:fixed;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 18px);
+  z-index:80;padding:13px 16px;border-radius:12px;background:#f2e6cf;color:#12222c;
+  font-size:13.5px;font-weight:700;text-align:center;opacity:0;pointer-events:none;
+  transform:translateY(10px);transition:opacity .3s,transform .3s}
+#mot.on{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <button class="ret" id="ret" aria-label="Retour">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="ou"><b>Le sable</b><span>Palma — les crabes</span></span>
+  <span class="eu" id="eu">—</span>
+</div>
+
+<div class="reste" id="reste"></div>
+<button class="panier" id="panier">Relever le panier</button>
+
+<h2 id="t-vivier">Ton vivier</h2>
+<div class="vivier" id="vivier"></div>
+
+<div class="miser" id="miser">
+  <div class="h" id="m-h">Faire courir</div>
+  <div class="c">
+    <p id="m-p">—</p>
+    <div class="mises" id="mises"></div>
+    <button class="courir" id="courir">Le lâcher sur le sable</button>
+  </div>
+</div>
+
+<div id="piste">
+  <div class="sable" id="sable"></div>
+  <div class="liste" id="liste"></div>
+  <div class="issue" id="issue"></div>
+</div>
+
+<div id="mot"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+/* ============================================================
+   LE DESSIN DES CRABES
+   Chaque crabe est dessiné à partir de son tirage : la qualité
+   donne la palette, les particularités s'ajoutent par-dessus.
+   ============================================================ */
+var QUAL = [
+  { k:'commun', n:'Commun', c:'#8a9a6a',
+    pal:[['#7d8a5c','#5c6a42'],['#8a7a56','#6a5c3e'],['#7a8a74','#566250'],
+         ['#94886c','#6a604a'],['#6e8270','#4c5c4e'],['#8c8258','#645c3c']],
+    motif:'aucun', txt:'#c8d0b0' },
+  { k:'correct', n:'Correct', c:'#c08a4e',
+    pal:[['#c08a4e','#8a5c30'],['#b07a48','#7d5028'],['#c9945c','#8f6236'],
+         ['#a88a64','#74593c'],['#c07a52','#875030'],['#b89a56','#7f683a'],
+         ['#a67c6a','#714f42']],
+    motif:'taches', txt:'#e8c89a' },
+  { k:'beau', n:'Beau', c:'#d4553a',
+    pal:[['#d4553a','#8e3220'],['#e0663a','#9a3a1e'],['#c94a44','#883028'],
+         ['#e08a3a','#a05620'],['#c9445c','#84283a'],['#d46a2a','#8e3f14'],
+         ['#b8503a','#782e22'],['#e07a5c','#a04a34']],
+    motif:'rayures', txt:'#ffc9a8' },
+  { k:'rare', n:'Rare', c:'#7a5cc4',
+    pal:[['#7a5cc4','#4a3480'],['#5c6ec8','#2f3d86'],['#9a5cb8','#5e2f78'],
+         ['#4a8ac4','#255a86'],['#6ac4a8','#2e7a68'],['#c45c8a','#7e2f54'],
+         ['#5c4ab0','#2e2470'],['#3aa8b8','#186a78']],
+    motif:'marbre', txt:'#dcc4ff' },
+  { k:'legendaire', n:'Légendaire', c:'#e8c07a',
+    pal:[['#f0d68a','#c08a30'],['#8ae0d0','#2a8a90'],['#f0a0c0','#a03a70'],
+         ['#b0e0f0','#3a86b0'],['#e0f0a0','#8aa03a'],['#d0b0f0','#6a3ab0'],
+         ['#fff0d8','#c9a878'],['#f0c0a0','#b06a3a']],
+    motif:'constellation', txt:'#fff0c0' }
+];
+
+/* ============================================================
+   LES PARTICULARITÉS
+   Elles ne dépendent pas de la qualité : un crabe commun peut
+   avoir une perle, un légendaire peut être borgne. C'est ce qui
+   fait qu'on reconnaît le sien entre mille.
+   ============================================================ */
+var TRAITS = [
+  { k:'borgne',    n:'Borgne',            p:.07 },
+  { k:'vairons',   n:'Yeux vairons',      p:.06 },
+  { k:'longs',     n:'Longues tiges',     p:.08 },
+  { k:'neuve',     n:'Pince repoussée',   p:.08 },
+  { k:'algues',    n:'Couvert d\'algues', p:.09 },
+  { k:'anemone',   n:'Porte une anémone', p:.05 },
+  { k:'perle',     n:'Perle incrustée',   p:.03 },
+  { k:'ebreche',   n:'Carapace ébréchée', p:.09 },
+  { k:'poilu',     n:'Pattes velues',     p:.08 },
+  { k:'courte',    n:'Une patte courte',  p:.07 },
+  { k:'or',        n:'Griffes dorées',    p:.04 },
+  { k:'coeur',     n:'Tache en cœur',     p:.03 },
+  { k:'givre',     n:'Bord givré',        p:.05 },
+  { k:'etoile',    n:'Étoile au dos',     p:.03 }
+];
+function aTrait(c, k){ return c.traits && c.traits.indexOf(k) >= 0; }
+
+var AGES = [
+  { k:0, n:'Jeune', t:.74, mot:'Rapide, mais il part n\'importe où.' },
+  { k:1, n:'Adulte', t:1, mot:'Son sommet. Ça ne durera pas.' },
+  { k:2, n:'Vieux', t:1.12, mot:'Plus lent, mais il sait quand pincer.' }
+];
+
+var NOMS_A = ['Bourrique','Pince','Roger','Sabot','Tonnerre','Miette','Coquin',
+  'Bastounet','Fanfaron','Sardine','Caillou','Bigorneau','Trompette','Farine',
+  'Rouille','Galoche','Beignet','Cerise','Écume','Ronchon'];
+var NOMS_B = ['de Palma','le Tordu','des Rochers','premier du nom','la Terreur',
+  'le Patient','de la Seu','à Trois Pattes','le Fourbe','du Quai','le Sage',
+  'de Travers','le Rapide','sans Peur'];
+
+/* ============================================================
+   LE DESSIN
+   Vue de dessus. La lumière vient d'en haut à gauche.
+   ============================================================ */
+function crabe(c, taille){
+  var r = graine(c.id * 7919 + 13);
+  var Q = QUAL[c.q], A = AGES[c.age];
+  var pal = Q.pal[c.pal];
+  var haut = pal[0], bas = pal[1];
+  var T = (taille || 1) * A.t * (0.9 + c.corps * 0.24);
+
+  /* le vieux crabe est terni, le jeune est plus vif */
+  if (c.age === 2){ haut = mel(haut, '#8a8478', .26); bas = mel(bas, '#6a6458', .2); }
+  if (c.age === 0){ haut = eclaircir(haut, .14); }
+
+  var cx = 200, cy = 178;
+  var lw = 96 * T, lh = 66 * T;      /* demi-largeur, demi-hauteur de carapace */
+  var s = '<g transform="translate(0,' + ((1 - T) * 26).toFixed(1) + ')">';
+
+  /* ---------- l'ombre portée sur le sable ---------- */
+  s += '<ellipse cx="' + cx + '" cy="' + (cy + lh * .82).toFixed(0) + '" rx="'
+    + (lw * 1.24).toFixed(0) + '" ry="' + (lh * .3).toFixed(0)
+    + '" fill="#0a1218" opacity=".3"/>';
+
+  /* ---------- les pattes : quatre paires, articulées ---------- */
+  for (var cote = -1; cote <= 1; cote += 2){
+    for (var p = 0; p < 4; p++){
+      var t = p / 3;
+      /* le point d'attache, sur le flanc de la carapace */
+      var ax = cx + cote * lw * (0.86 - t * 0.34);
+      var ay = cy - lh * .1 + t * lh * .72;
+      /* la patte s'ouvre en éventail vers l'arrière */
+      var ang = -0.42 + t * 1.18 + (r() - .5) * .16;
+      var l1 = lw * (0.56 - t * .09), l2 = lw * (0.46 - t * .07);
+      /* une patte plus courte que les autres, repoussée de travers */
+      if (aTrait(c, 'courte') && cote < 0 && p === 2){ l1 *= .58; l2 *= .5; }
+      var gx = ax + cote * Math.cos(ang) * l1;
+      var gy = ay + Math.sin(ang) * l1 - lh * .3;
+      var ex = gx + cote * Math.cos(ang + 0.95) * l2;
+      var ey = gy + Math.sin(ang + 0.95) * l2;
+
+      var ep = (7.5 - p * 0.7) * T;
+      /* le fémur */
+      s += '<path d="M' + ax.toFixed(1) + ' ' + ay.toFixed(1) + ' L' + gx.toFixed(1)
+        + ' ' + gy.toFixed(1) + '" stroke="' + assombrir(bas, .12) + '" stroke-width="'
+        + ep.toFixed(1) + '" stroke-linecap="round"/>';
+      /* le tibia, plus fin, jusqu'à la pointe */
+      s += '<path d="M' + gx.toFixed(1) + ' ' + gy.toFixed(1) + ' L' + ex.toFixed(1)
+        + ' ' + ey.toFixed(1) + '" stroke="' + assombrir(bas, .2) + '" stroke-width="'
+        + (ep * .66).toFixed(1) + '" stroke-linecap="round"/>';
+      /* la pointe cornée, dorée chez quelques-uns */
+      s += '<circle cx="' + ex.toFixed(1) + '" cy="' + ey.toFixed(1) + '" r="'
+        + (ep * .3).toFixed(1) + '" fill="'
+        + (aTrait(c, 'or') ? '#f0c86a' : assombrir(bas, .42)) + '"/>';
+      if (aTrait(c, 'or'))
+        s += '<circle cx="' + (ex - ep * .1).toFixed(1) + '" cy="'
+          + (ey - ep * .1).toFixed(1) + '" r="' + (ep * .12).toFixed(1)
+          + '" fill="#fff4d0"/>';
+      /* les poils raides, le long du tibia */
+      if (aTrait(c, 'poilu'))
+        for (var w = 0; w < 5; w++){
+          var tt = .2 + w * .18;
+          var wx = gx + (ex - gx) * tt, wy = gy + (ey - gy) * tt;
+          s += '<path d="M' + wx.toFixed(1) + ' ' + wy.toFixed(1) + ' l'
+            + (cote * 5).toFixed(1) + ' ' + (-4 - (w % 2) * 3).toFixed(1)
+            + '" stroke="' + assombrir(bas, .3) + '" stroke-width="1.4"'
+            + ' stroke-linecap="round" opacity=".8"/>';
+        }
+      /* le reflet du dessus */
+      s += '<path d="M' + ax.toFixed(1) + ' ' + (ay - ep * .22).toFixed(1) + ' L'
+        + gx.toFixed(1) + ' ' + (gy - ep * .22).toFixed(1) + '" stroke="'
+        + eclaircir(haut, .3) + '" stroke-width="' + (ep * .28).toFixed(1)
+        + '" stroke-linecap="round" opacity=".55"/>';
+      /* l'articulation */
+      s += '<circle cx="' + gx.toFixed(1) + '" cy="' + gy.toFixed(1) + '" r="'
+        + (ep * .42).toFixed(1) + '" fill="' + assombrir(bas, .06) + '"/>';
+    }
+  }
+
+  /* ---------- les pinces ----------
+     Une grosse, une petite : c'est ce qui fait un vrai crabe. */
+  var gros = c.pince > .5 ? 1 : -1;
+  for (var g = -1; g <= 1; g += 2){
+    var forte = (g === gros);
+    var k = forte ? (0.9 + c.force * 0.5) : (0.62 + c.force * 0.2);
+    /* une pince arrachée qui a repoussé : deux fois plus petite, plus claire */
+    var neuve = aTrait(c, 'neuve') && !forte;
+    if (neuve) k *= .54;
+    var bx = cx + g * lw * .82, by = cy - lh * .42;
+    /* le bras, levé vers l'avant */
+    var mx = bx + g * lw * .52, my = by - lh * .62;
+    var px = mx + g * lw * .26 * k, py = my - lh * .52 * k;
+
+    s += '<path d="M' + bx.toFixed(1) + ' ' + by.toFixed(1) + ' L' + mx.toFixed(1)
+      + ' ' + my.toFixed(1) + '" stroke="' + assombrir(bas, .1) + '" stroke-width="'
+      + (13 * T * (forte ? 1.15 : .88)).toFixed(1) + '" stroke-linecap="round"/>';
+    s += '<path d="M' + mx.toFixed(1) + ' ' + my.toFixed(1) + ' L' + px.toFixed(1)
+      + ' ' + py.toFixed(1) + '" stroke="' + assombrir(bas, .04) + '" stroke-width="'
+      + (12 * T * k).toFixed(1) + '" stroke-linecap="round"/>';
+
+    /* la main : une masse ovale, et deux doigts qui s'ouvrent */
+    var hw = 26 * T * k, hh = 20 * T * k;
+    var a = g * 0.34;
+    s += '<g transform="translate(' + px.toFixed(1) + ',' + py.toFixed(1)
+      + ') rotate(' + (g * -22).toFixed(0) + ')">';
+    /* le doigt fixe, vers le bas */
+    s += '<path d="M' + (g * hw * .1).toFixed(1) + ' ' + (hh * .1).toFixed(1)
+      + ' q' + (g * hw * .9).toFixed(1) + ' ' + (-hh * .1).toFixed(1) + ' '
+      + (g * hw * 1.34).toFixed(1) + ' ' + (-hh * .62).toFixed(1)
+      + ' q' + (-g * hw * .5).toFixed(1) + ' ' + (hh * .72).toFixed(1) + ' '
+      + (-g * hw * 1.34).toFixed(1) + ' ' + (hh * .5).toFixed(1) + ' z" fill="'
+      + assombrir(bas, .14) + '"/>';
+    /* la paume */
+    s += '<ellipse cx="0" cy="0" rx="' + hw.toFixed(1) + '" ry="' + hh.toFixed(1)
+      + '" fill="' + (neuve ? eclaircir(bas, .34) : bas) + '"/>';
+    s += '<ellipse cx="' + (-g * hw * .22).toFixed(1) + '" cy="' + (-hh * .3).toFixed(1)
+      + '" rx="' + (hw * .62).toFixed(1) + '" ry="' + (hh * .48).toFixed(1)
+      + '" fill="' + eclaircir(haut, .18) + '" opacity=".85"/>';
+    /* le doigt mobile, ouvert vers le haut */
+    s += '<path d="M' + (g * hw * .2).toFixed(1) + ' ' + (-hh * .5).toFixed(1)
+      + ' q' + (g * hw * .9).toFixed(1) + ' ' + (-hh * .2).toFixed(1) + ' '
+      + (g * hw * 1.5).toFixed(1) + ' ' + (-hh * .1).toFixed(1)
+      + ' q' + (-g * hw * .6).toFixed(1) + ' ' + (hh * .6).toFixed(1) + ' '
+      + (-g * hw * 1.5).toFixed(1) + ' ' + (hh * .34).toFixed(1) + ' z" fill="'
+      + eclaircir(bas, .08) + '"/>';
+    /* les dents du bord tranchant */
+    for (var d = 0; d < 4; d++)
+      s += '<circle cx="' + (g * hw * (.5 + d * .28)).toFixed(1) + '" cy="'
+        + (-hh * .3).toFixed(1) + '" r="' + (1.8 * T * k).toFixed(1) + '" fill="'
+        + eclaircir(haut, .5) + '" opacity=".7"/>';
+    /* les granules de la pince, chez les belles bêtes */
+    if (c.q >= 2)
+      for (var gr = 0; gr < 7; gr++)
+        s += '<circle cx="' + ((r() - .5) * hw * 1.2).toFixed(1) + '" cy="'
+          + ((r() - .5) * hh * 1.1).toFixed(1) + '" r="' + (1.6 * T).toFixed(1)
+          + '" fill="' + eclaircir(haut, .34) + '" opacity=".5"/>';
+    s += '</g>';
+  }
+
+  /* ---------- la carapace ----------
+     Un dessus large, des bords dentelés, un rostre à l'avant. */
+  var pts = [], N = 30;
+  for (var i = 0; i <= N; i++){
+    var th = Math.PI * 2 * i / N;
+    /* plus large que haute, aplatie à l'arrière */
+    var rr = 1 + Math.cos(th) * .06 - Math.abs(Math.sin(th)) * .1;
+    if (Math.sin(th) < 0) rr *= .96;
+    var x = cx + Math.sin(th) * lw * rr;
+    var y = cy - Math.cos(th) * lh * rr * (Math.cos(th) > 0 ? 1 : 1.06);
+    pts.push([x, y]);
+  }
+  var dd = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+  for (var i = 1; i < pts.length; i++){
+    var a1 = pts[i - 1], b1 = pts[i];
+    dd += ' Q' + ((a1[0] + b1[0]) / 2).toFixed(1) + ' ' + ((a1[1] + b1[1]) / 2).toFixed(1)
+      + ' ' + b1[0].toFixed(1) + ' ' + b1[1].toFixed(1);
+  }
+  dd += ' Z';
+
+  var uid = 'c' + c.id;
+  s += '<defs><linearGradient id="g' + uid + '" x1="0.2" y1="0" x2="0.8" y2="1">'
+    + '<stop offset="0%" stop-color="' + eclaircir(haut, .2) + '"/>'
+    + '<stop offset="52%" stop-color="' + haut + '"/>'
+    + '<stop offset="100%" stop-color="' + bas + '"/></linearGradient>'
+    + '<clipPath id="k' + uid + '"><path d="' + dd + '"/></clipPath></defs>';
+
+  /* le bord dentelé, derrière la carapace */
+  for (var e = 0; e < 9; e++){
+    var th2 = -1.15 + e * .29;
+    var ex2 = cx + Math.sin(th2) * lw * 1.02;
+    var ey2 = cy - Math.cos(th2) * lh * 1.02;
+    s += '<circle cx="' + ex2.toFixed(1) + '" cy="' + ey2.toFixed(1) + '" r="'
+      + (5 * T).toFixed(1) + '" fill="' + assombrir(bas, .1) + '"/>';
+    var ex3 = cx - Math.sin(th2) * lw * 1.02;
+    s += '<circle cx="' + ex3.toFixed(1) + '" cy="' + ey2.toFixed(1) + '" r="'
+      + (5 * T).toFixed(1) + '" fill="' + assombrir(bas, .1) + '"/>';
+  }
+
+  s += '<path d="' + dd + '" fill="url(#g' + uid + ')"/>';
+
+  /* ---------- ce qui est dessiné dessus ---------- */
+  s += '<g clip-path="url(#k' + uid + ')">';
+  if (Q.motif === 'taches'){
+    for (var t2 = 0; t2 < 14; t2++)
+      s += '<ellipse cx="' + (cx + (r() - .5) * lw * 1.7).toFixed(1) + '" cy="'
+        + (cy + (r() - .5) * lh * 1.7).toFixed(1) + '" rx="' + (4 + r() * 7).toFixed(1)
+        + '" ry="' + (3 + r() * 5).toFixed(1) + '" fill="' + assombrir(bas, .3)
+        + '" opacity=".4"/>';
+  }
+  if (Q.motif === 'rayures'){
+    for (var b2 = 0; b2 < 6; b2++){
+      var yy = cy - lh + b2 * lh * .38;
+      s += '<path d="M' + (cx - lw * 1.1) + ' ' + yy.toFixed(1) + ' q' + lw + ' '
+        + (10 + r() * 12).toFixed(0) + ' ' + (lw * 2.2) + ' 0" stroke="'
+        + assombrir(bas, .34) + '" stroke-width="' + (5 + r() * 5).toFixed(1)
+        + '" fill="none" opacity=".42"/>';
+    }
+  }
+  if (Q.motif === 'marbre'){
+    for (var m2 = 0; m2 < 9; m2++){
+      var sx = cx + (r() - .5) * lw * 1.8, sy = cy + (r() - .5) * lh * 1.6;
+      s += '<path d="M' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ' q'
+        + ((r() - .5) * 60).toFixed(0) + ' ' + ((r() - .5) * 40).toFixed(0) + ' '
+        + ((r() - .5) * 90).toFixed(0) + ' ' + ((r() - .5) * 60).toFixed(0)
+        + '" stroke="' + eclaircir(haut, .42) + '" stroke-width="' + (2 + r() * 4).toFixed(1)
+        + '" fill="none" opacity=".5" stroke-linecap="round"/>';
+    }
+  }
+  if (Q.motif === 'constellation'){
+    /* une nacre qui court sur la carapace */
+    s += '<ellipse cx="' + (cx - lw * .3).toFixed(0) + '" cy="' + (cy - lh * .4).toFixed(0)
+      + '" rx="' + (lw * .8).toFixed(0) + '" ry="' + (lh * .6).toFixed(0)
+      + '" fill="#ffffff" opacity=".22"/>';
+    s += '<ellipse cx="' + (cx + lw * .42).toFixed(0) + '" cy="' + (cy + lh * .3).toFixed(0)
+      + '" rx="' + (lw * .5).toFixed(0) + '" ry="' + (lh * .42).toFixed(0)
+      + '" fill="#8ae0d0" opacity=".26"/>';
+    for (var e2 = 0; e2 < 13; e2++){
+      var px2 = cx + (r() - .5) * lw * 1.7, py2 = cy + (r() - .5) * lh * 1.7;
+      var rr2 = 1.6 + r() * 2.6;
+      s += '<circle cx="' + px2.toFixed(1) + '" cy="' + py2.toFixed(1) + '" r="'
+        + rr2.toFixed(1) + '" fill="#fff8dc"/>';
+      s += '<circle cx="' + px2.toFixed(1) + '" cy="' + py2.toFixed(1) + '" r="'
+        + (rr2 * 2.6).toFixed(1) + '" fill="#fff8dc" opacity=".18"/>';
+    }
+  }
+
+  /* le relief du dessus : les lobes de la carapace */
+  s += '<path d="M' + (cx - lw * .52) + ' ' + (cy - lh * .1) + ' q' + (lw * .52) + ' '
+    + (lh * .34) + ' ' + (lw * 1.04) + ' 0" stroke="' + assombrir(bas, .26)
+    + '" stroke-width="3" fill="none" opacity=".4"/>';
+  s += '<ellipse cx="' + cx + '" cy="' + (cy - lh * .46).toFixed(0) + '" rx="'
+    + (lw * .3).toFixed(0) + '" ry="' + (lh * .2).toFixed(0) + '" fill="'
+    + eclaircir(haut, .22) + '" opacity=".5"/>';
+
+  /* le lustre, en haut à gauche */
+  s += '<ellipse cx="' + (cx - lw * .38).toFixed(0) + '" cy="' + (cy - lh * .5).toFixed(0)
+    + '" rx="' + (lw * .34).toFixed(0) + '" ry="' + (lh * .26).toFixed(0)
+    + '" fill="#ffffff" opacity="' + (c.q === 4 ? '.34' : '.18') + '"/>';
+
+  /* ---------- les particularités posées sur la carapace ---------- */
+  if (aTrait(c, 'coeur')){
+    var hx2 = cx - lw * .1, hy2 = cy + lh * .1, hs = lw * .17;
+    s += '<path d="M' + hx2.toFixed(1) + ' ' + (hy2 + hs * .8).toFixed(1)
+      + ' C' + (hx2 - hs * 1.4).toFixed(1) + ' ' + (hy2 - hs * .2).toFixed(1) + ' '
+      + (hx2 - hs * .5).toFixed(1) + ' ' + (hy2 - hs * 1.1).toFixed(1) + ' '
+      + hx2.toFixed(1) + ' ' + (hy2 - hs * .35).toFixed(1)
+      + ' C' + (hx2 + hs * .5).toFixed(1) + ' ' + (hy2 - hs * 1.1).toFixed(1) + ' '
+      + (hx2 + hs * 1.4).toFixed(1) + ' ' + (hy2 - hs * .2).toFixed(1) + ' '
+      + hx2.toFixed(1) + ' ' + (hy2 + hs * .8).toFixed(1) + ' Z" fill="'
+      + eclaircir(haut, .58) + '" opacity=".85"/>';
+  }
+  if (aTrait(c, 'etoile')){
+    var sx3 = cx + lw * .22, sy3 = cy - lh * .18, sr = lw * .2;
+    var dp = '';
+    for (var b3 = 0; b3 < 10; b3++){
+      var ra = b3 % 2 ? sr * .42 : sr;
+      var aa = -Math.PI / 2 + b3 * Math.PI / 5;
+      dp += (b3 ? ' L' : 'M') + (sx3 + Math.cos(aa) * ra).toFixed(1) + ' '
+         + (sy3 + Math.sin(aa) * ra * .9).toFixed(1);
+    }
+    s += '<path d="' + dp + ' Z" fill="' + eclaircir(haut, .62) + '" opacity=".8"/>';
+  }
+  if (aTrait(c, 'algues')){
+    /* des filaments qui pendent du bord arrière */
+    for (var al = 0; al < 9; al++){
+      var ax4 = cx + (r() - .5) * lw * 1.7, ay4 = cy + lh * (.2 + r() * .7);
+      s += '<path d="M' + ax4.toFixed(1) + ' ' + ay4.toFixed(1) + ' q'
+        + ((r() - .5) * 16).toFixed(1) + ' ' + (10 + r() * 12).toFixed(1) + ' '
+        + ((r() - .5) * 22).toFixed(1) + ' ' + (22 + r() * 20).toFixed(1)
+        + '" stroke="' + ['#5c7a3a','#4a6a48','#6a8a3a'][al % 3]
+        + '" stroke-width="' + (2 + r() * 3).toFixed(1) + '" fill="none"'
+        + ' stroke-linecap="round" opacity=".72"/>';
+    }
+  }
+  if (aTrait(c, 'perle')){
+    var px4 = cx + lw * .3, py4 = cy - lh * .34, pr = 9 * T;
+    s += '<circle cx="' + px4.toFixed(1) + '" cy="' + py4.toFixed(1) + '" r="'
+      + (pr * 1.25).toFixed(1) + '" fill="' + assombrir(bas, .3) + '"/>';
+    s += '<circle cx="' + px4.toFixed(1) + '" cy="' + py4.toFixed(1) + '" r="'
+      + pr.toFixed(1) + '" fill="#f4f0e4"/>';
+    s += '<circle cx="' + (px4 - pr * .3).toFixed(1) + '" cy="' + (py4 - pr * .34).toFixed(1)
+      + '" r="' + (pr * .34).toFixed(1) + '" fill="#ffffff"/>';
+    s += '<circle cx="' + (px4 + pr * .26).toFixed(1) + '" cy="' + (py4 + pr * .3).toFixed(1)
+      + '" r="' + (pr * .44).toFixed(1) + '" fill="#d8cfe0" opacity=".6"/>';
+  }
+  if (aTrait(c, 'anemone')){
+    /* un passager, planté sur le dos */
+    var nx = cx - lw * .42, ny = cy - lh * .22;
+    s += '<ellipse cx="' + nx.toFixed(1) + '" cy="' + ny.toFixed(1) + '" rx="'
+      + (11 * T).toFixed(1) + '" ry="' + (7 * T).toFixed(1) + '" fill="#b8446a"/>';
+    for (var tn = 0; tn < 11; tn++){
+      var an = tn / 11 * Math.PI * 2;
+      s += '<path d="M' + nx.toFixed(1) + ' ' + ny.toFixed(1) + ' q'
+        + (Math.cos(an) * 9 * T).toFixed(1) + ' ' + (Math.sin(an) * 6 * T - 6 * T).toFixed(1)
+        + ' ' + (Math.cos(an) * 15 * T).toFixed(1) + ' '
+        + (Math.sin(an) * 9 * T - 9 * T).toFixed(1) + '" stroke="#e0708a"'
+        + ' stroke-width="' + (2.6 * T).toFixed(1) + '" fill="none" stroke-linecap="round"/>';
+    }
+    s += '<circle cx="' + nx.toFixed(1) + '" cy="' + ny.toFixed(1) + '" r="'
+      + (4 * T).toFixed(1) + '" fill="#7d2a48"/>';
+  }
+
+  /* les marques du vieux : balanes, éraflures */
+  if (c.age === 2){
+    for (var v = 0; v < 5; v++){
+      var vx = cx + (r() - .5) * lw * 1.5, vy = cy + (r() - .5) * lh * 1.4;
+      s += '<circle cx="' + vx.toFixed(1) + '" cy="' + vy.toFixed(1) + '" r="'
+        + (3 + r() * 4).toFixed(1) + '" fill="#cfc8b4" opacity=".65"/>';
+      s += '<circle cx="' + vx.toFixed(1) + '" cy="' + vy.toFixed(1) + '" r="'
+        + (1.4 + r() * 1.6).toFixed(1) + '" fill="#8a8474" opacity=".7"/>';
+    }
+    s += '<path d="M' + (cx + lw * .2) + ' ' + (cy - lh * .6) + ' l' + (lw * .3) + ' '
+      + (lh * .5) + '" stroke="#e8e0cc" stroke-width="2" opacity=".3"/>';
+  }
+  s += '</g>';
+
+  /* le bord ébréché : un morceau qui manque, de la couleur du fond */
+  if (aTrait(c, 'ebreche')){
+    var eb = cx + lw * .62, ey5 = cy - lh * .52;
+    s += '<path d="M' + eb.toFixed(1) + ' ' + ey5.toFixed(1) + ' l'
+      + (16 * T).toFixed(1) + ' ' + (-9 * T).toFixed(1) + ' l' + (7 * T).toFixed(1)
+      + ' ' + (15 * T).toFixed(1) + ' z" fill="#1d3b48"/>';
+    s += '<path d="M' + eb.toFixed(1) + ' ' + ey5.toFixed(1) + ' l'
+      + (16 * T).toFixed(1) + ' ' + (-9 * T).toFixed(1) + '" stroke="'
+      + assombrir(bas, .45) + '" stroke-width="' + (2 * T).toFixed(1) + '"/>';
+  }
+
+  /* le liseré du bord */
+  s += '<path d="' + dd + '" fill="none" stroke="' + assombrir(bas, .3)
+    + '" stroke-width="' + (2.4 * T).toFixed(1) + '"/>';
+  if (aTrait(c, 'givre'))
+    s += '<path d="' + dd + '" fill="none" stroke="#dff0f8" stroke-width="'
+      + (3 * T).toFixed(1) + '" opacity=".72" stroke-dasharray="'
+      + (5 * T).toFixed(1) + ' ' + (4 * T).toFixed(1) + '"/>';
+  if (c.q === 4)
+    s += '<path d="' + dd + '" fill="none" stroke="#ffeab0" stroke-width="'
+      + (1.6 * T).toFixed(1) + '" opacity=".7"/>';
+
+  /* ---------- les yeux, sur leurs pédoncules ---------- */
+  var IRIS = ['#171b12','#2a5a7a','#7a4a1c','#3a6a3a','#6a2a4a'];
+  for (var o = -1; o <= 1; o += 2){
+    var ox = cx + o * lw * .34, oy = cy - lh * .92;
+    /* certains portent les yeux très haut : ça se voit de loin */
+    var tige = aTrait(c, 'longs') ? 30 : 15;
+    var ty = oy - tige * T;
+    /* un œil crevé, resté fermé */
+    var creve = aTrait(c, 'borgne') && o < 0;
+    var iris = aTrait(c, 'vairons') && o > 0
+      ? IRIS[1 + (c.id % 4)] : '#171b12';
+    s += '<path d="M' + ox.toFixed(1) + ' ' + (oy + 6 * T).toFixed(1) + ' L'
+      + ox.toFixed(1) + ' ' + ty.toFixed(1) + '" stroke="' + assombrir(bas, .06)
+      + '" stroke-width="' + ((aTrait(c, 'longs') ? 5.4 : 7) * T).toFixed(1)
+      + '" stroke-linecap="round"/>';
+    if (creve){
+      /* la tige est là, l'œil n'y est plus */
+      s += '<circle cx="' + ox.toFixed(1) + '" cy="' + ty.toFixed(1) + '" r="'
+        + (6.2 * T).toFixed(1) + '" fill="' + assombrir(bas, .24) + '"/>';
+      s += '<path d="M' + (ox - 4.6 * T).toFixed(1) + ' ' + (ty - 3.4 * T).toFixed(1)
+        + ' l' + (9.2 * T).toFixed(1) + ' ' + (6.8 * T).toFixed(1)
+        + ' M' + (ox + 4.6 * T).toFixed(1) + ' ' + (ty - 3.4 * T).toFixed(1)
+        + ' l' + (-9.2 * T).toFixed(1) + ' ' + (6.8 * T).toFixed(1)
+        + '" stroke="' + assombrir(bas, .5) + '" stroke-width="' + (2 * T).toFixed(1)
+        + '" stroke-linecap="round"/>';
+    } else {
+      s += '<circle cx="' + ox.toFixed(1) + '" cy="' + ty.toFixed(1) + '" r="'
+        + (7.4 * T).toFixed(1) + '" fill="' + iris + '"/>';
+      if (iris !== '#171b12')
+        s += '<circle cx="' + ox.toFixed(1) + '" cy="' + ty.toFixed(1) + '" r="'
+          + (3.4 * T).toFixed(1) + '" fill="#0e1210"/>';
+      s += '<circle cx="' + (ox - 2.2 * T).toFixed(1) + '" cy="' + (ty - 2.4 * T).toFixed(1)
+        + '" r="' + (2.6 * T).toFixed(1) + '" fill="#ffffff" opacity=".9"/>';
+    }
+    /* la paupière tombante du vieux */
+    if (c.age === 2 && !creve)
+      s += '<path d="M' + (ox - 7.4 * T).toFixed(1) + ' ' + (ty - 2 * T).toFixed(1)
+        + ' a' + (7.4 * T).toFixed(1) + ' ' + (7.4 * T).toFixed(1) + ' 0 0 1 '
+        + (14.8 * T).toFixed(1) + ' 0 z" fill="' + assombrir(bas, .1) + '"/>';
+  }
+
+  /* la bouche, deux petites pièces mobiles */
+  s += '<rect x="' + (cx - 11 * T).toFixed(1) + '" y="' + (cy - lh * .82).toFixed(1)
+    + '" width="' + (22 * T).toFixed(1) + '" height="' + (13 * T).toFixed(1)
+    + '" rx="' + (4 * T).toFixed(1) + '" fill="' + assombrir(bas, .22) + '"/>';
+  s += '<path d="M' + cx + ' ' + (cy - lh * .82).toFixed(1) + ' v' + (13 * T).toFixed(1)
+    + '" stroke="' + assombrir(bas, .42) + '" stroke-width="' + (1.8 * T).toFixed(1) + '"/>';
+
+  return s + '</g>';
+}
+
+
+
+/* ============================================================
+   LA PAGE
+   ============================================================ */
+var V = null, CHOISI = null, MISE = 200;
+var MISES = [50, 200, 500, 1500];
+
+function eur(n){ return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+
+/* la base parle en colonnes, le dessin parle en abréviations */
+function versDessin(c){
+  return { id: c.id, q: c.qualite, age: c.age, pal: c.palette,
+    corps: Number(c.corps), pince: Number(c.pince), force: Number(c.force),
+    traits: c.traits || [] };
+}
+function vignette(c, w, h){
+  return '<svg viewBox="' + (w || 80) + ' ' + (h || 45) + ' 240 200"'
+    + ' xmlns="http://www.w3.org/2000/svg">' + crabe(versDessin(c)) + '</svg>';
+}
+
+function dire(t){
+  var m = document.getElementById('mot');
+  m.textContent = t; m.classList.add('on');
+  clearTimeout(dire._t);
+  dire._t = setTimeout(function(){ m.classList.remove('on'); }, 2600);
+}
+
+/* ---------- le vivier ---------- */
+function poser(){
+  document.getElementById('eu').textContent = eur(V.euros) + ' €';
+
+  var R = [['Paniers', V.paniers], ['Courses', V.courses], ['Paris', V.paris]];
+  document.getElementById('reste').innerHTML = R.map(function(r){
+    return '<span class="' + (r[1] ? '' : 'vide') + '"><i>' + r[0] + '</i><b>'
+      + r[1] + '</b></span>';
+  }).join('');
+
+  var p = document.getElementById('panier');
+  var vivants = (V.crabes || []).filter(function(c){ return !c.retire; }).length;
+  if (!V.ici){ p.disabled = true; p.textContent = 'Il faut être à Palma'; }
+  else if (V.paniers < 1){ p.disabled = true; p.textContent = 'Plus de panier aujourd\'hui'; }
+  else if (vivants >= V.vivier_max){ p.disabled = true;
+    p.textContent = 'Ton vivier est plein'; }
+  else if (V.euros < V.prix){ p.disabled = true;
+    p.textContent = 'Il faut ' + eur(V.prix) + ' € pour un panier'; }
+  else { p.disabled = false; p.textContent = 'Relever le panier — ' + eur(V.prix) + ' €'; }
+
+  var C = V.crabes || [];
+  document.getElementById('t-vivier').textContent =
+    'Ton vivier — ' + vivants + ' sur ' + V.vivier_max;
+
+  document.getElementById('vivier').innerHTML = C.length
+    ? C.map(function(c){
+        var Q = QUAL[c.qualite];
+        return '<div class="bete' + (CHOISI === c.id ? ' on' : '')
+          + (c.retire ? ' dort' : '') + '" data-c="' + c.id + '">'
+          + '<span class="v">' + vignette(c)
+          + '<span class="q" style="background:' + Q.c + ';color:'
+          + (c.qualite === 0 || c.qualite === 4 ? '#12222c' : '#fff') + '">'
+          + Q.n + '</span></span>'
+          + '<span class="n"><b>' + c.nom + '</b><span>'
+          + (c.retire ? 'Retiré dans les rochers'
+              : ['Jeune','Adulte','Vieux'][c.age] + ' · ' + c.courses + ' course'
+                + (c.courses > 1 ? 's' : '')
+                + (c.premieres ? ' · ' + c.premieres + ' gagnée'
+                    + (c.premieres > 1 ? 's' : '') : ''))
+          + '</span></span>'
+          + ((c.traits || []).length
+              ? '<span class="tr">' + c.traits.map(function(k){
+                  var t = TRAITS.filter(function(z){ return z.k === k; })[0];
+                  return '<i>' + (t ? t.n : k) + '</i>';
+                }).join('') + '</span>'
+              : '')
+          + '</div>';
+      }).join('')
+    : '<p class="rien">Ton vivier est vide. Pose un panier ce soir, '
+      + 'et relève-le en revenant.</p>';
+
+  poserMise();
+}
+
+function poserMise(){
+  var m = document.getElementById('miser');
+  var c = (V.crabes || []).filter(function(z){ return z.id === CHOISI; })[0];
+  if (!c || c.retire || !V.ici){ m.className = 'miser'; return; }
+  m.className = 'miser on';
+  document.getElementById('m-h').textContent = 'Faire courir ' + c.nom;
+  document.getElementById('m-p').textContent = V.courses
+    ? 'Il te reste ' + V.courses + ' course' + (V.courses > 1 ? 's' : '')
+      + ' aujourd\'hui. La cote se décide au départ, selon le plateau.'
+    : 'Il a assez couru pour aujourd\'hui. Reviens demain.';
+
+  document.getElementById('mises').innerHTML = MISES.map(function(v){
+    var trop = v > V.euros;
+    return '<button data-m="' + v + '"' + (MISE === v ? ' class="on"' : '')
+      + (trop ? ' disabled' : '') + '>' + eur(v) + '</button>';
+  }).join('');
+  document.getElementById('courir').disabled = !V.courses || V.euros < MISE;
+}
+
+/* ============================================================
+   LA PISTE
+   Le serveur envoie le déroulé complet. Ici, on ne fait que le
+   rejouer : deux horloges, une pour la course, une pour l'image.
+   ============================================================ */
+var PW = 760, PH = 470, X0 = 54, X1 = 706, N = 8;
+var GR = [], TR = [], CHRONO = null, BOUCLE = null, PLAT = [], MOI = 0;
+
+function rndF(s){ var x = Math.sin(s * 91.7) * 43758.5; return x - Math.floor(x); }
+
+function sable(){
+  var s = '<rect x="0" y="0" width="' + PW + '" height="' + PH + '" fill="#d9c49a"/>';
+  s += '<defs><radialGradient id="lum" cx="0.42" cy="0.34" r="0.8">'
+    + '<stop offset="0%" stop-color="#f0dcae" stop-opacity=".6"/>'
+    + '<stop offset="100%" stop-color="#b89a68" stop-opacity=".35"/></radialGradient></defs>';
+  s += '<rect x="0" y="0" width="' + PW + '" height="' + PH + '" fill="url(#lum)"/>';
+  for (var k = 0; k < 200; k++){
+    var x = rndF(k * 3) * PW, y = rndF(k * 7) * PH;
+    s += '<circle cx="' + x.toFixed(0) + '" cy="' + y.toFixed(0) + '" r="'
+      + (0.8 + rndF(k) * 1.8).toFixed(1) + '" fill="'
+      + ['#c9b489','#e4d0a8','#bfa87c'][k % 3] + '" opacity="'
+      + (.3 + rndF(k * 5) * .4).toFixed(2) + '"/>';
+  }
+  for (var q = 0; q < 12; q++){
+    var qx = 70 + rndF(q * 11) * 620, qy = rndF(q * 5) * PH;
+    if (q % 3 === 0)
+      s += '<path d="M' + qx.toFixed(0) + ' ' + qy.toFixed(0)
+        + ' q7 -8 14 0 q-7 5 -14 0 z" fill="#efe4cc" opacity=".8"/>';
+    else if (q % 3 === 1)
+      s += '<ellipse cx="' + qx.toFixed(0) + '" cy="' + qy.toFixed(0)
+        + '" rx="5" ry="3.4" fill="#a89a7a" opacity=".7"/>';
+  }
+  return s;
+}
+
+function couloirs(){
+  var s = '', h = PH / N;
+  for (var i = 0; i <= N; i++){
+    var y = i * h;
+    s += '<path d="M' + X0 + ' ' + y.toFixed(0) + ' q' + ((X1 - X0) / 2).toFixed(0)
+      + ' 5 ' + (X1 - X0).toFixed(0) + ' 0" stroke="#a08a5c" stroke-width="2.6"'
+      + ' fill="none" opacity=".7"/>';
+    for (var p = 0; p <= 6; p++)
+      s += '<circle cx="' + (X0 + (X1 - X0) * p / 6).toFixed(0) + '" cy="'
+        + y.toFixed(0) + '" r="4" fill="#7d6a44"/>';
+  }
+  s += '<path d="M' + X0 + ' 4 v' + (PH - 8) + '" stroke="#8a7048" stroke-width="5"'
+    + ' stroke-dasharray="12 7" opacity=".8"/>';
+  s += '<rect x="' + (X1 - 4) + '" y="0" width="8" height="' + PH + '" fill="#f0e4c8"/>';
+  for (var b = 0; b < 16; b++)
+    s += '<rect x="' + (X1 - 4) + '" y="' + (b * PH / 16).toFixed(0)
+      + '" width="8" height="' + (PH / 32).toFixed(1) + '" fill="#b8443a"/>';
+  return s;
+}
+
+function numeros(){
+  var s = '', h = PH / N;
+  for (var i = 0; i < N; i++){
+    var y = i * h + h / 2;
+    s += '<circle cx="26" cy="' + y.toFixed(0) + '" r="17" fill="#f2e6cf"'
+      + ' stroke="#8a7048" stroke-width="3"/>';
+    s += '<text x="26" y="' + (y + 7).toFixed(0) + '" text-anchor="middle"'
+      + ' font-family="Georgia,serif" font-size="21" font-weight="700"'
+      + ' fill="' + (i === MOI ? '#c9542a' : '#4a3a24') + '">' + (i + 1) + '</text>';
+  }
+  return s;
+}
+
+function construire(){
+  var h = PH / N;
+  var s = '<svg viewBox="0 0 ' + PW + ' ' + PH + '" xmlns="http://www.w3.org/2000/svg">';
+  s += '<g>' + sable() + couloirs() + numeros() + '</g>';
+  for (var i = 0; i < N; i++){
+    s += '<g id="tr' + i + '"></g>';
+    var e = (h * 1.5) / 400;
+    s += '<g id="cr' + i + '"><g transform="scale(' + e.toFixed(3)
+      + ') translate(-200,-150)">' + crabe(versDessin({
+          id: PLAT[i].id || (900 + i), qualite: PLAT[i].qualite, age: PLAT[i].age,
+          palette: PLAT[i].palette, corps: PLAT[i].corps, pince: PLAT[i].pince,
+          force: PLAT[i].force, traits: PLAT[i].traits
+        })) + '</g></g>';
+  }
+  s += '<path id="rep" d="M0 0 l-8 -12 h16 z" fill="#c9542a"/>';
+  s += '<g id="chrono" style="opacity:0">'
+    + '<rect x="0" y="0" width="' + PW + '" height="' + PH + '" fill="#1a2c18" opacity=".42"/>'
+    + '<text id="chn" x="' + (PW / 2) + '" y="' + (PH / 2 + 46) + '" text-anchor="middle"'
+    + ' font-family="Georgia,serif" font-size="132" font-weight="700" fill="#fdf2d8"'
+    + ' stroke="#3a2a18" stroke-width="5" paint-order="stroke">3</text></g>';
+  s += '</svg>';
+  document.getElementById('sable').innerHTML = s;
+
+  GR = []; TR = [];
+  for (var i = 0; i < N; i++){
+    GR.push(document.getElementById('cr' + i));
+    TR.push(document.getElementById('tr' + i));
+  }
+  CHRONO = document.getElementById('chrono');
+  placer(PLAT.map(function(){ return 0; }), PLAT.map(function(){ return 0; }));
+}
+
+function placer(pos, phases){
+  var h = PH / N;
+  for (var i = 0; i < N; i++){
+    if (!GR[i]) continue;
+    var y0 = i * h + h / 2;
+    var px = X0 + (X1 - X0 - 44) * Math.max(0, Math.min(1, pos[i]));
+    var ph = phases[i];
+    GR[i].setAttribute('transform', 'translate('
+      + (px + Math.cos(ph * 2) * 3).toFixed(2) + ','
+      + (y0 + Math.sin(ph) * h * .16).toFixed(2) + ') rotate('
+      + (Math.sin(ph) * 7).toFixed(2) + ')');
+  }
+  var rep = document.getElementById('rep');
+  if (rep){
+    var my = MOI * h + h / 2;
+    var mx = X0 + (X1 - X0 - 44) * Math.max(0, Math.min(1, pos[MOI]));
+    rep.setAttribute('transform', 'translate(' + mx.toFixed(1) + ','
+      + (my - h * .46).toFixed(1) + ')');
+  }
+}
+
+function traces(i, x){
+  var h = PH / N, y0 = i * h + h / 2;
+  var px = X0 + (X1 - X0 - 44) * Math.max(0, Math.min(1, x));
+  var s = '';
+  for (var t = 1; t < 7; t++){
+    var tx = px - t * 15, o = (.32 - t * .045);
+    if (o <= 0 || tx < X0) continue;
+    s += '<ellipse cx="' + tx.toFixed(0) + '" cy="' + (y0 - h * .2).toFixed(0)
+      + '" rx="3.4" ry="2" fill="#b8a074" opacity="' + o.toFixed(2) + '"/>';
+    s += '<ellipse cx="' + (tx - 6).toFixed(0) + '" cy="' + (y0 + h * .24).toFixed(0)
+      + '" rx="3.4" ry="2" fill="#b8a074" opacity="' + o.toFixed(2) + '"/>';
+  }
+  if (TR[i]) TR[i].innerHTML = s;
+}
+
+function tableau(pos){
+  var o = PLAT.map(function(v, i){ return i; })
+    .sort(function(a, b){ return pos[b] - pos[a]; });
+  document.getElementById('liste').innerHTML = o.map(function(i, r){
+    return '<div class="pl' + (i === MOI ? ' moi' : '') + '"><i>' + (r + 1) + '</i>'
+      + '<b>' + PLAT[i].nom + '</b><span>' + (COTES[i] || '—') + '×</span></div>';
+  }).join('');
+}
+
+/* ---------- rejouer ce que le serveur a calculé ---------- */
+var COTES = [], DEROULE = [], ARRIVEE = [], RES = null;
+
+function lancer(r){
+  PLAT = r.plateau; COTES = r.cotes; DEROULE = r.deroule;
+  ARRIVEE = r.arrivee; RES = r;
+  MOI = 0;
+  for (var i = 0; i < PLAT.length; i++) if (PLAT[i].moi) MOI = i;
+
+  document.getElementById('piste').className = 'on';
+  document.getElementById('issue').className = 'issue';
+  construire();
+  tableau(PLAT.map(function(){ return 0; }));
+
+  var t = document.getElementById('chn');
+  CHRONO.style.opacity = '1'; CHRONO.style.transition = 'opacity .25s';
+  var mots = ['3','2','1','PARTEZ'], k = 0;
+  (function pas(){
+    t.textContent = mots[k];
+    t.setAttribute('font-size', k === 3 ? 82 : 132);
+    t.animate(
+      [{ transform:'scale(1.7)', opacity:0 },
+       { transform:'scale(1)', opacity:1, offset:.3 },
+       { transform:'scale(1)', opacity:1, offset:.8 },
+       { transform:'scale(.9)', opacity:.85 }],
+      { duration:640, easing:'cubic-bezier(.2,1.4,.4,1)' });
+    if (navigator.vibrate) navigator.vibrate(k === 3 ? 60 : 18);
+    k++;
+    if (k < mots.length) setTimeout(pas, 700);
+    else setTimeout(function(){ CHRONO.style.opacity = '0'; rejouer(); }, 480);
+  })();
+}
+
+function rejouer(){
+  var n = PLAT.length, k = 0;
+  var cible = DEROULE[0] ? DEROULE[0].p.map(Number) : new Array(n).fill(0);
+  var vue = new Array(n).fill(0), phases = [], dernier = new Array(n).fill(0);
+  for (var i = 0; i < n; i++) phases.push(Math.random() * 6.28);
+
+  var horloge = setInterval(function(){
+    k++;
+    if (k >= DEROULE.length){
+      clearInterval(horloge);
+      setTimeout(finir, 900);
+      return;
+    }
+    cible = DEROULE[k].p.map(Number);
+    /* le classement se réordonne pendant la course */
+    if (k % 6 === 0) tableau(cible);
+  }, 150);
+
+  var avant = performance.now();
+  function image(t){
+    var dt = Math.min(80, t - avant); avant = t;
+    for (var i = 0; i < n; i++){
+      var d = cible[i] - vue[i];
+      vue[i] += d * Math.min(1, dt / 150 * .34);
+      phases[i] += (0.9 + Math.max(0, d) * 900) * dt / 1000 * 3.4;
+      if (Math.abs(vue[i] - dernier[i]) > .012){ traces(i, vue[i]); dernier[i] = vue[i]; }
+    }
+    placer(vue, phases);
+    BOUCLE = requestAnimationFrame(image);
+  }
+  BOUCLE = requestAnimationFrame(image);
+}
+
+function finir(){
+  if (BOUCLE) cancelAnimationFrame(BOUCLE);
+  tableau(DEROULE[DEROULE.length - 1].p.map(Number));
+
+  var h = '';
+  for (var r = 0; r < 3; r++){
+    var i = ARRIVEE[r];
+    h += '<div class="l"><i>' + (r + 1) + '</i><b>' + PLAT[i].nom + '</b></div>';
+  }
+  h += '<div class="g' + (RES.gain ? '' : ' perdu') + '">'
+    + (RES.gain
+        ? 'Il gagne. Tu ramasses ' + eur(RES.gain) + ' € pour ' + eur(RES.mise) + ' misés.'
+        : 'Il finit ' + RES.place + 'ᵉ. Tu perds tes ' + eur(RES.mise) + ' €.')
+    + '</div>';
+  h += '<div class="b">'
+    + '<button id="i-sortir">Revenir au sable</button>'
+    + (RES.reste > 0
+        ? '<button class="vif" id="i-encore">Encore une (' + RES.reste + ')</button>'
+        : '')
+    + '</div>';
+  var z = document.getElementById('issue');
+  z.innerHTML = h; z.className = 'issue on';
+
+  document.getElementById('i-sortir').onclick = fermerPiste;
+  var e = document.getElementById('i-encore');
+  if (e) e.onclick = function(){ fermerPiste(); courir(); };
+}
+
+function fermerPiste(){
+  if (BOUCLE) cancelAnimationFrame(BOUCLE);
+  document.getElementById('piste').className = '';
+  charger();
+}
+
+/* ============================================================
+   CE QU'ON DEMANDE AU SERVEUR
+   ============================================================ */
+async function charger(){
+  var r;
+  try { r = await BD.agir('mon_vivier'); } catch(e){ return; }
+  if (!r || !r.ok) return;
+  V = r;
+  if (CHOISI && !(V.crabes || []).some(function(c){ return c.id === CHOISI; }))
+    CHOISI = null;
+  poser();
+}
+
+async function relever(){
+  var b = document.getElementById('panier');
+  b.disabled = true; b.textContent = 'Tu relèves le panier…';
+  var x;
+  try { x = await BD.agir('relever_le_panier'); } catch(e){ x = null; }
+  if (!x || !x.ok){
+    dire(x && x.pourquoi === 'vivier_plein' ? 'Ton vivier est plein.'
+       : x && x.pourquoi === 'trop_cher' ? 'Pas assez en poche.'
+       : x && x.pourquoi === 'assez_pour_aujourdhui' ? 'Plus de panier aujourd\'hui.'
+       : 'Le panier est remonté vide.');
+    await charger(); return;
+  }
+  CHOISI = x.crabe.id;
+  await charger();
+  dire('Tu remontes ' + x.crabe.nom + ' — ' + QUAL[x.crabe.qualite].n.toLowerCase() + '.');
+  if (navigator.vibrate) navigator.vibrate(x.crabe.qualite >= 3 ? [20,60,30,60,40] : 22);
+}
+
+async function courir(){
+  if (!CHOISI) return;
+  var b = document.getElementById('courir');
+  b.disabled = true; b.textContent = 'On forme le plateau…';
+  var x;
+  try { x = await BD.agir('une_course', { p_crabe: CHOISI, p_mise: MISE }); }
+  catch(e){ x = null; }
+  b.textContent = 'Le lâcher sur le sable';
+  if (!x || !x.ok){
+    dire(x && x.pourquoi === 'trop_cher' ? 'Pas assez pour cette mise.'
+       : x && x.pourquoi === 'assez_pour_aujourdhui' ? 'Il a assez couru aujourd\'hui.'
+       : x && x.pourquoi === 'mise_trop_haute' ? 'Cette mise s\'ouvre au niveau 6.'
+       : 'Pas de course maintenant.');
+    await charger(); return;
+  }
+  lancer(x);
+}
+
+/* ---------- on branche ---------- */
+document.getElementById('ret').onclick = function(){ location.href = 'hub.html?v=3'; };
+document.getElementById('panier').onclick = relever;
+document.getElementById('courir').onclick = courir;
+
+document.getElementById('vivier').onclick = function(e){
+  var b = e.target;
+  while (b && b !== this && (!b.getAttribute || b.getAttribute('data-c') === null))
+    b = b.parentNode;
+  if (b && b.getAttribute && b.getAttribute('data-c') !== null){
+    var id = +b.getAttribute('data-c');
+    CHOISI = (CHOISI === id) ? null : id;
+    poser();
+  }
+};
+document.getElementById('mises').onclick = function(e){
+  var b = e.target;
+  if (b && b.getAttribute && b.getAttribute('data-m') !== null){
+    MISE = +b.getAttribute('data-m'); poserMise();
+  }
+};
+
+charger();
+</script>
+</body>
+</html>
