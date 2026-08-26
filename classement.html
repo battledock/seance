@@ -256,6 +256,13 @@ function choisir(v){
   rendre();
 }
 
+/* un avatar illisible ne doit jamais emporter le classement entier */
+function tete(x){
+  try { return tete(x); }
+  catch(e){ return '<svg viewBox="0 0 16 16"><rect width="16" height="16"'
+    + ' fill="#dfe8ee"/></svg>'; }
+}
+
 function rendre(){
   const L = (TOUT && TOUT[VUE]) || [];
   const pod = document.getElementById('podium');
@@ -283,7 +290,7 @@ function rendre(){
           + '<span class="rg">' + x.rang + '</span>'
           + (cl === 'un' ? '<span class="cr">' + COURONNE + '</span>' : '')
           + '<span class="av' + (x.capitaine ? ' cap' : '') + '">'
-          +   BD.avatarSVG(x) + '</span>'
+          +   tete(x) + '</span>'
           + '<span class="nm">' + x.pseudo + '</span>'
           + (x.capitaine ? '<span class="cape">capitaine</span>' : '')
           + '<span class="eu">' + valeurDe(x) + '</span></div>';
@@ -298,7 +305,7 @@ function rendre(){
         + (x.capitaine ? ' cap' : '') + '">'
         + '<span class="rg">' + x.rang + '</span>'
         + '<span class="av' + (x.capitaine ? ' cap' : '') + '">'
-        +   BD.avatarSVG(x) + '</span>'
+        +   tete(x) + '</span>'
         + '<span class="co"><b>' + x.pseudo
         +   (x.capitaine ? '<em>capitaine</em>' : '') + '</b>'
         + '<span>Niveau ' + x.niveau + ' · ' + (PORTS[x.port] || 'en mer') + '</span></span>'

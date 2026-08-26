@@ -442,7 +442,10 @@ const TUILES = [
   /* elle n'apparaît que si tu portes une chèvre : personne d'autre
      n'a de raison d'aller voir le vétérinaire du port */
   { k:'veto', ou:'attend', ici:'anse', em:'🩺', t:'Le vétérinaire',
-    s:'Il faut lui montrer la chèvre', si:'chevre_a_bord',
+    s:'Il faut lui montrer la chèvre',
+    /* elle n'existe que le temps du voyage : pas de chèvre à bord,
+       ou verdict déjà rendu, et elle disparaît */
+    cache: () => !VECU.includes('chevre_a_bord') || VECU.includes('vet_fait'),
     f:() => location.href = 'cirque-veto.html' },
 
   /* ---- Barcelone ---- */
@@ -531,7 +534,11 @@ function sousTitre(t){
 
 function dessinerTuiles(){
   const E = hubEtat;
-  const DISPO = TUILES.filter(t => !t.ici || t.ici === PORT);
+  /* certaines tuiles ne s'affichent pas du tout : celles qui ne
+     valent que le temps d'une histoire, et qui n'ont plus lieu
+     d'être une fois celle-ci passée. */
+  const DISPO = TUILES.filter(t =>
+    (!t.ici || t.ici === PORT) && !(t.cache && t.cache()));
   let h = '';
 
   FAMILLES.forEach(F => {
@@ -665,9 +672,16 @@ document.getElementById('ouv-ok').onclick = () => {
       const attendu = ardit && ardit.etape >= 2 && !pere && (d.niveau || 1) >= 4;
       if (aLettre || pere || attendu) VECU.push('palma_pere');
       if (pere) VECU.push('pere');
-      /* une chèvre dans la cale ouvre la porte du vétérinaire */
+      /* une chèvre dans la cale ouvre la porte du vétérinaire ;
+         son verdict rendu, la porte se referme pour de bon */
       if ((d.cale || []).some(e => e && e.k === 'rosine'))
         VECU.push('chevre_a_bord');
+      BD.agir('mon_cirque').then(c => {
+        if (c && c.vet && !VECU.includes('vet_fait')){
+          VECU.push('vet_fait');
+          dessinerTuiles();
+        }
+      }).catch(() => {});
       PALMA = { aLettre: aLettre, pere: !!pere };
     }
     document.getElementById('rade-t').textContent = RADE[PORT] || RADE.anse;
