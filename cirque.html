@@ -18,13 +18,23 @@
 html,body{min-height:100%;background:#2a1420;color:#f6e6d8;
   font-family:'Nunito',system-ui,sans-serif}
 
-#sc{position:fixed;left:0;right:0;top:0;height:42%;overflow:hidden;
+#sc{position:fixed;left:0;right:0;top:0;height:54%;overflow:hidden;
   opacity:0;transition:opacity .34s ease}
 #sc.pret{opacity:1}
 #sc svg{display:block;width:100%;height:100%}
-#sc::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(42,20,32,.2) 0,rgba(42,20,32,0) 32%,
-    rgba(42,20,32,.76) 82%,rgba(42,20,32,1) 100%)}
+/* le fondu vers le bas, et un vignettage qui referme les bords :
+   c'est ce qui donne l'impression d'un regard, pas d'une image */
+#sc::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 120% 86% at 50% 42%,
+      rgba(20,8,16,0) 42%, rgba(20,8,16,.55) 100%),
+    linear-gradient(180deg,rgba(42,20,32,.34) 0,rgba(42,20,32,0) 26%,
+      rgba(42,20,32,.7) 78%,#2a1420 100%)}
+/* un grain très fin, pour que les aplats ne soient pas plats */
+#sc::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  opacity:.06;mix-blend-mode:overlay;
+  background-image:repeating-conic-gradient(#fff 0 0.0006turn,#000 0 0.0012turn);
+  background-size:3px 3px}
 
 .tete{position:fixed;left:0;right:0;top:0;z-index:8;display:flex;align-items:center;
   gap:10px;padding:calc(env(safe-area-inset-top) + 14px) 14px 0}
@@ -39,18 +49,21 @@ html,body{min-height:100%;background:#2a1420;color:#f6e6d8;
 .tete .ou span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
   color:rgba(246,230,216,.6);font-weight:800;margin-top:3px}
 
-.w{position:fixed;left:0;right:0;top:37%;bottom:0;z-index:5;overflow-y:auto;
-  padding:0 15px calc(env(safe-area-inset-bottom) + 28px)}
+.w{position:fixed;left:0;right:0;top:49%;bottom:0;z-index:5;overflow-y:auto;
+  padding:0 16px calc(env(safe-area-inset-bottom) + 28px)}
 .w::-webkit-scrollbar{display:none}
 
 /* ---------- ce qui se dit ---------- */
-.dit{padding-top:16px;display:flex;flex-direction:column;gap:13px}
-.dit p{font-size:15px;line-height:1.72;color:rgba(246,230,216,.86);
-  opacity:0;transform:translateY(8px);animation:venir .55s forwards}
-.dit p.parle{color:#fff;font-size:16px;padding-left:14px;
-  border-left:3px solid #d4a03a}
-.dit p.mamma{color:#e8c8a8;font-style:italic;padding-left:14px;
-  border-left:3px solid rgba(246,230,216,.3)}
+.dit{padding-top:20px;display:flex;flex-direction:column;gap:16px}
+/* la narration est en romain, discrète ; la parole est en serif,
+   plus grande, sans guillemets tapageurs : elle porte seule. */
+.dit p{font-size:14.5px;line-height:1.75;color:rgba(246,230,216,.7);
+  opacity:0;transform:translateY(10px);animation:venir .7s forwards}
+.dit p.parle{font-family:'DM Serif Display',Georgia,serif;font-weight:400;
+  color:#fff;font-size:21px;line-height:1.45;padding-left:16px;
+  border-left:3px solid #d4a03a;letter-spacing:.005em}
+.dit p.mamma{color:#e8c8a8;font-style:italic;padding-left:16px;
+  border-left:3px solid rgba(246,230,216,.26);font-size:14px}
 @keyframes venir{to{opacity:1;transform:none}}
 
 h2{font-size:9px;letter-spacing:.22em;text-transform:uppercase;font-weight:900;
@@ -60,16 +73,20 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 
 /* ---------- les choix ---------- */
 .choix{display:flex;flex-direction:column;gap:9px}
-.choix button{width:100%;text-align:left;padding:15px 16px;border-radius:13px;
-  cursor:pointer;font-family:inherit;
-  border:2.5px solid rgba(246,230,216,.24);background:rgba(70,26,44,.6);
-  transition:transform .13s,border-color .2s}
+.choix button{width:100%;text-align:left;padding:14px 16px;border-radius:14px;
+  cursor:pointer;font-family:inherit;position:relative;overflow:hidden;
+  border:2px solid rgba(246,230,216,.2);
+  background:linear-gradient(180deg,rgba(86,32,52,.7),rgba(56,20,36,.7));
+  transition:transform .13s,border-color .2s,background .2s}
+.choix button::after{content:"›";position:absolute;right:15px;top:50%;
+  transform:translateY(-50%);font-size:20px;color:rgba(246,230,216,.28)}
+.choix button.vif::after{color:#d4a03a}
 .choix button:active{transform:scale(.987)}
 .choix button:disabled{opacity:.45;cursor:default}
-.choix button b{display:block;font-size:15px;color:#f6e6d8;font-weight:700;
-  line-height:1.4}
-.choix button span{display:block;font-size:12px;color:rgba(246,230,216,.5);
-  margin-top:6px;line-height:1.55}
+.choix button b{display:block;font-size:15.5px;color:#f6e6d8;font-weight:700;
+  line-height:1.4;padding-right:20px}
+.choix button span{display:block;font-size:12px;color:rgba(246,230,216,.46);
+  margin-top:5px;line-height:1.5;padding-right:20px}
 .choix button.vif{border-color:#d4a03a;background:rgba(120,58,20,.5)}
 
 .go{width:100%;padding:15px;border-radius:13px;cursor:pointer;margin-top:6px;
@@ -103,6 +120,16 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 .ch svg{display:block;width:100%;height:auto}
 .ch b{display:block;text-align:center;font-size:11px;padding:4px 0 6px;
   color:rgba(246,230,216,.6);font-weight:800}
+
+/* la troupe se replie : on la consulte, elle ne s'impose pas */
+.troupe{margin-top:26px;border-top:1px solid rgba(246,230,216,.12);padding-top:14px}
+.troupe summary{list-style:none;cursor:pointer;font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;font-weight:900;color:rgba(246,230,216,.42);
+  display:flex;justify-content:space-between;align-items:center}
+.troupe summary::-webkit-details-marker{display:none}
+.troupe summary::after{content:"+";font-size:16px;letter-spacing:0}
+.troupe[open] summary::after{content:"−"}
+.troupe .gens{margin-top:12px}
 
 .mot{font-size:12.5px;line-height:1.7;color:rgba(246,230,216,.45);margin-top:18px;
   text-align:center;padding:0 6px}
@@ -457,6 +484,35 @@ function portrait(k){
    vide, le quai de nuit, la piste, l'arrière du chapiteau.
    ============================================================ */
 
+/* ---------- la lumière ----------
+   Une lampe, un halo, une poussière : ce sont ces trois choses
+   qui font qu'une scène plate devient une scène. */
+function halo(x, y, rx, ry, c, o){
+  var u = 'h' + Math.round(x + y * 7);
+  return '<defs><radialGradient id="' + u + '" cx="0.5" cy="0.5">'
+    + '<stop offset="0%" stop-color="' + c + '" stop-opacity="' + o + '"/>'
+    + '<stop offset="100%" stop-color="' + c + '" stop-opacity="0"/></radialGradient></defs>'
+    + '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + ry
+    + '" fill="url(#' + u + ')"/>';
+}
+
+/* la poussière qui flotte dans un faisceau */
+function poussiere(x, y, w, h, n){
+  var s = '';
+  for (var i = 0; i < (n || 14); i++)
+    s += '<circle class="fumee" cx="' + (x + rnd(i * 5) * w).toFixed(0) + '" cy="'
+      + (y + rnd(i * 9) * h).toFixed(0) + '" r="' + (1.2 + rnd(i) * 1.6).toFixed(1)
+      + '" fill="#ffeec8" opacity="' + (.3 + rnd(i * 3) * .4).toFixed(2)
+      + '" style="animation-delay:-' + (i * .7).toFixed(1) + 's"/>';
+  return s;
+}
+
+/* une masse sombre au tout premier plan : c'est elle qui creuse
+   la profondeur, en plaçant le regard derrière quelque chose */
+function avantPlan(d){
+  return '<path d="' + d + '" fill="#150a12" opacity=".82"/>';
+}
+
 /* le fond de nuit, commun : ciel, étoiles, toits */
 function nuit(h){
   var s = '<defs>'
@@ -552,6 +608,16 @@ function scPlace(){
   }
   s += chevre(392, base - 6, 1.15, '#d8cfc0');
   s += '<path d="M370 ' + (base - 4) + ' v-26" stroke="#6d4a30" stroke-width="4"/>';
+
+  /* la lumière chaude qui traîne au ras du pavé */
+  s += halo(240, base + 30, 300, 60, '#ffcf78', .16);
+  /* deux badauds de dos, en silhouette : on est derrière eux */
+  s += avantPlan('M-10 620 q30 -120 74 -122 q44 2 74 122 z');
+  s += avantPlan('M330 620 q26 -104 64 -106 q38 2 64 106 z');
+  s += '<circle cx="64" cy="482" r="30" fill="#150a12" opacity=".82"/>';
+  s += '<circle cx="394" cy="500" r="26" fill="#150a12" opacity=".82"/>';
+  /* le chapeau de l'un des deux */
+  s += '<path d="M28 470 h72 l-10 -22 h-52 z" fill="#150a12" opacity=".82"/>';
   return s;
 }
 
@@ -666,6 +732,14 @@ function scRoulotte(){
   s += '<circle class="ampoule a2" cx="262" cy="248" r="5" fill="#ffe08a"/>';
   /* la chèvre, au coin, qui observe */
   s += chevre(408, 470, 1.05, '#d8cfc0');
+  /* le faisceau qui sort de la porte et se couche sur le pavé */
+  s += '<path d="M180 260 L280 260 L340 620 L120 620 Z" fill="#ffcf78" opacity=".1"/>';
+  s += halo(230, 340, 150, 190, '#ffcf78', .2);
+  s += poussiere(190, 280, 100, 160, 10);
+  /* un coin d'affiche déchirée, tout près : on est dans la scène */
+  s += avantPlan('M-10 620 v-190 l86 -12 l14 202 z');
+  s += '<path d="M4 448 h58 v26 h-58 z" fill="#c9302c" opacity=".5"/>';
+  s += '<path d="M4 484 h44 v10 h-44 z" fill="#d4a03a" opacity=".4"/>';
   return s;
 }
 
@@ -709,12 +783,14 @@ function scDedans(){
   s += '<ellipse cx="0" cy="-48" rx="17" ry="19" fill="#1a1218"/>';
   s += '<path d="M-15 -52 q15 -12 30 0 q-4 -20 -15 -20 q-11 0 -15 20 z" fill="#141018"/>';
   s += '</g>';
-  /* la poussière dans le faisceau */
-  s += '<path d="M232 20 L120 470 L360 470 Z" fill="#ffe0a0" opacity=".07"/>';
-  for (var p = 0; p < 16; p++)
-    s += '<circle class="fumee" cx="' + (170 + rnd(p * 5) * 140).toFixed(0) + '" cy="'
-      + (200 + rnd(p * 9) * 240).toFixed(0) + '" r="1.8" fill="#ffeec8" opacity=".5"'
-      + ' style="animation-delay:-' + (p * .6).toFixed(1) + 's"/>';
+  /* le faisceau du projecteur, franc, et la poussière dedans */
+  s += '<path d="M228 8 L108 500 L372 500 Z" fill="#ffe0a0" opacity=".1"/>';
+  s += '<path d="M234 8 L182 500 L298 500 Z" fill="#fff0c8" opacity=".08"/>';
+  s += halo(240, 500, 230, 90, '#ffe8b8', .22);
+  s += poussiere(150, 120, 180, 360, 20);
+  /* le dossier du gradin d'où l'on regarde */
+  s += avantPlan('M-10 620 v-70 h500 v70 z');
+  s += '<path d="M-10 552 h500 v10 h-500 z" fill="#4a2430" opacity=".8"/>';
   return s;
 }
 
@@ -762,6 +838,19 @@ function scQuai(){
   s += '<path d="M-13 -26 h26 l-13 -10 z" fill="#2e2018"/>';
   s += '<circle cx="0" cy="-14" r="34" fill="#ffcf78" opacity=".14"/>';
   s += '</g>';
+  /* la halo de la lanterne, couché sur les planches */
+  s += halo(420, 540, 170, 90, '#ffcf78', .18);
+  /* une brume basse sur l'eau, qui mange le pied de la barque */
+  s += '<ellipse cx="240" cy="452" rx="330" ry="26" fill="#8ab0c0" opacity=".16"/>';
+  s += '<ellipse cx="150" cy="446" rx="180" ry="16" fill="#8ab0c0" opacity=".12"/>';
+  /* le reflet de la barque, brouillé */
+  s += '<path d="M212 470 q78 12 166 0 l-10 22 q-72 10 -146 0 z" fill="#6d4a30"'
+    + ' opacity=".18"/>';
+  /* un cordage lové, au tout premier plan */
+  s += avantPlan('M-10 620 v-84 q60 -26 128 -6 q-46 22 -50 90 z');
+  for (var c = 0; c < 4; c++)
+    s += '<path d="M' + (-4 + c * 6) + ' ' + (560 + c * 12) + ' q54 -20 106 -4"'
+      + ' stroke="#241620" stroke-width="7" fill="none" opacity=".9"/>';
   return s;
 }
 
@@ -848,6 +937,15 @@ function scDerriere(){
   /* une caisse libre à côté : la place où tu peux t'asseoir */
   s += '<rect x="356" y="486" width="76" height="48" rx="4" fill="#7d5e42"'
     + ' stroke="#4a3628" stroke-width="3"/>';
+  /* la lumière du chapiteau filtre par une déchirure de la toile */
+  s += '<path d="M188 210 l14 -34 l10 40 l-8 26 z" fill="#ffcf78" opacity=".7"/>';
+  s += '<path d="M196 214 L96 620 L300 620 Z" fill="#ffcf78" opacity=".08"/>';
+  s += halo(200, 300, 130, 200, '#ffcf78', .12);
+  /* son ombre, projetée sur la toile derrière lui */
+  s += '<ellipse cx="150" cy="470" rx="52" ry="86" fill="#3a0e14" opacity=".3"'
+    + ' transform="rotate(-8 150 470)"/>';
+  /* de l'herbe folle au pied de la toile, au premier plan */
+  s += avantPlan('M-10 620 v-40 q40 -30 78 -6 q42 -34 88 -4 q40 -28 76 -2 v52 z');
   return s;
 }
 
@@ -886,6 +984,17 @@ function scFinal(){
     tristesse:true, houppe:true });
   /* Rosine, évidemment */
   s += chevre(320, 566, .8, '#d8cfc0', 1, 0, true);
+  /* le halo au sol, et la poussière dans le cône */
+  s += halo(240, 552, 160, 60, '#ffe8b8', .3);
+  s += poussiere(160, 60, 160, 420, 22);
+  /* les têtes du premier rang, en contre-jour : on est dans le public */
+  var T = [[34,600,40],[128,614,34],[352,614,34],[446,600,40]];
+  T.forEach(function(t){
+    s += '<circle cx="' + t[0] + '" cy="' + t[1] + '" r="' + t[2]
+      + '" fill="#150a12"/>';
+    s += '<path d="M' + (t[0] - t[2] - 8) + ' 620 q' + (t[2] + 8) + ' -'
+      + (t[2] + 20) + ' ' + (t[2] * 2 + 16) + ' 0 z" fill="#150a12"/>';
+  });
   return s;
 }
 
@@ -938,34 +1047,27 @@ function dits(L){
 /* ---------- l'entrée : on te présente la maison ---------- */
 function scenePremiere(){
   return dits([
-    "Le chapiteau est planté au milieu de la place depuis trois mois. La toile "
-      + "s'affaisse d'un côté. Deux ampoules sur quinze ne marchent plus.",
-    "Un homme en costume trois-pièces sort de la roulotte. Il porte un nez rouge. "
-      + "Il ne l'enlève pas pour te parler.",
-    "« Tu débarques. Tout le monde débarque, ici. » Il ouvre les bras. "
-      + "« Moi, je ne débarque plus. Je reste. »",
-    "Il te fait asseoir sur une caisse et te sert quelque chose de trouble.",
-    "« Je vais être franc avec toi, parce que tu as une tête honnête. "
-      + "Nous avons un problème avec une chèvre. »"
+    "Le chapiteau est planté au milieu de la place depuis trois mois. "
+      + "Deux ampoules sur quinze ne marchent plus.",
+    "Un homme en costume trois-pièces sort de la roulotte. Il porte un nez rouge, "
+      + "et il ne l'enlève pas pour te parler.",
+    "« Nous avons un problème avec une chèvre. »"
   ])
-  + '<div class="choix" style="margin-top:20px">'
-  + '<button class="vif" id="c-ecouter"><b>« Je vous écoute. »</b>'
+  + '<div class="choix" style="margin-top:22px">'
+  + '<button class="vif" id="c-ecouter"><b>Je vous écoute</b>'
   + '<span>De toute façon, il a déjà commencé.</span></button></div>';
 }
 
 function sceneProbleme(){
   return dits([
-    "« Rosine a mangé un papier. » Il laisse le silence faire son travail.",
-    "« Ce papier était l'acte de propriété d'un terrain, au port. Ou un contrat. "
-      + "Ou une reconnaissance de dette. Les avis divergent. »",
-    "« Une autre famille le réclame. Nous, nous attendons que Rosine le rende. "
-      + "Nous attendons depuis trois mois. »",
-    "Derrière lui, un homme en veste verte tient un registre. Il n'a pas quitté "
-      + "la chèvre des yeux depuis douze semaines.",
-    "« Il nous faudrait un avis. Un vrai. Un vétérinaire de Marseille. "
-      + "Mais si on la met sur un bateau d'ici, toute la ville le saura demain. »",
-    "Il se retourne vers le premier rang. Une très vieille femme est assise là, "
-      + "dans un fauteuil, face au chapiteau vide. Elle hoche la tête, une fois.",
+    "« Rosine a mangé un papier. Un acte de propriété. Ou un contrat. "
+      + "Les avis divergent. »",
+    "Derrière lui, un homme en veste verte n'a pas quitté la chèvre des yeux "
+      + "depuis douze semaines.",
+    "« Il nous faudrait un vétérinaire de Marseille. Mais si on la met sur un bateau "
+      + "d'ici, toute la ville le saura demain. »",
+    "Il se retourne. Au premier rang du chapiteau vide, une très vieille femme "
+      + "hoche la tête, une fois.",
     "« Voilà. C'est décidé. »"
   ]);
 }
@@ -1061,12 +1163,14 @@ function blocFinal(){
 }
 
 function blocTroupe(){
-  return '<h2>La troupe</h2><div class="gens">'
+  /* elle ne doit pas manger l'écran : on la range sous un titre
+     qu'on ouvre si on veut. */
+  return '<details class="troupe"><summary>La troupe</summary><div class="gens">'
     + (C.gens || []).map(function(g){
         return '<div class="p"><span class="f">' + portrait(g.k) + '</span>'
           + '<span class="t"><b>' + g.nom + '</b><i>' + g.quoi + '</i>'
           + '<span>' + g.note + '</span></span></div>';
-      }).join('') + '</div>';
+      }).join('') + '</div></details>';
 }
 
 /* le décor suit l'histoire, sans qu'on ait à y penser */
