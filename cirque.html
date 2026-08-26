@@ -150,6 +150,20 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 .fumee{animation:monte 9s ease-out infinite}
 @keyframes monte{0%{transform:translate(0,0);opacity:0}
   20%{opacity:.4}100%{transform:translate(14px,-70px);opacity:0}}
+/* rien n'est parfaitement immobile : la toile respire, la vieille
+   aussi, la lanterne vacille, la chèvre remue la queue */
+.respire{animation:souffle 5.4s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:50% 100%}
+@keyframes souffle{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.018)}}
+.toile{animation:onduler 8s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:50% 0}
+@keyframes onduler{0%,100%{transform:skewX(0)}50%{transform:skewX(.5deg)}}
+.vacille{animation:flamme 2.6s ease-in-out infinite}
+@keyframes flamme{0%,100%{opacity:1}30%{opacity:.82}55%{opacity:1}72%{opacity:.9}}
+.queue{animation:remue 2.2s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:0 50%}
+@keyframes remue{0%,100%{transform:rotate(0)}50%{transform:rotate(-16deg)}}
+
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
 
 #charge{position:fixed;inset:0;z-index:90;background:#2a1420;display:flex;
@@ -184,6 +198,19 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 <script src="bd.js?v=3"></script>
 <script>
 function rnd(s){ var x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); }
+
+/* mélanger deux teintes : c'est ce qui permet d'éclairer ou
+   d'assombrir une même toile selon le côté où elle est. */
+function mel2(a, b, k){
+  function h(c){ return [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16),
+    parseInt(c.slice(5,7),16)]; }
+  var A = h(a), B = h(b), o = '#';
+  for (var i = 0; i < 3; i++){
+    var v = Math.round(A[i] + (B[i] - A[i]) * k).toString(16);
+    o += v.length < 2 ? '0' + v : v;
+  }
+  return o;
+}
 
 /* ============================================================
    LE DÉCOR — le chapiteau, un soir
@@ -350,8 +377,8 @@ function chevre(x, y, e, robe, cornes, oeil, clochette){
   /* le corps */
   s += '<ellipse cx="0" cy="-38" rx="30" ry="18" fill="' + c + '"/>';
   s += '<ellipse cx="-6" cy="-42" rx="22" ry="11" fill="#ffffff" opacity=".22"/>';
-  /* la queue, relevée */
-  s += '<path d="M28 -44 l10 -8 l-2 9 z" fill="' + c + '"/>';
+  /* la queue, relevée, qui remue */
+  s += '<path class="queue" d="M28 -44 l10 -8 l-2 9 z" fill="' + c + '"/>';
   /* le cou et la tête */
   s += '<path d="M-24 -44 q-14 -6 -20 -20 l12 -6 q8 12 16 16 z" fill="' + c + '"/>';
   s += '<ellipse cx="-46" cy="-70" rx="14" ry="10" fill="' + c + '"/>';
@@ -564,16 +591,43 @@ function scPlace(){
   s += '<path d="M' + cx + ' ' + haut + ' v-38" stroke="#6d4028" stroke-width="5"/>';
   s += '<path class="fanion" d="M' + cx + ' ' + (haut - 38) + ' l34 11 l-34 11 z"'
     + ' fill="#d4a03a" stroke="#3e1c2e" stroke-width="2.4"/>';
+  /* Les fuseaux de toile. Chacun prend la lumière différemment :
+     le soleil de la place vient de la gauche, donc les fuseaux de
+     droite s'assombrissent. Et la toile est vieille : elle plisse. */
   for (var q = 0; q < 8; q++){
     var a1 = -Math.PI / 2 + (q - 4) * .2, a2 = -Math.PI / 2 + (q - 3) * .2;
     var x1 = cx + Math.cos(a1) * larg, x2 = cx + Math.cos(a2) * larg;
     var creux = 16 + Math.abs(q - 3.5) * 3;
-    s += '<path d="M' + cx + ' ' + haut + ' Q' + ((cx + x1) / 2).toFixed(0) + ' '
-      + (haut + 120) + ' ' + x1.toFixed(0) + ' ' + base
+    /* la courbure varie : la toile ne tombe pas droit */
+    var ventre = 120 + Math.sin(q * 1.7) * 14;
+    var lum = 1 - Math.abs(q - 2.4) / 9;          /* 1 à gauche, moins à droite */
+    var c = q % 2
+      ? mel2('#c9302c', '#5c1418', 1 - lum)
+      : mel2('#f2e2c4', '#a8906c', 1 - lum);
+    var d1 = 'M' + cx + ' ' + haut + ' Q' + ((cx + x1) / 2).toFixed(0) + ' '
+      + (haut + ventre).toFixed(0) + ' ' + x1.toFixed(0) + ' ' + base
       + ' q' + ((x2 - x1) / 2).toFixed(0) + ' ' + creux + ' ' + (x2 - x1).toFixed(0) + ' 0'
-      + ' Q' + ((cx + x2) / 2).toFixed(0) + ' ' + (haut + 120) + ' ' + cx + ' ' + haut
-      + ' Z" fill="' + (q % 2 ? '#c9302c' : '#f2e2c4') + '"/>';
+      + ' Q' + ((cx + x2) / 2).toFixed(0) + ' ' + (haut + ventre).toFixed(0)
+      + ' ' + cx + ' ' + haut + ' Z';
+    s += '<path d="' + d1 + '" fill="' + c + '"/>';
+    /* la couture entre deux fuseaux, et son ombre */
+    s += '<path d="M' + cx + ' ' + haut + ' Q' + ((cx + x1) / 2).toFixed(0) + ' '
+      + (haut + ventre).toFixed(0) + ' ' + x1.toFixed(0) + ' ' + base
+      + '" stroke="#00000030" stroke-width="3" fill="none"/>';
+    /* deux plis mous, là où la toile a pris le pli du rangement */
+    for (var pl = 0; pl < 2; pl++){
+      var t = .42 + pl * .28;
+      var mx = cx + (x1 - cx) * t, my = haut + ventre * t * 1.5;
+      s += '<path d="M' + mx.toFixed(0) + ' ' + my.toFixed(0)
+        + ' q' + ((x2 - x1) * .3).toFixed(0) + ' ' + (14 + pl * 6)
+        + ' ' + ((x2 - x1) * .82).toFixed(0) + ' ' + (2 + pl * 3)
+        + '" stroke="#00000018" stroke-width="' + (7 - pl * 2)
+        + '" fill="none" stroke-linecap="round"/>';
+    }
   }
+  /* le côté droit reste dans l'ombre du soir */
+  s += '<path d="M' + cx + ' ' + haut + ' L' + (cx + larg) + ' ' + base
+    + ' L' + (cx + larg * .3) + ' ' + (base + 14) + ' Z" fill="#2a0e18" opacity=".22"/>';
   s += '<ellipse cx="' + cx + '" cy="' + haut + '" rx="16" ry="7" fill="#8a2420"/>';
   var fest = 'M' + (cx - larg) + ' ' + base;
   for (var f = 0; f < 8; f++)
@@ -706,6 +760,67 @@ function homme(x, y, e, q){
   return s + '</g>';
 }
 
+/* ---------- Don Battaglini, en pied ----------
+   Un homme large, court sur pattes, qui parle avec les mains.
+   Le ventre tend le gilet ; les bras ne sont jamais au repos. */
+function don(x, y, e){
+  var s = '<g transform="translate(' + x + ',' + y + ') scale(' + e + ')">';
+  var peau = '#c9925e', f = '#241820';
+  s += '<ellipse cx="0" cy="4" rx="56" ry="10" fill="#1a0e16" opacity=".38"/>';
+  /* les jambes, courtes, écartées */
+  s += '<path d="M-22 -56 v54 M22 -56 v54" stroke="#241820" stroke-width="26"'
+    + ' stroke-linecap="round"/>';
+  s += '<path d="M-34 0 h24 M10 0 h24" stroke="#160e14" stroke-width="11"'
+    + ' stroke-linecap="round"/>';
+  /* le corps : le ventre en avant */
+  s += '<path d="M-38 -58 q-12 -44 -2 -70 q8 -22 40 -24 q32 2 40 24'
+    + ' q10 26 -2 70 z" fill="#241820"/>';
+  /* le gilet clair que le ventre tend */
+  s += '<path d="M-26 -62 q-10 -40 0 -66 q26 -12 52 0 q10 26 0 66 z" fill="#5c4a3a"/>';
+  s += '<path d="M-26 -62 q-10 -40 0 -66 q13 -6 26 -6 v72 z" fill="#6d5844"/>';
+  /* la chemise et le nœud */
+  s += '<path d="M-13 -132 h26 l-5 40 h-16 z" fill="#f2e8dc"/>';
+  s += '<path d="M0 -124 l-12 -7 v14 z M0 -124 l12 -7 v14 z" fill="#c9302c"/>';
+  /* les revers du costume */
+  s += '<path d="M-14 -134 l-24 14 l14 46 z" fill="#2e2028"/>';
+  s += '<path d="M14 -134 l24 14 l-14 46 z" fill="#1c141c"/>';
+  /* la chaîne de montre, sur le gilet */
+  s += '<path d="M-18 -96 q14 12 28 2" stroke="#d4a03a" stroke-width="2.4" fill="none"/>';
+  /* les bras : ouverts, en train d'expliquer */
+  s += '<path d="M-36 -122 q-40 16 -48 52" stroke="#241820" stroke-width="20"'
+    + ' fill="none" stroke-linecap="round"/>';
+  s += '<path d="M36 -122 q42 12 44 54" stroke="#241820" stroke-width="20"'
+    + ' fill="none" stroke-linecap="round"/>';
+  /* les mains, paumes ouvertes */
+  s += '<ellipse cx="-86" cy="-66" rx="11" ry="9" fill="' + peau + '"'
+    + ' transform="rotate(-28 -86 -66)"/>';
+  s += '<ellipse cx="82" cy="-64" rx="11" ry="9" fill="' + peau + '"'
+    + ' transform="rotate(24 82 -64)"/>';
+  /* le cou épais, presque absent */
+  s += '<path d="M-11 -140 h22 v12 h-22 z" fill="#b07c4e"/>';
+  /* la tête, large */
+  s += '<ellipse cx="0" cy="-160" rx="27" ry="28" fill="' + peau + '"/>';
+  /* les bajoues */
+  s += '<path d="M-27 -158 q-3 20 10 26 M27 -158 q3 20 -10 26" stroke="#b07c4e"'
+    + ' stroke-width="5" fill="none" opacity=".5"/>';
+  /* les cheveux gominés, raie sur le côté */
+  s += '<path d="M-27 -166 q2 -28 27 -28 q25 0 27 28 q-10 -16 -27 -16 q-17 0 -27 16 z"'
+    + ' fill="#2e2028"/>';
+  s += '<path d="M-10 -190 q18 4 26 18" stroke="#4a3a40" stroke-width="3" fill="none"/>';
+  /* les sourcils, hauts, expressifs */
+  s += '<path d="M-18 -174 q8 -6 15 -2 M3 -176 q8 -4 15 2" stroke="#2e2028"'
+    + ' stroke-width="3.6" fill="none" stroke-linecap="round"/>';
+  s += '<circle cx="-10" cy="-162" r="3.2" fill="' + f + '"/>';
+  s += '<circle cx="10" cy="-162" r="3.2" fill="' + f + '"/>';
+  /* la moustache épaisse */
+  s += '<path d="M-16 -144 q16 -7 32 0 q-8 8 -16 8 q-8 0 -16 -8 z" fill="#2e2028"/>';
+  /* et le nez rouge, qu'il n'enlève jamais */
+  s += '<circle cx="0" cy="-150" r="8.4" fill="#e0352c" stroke="#8a2420"'
+    + ' stroke-width="2.2"/>';
+  s += '<circle cx="-3" cy="-153" r="2.6" fill="#ff8a7a" opacity=".8"/>';
+  return s + '</g>';
+}
+
 /* ---------- 2. Don sort de la roulotte ---------- */
 function scRoulotte(){
   var s = nuit(620) + toits(430) + pave(452, 168);
@@ -725,8 +840,7 @@ function scRoulotte(){
   /* les marches */
   s += '<path d="M170 454 h124 l14 22 h-152 z" fill="#3e2820"/>';
   /* Don, sur les marches, à contre-jour */
-  s += homme(230, 452, 1.06, { haut:'#241820', gilet:'#3a2a30', chemise:'#f2e8dc',
-    noeud:'#c9302c', cheveux:'#2e2028', moustache:true, nez:true });
+  s += don(230, 452, 1.06);
   /* deux ampoules au-dessus de la porte */
   s += '<circle class="ampoule" cx="200" cy="248" r="5" fill="#ffe08a"/>';
   s += '<circle class="ampoule a2" cx="262" cy="248" r="5" fill="#ffe08a"/>';
@@ -778,10 +892,28 @@ function scDedans(){
   s += '<path d="M-42 -14 h84 v14 h-84 z" fill="#8a2c34"/>';
   s += '<path d="M-46 48 v-56 q-10 4 -10 22 v34 z M46 48 v-56 q10 4 10 22 v34 z"'
     + ' fill="#5c1a22"/>';
-  /* la vieille, de dos, minuscule dans le fauteuil */
+  /* la vieille, de dos. Minuscule dans un fauteuil trop grand :
+     c'est tout ce qu'il y a à comprendre d'elle. */
+  s += '<g class="respire">';
   s += '<ellipse cx="0" cy="-16" rx="26" ry="30" fill="#1a1218"/>';
+  /* les plis du châle sur ses épaules */
+  s += '<path d="M-24 -22 q24 -14 48 0" stroke="#2a2028" stroke-width="3"'
+    + ' fill="none" opacity=".7"/>';
+  s += '<path d="M-20 -8 q20 -12 40 0" stroke="#2a2028" stroke-width="2.6"'
+    + ' fill="none" opacity=".6"/>';
+  /* la frange du châle */
+  for (var fr = 0; fr < 9; fr++)
+    s += '<path d="M' + (-22 + fr * 5.5) + ' 12 v7" stroke="#2a2028"'
+      + ' stroke-width="1.8" opacity=".7"/>';
   s += '<ellipse cx="0" cy="-48" rx="17" ry="19" fill="#1a1218"/>';
   s += '<path d="M-15 -52 q15 -12 30 0 q-4 -20 -15 -20 q-11 0 -15 20 z" fill="#141018"/>';
+  /* une mèche blanche qui dépasse du fichu */
+  s += '<path d="M-13 -44 q-5 6 -3 13" stroke="#c9c0b4" stroke-width="2.4"'
+    + ' fill="none" opacity=".7"/>';
+  s += '</g>';
+  /* sa canne, appuyée au fauteuil */
+  s += '<path d="M50 44 q6 -50 2 -78" stroke="#5c4229" stroke-width="4" fill="none"/>';
+  s += '<path d="M52 -34 q10 -4 10 6" stroke="#5c4229" stroke-width="4" fill="none"/>';
   s += '</g>';
   /* le faisceau du projecteur, franc, et la poussière dedans */
   s += '<path d="M228 8 L108 500 L372 500 Z" fill="#ffe0a0" opacity=".1"/>';
@@ -834,7 +966,8 @@ function scQuai(){
   /* une lanterne posée sur le quai */
   s += '<g transform="translate(420,540)">';
   s += '<path d="M-12 0 h24 l-4 -26 h-16 z" fill="#3e2820"/>';
-  s += '<rect x="-9" y="-24" width="18" height="20" fill="#ffcf78" opacity=".9"/>';
+  s += '<rect class="vacille" x="-9" y="-24" width="18" height="20" fill="#ffcf78"'
+    + ' opacity=".9"/>';
   s += '<path d="M-13 -26 h26 l-13 -10 z" fill="#2e2018"/>';
   s += '<circle cx="0" cy="-14" r="34" fill="#ffcf78" opacity=".14"/>';
   s += '</g>';
@@ -858,8 +991,7 @@ function scQuai(){
 function scRetour(){
   var s = scDedans();
   /* Don debout sur la piste, dos au fauteuil */
-  s += homme(150, 520, 1.02, { haut:'#241820', gilet:'#3a2a30', chemise:'#f2e8dc',
-    noeud:'#c9302c', cheveux:'#2e2028', moustache:true, nez:true });
+  s += don(150, 520, 1.02);
   /* Rosine à côté de lui, rendue */
   s += chevre(340, 528, 1.1, '#d8cfc0', 1, 0, true);
   return s;
@@ -977,8 +1109,7 @@ function scFinal(){
     + ' fill="#3a2a22"/>';
   s += '</g>';
   /* Don, un peu en retrait */
-  s += homme(102, 548, .84, { haut:'#241820', gilet:'#3a2a30', chemise:'#f2e8dc',
-    noeud:'#c9302c', cheveux:'#2e2028', moustache:true, nez:true });
+  s += don(102, 548, .84);
   /* Ghjuvanni de l'autre côté */
   s += homme(384, 548, .84, { haut:'#f2e8dc', bas:'#f2e8dc', blanc:'#f6f0e6',
     tristesse:true, houppe:true });
@@ -1007,6 +1138,14 @@ var SCENES = {
   place: scPlace, roulotte: scRoulotte, dedans: scDedans, quai: scQuai,
   retour: scRetour, concours: scConcours, derriere: scDerriere, final: scFinal
 };
+/* chaque lieu a sa température : le quai est froid, le chapiteau
+   est chaud. C'est ce qui fait qu'on sent où l'on est avant
+   même d'avoir regardé. */
+var TEINTES = {
+  place:    '#2a1420', roulotte: '#2e1620', dedans:  '#3a1420',
+  quai:     '#16283a', retour:   '#3a1420', concours:'#3a1420',
+  derriere: '#241428', final:    '#3e1620'
+};
 var SC = null;
 
 function decor(quoi){
@@ -1015,6 +1154,12 @@ function decor(quoi){
   SC = k;
   var el = document.getElementById('sc');
   var f = SCENES[k] || scPlace;
+  /* le fond de la page suit le lieu, et la barre du téléphone aussi */
+  var t = TEINTES[k] || '#2a1420';
+  document.body.style.transition = 'background .7s';
+  document.body.style.background = t;
+  var tc = document.getElementById('tc');
+  if (tc) tc.setAttribute('content', t);
   if (change && el.innerHTML){
     el.style.opacity = '0';
     setTimeout(function(){
