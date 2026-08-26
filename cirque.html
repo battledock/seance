@@ -85,6 +85,8 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 .choix button:disabled{opacity:.45;cursor:default}
 .choix button b{display:block;font-size:16px;color:#f6e6d8;font-weight:700;
   line-height:1.35;padding-right:22px}
+.choix button b .px{float:right;font-size:11.5px;font-weight:800;color:#d4a03a;
+  padding-left:10px}
 .choix button span{display:block;font-size:11.5px;color:rgba(246,230,216,.42);
   margin-top:4px;line-height:1.45;padding-right:22px}
 .choix button.vif{border-color:#d4a03a;background:rgba(120,58,20,.5)}
@@ -203,6 +205,15 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
   z-index:2;opacity:0;animation:annonce 1.5s forwards}
 @keyframes annonce{0%{opacity:0}22%{opacity:1}72%{opacity:1}100%{opacity:0}}
 
+/* le compte à rebours du vrai passage */
+.rebours{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;background:#2a0c14}
+.rebours b{font-family:'DM Serif Display',Georgia,serif;font-size:96px;color:#f0d69a;
+  animation:tombe2 .72s ease-out}
+.rebours b.go2{font-size:46px;color:#d4a03a}
+@keyframes tombe2{0%{transform:scale(1.9);opacity:0}
+  30%{transform:scale(1);opacity:1}100%{transform:scale(.94);opacity:.9}}
+
 /* ---------- l'affiche de la semaine ---------- */
 .aff{margin-top:12px;border-radius:13px;overflow:hidden;
   border:2px solid rgba(212,160,58,.4)}
@@ -225,6 +236,7 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
   text-transform:uppercase;color:rgba(246,230,216,.45);font-weight:800;margin-top:6px}
 .issue2 p{font-size:15px;line-height:1.7;margin-top:22px;color:rgba(246,230,216,.85)}
 .issue2 span{display:block;margin-top:20px;font-size:15px;font-weight:800;color:#8ce0a8}
+.issue2 .jt{margin-top:8px;color:#d4a03a}
 
 #charge{position:fixed;inset:0;z-index:90;background:#2a1420;display:flex;
   flex-direction:column;align-items:center;justify-content:center;gap:16px;
@@ -263,7 +275,7 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
   <div class="pi-b">
     <span class="pi-s"><i>Attrapées</i><b id="pi-a">0</b></span>
     <span class="pi-s"><i>Suite</i><b id="pi-l">0</b></span>
-    <span class="pi-s"><i>Belles prises</i><b id="pi-r">0</b></span>
+    <span class="pi-s"><i id="pi-t3">Belles prises</i><b id="pi-r">0</b></span>
   </div>
   <p class="pi-m" id="pi-m">Touche l'écran quand une massue passe dans le cercle.</p>
   <button class="go" id="pi-go">Commencer</button>
@@ -1414,6 +1426,26 @@ function blocNumero(){
   return h;
 }
 
+/* ---------- la boutique de la maison Battaglini ---------- */
+var BOU = null;
+
+function blocBoutique(){
+  if (!C.fin || !BOU || !BOU.ok) return '';
+  var A = BOU.articles || [];
+  var h = '<h2 class="dx">La roulotte<em>' + BOU.jetons + ' jetons</em></h2>';
+  h += '<div class="choix">' + A.map(function(a){
+      var dur = a.pris || BOU.jetons < a.prix;
+      return '<button data-b="' + a.k + '"' + (dur ? ' disabled' : '')
+        + (a.k === 'massue' ? ' class="vif"' : '') + '>'
+        + '<b>' + a.nom + '<span class="px">' + (a.pris ? 'à toi' : a.prix + ' jetons')
+        + '</span></b>'
+        + '<span>' + a.note + '</span></button>';
+    }).join('') + '</div>';
+  if (!BOU.jetons)
+    h += '<p class="mot">Les jetons ne se gagnent qu\'en piste.</p>';
+  return h;
+}
+
 function blocTroupe(){
   /* elle ne doit pas manger l'écran : on la range sous un titre
      qu'on ouvre si on veut. */
@@ -1447,7 +1479,7 @@ function poser(){
   decor(ouEnEstOn());
   if (C.etape === 1 && !C.chevre && !C.vet) s += sceneProbleme();
   s += blocEmbarquer() + blocRendre() + blocConcours() + blocFinal()
-     + blocRire() + blocNumero();
+     + blocRire() + blocNumero() + blocBoutique();
   if (C.fin)
     s += '<h2>Ce qui s\'est passé</h2><div class="fait">'
       + { verite:'Tu as dit la vérité. La Mamma s\'est levée.',
@@ -1478,6 +1510,9 @@ function brancher(){
   if (nm) nm.onclick = function(){ ouvrirPiste(false); };
   var rp = document.getElementById('c-repet');
   if (rp) rp.onclick = function(){ ouvrirPiste(true); };
+  document.querySelectorAll('[data-b]').forEach(function(b){
+    b.onclick = function(){ acheter(b.dataset.b, b); };
+  });
   document.querySelectorAll('[data-r]').forEach(function(b){
     b.onclick = function(){ faireRire(b.dataset.r); };
   });
@@ -1741,6 +1776,14 @@ function dessinerPiste(J, w, h){
       + (1 - k).toFixed(2) + '">' + J.juge + '</text>';
   }
 
+  /* les massues qu'il te reste à laisser tomber */
+  if (!REPETITION){
+    for (var vi = 0; vi < 3; vi++)
+      s += '<circle cx="' + (18 + vi * 17) + '" cy="30" r="6" fill="'
+        + (vi < 3 - J.ratees ? '#d4a03a' : 'none') + '" stroke="#d4a03a"'
+        + ' stroke-width="2"/>';
+  }
+
   /* la suite en cours, quand elle vaut la peine d'être vue */
   if (J.suite >= 5)
     s += '<text x="' + (w - 16) + '" y="30" text-anchor="end"'
@@ -1777,8 +1820,13 @@ function boucleJeu(){
   JEU.massues.forEach(function(m){
     if (!m.prise && !m.ratee && ouEnEst(m, JEU.t) > 1.1){
       m.ratee = true; JEU.ratees++; JEU.suite = 0;
+      JEU.juge = 'Au sol'; JEU.jugeT = JEU.t;
+      if (navigator.vibrate) navigator.vibrate(26);
     }
   });
+  /* devant le public, trois massues au sol et Don arrête tout.
+     En répétition, on ramasse et on recommence. */
+  if (!REPETITION && JEU.ratees >= 3){ finirNumero(); return; }
   JEU.massues = JEU.massues.filter(function(m){ return ouEnEst(m, JEU.t) < 1.35; });
   if (JEU.eclat > 0) JEU.eclat = Math.max(0, JEU.eclat - .06);
 
@@ -1786,7 +1834,9 @@ function boucleJeu(){
     + ' xmlns="http://www.w3.org/2000/svg">' + dessinerPiste(JEU, w, h) + '</svg>';
   document.getElementById('pi-a').textContent = JEU.attrapes;
   document.getElementById('pi-l').textContent = JEU.suite;
-  document.getElementById('pi-r').textContent = JEU.parfaites;
+  document.getElementById('pi-r').textContent = REPETITION
+    ? JEU.parfaites
+    : (3 - JEU.ratees);
 
   if (maintenant - JEU.debut > JEU.duree){ finirNumero(); return; }
   requestAnimationFrame(boucleJeu);
@@ -1820,7 +1870,7 @@ function attraper(){
 async function finirNumero(){
   if (!JEU || JEU.fini) return;
   JEU.fini = true;
-  var a = JEU.attrapes, l = JEU.plusLong;
+  var a = JEU.attrapes, l = JEU.plusLong, r = JEU.ratees;
 
   if (REPETITION){
     MEILLEUR = Math.max(MEILLEUR, a * 10 + l * 10);
@@ -1835,7 +1885,8 @@ async function finirNumero(){
 
   document.getElementById('pi-m').textContent = 'Le rideau tombe…';
   var x;
-  try { x = await BD.agir('mon_numero', { p_attrapes: a, p_plus_long: l }); }
+  try { x = await BD.agir('mon_numero',
+    { p_attrapes: a, p_plus_long: l, p_ratees: JEU.ratees }); }
   catch(e){ x = null; }
   if (!x || !x.ok){
     document.getElementById('pi-m').textContent = "Le public s'est déjà dispersé.";
@@ -1844,7 +1895,8 @@ async function finirNumero(){
   document.getElementById('pi-sc').innerHTML = '<div class="issue2">'
     + '<b>' + x.score + '</b><i>points · ' + x.rang + 'e cette semaine</i>'
     + '<p>' + x.mot + '</p>'
-    + '<span>+ ' + x.prime + ' € · + ' + x.xp + ' XP</span></div>';
+    + '<span>+ ' + x.prime + ' € · + ' + x.xp + ' XP</span>'
+    + '<span class="jt">+ ' + x.jetons + ' jetons de cirque</span></div>';
   var g2 = document.getElementById('pi-go');
   g2.style.display = ''; g2.textContent = 'Descendre de la piste';
   g2.onclick = fermerPiste;
@@ -1852,6 +1904,8 @@ async function finirNumero(){
 
 function ouvrirPiste(repet){
   REPETITION = !!repet;
+  var t3 = document.getElementById('pi-t3');
+  if (t3) t3.textContent = repet ? 'Belles prises' : 'Vies';
   document.getElementById('piste').className = 'on';
   document.getElementById('pi-tt').textContent = repet ? 'Répétition' : 'Ton numéro';
   document.getElementById('pi-r').textContent = '0';
@@ -1877,9 +1931,23 @@ function demarrerNumero(){
     el.innerHTML = '<div class="rideau"><i class="rg"></i><i class="rd"></i>'
       + '<b>Mesdames, messieurs…</b></div>';
     setTimeout(function(){
-      JEU = jeuNeuf();
-      requestAnimationFrame(boucleJeu);
-    }, 1500);
+      /* le roulement de tambour : trois, deux, un */
+      el.innerHTML = '<div class="rebours"><b id="reb">3</b></div>';
+      var mots = ['3', '2', '1', 'À toi'], k = 0;
+      (function pas(){
+        var t = document.getElementById('reb');
+        if (!t) return;
+        t.textContent = mots[k];
+        t.className = k === 3 ? 'go2' : '';
+        if (navigator.vibrate) navigator.vibrate(k === 3 ? 50 : 16);
+        k++;
+        if (k < mots.length) setTimeout(pas, 720);
+        else setTimeout(function(){
+          JEU = jeuNeuf();
+          requestAnimationFrame(boucleJeu);
+        }, 520);
+      })();
+    }, 1450);
     return;
   }
   JEU = jeuNeuf();
@@ -1939,6 +2007,19 @@ async function designer(n){
   setTimeout(charger, x.bon ? 3600 : 2400);
 }
 
+async function acheter(k, b){
+  b.disabled = true;
+  var x;
+  try { x = await BD.agir('acheter_au_cirque', { p_k: k }); } catch(e){ x = null; }
+  if (!x || !x.ok){
+    b.querySelector('span').textContent = x && x.pourquoi === 'pas_assez'
+      ? 'Il te faut ' + x.faut + ' jetons.' : 'Pas maintenant.';
+    return;
+  }
+  document.getElementById('w').innerHTML = dits([x.mot]);
+  setTimeout(charger, 2800);
+}
+
 async function registre(){
   var b = document.getElementById('c-registre');
   b.disabled = true;
@@ -1987,7 +2068,9 @@ async function charger(){
   if (C.fin){
     try { NUM = await BD.agir('le_numero'); } catch(e){ NUM = null; }
     if (NUM && !NUM.ok) NUM = null;
-  } else NUM = null;
+    try { BOU = await BD.agir('la_boutique_du_cirque'); } catch(e){ BOU = null; }
+    if (BOU && !BOU.ok) BOU = null;
+  } else { NUM = null; BOU = null; }
   poser();
 }
 
