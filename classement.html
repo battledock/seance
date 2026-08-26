@@ -66,17 +66,33 @@ body::before{background:linear-gradient(180deg,
   font-size:18px;top:-13px}
 .mar.un .cr{position:absolute;top:6px;right:9px;font-size:19px}
 /* ---------- capitaines et joueurs ----------
-   Un capitaine n'est pas quelqu'un : sa ligne est en retrait, son
-   avatar porte un liseré, et son nom le dit. On ne le déguise pas
-   en joueur — mais il tient sa place dans le classement. */
-.lg.cap{background:rgba(18,48,63,.035)}
-.lg.cap .co b{color:rgba(18,48,63,.72)}
-.co b em{font-style:normal;font-size:8px;letter-spacing:.14em;text-transform:uppercase;
-  font-weight:800;color:rgba(18,48,63,.42);border:1.5px solid rgba(18,48,63,.18);
-  border-radius:8px;padding:1px 6px;margin-left:7px;vertical-align:1px}
-.av.cap{box-shadow:0 0 0 2.5px #8aa0ac inset}
+   Le plus lisible, c'est la couleur : un joueur est en bleu d'encre,
+   un capitaine en gris-vert et sur fond rayé. On les distingue d'un
+   coup d'œil, sans avoir à lire l'étiquette. */
+.lg.cap{background:
+  repeating-linear-gradient(135deg,
+    rgba(122,140,132,.1) 0 6px, rgba(122,140,132,0) 6px 12px)}
+.lg.cap .co b{color:#5c7068}
+.lg.cap .co span{color:rgba(92,112,104,.7)}
+.lg.cap .eu{color:#5c7068}
+.lg.cap .rg{color:rgba(92,112,104,.6)}
+/* et son portrait porte un cadre de la même couleur */
+.av.cap{box-shadow:0 0 0 3px #7a8c84 inset;border-color:#7a8c84}
+
+/* un joueur, lui, reste en encre pleine */
+.lg .co b{color:#12303f}
+
+.co b em{display:inline-block;font-style:normal;font-size:8px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:900;color:#fdf6e6;background:#7a8c84;
+  border-radius:8px;padding:2px 7px;margin-left:8px;vertical-align:2px}
+
+/* sur le podium, la carte entière prend la teinte */
+.mar.cap{background:#e4e8e2;border-color:#7a8c84}
+.mar.cap .nm{color:#5c7068}
+.mar.cap .eu{color:#5c7068}
 .mar .cape{display:block;font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;
-  font-weight:800;color:rgba(18,48,63,.4);margin-top:2px}
+  font-weight:900;color:#fdf6e6;background:#7a8c84;border-radius:8px;
+  padding:2px 0;margin:4px 12px 0}
 
 .lg{display:flex;align-items:center;gap:13px;padding:14px 16px;
   border-bottom:2px solid rgba(18,48,63,.1)}
@@ -258,7 +274,7 @@ function choisir(v){
 
 /* un avatar illisible ne doit jamais emporter le classement entier */
 function tete(x){
-  try { return tete(x); }
+  try { return BD.avatarSVG(x); }
   catch(e){ return '<svg viewBox="0 0 16 16"><rect width="16" height="16"'
     + ' fill="#dfe8ee"/></svg>'; }
 }
@@ -286,7 +302,7 @@ function rendre(){
   pod.innerHTML = T.length >= 3
     ? '<div class="pod">' + [T[1], T[0], T[2]].map((x, i) => {
         const cl = ['deux', 'un', 'trois'][i];
-        return '<div class="mar ' + cl + '">'
+        return '<div class="mar ' + cl + (x.capitaine ? ' cap' : '') + '">'
           + '<span class="rg">' + x.rang + '</span>'
           + (cl === 'un' ? '<span class="cr">' + COURONNE + '</span>' : '')
           + '<span class="av' + (x.capitaine ? ' cap' : '') + '">'
