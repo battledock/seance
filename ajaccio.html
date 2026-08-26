@@ -149,6 +149,11 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
 
 /* ---------- les autres joueurs ---------- */
 #eti{position:fixed;inset:0;z-index:5;pointer-events:none}
+/* la tienne ne se clique pas : elle se nomme, c'est tout */
+.eti.moi{cursor:default;pointer-events:none;
+  background:rgba(240,196,106,.22);border-color:rgba(240,196,106,.6)}
+.eti.moi .tx b{color:#f0c46a}
+
 .eti{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;
   display:flex;align-items:center;gap:6px;padding:4px 9px 4px 4px;border-radius:20px;
   background:rgba(12,26,42,.74);border:1.5px solid rgba(255,255,255,.24);
@@ -1142,7 +1147,7 @@ function decor(){
   document.getElementById('sc').innerHTML =
     '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + ajaccio(MOI) + barquesDesAutres(150, 42) + '</svg>';
+    + ajaccio(MOI) + barquesDesAutres(190, 46) + maBarque() + '</svg>';
   etiquettes(v);
 }
 
@@ -1227,6 +1232,38 @@ const BARQ_A = ['—','La coque nue','Le pontet','La barquette','Le canot','La c
   'La bette','Le bisquine','La galiote','Le brigantin','Le trois-mâts'];
 let AUTRES = [], POS_A = [];
 
+/* ---------- ta barque, amarrée au premier plan ----------
+   Les autres sont plus loin dans la rade ; la tienne est là,
+   devant, avec ton pavillon. On la reconnaît d'un coup d'œil. */
+function maBarque(){
+  const M = MOI || {};
+  const n = Math.max(1, Math.min(20, M.barque || 1));
+  const d = 104;                       /* tout près du quai */
+  const y = sol(d), m = u => px(u, d), x = pX(-3.4, d);
+  const k = m(2.6 + n * .1) / (76 + n * 5.6);
+  let s = '<g class="amarre a0">';
+  /* le reflet sous la coque */
+  s += `<ellipse cx="${x.toFixed(1)}" cy="${(y + m(.12)).toFixed(1)}"
+    rx="${m(2.5).toFixed(1)}" ry="${m(.26).toFixed(1)}" fill="#12324a" opacity=".26"/>`;
+  s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${k.toFixed(4)})">`
+    + `<g transform="translate(-150,-122)">` + barqueQ(n, false) + `</g></g>`;
+  /* le pavillon, à tes couleurs */
+  const c = M.couleur || '#f0c46a';
+  s += `<path d="M${(x + m(2.3)).toFixed(1)} ${y.toFixed(1)} v${(-m(2)).toFixed(1)}"
+    stroke="#5a4a38" stroke-width="${Math.max(.6, m(.1)).toFixed(1)}"/>`;
+  s += `<path d="M${(x + m(2.3)).toFixed(1)} ${(y - m(2)).toFixed(1)}
+    l${m(.8).toFixed(1)} ${m(.24).toFixed(1)} l${(-m(.8)).toFixed(1)} ${m(.24).toFixed(1)} z"
+    fill="${c}"/>`;
+  /* l'amarre qui la retient au quai */
+  s += `<path d="M${(x - m(2.2)).toFixed(1)} ${(y - m(.5)).toFixed(1)}
+    q${(-m(1.6)).toFixed(1)} ${m(.9).toFixed(1)} ${(-m(3.2)).toFixed(1)} ${m(.5).toFixed(1)}"
+    stroke="#6d5a42" stroke-width="${Math.max(.7, m(.08)).toFixed(1)}" fill="none"/>`;
+  s += '</g>';
+  POS_MOI = { x, y: y - m(2.8) };
+  return s;
+}
+let POS_MOI = null;
+
 /* leurs barques, dessinées dans la scène */
 function barquesDesAutres(depart, ecart){
   let s = '';
@@ -1259,17 +1296,29 @@ function barquesDesAutres(depart, ecart){
 /* les étiquettes, posées au-dessus */
 function etiquettes(v){
   const el = document.getElementById('sc');
-  if (!el || !POS_A.length){
-    const e2 = document.getElementById('eti');
-    if (e2) e2.innerHTML = '';
-    return;
-  }
+  const zone = document.getElementById('eti');
+  if (!el || !zone) return;
+  if (!POS_A.length && !POS_MOI){ zone.innerHTML = ''; return; }
   const L = el.clientWidth, H = el.clientHeight;
   const ech = Math.max(L / W, H / v.h);
   const dx = (L - W * ech) / 2, dy = (H - v.h * ech) / 2;
   /* on écarte celles qui se marchent dessus */
   const prises = [];
-  document.getElementById('eti').innerHTML = POS_A.map((p, i) => {
+
+  /* la tienne d'abord : elle a la priorité sur la place */
+  let mien = '';
+  if (POS_MOI){
+    const X = dx + POS_MOI.x * ech, Y = dy + (POS_MOI.y - v.y) * ech;
+    if (X > 20 && X < L - 20 && Y > 96 && Y < H - 110){
+      prises.push({ X, Y });
+      mien = '<span class="eti moi" style="left:' + X.toFixed(0) + 'px;top:'
+        + Y.toFixed(0) + 'px"><span class="em" style="background:'
+        + ((MOI && MOI.couleur) || '#f0c46a') + ';border-radius:6px"></span>'
+        + '<span class="tx"><b>Ta barque</b></span></span>';
+    }
+  }
+
+  zone.innerHTML = mien + POS_A.map((p, i) => {
     const c = COULEURS.find(x => x.k === p.j.couleur) || COULEURS[0];
     const f = (ECUSSONS.find(x => x.k === p.j.ecusson) || ECUSSONS[0]).r;
     const X = dx + p.x * ech;
