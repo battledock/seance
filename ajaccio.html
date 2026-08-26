@@ -1233,33 +1233,41 @@ const BARQ_A = ['—','La coque nue','Le pontet','La barquette','Le canot','La c
 let AUTRES = [], POS_A = [];
 
 /* ---------- ta barque, amarrée au premier plan ----------
-   Les autres sont plus loin dans la rade ; la tienne est là,
-   devant, avec ton pavillon. On la reconnaît d'un coup d'œil. */
+   Ajaccio est vue de très haut : l'échelle de la perspective y
+   est bien plus serrée qu'ailleurs. On ne la calcule donc pas —
+   on pose la barque devant, à une taille choisie, comme dans les
+   autres ports. Elle occupe le bas de la rade. */
 function maBarque(){
   const M = MOI || {};
   const n = Math.max(1, Math.min(20, M.barque || 1));
-  const d = 104;                       /* tout près du quai */
-  const y = sol(d), m = u => px(u, d), x = pX(-3.4, d);
-  const k = m(2.6 + n * .1) / (76 + n * 5.6);
+
+  /* on la veut large et proche : un tiers de la largeur de l'écran */
+  const larg = 178;
+  const k = larg / (76 + n * 5.6);
+  const x = 152;
+  const y = BAS - 78;
+
   let s = '<g class="amarre a0">';
-  /* le reflet sous la coque */
-  s += `<ellipse cx="${x.toFixed(1)}" cy="${(y + m(.12)).toFixed(1)}"
-    rx="${m(2.5).toFixed(1)}" ry="${m(.26).toFixed(1)}" fill="#12324a" opacity=".26"/>`;
-  s += `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${k.toFixed(4)})">`
+  /* le reflet dans l'eau */
+  s += `<ellipse cx="${x}" cy="${(y + 7).toFixed(0)}" rx="${(larg * .56).toFixed(0)}"
+    ry="${(larg * .07).toFixed(0)}" fill="#12324a" opacity=".3"/>`;
+  s += `<g transform="translate(${x},${y.toFixed(1)}) scale(${k.toFixed(4)})">`
     + `<g transform="translate(-150,-122)">` + barqueQ(n, false) + `</g></g>`;
-  /* le pavillon, à tes couleurs */
+
+  /* le pavillon, à tes couleurs, en tête de mât */
   const c = M.couleur || '#f0c46a';
-  s += `<path d="M${(x + m(2.3)).toFixed(1)} ${y.toFixed(1)} v${(-m(2)).toFixed(1)}"
-    stroke="#5a4a38" stroke-width="${Math.max(.6, m(.1)).toFixed(1)}"/>`;
-  s += `<path d="M${(x + m(2.3)).toFixed(1)} ${(y - m(2)).toFixed(1)}
-    l${m(.8).toFixed(1)} ${m(.24).toFixed(1)} l${(-m(.8)).toFixed(1)} ${m(.24).toFixed(1)} z"
-    fill="${c}"/>`;
-  /* l'amarre qui la retient au quai */
-  s += `<path d="M${(x - m(2.2)).toFixed(1)} ${(y - m(.5)).toFixed(1)}
-    q${(-m(1.6)).toFixed(1)} ${m(.9).toFixed(1)} ${(-m(3.2)).toFixed(1)} ${m(.5).toFixed(1)}"
-    stroke="#6d5a42" stroke-width="${Math.max(.7, m(.08)).toFixed(1)}" fill="none"/>`;
+  const hm = larg * .5;
+  s += `<path d="M${(x + larg * .3).toFixed(0)} ${y.toFixed(0)} v${(-hm).toFixed(0)}"
+    stroke="#5a4a38" stroke-width="2.4"/>`;
+  s += `<path d="M${(x + larg * .3).toFixed(0)} ${(y - hm).toFixed(0)}
+    l22 7 l-22 7 z" fill="${c}"/>`;
+
+  /* l'amarre qui la retient, vers le quai à gauche */
+  s += `<path d="M${(x - larg * .42).toFixed(0)} ${(y - 10).toFixed(0)}
+    q-26 16 -58 8" stroke="#6d5a42" stroke-width="2.2" fill="none" opacity=".8"/>`;
   s += '</g>';
-  POS_MOI = { x, y: y - m(2.8) };
+
+  POS_MOI = { x, y: y - hm - 10 };
   return s;
 }
 let POS_MOI = null;
@@ -1578,15 +1586,6 @@ const ICO = {
 
 
   document.getElementById('partir').onclick = () => location.href = 'voyager.html';
-
-  /* le hub peut demander qu'on ouvre le chargement en arrivant */
-  try {
-    const q = sessionStorage.getItem('bd-ouvrir');
-    if (q){
-      sessionStorage.removeItem('bd-ouvrir');
-      if (q === 'chargement_ajaccio') basculerContrats(true, MOI);
-    }
-  } catch(e){}
 
   /* le rideau se lève */
   setTimeout(() => {
