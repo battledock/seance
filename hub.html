@@ -473,6 +473,15 @@ const TUILES = [
     s:'La vigie : qui est où, et ce qu\'on a débarqué',
     f:() => location.href = 'vigie.html' },
 
+  /* ---- Ajaccio ---- */
+  { k:'chargement_ajaccio', ou:'attend', ici:'ajaccio', em:'📦', t:'Le chargement',
+    s:'Ce que la Corse envoie sur le continent',
+    f:() => aller('chargement_ajaccio') },
+  { k:'ville_ajaccio', ou:'lieu', ici:'ajaccio', em:'🏘️', t:'La ville',
+    s:'Personne ne te connaît encore ici.', ferme:true },
+  { k:'citadelle', ou:'lieu', ici:'ajaccio', em:'🏰', t:'La citadelle',
+    s:'On n\'y monte pas. Pas encore.', ferme:true },
+
   /* ---- partout ---- */
   { k:'quetes', ou:'attend', em:'📓', t:'Ton carnet',
     s:'Les histoires en cours',

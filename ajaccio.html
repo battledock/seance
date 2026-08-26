@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#2f6ba0">
 <title>Battle Dock — Ajaccio</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
@@ -225,50 +225,26 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
 .av.pret{opacity:1}
 .av svg{display:block;width:100%;height:100%}
 
-.menu{position:fixed;z-index:21;
-  top:calc(env(safe-area-inset-top) + 78px);left:14px;width:266px;
-  background:rgba(20,34,50,.9);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border:2px solid rgba(255,255,255,.3);border-radius:8px;
-  box-shadow:0 10px 34px rgba(6,16,28,.56);
-  overflow:hidden;transform-origin:24px 0;
-  opacity:0;transform:scale(.9) translateY(-8px);pointer-events:none;
-  transition:opacity .22s,transform .24s cubic-bezier(.2,.9,.3,1)}
-.menu.on{opacity:1;transform:none;pointer-events:auto}
+/* ---------- reprendre la mer ----------
+   Les lieux sont dans le hub ; en bas, un seul geste. */
+.partir{position:fixed;z-index:12;
+  left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 16px);
+  height:62px;border-radius:16px;
+  background:#fdf6e6;border:3px solid #12303f;
+  box-shadow:0 6px 22px rgba(6,16,28,.44);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity .5s,transform .5s,background .15s}
+.partir.pret{opacity:1;transform:none;pointer-events:auto}
+.partir:active{background:#f2e7cf;transform:translateY(2px)}
+.partir svg{width:24px;height:24px;flex:0 0 24px;fill:none;stroke:#12303f;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.partir b{font-family:'DM Serif Display',Georgia,serif;font-weight:400;
+  font-size:19px;color:#12303f;letter-spacing:.01em}
 
 /* l'entête : le portrait en grand */
-.menu .tete{display:flex;align-items:center;gap:12px;padding:14px 15px;
-  border-bottom:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent)}
-.menu .tete .por{flex:0 0 50px;height:50px;border-radius:5px;overflow:hidden;
-  border:1.6px solid rgba(255,255,255,.34);background:#dfe8ee}
-.menu .tete .por svg{display:block;width:100%;height:100%}
-.menu .tete .id{flex:1;min-width:0}
-.menu .tete .id b{display:block;font-size:15px;color:#fff;font-weight:700;
-  letter-spacing:.04em}
-.menu .tete .id span{display:block;font-size:8.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(255,255,255,.52);margin-top:3px}
-
-
 /* les lignes du menu */
-.menu ul{list-style:none}
-.menu li button{width:100%;display:flex;align-items:center;gap:11px;
-  padding:12px 15px;background:none;border:0;cursor:pointer;text-align:left;
-  color:rgba(255,255,255,.92);font-family:'Courier Prime',monospace;font-size:12.5px;
-  border-bottom:1px solid rgba(255,255,255,.07);transition:background .14s}
-.menu li:last-child button{border-bottom:0}
-.menu li button:active{background:rgba(255,255,255,.1)}
-.menu li button svg{flex:0 0 17px;height:17px;stroke:#f0c46a;fill:none;
-  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.menu li button .tx{flex:1}
-.menu li button .tx b{display:block;font-weight:400;letter-spacing:.03em}
-.menu li button .tx span{display:block;font-size:9.5px;color:rgba(255,255,255,.46);
-  margin-top:1.5px;font-family:system-ui,sans-serif}
-.menu li button .fl{flex:0 0 auto;color:rgba(255,255,255,.3);font-size:14px}
-.menu li button:disabled{opacity:.36;cursor:default}
-.menu li button.sortie{color:#f0a88a}
-.menu li button.sortie svg{stroke:#f0a88a}
-
 .av{cursor:pointer}
 .av.ouvert{border-color:rgba(240,196,106,.9)}
 
@@ -370,13 +346,6 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
   </span>
 </div>
 
-<nav class="menu" id="menu">
-  <div class="tete">
-    <span class="por" id="m-por"></span>
-    <span class="id"><b id="m-nom">—</b><span id="m-sous">Docker</span></span>
-  </div>
-  <ul id="m-liste"></ul>
-</nav>
 <div id="sc"></div>
 
 <div class="rid" id="rid">
@@ -385,12 +354,13 @@ html,body{height:100%;overflow:hidden;background:#1b3550;
   <span>La Corse</span>
 </div>
 
-<div class="tete" id="tete">
-  </span>
-  </div>
-
-
 <div class="voile" id="voile"></div>
+
+<button class="partir" id="partir">
+  <svg viewBox="0 0 24 24"><path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7z
+    M12 10V4M12 4l6 3-6 2"/></svg>
+  <b>Reprendre la mer</b>
+</button>
 
 <section class="ct" id="ct">
   <div class="haut">
@@ -1420,58 +1390,6 @@ function poserBarre(d){
   el.classList.add('pret');
 }
 
-function poserMenu(d){
-  const el = document.getElementById('m-liste');
-  if (!el) return;
-  const p = PALIERS_B[Math.max(0, (d.barque || 1) - 1)];
-
-  const L = [
-    { k:'contrats', n:'Le chargement', s:"Ce que la Corse t'envoie", ouvert:true,
-      f:() => { basculerMenu(false); basculerContrats(true, MOI); } },
-    { k:'barque', n:'Reprendre la mer',
-      s:'Deux jours jusqu\'à Marseille', ouvert:true,
-      f:() => location.href = 'voyager.html' },
-    { k:'quetes', n:'Tes affaires en cours',
-      s: (d.quetes || []).filter(q => q.etat !== 'finie').length
-         ? (d.quetes || []).filter(q => q.etat !== 'finie').length + ' à finir'
-         : 'Rien pour l\'instant',
-      ouvert:true, f:() => location.href = 'jeu.html' },
-    { k:'gens', n:'La ville', s:'Personne ne te connaît encore', ouvert:false },
-    { k:'chantier', n:'La citadelle', s:'On n\'y monte pas', ouvert:false },
-    { k:'fiche', n:'Ta fiche', s:'Ce que tu sais faire', ouvert:true,
-      f:() => location.href = 'jeu.html' }
-  ];
-
-  el.innerHTML = L.map((m, i) =>
-    '<li><button data-i="' + i + '"' + (m.ouvert ? '' : ' disabled')
-    + (m.sortie ? ' class="sortie"' : '') + '>'
-    + '<svg viewBox="0 0 24 24">' + ICONES[m.k] + '</svg>'
-    + '<span class="tx"><b>' + m.n + '</b>'
-    + (m.s ? '<span>' + m.s + '</span>' : '') + '</span>'
-    + (m.ouvert && !m.sortie ? '<span class="fl">›</span>' : '')
-    + '</button></li>').join('');
-
-  el.querySelectorAll('[data-i]').forEach(b => {
-    const m = L[+b.dataset.i];
-    if (m.f) b.onclick = m.f;
-  });
-
-  /* l'entête et les compteurs */
-  document.getElementById('m-por').innerHTML = BD.avatarSVG(d);
-  document.getElementById('m-nom').textContent = d.pseudo || 'Sans nom';
-  document.getElementById('m-sous').textContent = 'Docker — matricule ' + matricule(d);
-}
-
-let menuOuvert = false;
-function basculerMenu(forcer){
-  menuOuvert = forcer === undefined ? !menuOuvert : forcer;
-  const m = document.getElementById('menu');
-  const v = document.getElementById('voile');
-  const a = document.getElementById('av');
-  if (m) m.classList.toggle('on', menuOuvert);
-  if (v) v.classList.toggle('on', menuOuvert || ctOuvert);
-  if (a) a.classList.toggle('ouvert', menuOuvert);
-}
 
 let MOI = null;
 let chargesCt = false;
@@ -1546,7 +1464,7 @@ async function poserContrats(d, forcer){
         secousse('bien');
         const f = await BD.charger();
         Object.assign(d, f);
-        poserBarre(d); poserMenu(d); poserBarque(d); poserBas(d);
+        poserBarre(d); poserBarque(d);
         poserContrats(d, true);
       } else {
         b.textContent = p.pourquoi === 'cale_pleine' ? 'Cale pleine' : 'Impossible';
@@ -1564,7 +1482,7 @@ function basculerContrats(o, d){
   if (ctOuvert && d) poserContrats(d);
 }
 document.getElementById('k-fer').onclick = () => basculerContrats(false);
-document.getElementById('voile').onclick = () => { basculerContrats(false); basculerMenu(false); };
+document.getElementById('voile').onclick = () => basculerContrats(false);
 
 const ICO = {
   frere:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
@@ -1572,14 +1490,8 @@ const ICO = {
   moulin:'<path d="M12 12v9M8 21h8M12 12L4 6M12 12l8-6M12 12l-6 8M12 12l6 8"/>',
   barque:'<path d="M3 18q2.4 1.6 4.8 0t4.8 0 4.8 0T21 18M5 14h14l-2-4H7zM12 10V4M12 4l6 3-6 2"/>'
 };
-const LIEUX = [
-  { k:'frere',  n:'La ville',        ouvert:false },
-  { k:'marche', n:'Le chargement',   ouvert:true },
-  { k:'moulin', n:'La citadelle',    ouvert:false },
-  { k:'barque', n:'Reprendre la mer', ouvert:true }
-];
-
-
+/* Les lieux d'Ajaccio vivent dans le hub, qu'on ouvre par
+   l'avatar. En bas, il ne reste que le geste qui compte. */
 
 (async () => {
   let d;
@@ -1598,9 +1510,10 @@ const LIEUX = [
   av.innerHTML = BD.avatarSVG(d)
     + ((d && d.pseudo) ? '<span class="nm">' + d.pseudo + '</span>' : '');
   av.classList.add('pret');
-  av.onclick = () => basculerMenu();
+  /* l'avatar ouvre le hub, comme dans les autres ports */
+  av.onclick = () => location.href = 'hub.html?v=3';
+  try { localStorage.setItem('bd-port', d.port || 'ajaccio'); } catch(e){}
   poserBarre(d);
-  poserMenu(d);
   MOI = { barque: d.barque || 1,
     couleur: ((COULEURS.find(c => c.k === ((d.affaire||{}).couleur)) || {}).c) };
   decor();
@@ -1615,14 +1528,16 @@ const LIEUX = [
   const suite = !aLettre && ardit && ardit.etape >= 2 && !pere && (d.niveau || 1) >= 4;
 
 
-  LIEUX[0].ouvert = false;
-  
-  /* le chargement s'ouvre quand il te confie son tissu */
-  LIEUX[1].n = 'Le chargement';
-  LIEUX[1].ouvert = true;
+  document.getElementById('partir').onclick = () => location.href = 'voyager.html';
 
-
-
+  /* le hub peut demander qu'on ouvre le chargement en arrivant */
+  try {
+    const q = sessionStorage.getItem('bd-ouvrir');
+    if (q){
+      sessionStorage.removeItem('bd-ouvrir');
+      if (q === 'chargement_ajaccio') basculerContrats(true, MOI);
+    }
+  } catch(e){}
 
   /* le rideau se lève */
   setTimeout(() => {
@@ -1630,10 +1545,12 @@ const LIEUX = [
       const e = document.getElementById(k);
       if (e) e.classList.add('parti');
     });
-    ['av'].forEach(k => {
+    ['av','barre'].forEach(k => {
       const e = document.getElementById(k);
       if (e) e.classList.add('on');
     });
+    const p = document.getElementById('partir');
+    if (p) p.classList.add('pret');
   }, 1600);
 })();
 
