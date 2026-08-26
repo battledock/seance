@@ -19,7 +19,7 @@ html,body{min-height:100%;background:#2a1420;color:#f6e6d8;
   font-family:'Nunito',system-ui,sans-serif}
 
 #sc{position:fixed;left:0;right:0;top:0;height:42%;overflow:hidden;
-  opacity:0;transition:opacity .6s}
+  opacity:0;transition:opacity .34s ease}
 #sc.pret{opacity:1}
 #sc svg{display:block;width:100%;height:100%}
 #sc::after{content:"";position:absolute;inset:0;
@@ -450,13 +450,474 @@ function portrait(k){
   return s + '</svg>';
 }
 
-function decor(){
-  document.getElementById('sc').innerHTML =
-    '<svg viewBox="0 0 480 620" preserveAspectRatio="xMidYMax slice"'
-    + ' xmlns="http://www.w3.org/2000/svg">' + chapiteau() + '</svg>';
-  requestAnimationFrame(function(){
-    document.getElementById('sc').classList.add('pret');
-  });
+/* ============================================================
+   LES SCÈNES
+   Chaque moment de l'histoire a son décor. On ne reste jamais
+   devant la même image : la place, la roulotte, le chapiteau
+   vide, le quai de nuit, la piste, l'arrière du chapiteau.
+   ============================================================ */
+
+/* le fond de nuit, commun : ciel, étoiles, toits */
+function nuit(h){
+  var s = '<defs>'
+    + '<linearGradient id="n-ciel" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0%" stop-color="#1e1030"/>'
+    +   '<stop offset="52%" stop-color="#4a2038"/>'
+    +   '<stop offset="100%" stop-color="#8a4030"/></linearGradient></defs>';
+  s += '<rect x="0" y="0" width="480" height="' + h + '" fill="url(#n-ciel)"/>';
+  for (var e = 0; e < 26; e++)
+    s += '<circle cx="' + (rnd(e * 3) * 480).toFixed(0) + '" cy="'
+      + (rnd(e * 7) * (h * .34)).toFixed(0) + '" r="' + (0.8 + rnd(e) * 1.2).toFixed(1)
+      + '" fill="#fff4d8" opacity="' + (.2 + rnd(e * 5) * .5).toFixed(2) + '"/>';
+  return s;
+}
+
+function toits(yb){
+  var s = '';
+  for (var t = 0; t < 40; t++){
+    var tx = -10 + t * 13, th = 26 + rnd(t * 3) * 44;
+    s += '<rect x="' + tx.toFixed(0) + '" y="' + (yb - th).toFixed(0) + '" width="'
+      + (12 + rnd(t) * 5).toFixed(0) + '" height="' + (th + 44).toFixed(0) + '" fill="'
+      + ['#3a2030','#472838','#2e1a28'][t % 3] + '" opacity=".9"/>';
+    if (rnd(t * 11) > .68)
+      s += '<rect x="' + (tx + 4).toFixed(0) + '" y="' + (yb + 14 - th).toFixed(0)
+        + '" width="5" height="7" fill="#ffcf78" opacity=".75"/>';
+  }
+  return s;
+}
+
+function pave(yb, h){
+  var s = '<rect x="0" y="' + yb + '" width="480" height="' + h + '" fill="#4a3028"/>';
+  for (var p = 0; p < 90; p++)
+    s += '<ellipse cx="' + (rnd(p * 3) * 480).toFixed(0) + '" cy="'
+      + (yb + 6 + rnd(p * 7) * h).toFixed(0) + '" rx="' + (3 + rnd(p) * 7).toFixed(0)
+      + '" ry="' + (1.6 + rnd(p * 5) * 2.6).toFixed(0) + '" fill="'
+      + ['#54382e','#3e2822','#5e4034'][p % 3] + '" opacity=".7"/>';
+  return s;
+}
+
+/* ---------- 1. la place, et le chapiteau planté dessus ---------- */
+function scPlace(){
+  var s = nuit(620) + toits(438);
+  var cx = 240, base = 470, haut = 168, larg = 208;
+  s += '<defs><radialGradient id="c-halo" cx="0.5" cy="0.5">'
+    + '<stop offset="0%" stop-color="#ffd88a" stop-opacity=".5"/>'
+    + '<stop offset="100%" stop-color="#ffd88a" stop-opacity="0"/></radialGradient></defs>';
+  s += '<ellipse cx="' + cx + '" cy="' + (base - 90) + '" rx="250" ry="180"'
+    + ' fill="url(#c-halo)"/>';
+  s += '<path d="M' + cx + ' ' + haut + ' v-38" stroke="#6d4028" stroke-width="5"/>';
+  s += '<path class="fanion" d="M' + cx + ' ' + (haut - 38) + ' l34 11 l-34 11 z"'
+    + ' fill="#d4a03a" stroke="#3e1c2e" stroke-width="2.4"/>';
+  for (var q = 0; q < 8; q++){
+    var a1 = -Math.PI / 2 + (q - 4) * .2, a2 = -Math.PI / 2 + (q - 3) * .2;
+    var x1 = cx + Math.cos(a1) * larg, x2 = cx + Math.cos(a2) * larg;
+    var creux = 16 + Math.abs(q - 3.5) * 3;
+    s += '<path d="M' + cx + ' ' + haut + ' Q' + ((cx + x1) / 2).toFixed(0) + ' '
+      + (haut + 120) + ' ' + x1.toFixed(0) + ' ' + base
+      + ' q' + ((x2 - x1) / 2).toFixed(0) + ' ' + creux + ' ' + (x2 - x1).toFixed(0) + ' 0'
+      + ' Q' + ((cx + x2) / 2).toFixed(0) + ' ' + (haut + 120) + ' ' + cx + ' ' + haut
+      + ' Z" fill="' + (q % 2 ? '#c9302c' : '#f2e2c4') + '"/>';
+  }
+  s += '<ellipse cx="' + cx + '" cy="' + haut + '" rx="16" ry="7" fill="#8a2420"/>';
+  var fest = 'M' + (cx - larg) + ' ' + base;
+  for (var f = 0; f < 8; f++)
+    fest += ' q' + (larg / 8).toFixed(0) + ' 20 ' + (larg * 2 / 8).toFixed(0) + ' 0';
+  s += '<path d="' + fest + '" stroke="#d4a03a" stroke-width="6" fill="none"/>';
+  for (var b = 0; b < 15; b++){
+    var bx = cx - larg + 8 + b * ((larg * 2 - 16) / 14);
+    var by = base + 12 + Math.sin(b / 14 * Math.PI * 8) * 6;
+    s += '<circle class="ampoule a' + (b % 6) + '" cx="' + bx.toFixed(0) + '" cy="'
+      + by.toFixed(0) + '" r="4.6" fill="' + (b === 4 || b === 11 ? '#6d5a3a' : '#ffe08a')
+      + '"/>';
+    if (b !== 4 && b !== 11)
+      s += '<circle class="ampoule a' + (b % 6) + '" cx="' + bx.toFixed(0) + '" cy="'
+        + by.toFixed(0) + '" r="11" fill="#ffe08a" opacity=".2"/>';
+  }
+  s += '<path d="M' + (cx - 46) + ' ' + base + ' v-96 q46 -30 92 0 v96 z" fill="#20101c"/>';
+  s += '<path d="M' + (cx - 46) + ' ' + base + ' v-96 q-22 -6 -34 6 l6 90 z" fill="#c9302c"/>';
+  s += '<path d="M' + (cx + 46) + ' ' + base + ' v-96 q22 -6 34 6 l-6 90 z" fill="#a82420"/>';
+  s += '<path d="M' + (cx - 40) + ' ' + base + ' l14 -70 h52 l14 70 z"'
+    + ' fill="#ffcf78" opacity=".2"/>';
+  s += '<rect x="' + (cx - 92) + '" y="' + (base - 148) + '" width="184" height="40"'
+    + ' rx="8" fill="#3e1c2e" stroke="#d4a03a" stroke-width="3.4"/>';
+  s += '<text x="' + cx + '" y="' + (base - 120) + '" text-anchor="middle"'
+    + ' font-family="Georgia,serif" font-size="22" fill="#d4a03a"'
+    + ' letter-spacing="2">BATTAGLINI</text>';
+  s += pave(base, 150);
+  s += roulotte(14, base);
+  for (var g = 0; g < 6; g++){
+    var gx = 120 + g * 20, gy = base - 108 + Math.sin(g / 5 * Math.PI) * 12;
+    s += '<path class="fanion f' + (g % 4) + '" d="M' + gx + ' ' + gy.toFixed(0)
+      + ' l13 0 l-6.5 15 z" fill="' + ['#d4a03a','#c9302c','#2e5a4a'][g % 3] + '"/>';
+  }
+  s += chevre(392, base - 6, 1.15, '#d8cfc0');
+  s += '<path d="M370 ' + (base - 4) + ' v-26" stroke="#6d4a30" stroke-width="4"/>';
+  return s;
+}
+
+function roulotte(x, base){
+  var s = '<g>';
+  s += '<rect x="' + x + '" y="' + (base - 74) + '" width="104" height="66" rx="6"'
+    + ' fill="#2e5a4a" stroke="#1a2e26" stroke-width="3"/>';
+  s += '<path d="M' + (x - 6) + ' ' + (base - 74) + ' h116 l-10 -16 h-96 z" fill="#c9302c"/>';
+  for (var w = 0; w < 3; w++)
+    s += '<rect x="' + (x + 12 + w * 30) + '" y="' + (base - 62) + '" width="20"'
+      + ' height="22" rx="3" fill="#ffcf78" opacity="' + (w === 1 ? '.85' : '.3') + '"/>';
+  s += '<circle cx="' + (x + 26) + '" cy="' + (base - 4) + '" r="13" fill="#3e2820"'
+    + ' stroke="#6d4a30" stroke-width="3"/>';
+  s += '<circle cx="' + (x + 82) + '" cy="' + (base - 4) + '" r="13" fill="#3e2820"'
+    + ' stroke="#6d4a30" stroke-width="3"/>';
+  s += '<rect x="' + (x + 80) + '" y="' + (base - 104) + '" width="12" height="22"'
+    + ' fill="#4a3028"/>';
+  for (var m = 0; m < 3; m++)
+    s += '<circle class="fumee" cx="' + (x + 86) + '" cy="' + (base - 108) + '" r="'
+      + (5 + m * 2) + '" fill="#e8d8c8" opacity=".3" style="animation-delay:-'
+      + (m * 3) + 's"/>';
+  return s + '</g>';
+}
+
+/* ---------- un homme, de face, en pied ----------
+   sert pour Don, Pasquale et Ghjuvanni : le costume change,
+   la carcasse est la même. */
+function homme(x, y, e, q){
+  var s = '<g transform="translate(' + x + ',' + y + ') scale(' + e + ')">';
+  var peau = '#c9925e', f = '#241820';
+  s += '<ellipse cx="0" cy="4" rx="46" ry="9" fill="#1a0e16" opacity=".34"/>';
+  /* les jambes */
+  s += '<path d="M-18 -60 v58 M18 -60 v58" stroke="' + (q.bas || '#241820')
+    + '" stroke-width="22" stroke-linecap="round"/>';
+  s += '<path d="M-26 0 h20 M6 0 h20" stroke="#160e14" stroke-width="9"'
+    + ' stroke-linecap="round"/>';
+  /* le torse */
+  s += '<path d="M-34 -62 q-6 -66 34 -70 q40 4 34 70 z" fill="' + (q.haut || '#2e2028') + '"/>';
+  if (q.chemise)
+    s += '<path d="M-13 -128 h26 l-6 62 h-14 z" fill="' + q.chemise + '"/>';
+  if (q.noeud)
+    s += '<path d="M0 -120 l-11 -6 v12 z M0 -120 l11 -6 v12 z" fill="' + q.noeud + '"/>';
+  if (q.gilet){
+    s += '<path d="M-32 -62 q-4 -58 18 -66 l6 66 z" fill="' + q.gilet + '"/>';
+    s += '<path d="M32 -62 q4 -58 -18 -66 l-6 66 z" fill="' + q.gilet + '"/>';
+  }
+  /* les bras */
+  s += '<path d="M-32 -112 q-24 26 -20 62 M32 -112 q24 26 20 62" stroke="'
+    + (q.haut || '#2e2028') + '" stroke-width="17" fill="none" stroke-linecap="round"/>';
+  s += '<circle cx="-50" cy="-48" r="8" fill="' + peau + '"/>';
+  s += '<circle cx="50" cy="-48" r="8" fill="' + peau + '"/>';
+  /* la tête */
+  s += '<ellipse cx="0" cy="-152" rx="24" ry="27" fill="' + (q.blanc || peau) + '"/>';
+  if (q.cheveux)
+    s += '<path d="M-24 -158 q2 -26 24 -26 q22 0 24 26 q-8 -14 -24 -14 q-16 0 -24 14 z"'
+      + ' fill="' + q.cheveux + '"/>';
+  /* les yeux */
+  if (q.tristesse){
+    s += '<path d="M-16 -152 q6 5 12 0 M4 -152 q6 5 12 0" stroke="' + f
+      + '" stroke-width="2.8" fill="none" stroke-linecap="round"/>';
+    s += '<path d="M-11 -146 l-2 9" stroke="#3a6a9a" stroke-width="3"'
+      + ' stroke-linecap="round"/>';
+    s += '<path d="M-18 -168 q7 -9 14 -3 M4 -171 q8 -6 14 3" stroke="' + f
+      + '" stroke-width="3" fill="none" stroke-linecap="round"/>';
+    s += '<path d="M-11 -134 q11 -6 22 0" stroke="#c9302c" stroke-width="3.4"'
+      + ' fill="none" stroke-linecap="round"/>';
+  } else {
+    s += '<circle cx="-9" cy="-154" r="3" fill="' + f + '"/>';
+    s += '<circle cx="9" cy="-154" r="3" fill="' + f + '"/>';
+    s += '<path d="M-15 -164 q6 -4 12 -1 M3 -165 q6 -3 12 1" stroke="'
+      + (q.cheveux || f) + '" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  }
+  if (q.moustache)
+    s += '<path d="M-13 -140 q13 -6 26 0 q-7 6 -13 6 q-6 0 -13 -6 z" fill="' + f + '"/>';
+  if (q.nez)
+    s += '<circle cx="0" cy="-144" r="7.4" fill="#e0352c" stroke="#8a2420"'
+      + ' stroke-width="2"/>';
+  if (q.houppe)
+    s += '<path d="M0 -180 q-6 -11 3 -12 q9 1 3 12 z" fill="#c9302c"/>';
+  if (q.carnet){
+    s += '<rect x="46" y="-52" width="18" height="24" rx="2" fill="#e8dcc8"'
+      + ' stroke="#3a2a22" stroke-width="2"/>';
+    s += '<path d="M50 -46 h10 M50 -41 h10 M50 -36 h6" stroke="#8a7a68"'
+      + ' stroke-width="1.4"/>';
+  }
+  return s + '</g>';
+}
+
+/* ---------- 2. Don sort de la roulotte ---------- */
+function scRoulotte(){
+  var s = nuit(620) + toits(430) + pave(452, 168);
+  /* le flanc de la roulotte, gros plan */
+  s += '<rect x="-20" y="150" width="330" height="304" rx="10" fill="#2e5a4a"'
+    + ' stroke="#1a2e26" stroke-width="5"/>';
+  s += '<path d="M-30 152 h350 l-16 -26 h-318 z" fill="#c9302c"/>';
+  /* les lettres peintes, écaillées */
+  s += '<text x="140" y="216" text-anchor="middle" font-family="Georgia,serif"'
+    + ' font-size="30" fill="#d4a03a" letter-spacing="3">CIRCO</text>';
+  s += '<text x="140" y="250" text-anchor="middle" font-family="Georgia,serif"'
+    + ' font-size="19" fill="#e8c88a" opacity=".8" letter-spacing="2">BATTAGLINI</text>';
+  /* la porte ouverte, la lumière dedans */
+  s += '<rect x="176" y="256" width="108" height="198" fill="#20101c"/>';
+  s += '<rect x="176" y="256" width="108" height="198" fill="#ffcf78" opacity=".18"/>';
+  s += '<path d="M284 256 h34 v198 h-34 z" fill="#24483c"/>';
+  /* les marches */
+  s += '<path d="M170 454 h124 l14 22 h-152 z" fill="#3e2820"/>';
+  /* Don, sur les marches, à contre-jour */
+  s += homme(230, 452, 1.06, { haut:'#241820', gilet:'#3a2a30', chemise:'#f2e8dc',
+    noeud:'#c9302c', cheveux:'#2e2028', moustache:true, nez:true });
+  /* deux ampoules au-dessus de la porte */
+  s += '<circle class="ampoule" cx="200" cy="248" r="5" fill="#ffe08a"/>';
+  s += '<circle class="ampoule a2" cx="262" cy="248" r="5" fill="#ffe08a"/>';
+  /* la chèvre, au coin, qui observe */
+  s += chevre(408, 470, 1.05, '#d8cfc0');
+  return s;
+}
+
+/* ---------- 3. dedans : le chapiteau vide et la Mamma ---------- */
+function scDedans(){
+  var s = '<rect x="0" y="0" width="480" height="620" fill="#3a1420"/>';
+  /* la toile vue de l'intérieur : les fuseaux convergent au mât */
+  for (var q = 0; q < 10; q++){
+    var x1 = -60 + q * 66, x2 = -60 + (q + 1) * 66;
+    s += '<path d="M240 -40 L' + x1 + ' 300 L' + x2 + ' 300 Z" fill="'
+      + (q % 2 ? '#8a2420' : '#c9302c') + '" opacity=".9"/>';
+  }
+  s += '<ellipse cx="240" cy="-10" rx="30" ry="14" fill="#20101c"/>';
+  /* le mât central */
+  s += '<rect x="232" y="0" width="16" height="330" fill="#5c4229"/>';
+  s += '<rect x="232" y="0" width="5" height="330" fill="#7d5c3a"/>';
+  /* les gradins, dans l'ombre */
+  for (var r = 0; r < 5; r++)
+    s += '<path d="M0 ' + (300 + r * 22) + ' h480 v18 h-480 z" fill="'
+      + ['#2e1620','#361a26'][r % 2] + '"/>';
+  /* la piste, en sciure, un rond de lumière */
+  s += '<defs><radialGradient id="d-pist" cx="0.5" cy="0.5">'
+    + '<stop offset="0%" stop-color="#e8c890"/>'
+    + '<stop offset="100%" stop-color="#a8804c"/></radialGradient></defs>';
+  s += '<ellipse cx="240" cy="500" rx="270" ry="106" fill="url(#d-pist)"/>';
+  s += '<ellipse cx="240" cy="500" rx="270" ry="106" fill="none" stroke="#c9302c"'
+    + ' stroke-width="9"/>';
+  for (var g = 0; g < 60; g++)
+    s += '<circle cx="' + (rnd(g * 3) * 480).toFixed(0) + '" cy="'
+      + (410 + rnd(g * 7) * 180).toFixed(0) + '" r="' + (1 + rnd(g) * 2).toFixed(1)
+      + '" fill="#c9a878" opacity=".5"/>';
+  /* le fauteuil de la Mamma, au premier rang, seul */
+  s += '<g transform="translate(240,470)">';
+  s += '<ellipse cx="0" cy="52" rx="60" ry="12" fill="#20101c" opacity=".4"/>';
+  s += '<path d="M-42 48 v-72 q0 -20 20 -20 h44 q20 0 20 20 v72 z" fill="#6d2028"/>';
+  s += '<path d="M-42 -14 h84 v14 h-84 z" fill="#8a2c34"/>';
+  s += '<path d="M-46 48 v-56 q-10 4 -10 22 v34 z M46 48 v-56 q10 4 10 22 v34 z"'
+    + ' fill="#5c1a22"/>';
+  /* la vieille, de dos, minuscule dans le fauteuil */
+  s += '<ellipse cx="0" cy="-16" rx="26" ry="30" fill="#1a1218"/>';
+  s += '<ellipse cx="0" cy="-48" rx="17" ry="19" fill="#1a1218"/>';
+  s += '<path d="M-15 -52 q15 -12 30 0 q-4 -20 -15 -20 q-11 0 -15 20 z" fill="#141018"/>';
+  s += '</g>';
+  /* la poussière dans le faisceau */
+  s += '<path d="M232 20 L120 470 L360 470 Z" fill="#ffe0a0" opacity=".07"/>';
+  for (var p = 0; p < 16; p++)
+    s += '<circle class="fumee" cx="' + (170 + rnd(p * 5) * 140).toFixed(0) + '" cy="'
+      + (200 + rnd(p * 9) * 240).toFixed(0) + '" r="1.8" fill="#ffeec8" opacity=".5"'
+      + ' style="animation-delay:-' + (p * .6).toFixed(1) + 's"/>';
+  return s;
+}
+
+/* ---------- 4. le quai, de nuit : on embarque la chèvre ---------- */
+function scQuai(){
+  var s = nuit(620);
+  /* la mer */
+  s += '<rect x="0" y="330" width="480" height="140" fill="#1a3a4a"/>';
+  for (var k = 0; k < 30; k++)
+    s += '<path d="M' + (rnd(k * 3) * 460).toFixed(0) + ' '
+      + (338 + rnd(k * 5) * 124).toFixed(0) + ' h' + (12 + rnd(k * 7) * 40).toFixed(0)
+      + '" stroke="#8ab0c0" stroke-width="1.6" opacity="'
+      + (.1 + rnd(k) * .2).toFixed(2) + '"/>';
+  /* la lune et son chemin sur l'eau */
+  s += '<circle cx="392" cy="96" r="30" fill="#f4ecd0" opacity=".9"/>';
+  s += '<circle cx="380" cy="88" r="26" fill="#4a2038" opacity=".5"/>';
+  s += '<path d="M374 330 L410 330 L470 470 L320 470 Z" fill="#f4ecd0" opacity=".12"/>';
+  /* le quai, au premier plan */
+  s += '<rect x="0" y="452" width="480" height="168" fill="#3e3028"/>';
+  for (var b = 0; b < 16; b++)
+    s += '<path d="M0 ' + (460 + b * 10) + ' h480" stroke="#2e231e" stroke-width="2"'
+      + ' opacity=".5"/>';
+  /* la bitte d'amarrage et la corde */
+  s += '<path d="M56 452 v-34 q0 -10 12 -10 q12 0 12 10 v34 z" fill="#2e2620"/>';
+  s += '<ellipse cx="68" cy="410" rx="16" ry="6" fill="#4a3c30"/>';
+  s += '<path d="M84 420 q60 26 128 10" stroke="#8a7050" stroke-width="4" fill="none"/>';
+  /* la barque, amarrée, et la planche */
+  s += '<path d="M200 452 q80 -14 190 0 l-16 40 q-80 12 -158 0 z" fill="#6d4a30"'
+    + ' stroke="#3e2820" stroke-width="4"/>';
+  s += '<path d="M206 452 q78 -12 178 0" stroke="#a8804c" stroke-width="5" fill="none"/>';
+  s += '<path d="M300 448 v-90" stroke="#5c4229" stroke-width="6"/>';
+  s += '<path d="M300 358 q46 20 40 60 l-40 -8 z" fill="#e8dcc0" opacity=".9"/>';
+  /* la planche d'embarquement */
+  s += '<path d="M140 470 L232 440 l8 14 L148 484 z" fill="#8a6a48"'
+    + ' stroke="#3e2820" stroke-width="3"/>';
+  /* Rosine sur la planche, tranquille */
+  s += chevre(196, 462, 1.16, '#d8cfc0', 1, 0, true);
+  /* Pasquale, au bord, qui note */
+  s += homme(78, 560, .82, { haut:'#4a5a44', bas:'#3a4438', cheveux:'#3e3428',
+    carnet:true });
+  /* une lanterne posée sur le quai */
+  s += '<g transform="translate(420,540)">';
+  s += '<path d="M-12 0 h24 l-4 -26 h-16 z" fill="#3e2820"/>';
+  s += '<rect x="-9" y="-24" width="18" height="20" fill="#ffcf78" opacity=".9"/>';
+  s += '<path d="M-13 -26 h26 l-13 -10 z" fill="#2e2018"/>';
+  s += '<circle cx="0" cy="-14" r="34" fill="#ffcf78" opacity=".14"/>';
+  s += '</g>';
+  return s;
+}
+
+/* ---------- 5. le retour : Don écoute le verdict ---------- */
+function scRetour(){
+  var s = scDedans();
+  /* Don debout sur la piste, dos au fauteuil */
+  s += homme(150, 520, 1.02, { haut:'#241820', gilet:'#3a2a30', chemise:'#f2e8dc',
+    noeud:'#c9302c', cheveux:'#2e2028', moustache:true, nez:true });
+  /* Rosine à côté de lui, rendue */
+  s += chevre(340, 528, 1.1, '#d8cfc0', 1, 0, true);
+  return s;
+}
+
+/* ---------- 6. la piste, les cinq bêtes alignées ---------- */
+function scConcours(){
+  var s = scDedans();
+  /* les cinq, en rang sur la piste, vues de loin */
+  for (var i = 0; i < 5; i++)
+    s += chevre(66 + i * 88, 512 + (i % 2 ? 6 : 0), .62,
+      ['#d8cfc0','#a89078','#6d5c4e','#efe6da','#c9b8a0'][i], i % 3, (i + 1) % 3, i % 2 === 0);
+  /* Pasquale les surveille, à gauche */
+  s += homme(30, 560, .7, { haut:'#4a5a44', bas:'#3a4438', cheveux:'#3e3428',
+    carnet:true });
+  return s;
+}
+
+/* ---------- 7. derrière le chapiteau : Ghjuvanni ---------- */
+function scDerriere(){
+  var s = nuit(620) + toits(400);
+  /* le dos de la toile, en biais : on est de l'autre côté */
+  s += '<path d="M-40 620 L120 120 L300 120 L200 620 Z" fill="#8a2420"/>';
+  s += '<path d="M120 120 L300 120 L200 620 L150 620 Z" fill="#a82c28"/>';
+  for (var c = 0; c < 8; c++)
+    s += '<path d="M' + (128 + c * 20) + ' 130 L' + (60 + c * 18) + ' 620"'
+      + ' stroke="#6d1c18" stroke-width="2" opacity=".5"/>';
+  /* des cordes tendues au sol, des piquets */
+  for (var p = 0; p < 5; p++){
+    var px = 210 + p * 56, py = 470 + p * 22;
+    s += '<path d="M' + (170 + p * 14) + ' ' + (240 + p * 40) + ' L' + px + ' ' + py
+      + '" stroke="#8a7050" stroke-width="2.6"/>';
+    s += '<path d="M' + px + ' ' + py + ' l6 20" stroke="#3e2820" stroke-width="5"'
+      + ' stroke-linecap="round"/>';
+  }
+  s += pave(470, 150);
+  /* les caisses empilées */
+  s += '<rect x="300" y="418" width="86" height="60" rx="4" fill="#8a6a48"'
+    + ' stroke="#4a3628" stroke-width="3"/>';
+  s += '<path d="M300 442 h86" stroke="#4a3628" stroke-width="2.4"/>';
+  s += '<rect x="318" y="368" width="60" height="50" rx="4" fill="#9a7a54"'
+    + ' stroke="#4a3628" stroke-width="3"/>';
+  /* Ghjuvanni assis sur une caisse, effondré */
+  s += '<g transform="translate(206,500)">';
+  s += '<ellipse cx="10" cy="8" rx="52" ry="10" fill="#1a0e16" opacity=".34"/>';
+  s += '<rect x="-56" y="-56" width="104" height="62" rx="5" fill="#8a6a48"'
+    + ' stroke="#4a3628" stroke-width="3"/>';
+  /* les jambes pendantes, chaussures immenses */
+  s += '<path d="M-16 -56 v40 M16 -56 v40" stroke="#f2e8dc" stroke-width="20"'
+    + ' stroke-linecap="round"/>';
+  s += '<ellipse cx="-24" cy="-12" rx="20" ry="9" fill="#c9302c"/>';
+  s += '<ellipse cx="26" cy="-12" rx="20" ry="9" fill="#2e5a4a"/>';
+  /* le buste voûté */
+  s += '<path d="M-30 -58 q-8 -54 30 -58 q38 4 30 58 z" fill="#f2e8dc"/>';
+  s += '<path d="M-14 -112 h28 l-4 40 h-20 z" fill="#c9302c" opacity=".5"/>';
+  /* les bras posés sur les genoux */
+  s += '<path d="M-28 -104 q-26 24 -18 48 M28 -104 q26 24 18 48" stroke="#f2e8dc"'
+    + ' stroke-width="16" fill="none" stroke-linecap="round"/>';
+  s += '<circle cx="-44" cy="-54" r="8" fill="#f6f0e6"/>';
+  s += '<circle cx="44" cy="-54" r="8" fill="#f6f0e6"/>';
+  /* la tête, penchée */
+  s += '<g transform="rotate(-8)">';
+  s += '<ellipse cx="0" cy="-140" rx="25" ry="28" fill="#f6f0e6"/>';
+  s += '<path d="M-17 -142 q7 6 14 0 M3 -142 q7 6 14 0" stroke="#2e2028"'
+    + ' stroke-width="3" fill="none" stroke-linecap="round"/>';
+  s += '<path d="M-12 -135 l-2 10" stroke="#3a6a9a" stroke-width="3.4"'
+    + ' stroke-linecap="round"/>';
+  s += '<path d="M-19 -158 q8 -10 15 -3 M4 -161 q9 -7 15 3" stroke="#2e2028"'
+    + ' stroke-width="3.2" fill="none" stroke-linecap="round"/>';
+  s += '<path d="M-12 -122 q12 -7 24 0" stroke="#c9302c" stroke-width="3.6"'
+    + ' fill="none" stroke-linecap="round"/>';
+  s += '<circle cx="0" cy="-130" r="6" fill="#e0352c"/>';
+  s += '<path d="M0 -168 q-6 -11 3 -12 q9 1 3 12 z" fill="#c9302c"/>';
+  s += '</g></g>';
+  /* une caisse libre à côté : la place où tu peux t'asseoir */
+  s += '<rect x="356" y="486" width="76" height="48" rx="4" fill="#7d5e42"'
+    + ' stroke="#4a3628" stroke-width="3"/>';
+  return s;
+}
+
+/* ---------- 8. le final : tout le monde sous le chapiteau ---------- */
+function scFinal(){
+  var s = scDedans();
+  /* les gradins se remplissent : des silhouettes serrées */
+  for (var r = 0; r < 4; r++)
+    for (var i = 0; i < 14; i++){
+      var x = 12 + i * 34 + (r % 2 ? 12 : 0), y = 306 + r * 22;
+      s += '<circle cx="' + x + '" cy="' + y + '" r="9" fill="'
+        + ['#2a1620','#33202c','#241a24'][i % 3] + '"/>';
+      s += '<path d="M' + (x - 10) + ' ' + (y + 22) + ' q10 -14 20 0 z" fill="'
+        + ['#3a2430','#442c3a'][i % 2] + '"/>';
+    }
+  /* le faisceau tombe au centre : c'est là que tu te tiens */
+  s += '<path d="M228 20 L146 560 L334 560 Z" fill="#ffe0a0" opacity=".16"/>';
+  s += '<ellipse cx="240" cy="546" rx="92" ry="30" fill="#ffe8b8" opacity=".22"/>';
+  /* toi, au centre, de dos */
+  s += '<g transform="translate(240,556)">';
+  s += '<ellipse cx="0" cy="6" rx="34" ry="8" fill="#1a0e16" opacity=".4"/>';
+  s += '<path d="M-14 -46 v44 M14 -46 v44" stroke="#3a2a24" stroke-width="17"'
+    + ' stroke-linecap="round"/>';
+  s += '<path d="M-26 -48 q-5 -50 26 -54 q31 4 26 54 z" fill="#5c6a70"/>';
+  s += '<path d="M-24 -86 q-19 20 -15 48 M24 -86 q19 20 15 48" stroke="#5c6a70"'
+    + ' stroke-width="14" fill="none" stroke-linecap="round"/>';
+  s += '<ellipse cx="0" cy="-116" rx="19" ry="21" fill="#c9925e"/>';
+  s += '<path d="M-19 -122 q2 -20 19 -20 q17 0 19 20 q-6 -10 -19 -10 q-13 0 -19 10 z"'
+    + ' fill="#3a2a22"/>';
+  s += '</g>';
+  /* Don, un peu en retrait */
+  s += homme(102, 548, .84, { haut:'#241820', gilet:'#3a2a30', chemise:'#f2e8dc',
+    noeud:'#c9302c', cheveux:'#2e2028', moustache:true, nez:true });
+  /* Ghjuvanni de l'autre côté */
+  s += homme(384, 548, .84, { haut:'#f2e8dc', bas:'#f2e8dc', blanc:'#f6f0e6',
+    tristesse:true, houppe:true });
+  /* Rosine, évidemment */
+  s += chevre(320, 566, .8, '#d8cfc0', 1, 0, true);
+  return s;
+}
+
+/* ============================================================
+   POSER UN DÉCOR
+   On enchaîne en fondu : la scène d'avant s'efface pendant que
+   la nouvelle arrive. On ne saute jamais d'une image à l'autre.
+   ============================================================ */
+var SCENES = {
+  place: scPlace, roulotte: scRoulotte, dedans: scDedans, quai: scQuai,
+  retour: scRetour, concours: scConcours, derriere: scDerriere, final: scFinal
+};
+var SC = null;
+
+function decor(quoi){
+  var k = quoi || SC || 'place';
+  var change = (k !== SC);
+  SC = k;
+  var el = document.getElementById('sc');
+  var f = SCENES[k] || scPlace;
+  if (change && el.innerHTML){
+    el.style.opacity = '0';
+    setTimeout(function(){
+      el.innerHTML = '<svg viewBox="0 0 480 620" preserveAspectRatio="xMidYMax slice"'
+        + ' xmlns="http://www.w3.org/2000/svg">' + f() + '</svg>';
+      el.style.opacity = '1';
+    }, 320);
+    return;
+  }
+  el.innerHTML = '<svg viewBox="0 0 480 620" preserveAspectRatio="xMidYMax slice"'
+    + ' xmlns="http://www.w3.org/2000/svg">' + f() + '</svg>';
+  requestAnimationFrame(function(){ el.classList.add('pret'); });
 }
 
 /* ============================================================
@@ -554,14 +1015,22 @@ function blocConcours(){
           + 'de poser la main.</p>');
 }
 
+/* aller derrière le chapiteau est un déplacement : le décor change */
+var DERRIERE = false;
+
 function blocRire(){
   if (!C.vu_don || C.rire) return C.rire
     ? '<h2>Ghjuvanni</h2><div class="fait">Il a ri. Une fois. '
       + 'Depuis, il te salue de la tête quand tu passes.</div>'
     : '';
+  if (!DERRIERE)
+    return '<h2>Derrière le chapiteau</h2><div class="choix">'
+      + '<button id="c-derriere"><b>Aller voir Ghjuvanni</b>'
+      + '<span>Il est assis sur une caisse, de l\'autre côté de la toile.</span>'
+      + '</button></div>';
   return '<h2>Ghjuvanni le Triste</h2>'
-    + '<p class="mot" style="margin:0 0 12px;text-align:left">Le clown blanc est assis '
-    + 'sur une caisse, derrière le chapiteau. Huit ans qu\'il n\'a pas ri. '
+    + '<p class="mot" style="margin:0 0 12px;text-align:left">Il est assis sur une caisse, '
+    + 'les coudes sur les genoux. Huit ans qu\'il n\'a pas ri. '
     + 'Il te regarde arriver sans espoir.</p>'
     + '<div class="choix">'
     + '<button data-r="blague"><b>Lui raconter une blague</b>'
@@ -600,14 +1069,27 @@ function blocTroupe(){
       }).join('') + '</div>';
 }
 
+/* le décor suit l'histoire, sans qu'on ait à y penser */
+function ouEnEstOn(){
+  if (!C.vu_don) return 'place';
+  if (C.fin) return 'final';
+  if (C.concours_gagne) return 'final';
+  if (C.vet && !C.chevre) return 'concours';
+  if (C.vet && C.chevre) return 'retour';
+  if (C.chevre) return 'quai';
+  return 'roulotte';
+}
+
 function poser(){
   var s = '';
   if (!C.vu_don){
+    decor('place');
     s = scenePremiere();
     document.getElementById('w').innerHTML = s;
     document.getElementById('c-ecouter').onclick = entrer;
     return;
   }
+  decor(ouEnEstOn());
   if (C.etape === 1 && !C.chevre && !C.vet) s += sceneProbleme();
   s += blocEmbarquer() + blocRendre() + blocConcours() + blocFinal() + blocRire();
   if (C.fin)
@@ -621,6 +1103,12 @@ function poser(){
 }
 
 function brancher(){
+  var g = document.getElementById('c-derriere');
+  if (g) g.onclick = function(){
+    DERRIERE = true; decor('derriere');
+    document.getElementById('w').innerHTML = blocRire() + blocTroupe();
+    brancher();
+  };
   var e = document.getElementById('c-embarquer');
   if (e) e.onclick = embarquer;
   var r = document.getElementById('c-rendre');
@@ -640,7 +1128,11 @@ function brancher(){
 async function entrer(){
   var b = document.getElementById('c-ecouter');
   b.disabled = true;
+  /* il te fait entrer : on quitte la place pour la roulotte,
+     puis le chapiteau quand il se retourne vers sa mère */
+  decor('roulotte');
   document.getElementById('w').innerHTML = sceneProbleme();
+  setTimeout(function(){ decor('dedans'); }, 3400);
   try { await BD.agir('cirque_entrer'); } catch(e){}
   setTimeout(charger, 4200);
 }
@@ -660,6 +1152,7 @@ async function rendre(){
   var x;
   try { x = await BD.agir('cirque_rendre'); } catch(e){ x = null; }
   if (!x || !x.ok){ b.querySelector('span').textContent = 'Pas maintenant.'; return; }
+  decor('retour');
   document.getElementById('w').innerHTML = dits([x.mot]);
   setTimeout(charger, 3400);
 }
