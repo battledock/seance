@@ -1044,10 +1044,13 @@ function eau(){
 /* ============================================================
    LE PLANCHER — un ponton de bois, planche par planche
    ============================================================ */
+/* la ligne d'eau : le bord du quai. Tout ce qui flotte s'y pose. */
+function bordDuQuai(){ return HAUT + (BAS - HAUT) * .74; }
+
 function quai(){
   /* on vise une part fixe de la scène, pas une distance :
      ainsi le plancher reste visible même dans une fenêtre courte */
-  const yq = HAUT + (BAS - HAUT) * .74;
+  const yq = bordDuQuai();
   let s = '';
 
   /* le fond sous les planches : l'eau qu'on devine entre elles */
@@ -1117,7 +1120,7 @@ function quai(){
 /* ============================================================
    LA SCÈNE
    ============================================================ */
-function ajaccio(MOI2){
+function ajaccio(MOI2, laTienne){
   let s = ciel();
   s += cote();
   s += eau();
@@ -1129,6 +1132,9 @@ function ajaccio(MOI2){
   s += ilot(1150, oX(96, 1150), 62, 120, 7, false);    /* au fond à gauche */
   s += ilot(700,  oX(392, 700), 54, 96, 11, false);    /* il mord le bord du soleil */
   s += ilot(430,  oX(150, 430), 42, 76, 5, true);      /* le plus proche, à gauche */
+  /* ta barque flotte devant le quai : on la pose avant lui, pour que
+     les planches du môle passent devant sa coque comme il se doit */
+  if (laTienne) s += laTienne();
   s += quai();
 
   /* la pénombre */
@@ -1147,7 +1153,7 @@ function decor(){
   document.getElementById('sc').innerHTML =
     '<svg viewBox="0 ' + v.y.toFixed(1) + ' ' + W + ' ' + v.h.toFixed(1) + '" '
     + 'preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
-    + ajaccio(MOI) + barquesDesAutres(190, 46) + maBarque() + '</svg>';
+    + ajaccio(MOI, maBarque) + barquesDesAutres(190, 46) + '</svg>';
   etiquettes(v);
 }
 
@@ -1245,7 +1251,9 @@ function maBarque(){
   const larg = 178;
   const k = larg / (76 + n * 5.6);
   const x = 152;
-  const y = BAS - 78;
+  /* sa flottaison se pose sur le bord du quai : c'est là que
+     commence l'eau. Plus bas, ce sont les planches du môle. */
+  const y = bordDuQuai() + 4;
 
   let s = '<g class="amarre a0">';
   /* le reflet dans l'eau */
