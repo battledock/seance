@@ -140,8 +140,8 @@ body::before{background:linear-gradient(180deg,
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="bd.js?v=4"></script>
-<script src="son.js?v=1"></script>
+<script src="bd.js?v=5"></script>
+<script src="son.js?v=2"></script>
 <script>
 /* le contenu paraît d'un trait, une fois complet */
 function paraitre(){
@@ -278,6 +278,7 @@ async function dessiner(){
       b.disabled = true; b.textContent = '…';
       let x = null;
       try { x = await BD.agir('prendre_contrat', { p_id: b.dataset.id }); } catch(e){}
+      if (x && x.ok) BD.sonner('charge'); else BD.sonner('refus');
       if (x && (x.ok || x.pris)){ dessiner(); return; }
       /* dire pourquoi, plutôt que de remettre le bouton comme si de rien */
       const P = { cale_pleine:'Cale pleine', en_mer:'Tu es en mer',

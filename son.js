@@ -482,6 +482,51 @@ const SONS = {
 };
 
 
+  /* ============================================================
+     L'AMBIANCE DES LIEUX
+     Une seule fois, à l'arrivée. Jamais en boucle : une musique qui
+     tourne en rond devient une nuisance au bout de trois minutes, et
+     on n'a pas envie de couper le son pour ça.
+     ============================================================ */
+  const AMBIANCES = {
+    'hub':        'p_nuit',
+    'jeu':        'm_port',
+    'rue':        'm_port',
+    'palma':      'm_port',
+    'ajaccio':    'm_port',
+    'barcelone':  'm_port',
+    'anse':       'p_port',
+    'taverne':    'p_taverne',
+    'pere':       'p_taverne',
+    'drap':       'p_taverne',
+    'cirque':     'm_cirque',
+    'citadelle':  'p_donjon',
+    'mer':        'houle',
+    'vigie':      'p_nuit',
+    'crabes':     'm_port',
+    'index':      'p_nuit'
+  };
+
+  let AMBIANCE_FAITE = false;
+
+  function quelLieu(){
+    try {
+      const f = (location.pathname.split('/').pop() || 'index')
+        .replace(/\.html?$/i, '').toLowerCase();
+      return AMBIANCES[f] || null;
+    } catch(e){ return null; }
+  }
+
+  /* elle attend le premier geste : les navigateurs interdisent de
+     jouer quoi que ce soit avant */
+  function ambiance(){
+    if (AMBIANCE_FAITE) return;
+    const a = quelLieu();
+    if (!a) return;
+    AMBIANCE_FAITE = true;
+    jouer(a, 0.35);
+  }
+
   /* ---------- ce que les pages appellent ---------- */
   let PRET = false;
 
@@ -491,6 +536,8 @@ const SONS = {
     if (PRET) return;
     PRET = true;
     try { ctx(); } catch(e){}
+    /* et le lieu se présente, une seule fois */
+    try { ambiance(); } catch(e){}
   }
   ['pointerdown','keydown','touchstart'].forEach(e =>
     addEventListener(e, eveiller, { once:true, passive:true }));
@@ -507,7 +554,17 @@ const SONS = {
     try { SONS[nom](ctx().currentTime + (quand || 0.015)); } catch(e){}
   }
 
-  return { jouer, tuer, eveiller,
+  /* ---------- le geste, sur tous les boutons du jeu ----------
+     Plutôt que d'aller le brancher page par page, on écoute une fois
+     pour toutes : n'importe quel bouton fait le petit bruit. */
+  addEventListener('pointerdown', e => {
+    if (!PRET) return;
+    const b = e.target && e.target.closest
+      && e.target.closest('button, .tuile, [data-va], [role="button"]');
+    if (b && !b.disabled) jouer('clic', 0.005);
+  }, { passive:true, capture:true });
+
+  return { jouer, tuer, eveiller, ambiance,
            get pret(){ return PRET; },
            volume(v){ ctx(); if (VOL) VOL.gain.value = v; } };
 })();

@@ -145,8 +145,8 @@ body{padding:calc(env(safe-area-inset-top) + 16px) 15px
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="bd.js?v=4"></script>
-<script src="son.js?v=1"></script>
+<script src="bd.js?v=5"></script>
+<script src="son.js?v=2"></script>
 <script>
 const $ = id => document.getElementById(id);
 let C = null, VUE = 'recus', VERS = null;
@@ -278,6 +278,7 @@ $('e-envoyer').addEventListener('click', async () => {
     return;
   }
   $('ecrire').className = '';
+  BD.sonner('depart');
   dire('Ton mot est parti à ' + r.a + '.', true);
   VUE = 'envoyes';
   majOnglets();

@@ -184,8 +184,8 @@ h2 em{font-style:normal;color:#c9a24a;letter-spacing:.1em}
 <div class="w" id="w"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="bd.js?v=4"></script>
-<script src="son.js?v=1"></script>
+<script src="bd.js?v=5"></script>
+<script src="son.js?v=2"></script>
 <script>
 function rnd(s){ var x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); }
 
@@ -609,6 +609,7 @@ async function entrer(){
   b.disabled = true;
   var x;
   try { x = await BD.agir('donjon_entrer'); } catch(e){ x = null; }
+  if (x && x.ok) BD.sonner('torche'); else BD.sonner('refus');
   if (!x || !x.ok){
     DERNIER = { t: x && x.pourquoi === 'trop_fatigue'
       ? 'Tu n\'as pas les jambes pour ça aujourd\'hui.'
@@ -629,6 +630,12 @@ async function agir(quoi, b){
       : 'Rien à faire ici.', mal:true };
     await charger(); return;
   }
+
+  if (x.descendu) BD.sonner('torche');
+  else if (x.touche) BD.sonner('coup');
+  else if (x.gagne) BD.sonner('piece');
+  else if (x.sorti) BD.sonner('arrivee');
+  if (x.fin && x.fin.perdu) BD.sonner('refus');
 
   var t = x.mot || '';
   if (x.touche) t += ' (−' + x.touche + ')';
