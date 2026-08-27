@@ -5,14 +5,9 @@
    ============================================================ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
+/* La palette vit dans couleurs.css, chargée par toutes les pages.
+   Ici on ne garde que ce qui est propre au registre clair. */
 :root{
-  --encre:#12303f;
-  --creme:#fdf6e6;
-  --creme2:#f7edd8;
-  --or:#f0a92e;
-  --rouge:#e0533c;
-  --vert:#2f8a5c;
-  --bleu:#2d7ba8;
   --ombre:none;
   --ombre-p:none;
 }

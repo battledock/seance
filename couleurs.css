@@ -1,0 +1,62 @@
+/* ============================================================
+   BATTLE DOCK — LA PALETTE
+   Une seule feuille pour toutes les pages, claires et sombres.
+   Avant, chaque page inventait ses fonds : huit bruns-bleus-noirs
+   différents pour la même idée de « lieu sombre ». Ici, il y en a
+   trois, nommés, et on ne s'en écarte plus.
+
+   Deux registres, et c'est voulu :
+   — LE JOUR, fond crème et contours d'encre, pour les pages où
+     l'on choisit, compare, décide.
+   — LA NUIT, fonds sombres, pour les pages où l'on rencontre
+     quelqu'un et où il se passe quelque chose.
+   Ce qui change, c'est le fond. L'encre, l'or et le vert restent
+   les mêmes des deux côtés : c'est ça qui fait le même jeu.
+   ============================================================ */
+:root{
+  /* ---------- l'encre et le papier ---------- */
+  --encre:      #12303f;   /* le trait, partout */
+  --encre-fort: #0b2230;   /* les contours appuyés */
+  --creme:      #fdf6e6;   /* le papier des cartes */
+  --creme2:     #f7edd8;   /* le papier, un ton en dessous */
+  --creme3:     #e8e2d4;   /* les séparations sur fond clair */
+
+  /* ---------- les trois couleurs qui parlent ---------- */
+  --or:      #f0a92e;      /* ce qu'on peut faire, ce qui rapporte */
+  --or-pale: #f0c46a;      /* l'or sur fond sombre */
+  --rouge:   #c9302c;      /* ce qui coûte, ce qui manque, le danger */
+  --vert:    #2f8a5c;      /* ce qui est acquis, ce qui va bien */
+  --vert-pale:#8ce0a8;     /* le vert sur fond sombre */
+  --bleu:    #2d7ba8;      /* la mer, les liens, l'information */
+
+  /* ---------- les trois nuits ----------
+     Une par nature de lieu, et pas une de plus. */
+  --nuit-mer:    #101f2e;  /* les ports, le large, la vigie */
+  --nuit-bois:   #17110b;  /* les intérieurs : taverne, atelier, cales */
+  --nuit-pierre: #14161a;  /* la pierre : citadelle, souterrains */
+
+  /* les mêmes, un ton au-dessus, pour les cartes posées dessus */
+  --mer-2:    #1a3348;
+  --bois-2:   #2a2016;
+  --pierre-2: #22262c;
+
+  /* le texte sur fond sombre */
+  --clair:      #f2e6cf;
+  --clair-doux: rgba(242,230,207,.62);
+  --clair-faible: rgba(242,230,207,.4);
+
+  /* les bordures, des deux côtés */
+  --bord-jour: rgba(18,48,63,.16);
+  --bord-nuit: rgba(242,230,207,.18);
+}
+
+/* ============================================================
+   CE QUI VAUT PARTOUT
+   ============================================================ */
+.nuit-mer{ background:var(--nuit-mer); }
+.nuit-bois{ background:var(--nuit-bois); }
+.nuit-pierre{ background:var(--nuit-pierre); }
+
+/* Courier Prime n'est plus une police de corps : c'est la voix
+   des gens. On la réserve à ce qu'ils disent. */
+.voix{ font-family:'Courier Prime',monospace; }
