@@ -540,6 +540,9 @@ const TUILES = [
     f:() => location.href = 'reglages.html' },
   { k:'gens', ou:'autres', em:'🧑‍🤝‍🧑', t:'Les gens', s:'Ce qu\'ils pensent de toi',
     f:() => location.href = 'gens.html' },
+  { k:'courrier', ou:'autres', em:'✉️', t:'Ton courrier',
+    s:'Ce qu\'on t\'écrit',
+    f:() => location.href = 'courrier.html' },
   { k:'classement', ou:'autres', em:'🏆', t:'Le classement', s:'Qui mène la danse',
     f:() => location.href = 'classement.html' },
   /* le journal de bord : ce qui a changé dans le jeu depuis ta dernière visite */
@@ -809,6 +812,18 @@ document.getElementById('ouv-ok').onclick = () => {
       if (st >= 1) hubEtat.fabrique = st;
       dessinerTuiles();
     }
+
+    /* le courrier : la pastille dit combien de mots attendent */
+    try {
+      const co = await BD.agir('mon_courrier', { p_combien: 1 });
+      if (co && co.ok && co.non_lus){
+        hubEtat.courrier = co.non_lus;
+        const t = TUILES.find(x => x.k === 'courrier');
+        if (t) t.sv = co.non_lus + (co.non_lus > 1 ? ' mots t\'attendent'
+                                                  : ' mot t\'attend');
+        dessinerTuiles();
+      }
+    } catch(e){}
 
     /* ce que tu n'as pas encore lu, et le numéro de la dernière mise à jour */
     try {

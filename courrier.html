@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#fdf6e6">
+<title>Battle Dock — Ton courrier</title>
+<link rel="stylesheet" href="couleurs.css?v=2">
+<link rel="stylesheet" href="chaud.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+body{padding:calc(env(safe-area-inset-top) + 16px) 15px
+  calc(env(safe-area-inset-bottom) + 30px)}
+
+.tete{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.tete .q{flex:1;min-width:0}
+.tete .q b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:26px;
+  line-height:1.1}
+.tete .q span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(18,48,63,.45);font-weight:800;margin-top:4px}
+.tete button{flex:0 0 auto;padding:11px 16px;border-radius:13px;cursor:pointer;
+  border:3px solid var(--encre);background:var(--creme);color:var(--encre);
+  font-family:inherit;font-size:14px;font-weight:800}
+
+/* les deux volets */
+.onglets{display:flex;gap:7px;margin-bottom:16px}
+.onglets button{flex:1;padding:12px 8px;border-radius:13px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:800;
+  border:3px solid rgba(18,48,63,.2);background:transparent;color:var(--encre)}
+.onglets button.on{background:var(--creme);border-color:var(--encre)}
+.onglets button i{font-style:normal;display:inline-block;min-width:20px;
+  padding:1px 6px;margin-left:6px;border-radius:10px;background:var(--rouge);
+  color:var(--creme);font-size:11px;font-weight:900}
+
+/* un mot */
+.lettre{border-radius:15px;overflow:hidden;border:3px solid var(--encre);
+  background:var(--creme);margin-bottom:9px}
+.lettre.neuf{border-color:var(--or);box-shadow:0 3px 0 var(--or)}
+.lettre .h{display:flex;align-items:center;gap:11px;padding:12px 14px 0}
+.lettre .av{flex:0 0 34px;height:34px;border-radius:9px;overflow:hidden;
+  background:#dfe8ee;border:2px solid var(--encre)}
+.lettre .av svg{display:block;width:100%;height:100%}
+.lettre .av.jeu{background:var(--encre);display:flex;align-items:center;
+  justify-content:center;color:var(--creme);font-size:15px}
+.lettre .qui{flex:1;min-width:0}
+.lettre .qui b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis}
+.lettre .qui span{display:block;font-size:11px;color:rgba(18,48,63,.5);margin-top:2px}
+.lettre .qui em{font-style:normal;font-size:8px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:900;color:var(--creme);background:#7a8c84;
+  border-radius:8px;padding:2px 6px;margin-left:6px;vertical-align:2px}
+.lettre p{padding:11px 14px 13px;font-size:14.5px;line-height:1.6;
+  font-family:'Courier Prime',monospace}
+.lettre .b{display:flex;gap:8px;padding:0 14px 13px}
+.lettre .b button{padding:9px 13px;border-radius:11px;cursor:pointer;
+  font-family:inherit;font-size:12.5px;font-weight:800;
+  border:2.5px solid rgba(18,48,63,.24);background:transparent;color:var(--encre)}
+.lettre .b button.rep{background:var(--or);border-color:var(--encre)}
+
+.env{display:flex;gap:11px;padding:12px 14px;border-radius:13px;
+  border:2.5px solid rgba(18,48,63,.16);background:var(--creme2);margin-bottom:8px}
+.env .t{flex:1;min-width:0}
+.env .t b{display:block;font-size:13px;color:rgba(18,48,63,.6)}
+.env .t span{display:block;font-size:14px;margin-top:4px;
+  font-family:'Courier Prime',monospace;line-height:1.5}
+.env .lu{flex:0 0 auto;font-size:10.5px;font-weight:900;letter-spacing:.08em;
+  text-transform:uppercase;color:#2f8a5c;align-self:flex-start}
+.env .lu.non{color:rgba(18,48,63,.35)}
+
+.rien{padding:26px 16px;text-align:center;font-size:13.5px;line-height:1.7;
+  color:rgba(18,48,63,.5)}
+
+/* écrire */
+.plume{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom) + 18px);
+  z-index:20;padding:15px 20px;border-radius:16px;cursor:pointer;
+  border:3px solid var(--encre);background:var(--or);color:var(--encre);
+  font-family:inherit;font-size:15px;font-weight:900;
+  box-shadow:0 6px 18px rgba(12,30,42,.28)}
+
+#ecrire{position:fixed;inset:0;z-index:60;background:rgba(12,24,32,.62);
+  display:none;align-items:flex-end;backdrop-filter:blur(5px)}
+#ecrire.on{display:flex}
+#ecrire .b{width:100%;max-height:88vh;overflow-y:auto;border-radius:20px 20px 0 0;
+  background:var(--creme);border:3px solid var(--encre);border-bottom:0;
+  padding:18px 16px calc(env(safe-area-inset-bottom) + 18px)}
+#ecrire h3{font-family:'DM Serif Display',Georgia,serif;font-size:22px;
+  margin-bottom:12px}
+.qui-liste{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.qui-liste button{padding:9px 13px;border-radius:11px;cursor:pointer;
+  font-family:inherit;font-size:13px;font-weight:800;
+  border:2.5px solid rgba(18,48,63,.2);background:transparent;color:var(--encre)}
+.qui-liste button.on{background:var(--or);border-color:var(--encre)}
+.qui-liste button em{font-style:normal;opacity:.55;font-size:11px;margin-left:5px}
+#ecrire textarea{width:100%;height:110px;padding:14px;border-radius:13px;
+  border:2.5px solid rgba(18,48,63,.24);background:var(--creme2);
+  font-family:'Courier Prime',monospace;font-size:15px;color:var(--encre);
+  resize:none;outline:0}
+#ecrire textarea:focus{border-color:var(--or)}
+.compte2{text-align:right;font-size:11.5px;color:rgba(18,48,63,.45);margin-top:6px}
+#ecrire .deux{display:flex;gap:8px;margin-top:14px}
+#ecrire .deux button{flex:1;padding:14px;border-radius:13px;cursor:pointer;
+  font-family:inherit;font-size:14.5px;font-weight:900;
+  border:3px solid var(--encre);background:var(--creme)}
+#ecrire .deux button.oui{background:var(--or)}
+#ecrire .deux button:disabled{opacity:.4;cursor:default}
+
+.msg{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:13.5px;
+  line-height:1.55;display:none}
+.msg.on{display:block}
+.msg.mal{background:rgba(201,48,44,.12);border:2px solid rgba(201,48,44,.4);
+  color:#a8241f}
+.msg.ok{background:rgba(47,138,92,.12);border:2px solid rgba(47,138,92,.4);
+  color:#1e6b44}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <span class="q"><b>Ton courrier</b><span id="c-sous">—</span></span>
+  <button id="retour">‹ Retour</button>
+</div>
+
+<div class="onglets" id="onglets">
+  <button data-v="recus" class="on">Reçus<i id="badge" style="display:none">0</i></button>
+  <button data-v="envoyes">Envoyés</button>
+</div>
+
+<div id="liste"></div>
+<p class="msg" id="msg"></p>
+
+<button class="plume" id="plume">✍ Écrire</button>
+
+<div id="ecrire">
+  <div class="b">
+    <h3 id="e-titre">Écrire un mot</h3>
+    <div class="qui-liste" id="e-qui"></div>
+    <textarea id="e-texte" maxlength="240"
+      placeholder="Ce que tu as à lui dire…"></textarea>
+    <p class="compte2" id="e-compte">0 / 240</p>
+    <div class="deux">
+      <button id="e-annuler">Annuler</button>
+      <button class="oui" id="e-envoyer" disabled>Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=4"></script>
+<script>
+const $ = id => document.getElementById(id);
+let C = null, VUE = 'recus', VERS = null;
+
+function dire(t, bon){
+  const m = $('msg');
+  m.textContent = t;
+  m.className = 'msg on ' + (bon ? 'ok' : 'mal');
+  setTimeout(() => { m.className = 'msg'; }, 4000);
+}
+
+function ilYA(iso){
+  const d = (Date.now() - new Date(iso).getTime()) / 60000;
+  if (d < 2) return 'à l\u2019instant';
+  if (d < 60) return 'il y a ' + Math.round(d) + ' min';
+  if (d < 1440) return 'il y a ' + Math.round(d / 60) + ' h';
+  return 'il y a ' + Math.round(d / 1440) + ' j';
+}
+
+function tete(x){
+  try { return BD.avatarSVG(x); }
+  catch(e){ return '<svg viewBox="0 0 16 16"><rect width="16" height="16"'
+    + ' fill="#dfe8ee"/></svg>'; }
+}
+
+function poser(){
+  if (!C || !C.ok) return;
+  const n = C.non_lus || 0;
+  $('c-sous').textContent = n
+    ? n + (n > 1 ? ' mots non lus' : ' mot non lu') : 'Tout est lu';
+  const b = $('badge');
+  b.style.display = n ? '' : 'none';
+  b.textContent = n;
+
+  const L = $('liste');
+
+  if (VUE === 'recus'){
+    const R = C.recus || [];
+    L.innerHTML = R.length ? R.map(m =>
+      '<div class="lettre' + (m.lu ? '' : ' neuf') + '">'
+      + '<div class="h">'
+      +   (m.de_id
+            ? '<span class="av">' + tete({ avatar:null }) + '</span>'
+            : '<span class="av jeu">✉</span>')
+      +   '<span class="qui"><b>' + m.de
+      +     (m.capitaine ? '<em>capitaine</em>' : '') + '</b>'
+      +     '<span>' + ilYA(m.quand) + '</span></span>'
+      + '</div>'
+      + '<p>' + m.texte.replace(/</g, '&lt;') + '</p>'
+      + '<div class="b">'
+      +   (m.de_id ? '<button class="rep" data-rep="' + m.de_id + '"'
+            + ' data-nom="' + m.de + '">Répondre</button>' : '')
+      +   '<button data-jeter="' + m.id + '">Jeter</button>'
+      + '</div></div>').join('')
+      : '<p class="rien">Personne ne t\u2019a écrit.<br>Le premier mot part souvent'
+        + ' de toi.</p>';
+  } else {
+    const E = C.envoyes || [];
+    L.innerHTML = E.length ? E.map(m =>
+      '<div class="env"><span class="t"><b>À ' + m.a + ' · ' + ilYA(m.quand) + '</b>'
+      + '<span>' + m.texte.replace(/</g, '&lt;') + '</span></span>'
+      + '<span class="lu' + (m.lu ? '' : ' non') + '">'
+      + (m.lu ? 'Lu' : 'Pas lu') + '</span></div>').join('')
+      : '<p class="rien">Tu n\u2019as encore écrit à personne.</p>';
+  }
+  brancher();
+}
+
+function brancher(){
+  document.querySelectorAll('[data-rep]').forEach(b => {
+    b.onclick = () => ouvrirEcrire(b.dataset.rep, b.dataset.nom);
+  });
+  document.querySelectorAll('[data-jeter]').forEach(b => {
+    b.onclick = async () => {
+      b.disabled = true;
+      try { await BD.agir('jeter_un_mot', { p_id: +b.dataset.jeter }); } catch(e){}
+      await charger();
+    };
+  });
+}
+
+/* ---------- écrire ---------- */
+function ouvrirEcrire(vers, nom){
+  VERS = vers || null;
+  $('ecrire').className = 'on';
+  $('e-titre').textContent = nom ? 'Répondre à ' + nom : 'Écrire un mot';
+  const D = C.destinataires || [];
+  $('e-qui').innerHTML = D.map(z =>
+    '<button data-q="' + z.id + '"' + (z.id === VERS ? ' class="on"' : '') + '>'
+    + z.qui + (z.capitaine ? '<em>capitaine</em>' : '') + '</button>').join('');
+  document.querySelectorAll('[data-q]').forEach(b => {
+    b.onclick = () => {
+      VERS = b.dataset.q;
+      document.querySelectorAll('[data-q]').forEach(z => z.className = '');
+      b.className = 'on';
+      juger();
+    };
+  });
+  $('e-texte').value = '';
+  juger();
+  $('e-texte').focus();
+}
+
+function juger(){
+  const t = $('e-texte').value.trim();
+  $('e-compte').textContent = $('e-texte').value.length + ' / 240';
+  $('e-envoyer').disabled = !(VERS && t.length >= 2);
+}
+
+$('e-texte').addEventListener('input', juger);
+$('e-annuler').addEventListener('click', () => { $('ecrire').className = ''; });
+$('plume').addEventListener('click', () => ouvrirEcrire(null, null));
+
+$('e-envoyer').addEventListener('click', async () => {
+  const b = $('e-envoyer');
+  b.disabled = true; b.textContent = 'Envoi…';
+  let r = null;
+  try { r = await BD.agir('ecrire_un_mot',
+    { p_vers: VERS, p_texte: $('e-texte').value }); } catch(e){}
+  b.textContent = 'Envoyer';
+  if (!r || !r.ok){
+    const q = r && r.pourquoi;
+    dire(q === 'trop_de_mots'
+        ? 'Il a déjà trois mots de toi qu\u2019il n\u2019a pas lus. Laisse-lui le temps.'
+      : q === 'assez_pour_aujourdhui' ? 'Douze mots dans la journée, ça suffit.'
+      : q === 'vide' ? 'Écris quelque chose.'
+      : 'Le mot n\u2019est pas parti.', false);
+    b.disabled = false;
+    return;
+  }
+  $('ecrire').className = '';
+  dire('Ton mot est parti à ' + r.a + '.', true);
+  VUE = 'envoyes';
+  majOnglets();
+  await charger();
+});
+
+/* ---------- les volets ---------- */
+function majOnglets(){
+  document.querySelectorAll('#onglets button').forEach(b => {
+    b.className = (b.dataset.v === VUE) ? 'on' : '';
+  });
+}
+$('onglets').addEventListener('click', e => {
+  const b = e.target.closest('[data-v]');
+  if (!b) return;
+  VUE = b.dataset.v;
+  majOnglets();
+  poser();
+});
+
+async function charger(){
+  try { C = await BD.agir('mon_courrier'); } catch(e){ C = null; }
+  if (!C || !C.ok){
+    $('liste').innerHTML = '<p class="rien">Le courrier n\u2019a pas répondu.</p>';
+    return;
+  }
+  poser();
+  /* ouvrir le courrier, c'est le lire */
+  if (VUE === 'recus' && C.non_lus){
+    try { await BD.agir('tout_lire'); } catch(e){}
+    setTimeout(async () => {
+      try { C = await BD.agir('mon_courrier'); } catch(e){}
+      const n = $('badge');
+      if (n) n.style.display = 'none';
+      $('c-sous').textContent = 'Tout est lu';
+    }, 1200);
+  }
+}
+
+$('retour').addEventListener('click', () => history.length > 1
+  ? history.back() : location.href = 'hub.html?v=3');
+
+charger();
+</script>
+</body>
+</html>
