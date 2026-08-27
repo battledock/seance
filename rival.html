@@ -137,11 +137,14 @@ function poser(){
   }
   if (R.aucun){
     $('sous').textContent = 'Personne, encore';
-    $('w').innerHTML = '<p class="rien">Personne ne t\u2019a encore remarqué.'
+    $('w').innerHTML = '<p class="rien">'
       + (R.pourquoi === 'trop_tot'
-          ? '<br><br>Il faut être au moins niveau ' + R.faut
-            + ' pour qu\u2019on s\u2019intéresse à toi.'
-          : '') + '</p>';
+          ? 'Personne ne t\u2019a encore remarqué.<br><br>Il faut être au moins '
+            + 'niveau ' + R.faut + ' pour qu\u2019on s\u2019intéresse à toi.'
+        : R.pourquoi === 'tous_pris'
+          ? 'Tous les capitaines de la côte ont déjà quelqu\u2019un en tête.'
+            + '<br><br>Reviens : les rancunes ne durent pas toujours.'
+          : 'Personne ne t\u2019a encore remarqué.') + '</p>';
     return;
   }
 
