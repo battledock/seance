@@ -55,6 +55,9 @@ h1{font-family:'DM Serif Display',Georgia,serif;font-size:27px;line-height:1.15}
 .msg.ok{background:rgba(47,138,92,.18);border:2px solid rgba(140,224,168,.44);
   color:#a8e8c0}
 
+.ts{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
+  color:var(--clair-faible);margin:26px 0 8px}
+
 .retour{display:block;width:100%;margin-top:14px;padding:13px;border-radius:12px;
   cursor:pointer;background:transparent;border:2.5px solid var(--bord-nuit);
   color:var(--clair);font-family:inherit;font-size:14px;font-weight:800}
@@ -93,6 +96,26 @@ h1{font-family:'DM Serif Display',Georgia,serif;font-size:27px;line-height:1.15}
   </div>
 
   <p class="msg" id="msg"></p>
+
+  <!-- Quand le lien du courriel renvoie ailleurs (une adresse de retour
+       mal réglée côté serveur), on peut encore s'en sortir : le lien
+       contient tout ce qu'il faut. Il suffit de le coller ici. -->
+  <div id="secours" style="display:none">
+    <h2 class="ts">Le lien t'a envoyé sur une page d'erreur ?</h2>
+    <p class="sous">Ça arrive : le lien renvoie parfois vers une adresse qui
+      n'existe pas. Mais <b>tout ce qu'il faut est déjà dans la barre
+      d'adresse</b> de cette page d'erreur.<br><br>
+      Reviens dessus, appuie sur la barre d'adresse en haut, copie-la
+      en entier, et colle-la ici.</p>
+    <div class="champ">
+      <div class="boite">
+        <input id="colle" placeholder="Colle le lien ici" autocomplete="off"
+          spellcheck="false">
+      </div>
+    </div>
+    <button class="principal" id="ouvrir">Ouvrir le lien</button>
+  </div>
+
   <button class="retour" id="retour">Revenir à la connexion</button>
 </div>
 
@@ -159,6 +182,7 @@ function erreurDeLien(){
   const err = erreurDeLien();
   if (err){
     $('form').style.display = 'none';
+    $('secours').style.display = '';
     $('sous').textContent = 'Ce lien n\u2019a pas fonctionné.';
     dire(/expired|invalid/i.test(err)
       ? 'Le lien a expiré ou a déjà servi. Redemandes-en un depuis l\u2019écran '
@@ -174,11 +198,73 @@ function erreurDeLien(){
   setTimeout(async () => {
     if (await attendreLaSession()) return;
     $('form').style.display = 'none';
+    $('secours').style.display = '';
     $('sous').textContent = 'Ce lien n\u2019est plus valable.';
     dire('Le lien a expiré, ou il a déjà servi. Redemandes-en un depuis '
       + 'l\u2019écran de connexion — ils ne durent qu\u2019une heure.', false);
   }, 1600);
 })();
+
+/* ============================================================
+   LE CHEMIN DE SECOURS
+   Le lien du courriel contient le jeton, même s'il pointe vers une
+   mauvaise adresse. On le lit et on ouvre la session nous-mêmes.
+   ============================================================ */
+function jetonDuLien(lien){
+  let u;
+  try { u = new URL(lien.trim()); } catch(e){ return null; }
+  const q = u.searchParams;
+  const f = new URLSearchParams((u.hash || '').replace(/^#/, ''));
+  return {
+    hash:  q.get('token_hash') || f.get('token_hash'),
+    token: q.get('token') || f.get('token'),
+    type:  q.get('type') || f.get('type') || 'recovery',
+    acces: f.get('access_token') || q.get('access_token'),
+    frais: f.get('refresh_token') || q.get('refresh_token')
+  };
+}
+
+async function ouvrirAvecLeLien(lien){
+  const j = jetonDuLien(lien);
+  if (!j) return 'pas_un_lien';
+
+  /* le lien a déjà été échangé : il porte la session complète */
+  if (j.acces && j.frais){
+    const { error } = await sb.auth.setSession({
+      access_token: j.acces, refresh_token: j.frais });
+    return error ? 'refuse' : null;
+  }
+  /* sinon, on échange le jeton contre une session */
+  const jeton = j.hash || j.token;
+  if (!jeton) return 'pas_de_jeton';
+  const { error } = await sb.auth.verifyOtp(
+    j.hash ? { token_hash: j.hash, type: j.type }
+           : { token: j.token, type: j.type, email: (
+               new URL(lien).searchParams.get('email') || '') });
+  return error ? 'refuse' : null;
+}
+
+$('ouvrir').addEventListener('click', async () => {
+  const b = $('ouvrir');
+  b.disabled = true; b.textContent = 'Vérification…';
+  const souci = await ouvrirAvecLeLien($('colle').value);
+  b.disabled = false; b.textContent = 'Ouvrir le lien';
+  if (souci === 'pas_un_lien')
+    return dire('Ça ne ressemble pas à une adresse. Copie le lien en entier, '
+      + 'il commence par https://', false);
+  if (souci === 'pas_de_jeton')
+    return dire('Ce lien ne contient pas de jeton. Copie bien celui du bouton '
+      + 'du courriel.', false);
+  if (souci)
+    return dire('Le lien a expiré ou a déjà servi. Redemandes-en un depuis '
+      + 'la connexion.', false);
+
+  PRET = true;
+  $('secours').style.display = 'none';
+  $('form').style.display = '';
+  $('sous').textContent = 'Choisis ton nouveau mot de passe.';
+  dire('Lien accepté. Tu peux changer ton mot de passe.', true);
+});
 
 $('valider').addEventListener('click', async () => {
   if (!PRET) return dire('Ce lien n\u2019est plus valable.', false);
