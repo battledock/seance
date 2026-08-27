@@ -2092,7 +2092,17 @@ decor();
 charger();
 
 var t = null;
-addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(decor, 240); });
+/* la barre d'adresse qui se cache envoie un resize : on ne redessine
+   que si le cadre a vraiment changé, sinon l'écran clignote */
+let __L = innerWidth, __H = innerHeight, __t = null;
+function surRedimension(refaire){
+  const dl = Math.abs(innerWidth - __L), dh = Math.abs(innerHeight - __H);
+  if (dl < 2 && dh < 120) return;
+  __L = innerWidth; __H = innerHeight;
+  clearTimeout(__t);
+  __t = setTimeout(refaire, 220);
+}
+addEventListener('resize', () => surRedimension(decor));
 </script>
 </body>
 </html>

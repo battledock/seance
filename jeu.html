@@ -2941,7 +2941,7 @@ function etiquettes(v){
 
 /* on garde ce qu'on sait déjà : rouvrir une fiche doit être immédiat */
 const SU_E = {};
-let SU_TOUR = 0, SU_TUYAUX = null;
+let SU_TOUR = 0, SU_TUYAUX = null, SU_QUI = null;
 
 /* quand on a demandé la connaissance de chacun, pour la dernière fois */
 const SU_QUAND = {};
@@ -2951,9 +2951,12 @@ async function ficheAutre(i){
   const tour = ++SU_TOUR;
 
   /* on dessine tout de suite avec ce qu'on sait déjà : la fiche
-     s'ouvre sans attendre le serveur, même la première fois */
+     s'ouvre sans attendre le serveur, même la première fois.
+     Si c'est déjà elle qui est ouverte, on ne la refait pas. */
   let E = SU_E[j.id] || null;
-  dessinerFiche(j, E);
+  const fi = document.getElementById('fi');
+  const dejaLa = (SU_QUI === j.id) && fi && fi.classList.contains('on');
+  if (!dejaLa){ dessinerFiche(j, E); SU_QUI = j.id; }
 
   if (!j.id) return;
 
@@ -2968,10 +2971,11 @@ async function ficheAutre(i){
   SU_E[j.id] = f;
   SU_QUAND[j.id] = Date.now();
 
-  /* si la fiche était vide au moment du dessin, on la refait ;
-     sinon on se contente de mettre les chiffres à jour */
-  if (!E) dessinerFiche(j, f);
-  else majConnaissance(f);
+  /* On ne redessine jamais la fiche entière : c'est ce qui faisait
+     clignoter tout le panneau. On ne remplit que les deux blocs qui
+     attendaient la réponse — le reste ne bouge pas d'un pixel. */
+  poserConnaissance(f);
+  poserGestes(j, f);
 }
 
 function dessinerFiche(j, E){
@@ -4628,7 +4632,21 @@ function dessiner(){
 }
 dessiner();
 let t = null;
-addEventListener('resize', () => { clearTimeout(t); t = setTimeout(dessiner, 200); });
+/* ---------- ne redessiner que si le cadre a vraiment changé ----------
+   Sur mobile, la barre d'adresse qui se cache envoie un resize et fait
+   varier la hauteur d'une soixantaine de pixels. Redessiner la scène à
+   ce moment-là ne sert à rien et fait clignoter tout l'écran. */
+let __L = innerWidth, __H = innerHeight, __t = null;
+function surRedimension(refaire){
+  const dl = Math.abs(innerWidth - __L);
+  const dh = Math.abs(innerHeight - __H);
+  if (dl < 2 && dh < 120) return;      /* la barre d'adresse, rien de plus */
+  __L = innerWidth; __H = innerHeight;
+  clearTimeout(__t);
+  __t = setTimeout(refaire, 220);
+}
+
+addEventListener('resize', () => surRedimension(dessiner));
 </script>
 </body>
 </html>

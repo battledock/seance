@@ -1654,7 +1654,21 @@ const ICO = {
 })();
 
 let t = null;
-addEventListener('resize', () => { clearTimeout(t); t = setTimeout(decor, 200); });
+/* ---------- ne redessiner que si le cadre a vraiment changé ----------
+   Sur mobile, la barre d'adresse qui se cache envoie un resize et fait
+   varier la hauteur d'une soixantaine de pixels. Redessiner la scène à
+   ce moment-là ne sert à rien et fait clignoter tout l'écran. */
+let __L = innerWidth, __H = innerHeight, __t = null;
+function surRedimension(refaire){
+  const dl = Math.abs(innerWidth - __L);
+  const dh = Math.abs(innerHeight - __H);
+  if (dl < 2 && dh < 120) return;      /* la barre d'adresse, rien de plus */
+  __L = innerWidth; __H = innerHeight;
+  clearTimeout(__t);
+  __t = setTimeout(refaire, 220);
+}
+
+addEventListener('resize', () => surRedimension(decor));
 </script>
 </body>
 </html>

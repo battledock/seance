@@ -1648,10 +1648,17 @@ setTimeout(leverAube, 6000);
   } catch(e){}
 })();
 
-let t = null;
+/* ---------- ne redessiner que si le cadre a vraiment changé ----------
+   La barre d'adresse qui se cache envoie un resize et fait varier la
+   hauteur d'une soixantaine de pixels : redessiner à ce moment-là ne
+   sert à rien et fait clignoter tout l'écran. */
+let __L = innerWidth, __H = innerHeight, __t = null;
 addEventListener('resize', () => {
-  clearTimeout(t);
-  t = setTimeout(() => { dessiner(); poserMiquel(); }, 200);
+  const dl = Math.abs(innerWidth - __L), dh = Math.abs(innerHeight - __H);
+  if (dl < 2 && dh < 120) return;
+  __L = innerWidth; __H = innerHeight;
+  clearTimeout(__t);
+  __t = setTimeout(() => { dessiner(); poserMiquel(); }, 220);
 });
 </script>
 </body>
