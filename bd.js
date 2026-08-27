@@ -264,7 +264,7 @@ const BD = (() => {
      le navigateur : les réglages déjà choisis restent valables, et
      rien ne s'écrase entre les deux. */
   const REGLAGES_PAR_DEFAUT = { animations:true, decor:true, secousse:true,
-                                texte:'normal', confirmer:true };
+                                son:true, texte:'normal', confirmer:true };
 
   function reglages(){
     try {
@@ -296,6 +296,12 @@ const BD = (() => {
   function vibrer(motif){
     if (!reglages().secousse) return;
     try { if (navigator.vibrate) navigator.vibrate(motif); } catch(e){}
+  }
+
+  /* et elles sonnent par ici. Si son.js n'est pas chargé sur la page,
+     l'appel ne fait rien : aucune page ne peut casser pour ça. */
+  function sonner(nom){
+    try { if (window.SON) SON.jouer(nom); } catch(e){}
   }
 
   appliquerReglages();
@@ -587,6 +593,6 @@ const BD = (() => {
   return {
     verifierMaintenance, client, utilisateur, charger, enregistrer, poser, lire, agir,
            avancer, garder, deconnexion, avatarDe, avatarSVG, ETAPES, PAGES,
-           reglages, regler, vibrer, appliquerReglages,
+           reglages, regler, vibrer, sonner, appliquerReglages,
            get docker(){ return docker; } };
 })();

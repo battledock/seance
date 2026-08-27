@@ -49,6 +49,10 @@ body::before{background:linear-gradient(180deg,
    ============================================================ */
 
 /* ---------- le numéro de la mise à jour ---------- */
+/* la date d'une maj repliée, à côté de son numéro */
+.vieille b em{font-style:normal;display:block;font-size:11px;font-weight:700;
+  color:rgba(18,48,63,.45);margin-top:3px;letter-spacing:0;text-transform:none}
+
 .maj{display:flex;align-items:center;gap:15px;padding:17px 18px;margin-bottom:16px;
   border-radius:18px;background:var(--creme);border:3px solid var(--encre)}
 .maj .n{flex:0 0 auto;min-width:60px;padding:8px 12px;border-radius:14px;
@@ -126,6 +130,7 @@ body::before{background:linear-gradient(180deg,
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=4"></script>
+<script src="son.js?v=1"></script>
 <script>
 function paraitre(){
   const e = document.getElementById('liste');
@@ -143,6 +148,12 @@ function leJour(iso){
   if (iso === j(new Date(h.getTime() - 864e5))) return 'hier';
   return 'le ' + new Date(iso + 'T12:00:00')
     .toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+}
+
+/* la même date, en court : pour les intervalles et les listes */
+function jourCourt(iso){
+  return new Date(iso + 'T12:00:00')
+    .toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
 }
 
 /* une ligne : un point, un titre, et le reste replié dessous */
@@ -195,7 +206,10 @@ function compte(lot){
     N.forEach(n => {
       const k = n.maj || n.le_jour;
       let m = majs.find(x => x.k === k);
-      if (!m){ majs.push(m = { k, jour:n.le_jour, lot:[] }); }
+      if (!m){ majs.push(m = { k, jour:n.le_jour, debut:n.le_jour, lot:[] }); }
+      /* les entrées arrivent de la plus récente à la plus ancienne :
+         la dernière vue est donc le jour où la maj a commencé */
+      m.debut = n.le_jour;
       m.lot.push(n);
     });
 
@@ -203,7 +217,9 @@ function compte(lot){
     let h = '<div class="maj">'
       + '<span class="n"><small>Maj</small><b>' + der.k + '</b></span>'
       + '<span class="co"><b>' + compte(der.lot) + '</b>'
-      + '<span>Arrivé ' + leJour(der.jour) + '</span></span></div>'
+      + '<span>' + (der.debut && der.debut !== der.jour
+          ? 'Du ' + jourCourt(der.debut) + ' au ' + jourCourt(der.jour)
+          : 'Arrivé ' + leJour(der.jour)) + '</span></span></div>'
       + '<div class="bloc">' + der.lot.map(n => ligne(n, n.id > vu)).join('') + '</div>';
 
     /* les précédentes restent pliées : on ne les cherche que si on veut */
@@ -211,7 +227,8 @@ function compte(lot){
       h += '<p class="sec">Avant ça</p><div class="bloc" id="avant">'
         + majs.slice(1).map(m =>
             '<button class="vieille" data-m="' + m.k + '">'
-            + '<b>Maj ' + m.k + '</b><span>' + m.lot.length + '</span>'
+            + '<b>Maj ' + m.k + '<em>' + leJour(m.jour) + '</em></b>'
+            + '<span>' + m.lot.length + '</span>'
             + '<span class="fl">›</span></button>'
             + '<div class="bloc-m" data-lot="' + m.k + '" hidden>'
             + m.lot.map(n => ligne(n, false)).join('') + '</div>').join('')

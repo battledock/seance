@@ -285,6 +285,7 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=4"></script>
+<script src="son.js?v=1"></script>
 <script>
 function rnd(s){ var x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); }
 
@@ -1823,7 +1824,7 @@ function boucleJeu(){
     if (!m.prise && !m.ratee && ouEnEst(m, JEU.t) > 1.1){
       m.ratee = true; JEU.ratees++; JEU.suite = 0;
       JEU.juge = 'Au sol'; JEU.jugeT = JEU.t;
-      BD.vibrer(26);
+      BD.vibrer(26); BD.sonner('refus');
     }
   });
   /* devant le public, trois massues au sol et Don arrête tout.
@@ -1862,7 +1863,7 @@ function attraper(){
     if (mieux < .035){ JEU.parfaites++; JEU.juge = 'Belle prise'; JEU.jugeT = JEU.t; }
     else if (mieux < .085){ JEU.juge = 'Bien'; JEU.jugeT = JEU.t; }
     else { JEU.juge = 'De justesse'; JEU.jugeT = JEU.t; }
-    BD.vibrer(mieux < .035 ? [6, 20, 10] : 8);
+    BD.vibrer(mieux < .035 ? [6, 20, 10] : 8); BD.sonner('massue');
   } else {
     JEU.suite = 0;
     JEU.juge = 'Dans le vide'; JEU.jugeT = JEU.t;
@@ -2037,7 +2038,7 @@ async function faireRire(quoi){
   try { x = await BD.agir('cirque_faire_rire', { p_quoi: quoi }); } catch(e){ x = null; }
   if (!x || !x.ok) return;
   document.getElementById('w').innerHTML = dits([x.mot]);
-  if (x.ri) BD.vibrer([18, 70, 18, 70, 30]);
+  if (x.ri) BD.vibrer([18, 70, 18, 70, 30]); BD.sonner('piece');
   setTimeout(charger, x.ri ? 4200 : 2600);
 }
 

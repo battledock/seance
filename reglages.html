@@ -133,6 +133,11 @@ h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
     <button class="bascule" id="b-decor" aria-label="Décor"><i></i></button>
   </div>
   <div class="li">
+    <span class="tx"><b>Le son</b>
+      <span>La pièce, la cloche du quai, les cordes du piano</span></span>
+    <button class="bascule" id="b-son" aria-label="Son"><i></i></button>
+  </div>
+  <div class="li">
     <span class="tx"><b>Les vibrations</b>
       <span>La petite secousse quand il se passe quelque chose</span></span>
     <button class="bascule" id="b-secousse" aria-label="Vibrations"><i></i></button>
@@ -206,6 +211,7 @@ h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=4"></script>
+<script src="son.js?v=1"></script>
 <script>
 const $ = id => document.getElementById(id);
 
@@ -216,7 +222,7 @@ function dire(t, bon){
 }
 
 /* ---------- les interrupteurs ---------- */
-const BASCULES = ['animations','decor','secousse','confirmer'];
+const BASCULES = ['animations','decor','son','secousse','confirmer'];
 
 function poser(){
   const r = BD.reglages();
@@ -235,6 +241,7 @@ BASCULES.forEach(k => {
     poser();
     /* on éprouve le réglage au moment où on le change */
     if (k === 'secousse' && !r[k]) BD.vibrer(18);
+    if (k === 'son' && !r[k]) BD.sonner('piece');
   });
 });
 

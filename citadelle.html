@@ -185,6 +185,7 @@ h2 em{font-style:normal;color:#c9a24a;letter-spacing:.1em}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="bd.js?v=4"></script>
+<script src="son.js?v=1"></script>
 <script>
 function rnd(s){ var x = Math.sin(s * 127.1) * 43758.5; return x - Math.floor(x); }
 
@@ -638,7 +639,7 @@ async function agir(quoi, b){
   DERNIER = { t: t, bien: !!(x.vaincu || x.gagne || x.soin),
     mal: !!(x.riposte || x.degats) };
 
-  if (x.vaincu) BD.vibrer([12, 50, 22]);
+  if (x.vaincu) BD.vibrer([12, 50, 22]); BD.sonner('coup');
 
   /* la fin d'une descente, dans un sens ou dans l'autre */
   if (x.fin && x.fin.perdu){
