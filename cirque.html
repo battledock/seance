@@ -1823,7 +1823,7 @@ function boucleJeu(){
     if (!m.prise && !m.ratee && ouEnEst(m, JEU.t) > 1.1){
       m.ratee = true; JEU.ratees++; JEU.suite = 0;
       JEU.juge = 'Au sol'; JEU.jugeT = JEU.t;
-      if (navigator.vibrate) navigator.vibrate(26);
+      BD.vibrer(26);
     }
   });
   /* devant le public, trois massues au sol et Don arrête tout.
@@ -1862,7 +1862,7 @@ function attraper(){
     if (mieux < .035){ JEU.parfaites++; JEU.juge = 'Belle prise'; JEU.jugeT = JEU.t; }
     else if (mieux < .085){ JEU.juge = 'Bien'; JEU.jugeT = JEU.t; }
     else { JEU.juge = 'De justesse'; JEU.jugeT = JEU.t; }
-    if (navigator.vibrate) navigator.vibrate(mieux < .035 ? [6, 20, 10] : 8);
+    BD.vibrer(mieux < .035 ? [6, 20, 10] : 8);
   } else {
     JEU.suite = 0;
     JEU.juge = 'Dans le vide'; JEU.jugeT = JEU.t;
@@ -1941,7 +1941,7 @@ function demarrerNumero(){
         if (!t) return;
         t.textContent = mots[k];
         t.className = k === 3 ? 'go2' : '';
-        if (navigator.vibrate) navigator.vibrate(k === 3 ? 50 : 16);
+        BD.vibrer(k === 3 ? 50 : 16);
         k++;
         if (k < mots.length) setTimeout(pas, 720);
         else setTimeout(function(){
@@ -2037,7 +2037,7 @@ async function faireRire(quoi){
   try { x = await BD.agir('cirque_faire_rire', { p_quoi: quoi }); } catch(e){ x = null; }
   if (!x || !x.ok) return;
   document.getElementById('w').innerHTML = dits([x.mot]);
-  if (x.ri && navigator.vibrate) navigator.vibrate([18, 70, 18, 70, 30]);
+  if (x.ri) BD.vibrer([18, 70, 18, 70, 30]);
   setTimeout(charger, x.ri ? 4200 : 2600);
 }
 

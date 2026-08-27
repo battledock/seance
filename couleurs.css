@@ -60,3 +60,18 @@
 /* Courier Prime n'est plus une police de corps : c'est la voix
    des gens. On la réserve à ce qu'ils disent. */
 .voix{ font-family:'Courier Prime',monospace; }
+
+/* ============================================================
+   CE QUE LES RÉGLAGES CHANGENT
+   Déclaré ici pour que ce soit vrai sur les quarante et une
+   pages, et pas seulement là où c'était écrit à la main.
+   ============================================================ */
+html.sans-anim *,
+html.sans-anim *::before,
+html.sans-anim *::after{
+  animation:none !important;
+  transition:none !important;
+}
+html.sans-decor #sc,
+html.sans-decor .decor,
+html.sans-decor .fond{ opacity:.28 !important; }

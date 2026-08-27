@@ -925,7 +925,7 @@ function lancer(r){
        { transform:'scale(1)', opacity:1, offset:.8 },
        { transform:'scale(.9)', opacity:.85 }],
       { duration:640, easing:'cubic-bezier(.2,1.4,.4,1)' });
-    if (navigator.vibrate) navigator.vibrate(k === 3 ? 60 : 18);
+    BD.vibrer(k === 3 ? 60 : 18);
     k++;
     if (k < mots.length) setTimeout(pas, 700);
     else setTimeout(function(){ CHRONO.style.opacity = '0'; rejouer(); }, 480);
@@ -1027,7 +1027,7 @@ async function relever(){
   CHOISI = x.crabe.id;
   await charger();
   dire('Tu remontes ' + x.crabe.nom + ' — ' + QUAL[x.crabe.qualite].n.toLowerCase() + '.');
-  if (navigator.vibrate) navigator.vibrate(x.crabe.qualite >= 3 ? [20,60,30,60,40] : 22);
+  BD.vibrer(x.crabe.qualite >= 3 ? [20,60,30,60,40] : 22);
 }
 
 async function courir(){

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#fdf6e6">
+<title>Battle Dock — Réglages</title>
+<link rel="stylesheet" href="couleurs.css?v=2">
+<link rel="stylesheet" href="chaud.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+body{padding:calc(env(safe-area-inset-top) + 16px) 15px
+  calc(env(safe-area-inset-bottom) + 30px)}
+
+.tete{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.tete .q{flex:1;min-width:0}
+.tete .q b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:26px;
+  line-height:1.1}
+.tete .q span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(18,48,63,.45);font-weight:800;margin-top:4px}
+.tete button{flex:0 0 auto;padding:11px 16px;border-radius:13px;cursor:pointer;
+  border:3px solid var(--encre);background:var(--creme);color:var(--encre);
+  font-family:inherit;font-size:14px;font-weight:800}
+
+h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
+  color:rgba(18,48,63,.45);margin:26px 2px 10px}
+
+.bloc{border-radius:16px;overflow:hidden;border:3px solid var(--encre);
+  background:var(--creme)}
+.li{display:flex;align-items:center;gap:14px;padding:15px 16px;
+  border-bottom:2px solid rgba(18,48,63,.1)}
+.li:last-child{border-bottom:0}
+.li .tx{flex:1;min-width:0}
+.li .tx b{display:block;font-size:15.5px}
+.li .tx span{display:block;font-size:12.5px;color:rgba(18,48,63,.55);margin-top:3px;
+  line-height:1.5}
+
+/* l'interrupteur */
+.bascule{flex:0 0 auto;width:56px;height:32px;border-radius:20px;cursor:pointer;
+  border:3px solid var(--encre);background:var(--creme2);position:relative;
+  transition:background .18s}
+.bascule i{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;
+  background:var(--encre);transition:transform .18s}
+.bascule.on{background:var(--or)}
+.bascule.on i{transform:translateX(24px)}
+
+/* les trois tailles de texte */
+.trois{display:flex;gap:7px;flex:0 0 auto}
+.trois button{padding:9px 13px;border-radius:11px;cursor:pointer;font-family:inherit;
+  font-size:13px;font-weight:800;border:2.5px solid rgba(18,48,63,.2);
+  background:transparent;color:var(--encre)}
+.trois button.on{background:var(--or);border-color:var(--encre)}
+
+.agir{width:100%;padding:15px;border-radius:14px;cursor:pointer;margin-top:10px;
+  font-family:inherit;font-size:15.5px;font-weight:900;
+  border:3px solid var(--encre);background:var(--creme);color:var(--encre)}
+.agir.sortir{background:var(--encre);color:var(--creme)}
+.agir.danger{background:transparent;border-color:rgba(201,48,44,.6);color:#a8241f}
+.agir:active{transform:translateY(2px)}
+
+.compte{padding:15px 16px;font-size:13px;line-height:1.65;
+  color:rgba(18,48,63,.6)}
+.compte b{color:var(--encre)}
+
+.mot{font-size:12px;line-height:1.65;color:rgba(18,48,63,.45);margin-top:12px;
+  padding:0 4px}
+
+/* la suppression, en deux temps */
+#gouffre{position:fixed;inset:0;z-index:60;background:rgba(12,24,32,.7);
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(6px)}
+#gouffre.on{display:flex}
+#gouffre .b{width:100%;max-width:360px;border-radius:18px;background:var(--creme);
+  border:3px solid var(--encre);padding:20px}
+#gouffre h3{font-family:'DM Serif Display',Georgia,serif;font-size:22px}
+#gouffre p{font-size:13.5px;line-height:1.65;color:rgba(18,48,63,.7);margin-top:10px}
+#gouffre input{width:100%;margin-top:14px;padding:14px;border-radius:12px;
+  border:2.5px solid rgba(18,48,63,.24);background:var(--creme2);
+  font-family:inherit;font-size:16px;color:var(--encre)}
+#gouffre .deux{display:flex;gap:8px;margin-top:14px}
+#gouffre .deux button{flex:1;padding:14px;border-radius:12px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:900;border:3px solid var(--encre);
+  background:var(--creme)}
+#gouffre .deux button.oui{background:#c9302c;border-color:#8a1f1c;color:#fff}
+#gouffre .deux button:disabled{opacity:.4;cursor:default}
+
+.msg{margin-top:14px;padding:13px 15px;border-radius:12px;font-size:13.5px;
+  line-height:1.6;display:none}
+.msg.on{display:block}
+.msg.mal{background:rgba(201,48,44,.12);border:2px solid rgba(201,48,44,.4);
+  color:#a8241f}
+.msg.ok{background:rgba(47,138,92,.12);border:2px solid rgba(47,138,92,.4);
+  color:#1e6b44}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <span class="q"><b>Réglages</b><span>Comme tu préfères</span></span>
+  <button id="retour">‹ Retour</button>
+</div>
+
+<h2>Le confort</h2>
+<div class="bloc">
+  <div class="li">
+    <span class="tx"><b>Les animations</b>
+      <span>Les vagues, les flammes, tout ce qui bouge</span></span>
+    <button class="bascule" id="b-animations" aria-label="Animations"><i></i></button>
+  </div>
+  <div class="li">
+    <span class="tx"><b>Le décor</b>
+      <span>Les scènes dessinées derrière les pages</span></span>
+    <button class="bascule" id="b-decor" aria-label="Décor"><i></i></button>
+  </div>
+  <div class="li">
+    <span class="tx"><b>Les vibrations</b>
+      <span>La petite secousse quand il se passe quelque chose</span></span>
+    <button class="bascule" id="b-secousse" aria-label="Vibrations"><i></i></button>
+  </div>
+  <div class="li">
+    <span class="tx"><b>La taille du texte</b></span>
+    <span class="trois" id="t-texte">
+      <button data-t="petit">Petit</button>
+      <button data-t="normal">Normal</button>
+      <button data-t="grand">Grand</button>
+    </span>
+  </div>
+</div>
+
+<h2>Le jeu</h2>
+<div class="bloc">
+  <div class="li">
+    <span class="tx"><b>Confirmer les grosses dépenses</b>
+      <span>Au-dessus de 500 €, on te demande deux fois</span></span>
+    <button class="bascule" id="b-confirmer" aria-label="Confirmer"><i></i></button>
+  </div>
+</div>
+
+<h2>Ton compte</h2>
+<div class="bloc">
+  <p class="compte" id="compte">…</p>
+</div>
+<button class="agir sortir" id="sortir">Se déconnecter</button>
+<button class="agir danger" id="effacer">Supprimer mon compte</button>
+<p class="mot">Se déconnecter ne perd rien : tu retrouves ta partie en te
+  reconnectant. Supprimer ton compte efface tout, définitivement.</p>
+
+<p class="msg" id="msg"></p>
+
+<div id="gouffre">
+  <div class="b">
+    <h3>Supprimer ton compte</h3>
+    <p>Ta barque, ton argent, tes histoires, tes liens avec les gens : tout part.
+      Ça ne se rattrape pas.</p>
+    <p>Écris <b id="mot-cle">SUPPRIMER</b> pour confirmer.</p>
+    <input id="preuve" placeholder="SUPPRIMER" autocomplete="off"
+      autocapitalize="characters">
+    <div class="deux">
+      <button id="annuler">Annuler</button>
+      <button class="oui" id="confirmer" disabled>Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=3"></script>
+<script>
+const $ = id => document.getElementById(id);
+
+function dire(t, bon){
+  const m = $('msg');
+  m.textContent = t;
+  m.className = 'msg on ' + (bon ? 'ok' : 'mal');
+}
+
+/* ---------- les interrupteurs ---------- */
+const BASCULES = ['animations','decor','secousse','confirmer'];
+
+function poser(){
+  const r = BD.reglages();
+  BASCULES.forEach(k => {
+    $('b-' + k).className = 'bascule' + (r[k] ? ' on' : '');
+  });
+  document.querySelectorAll('#t-texte button').forEach(b => {
+    b.className = (b.dataset.t === (r.texte || 'normal')) ? 'on' : '';
+  });
+}
+
+BASCULES.forEach(k => {
+  $('b-' + k).addEventListener('click', () => {
+    const r = BD.reglages();
+    BD.regler(k, !r[k]);
+    poser();
+    /* on éprouve le réglage au moment où on le change */
+    if (k === 'secousse' && !r[k]) BD.vibrer(18);
+  });
+});
+
+document.querySelectorAll('#t-texte button').forEach(b => {
+  b.addEventListener('click', () => { BD.regler('texte', b.dataset.t); poser(); });
+});
+
+/* ---------- ton compte ---------- */
+(async () => {
+  poser();
+  let d = null;
+  try { d = await BD.charger(); } catch(e){}
+  if (!d){
+    $('compte').textContent = 'Tu n\u2019es pas connecté.';
+    $('effacer').style.display = 'none';
+    $('sortir').textContent = 'Aller à la connexion';
+    return;
+  }
+  $('compte').innerHTML = 'Tu joues sous le nom de <b>' + (d.pseudo || '—')
+    + '</b>, niveau ' + (d.niveau || 1) + '.';
+})();
+
+$('retour').addEventListener('click', () => history.length > 1
+  ? history.back() : location.href = 'hub.html?v=3');
+
+$('sortir').addEventListener('click', async () => {
+  $('sortir').disabled = true;
+  $('sortir').textContent = 'Déconnexion…';
+  try { await BD.deconnexion(); } catch(e){}
+  location.href = 'index.html';
+});
+
+/* ---------- supprimer, en deux temps ---------- */
+$('effacer').addEventListener('click', () => { $('gouffre').className = 'on'; });
+$('annuler').addEventListener('click', () => {
+  $('gouffre').className = ''; $('preuve').value = ''; $('confirmer').disabled = true;
+});
+$('preuve').addEventListener('input', () => {
+  $('confirmer').disabled = $('preuve').value.trim().toUpperCase() !== 'SUPPRIMER';
+});
+
+$('confirmer').addEventListener('click', async () => {
+  const b = $('confirmer');
+  b.disabled = true; b.textContent = 'Suppression…';
+  let r = null;
+  try { r = await BD.agir('supprimer_mon_compte', { p_preuve: 'SUPPRIMER' }); }
+  catch(e){}
+  if (!r || !r.ok){
+    $('gouffre').className = '';
+    dire('La suppression n\u2019a pas abouti. Rien n\u2019a été effacé.', false);
+    b.disabled = false; b.textContent = 'Supprimer';
+    return;
+  }
+  try { await BD.deconnexion(); } catch(e){}
+  location.href = 'index.html';
+});
+</script>
+</body>
+</html>

@@ -3672,7 +3672,7 @@ function secousse(quoi){
   if (!REG.secousse) return;
   if (!navigator.vibrate) return;
   const M = { touche:12, bien:[18, 40, 30], gros:[24, 50, 24, 50, 60], raté:[40, 60, 40] };
-  try { navigator.vibrate(M[quoi] || 12); } catch(e){}
+  try { BD.vibrer(M[quoi] || 12); } catch(e){}
 }
 
 function appliquerReglages(){

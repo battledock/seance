@@ -675,7 +675,7 @@ function secousse(){
   p.style.transition = 'box-shadow .5s';
   p.style.boxShadow = '0 0 0 2px rgba(240,196,106,.7),0 10px 40px rgba(200,150,60,.4)';
   setTimeout(() => p.style.boxShadow = '', 1400);
-  if (navigator.vibrate) navigator.vibrate([14, 60, 22]);
+  BD.vibrer([14, 60, 22]);
 }
 
 function brancher(r){

@@ -254,6 +254,54 @@ const BD = (() => {
     location.href = 'index.html';
   }
 
+  /* ============================================================
+     LES RÉGLAGES
+     Gardés sur l'appareil : ils n'ont pas à voyager jusqu'au
+     serveur. Toutes les pages passent par ici, ce qui fait que
+     couper les vibrations les coupe vraiment partout.
+     ============================================================ */
+  /* Les mêmes noms que le panneau de Marseille, et la même case dans
+     le navigateur : les réglages déjà choisis restent valables, et
+     rien ne s'écrase entre les deux. */
+  const REGLAGES_PAR_DEFAUT = { animations:true, decor:true, secousse:true,
+                                texte:'normal', confirmer:true };
+
+  function reglages(){
+    try {
+      const brut = localStorage.getItem('bd-reglages');
+      return Object.assign({}, REGLAGES_PAR_DEFAUT, brut ? JSON.parse(brut) : {});
+    } catch(e){ return Object.assign({}, REGLAGES_PAR_DEFAUT); }
+  }
+
+  function regler(quoi, valeur){
+    const r = reglages();
+    r[quoi] = valeur;
+    try { localStorage.setItem('bd-reglages', JSON.stringify(r)); } catch(e){}
+    appliquerReglages();
+    return r;
+  }
+
+  /* les animations coupées, le décor allégé, la taille du texte */
+  function appliquerReglages(){
+    const r = reglages();
+    const h = document && document.documentElement;
+    if (!h) return;
+    h.classList.toggle('sans-anim', !r.animations);
+    h.classList.toggle('sans-decor', !r.decor);
+    h.style.setProperty('--txt',
+      r.texte === 'grand' ? '1.14' : r.texte === 'petit' ? '.92' : '1');
+  }
+
+  /* toutes les pages vibrent par ici, et nulle part ailleurs */
+  function vibrer(motif){
+    if (!reglages().secousse) return;
+    try { if (navigator.vibrate) navigator.vibrate(motif); } catch(e){}
+  }
+
+  appliquerReglages();
+  if (document && document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', appliquerReglages);
+
   /* ---------- avatar ---------- */
   const AVATAR_DEFAUT = { peau:2, cheveux:1, coiffure:1, barbe:2, tete:1, veste:0,
                           yeux:0, bouche:0, lunettes:0, boucle:0, motif:0, foulard:0 };
@@ -539,5 +587,6 @@ const BD = (() => {
   return {
     verifierMaintenance, client, utilisateur, charger, enregistrer, poser, lire, agir,
            avancer, garder, deconnexion, avatarDe, avatarSVG, ETAPES, PAGES,
+           reglages, regler, vibrer, appliquerReglages,
            get docker(){ return docker; } };
 })();
