@@ -321,7 +321,7 @@ body::before{background:linear-gradient(180deg,
     <span class="tr"></span>
   </button>
 
-  <section id="defis" class="attend" style="display:none">
+  <section id="defis" style="display:none">
     <h2 class="dt">Les trois du jour<em id="d-reste"></em></h2>
     <div id="d-liste"></div>
   </section>
@@ -344,7 +344,7 @@ body::before{background:linear-gradient(180deg,
 <script>
 /* rien ne se montre tant que tout n'est pas là */
 function paraitre(){
-  ['liv', 'rade', 'tuiles', 'pied'].forEach(k => {
+  ['liv', 'rade', 'defis', 'tuiles', 'pied'].forEach(k => {
     const e = document.getElementById(k);
     if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
   });
@@ -564,8 +564,13 @@ let PALMA = { aLettre:false, pere:false };
 let DEFIS = null;
 
 async function poserDefis(){
-  try { DEFIS = await BD.agir('mes_defis'); } catch(e){ return; }
-  if (!DEFIS || !DEFIS.ok || !(DEFIS.defis || []).length) return;
+  const sec = document.getElementById('defis');
+  try { DEFIS = await BD.agir('mes_defis'); } catch(e){ DEFIS = null; }
+  if (!DEFIS || !DEFIS.ok || !(DEFIS.defis || []).length){
+    /* rien à montrer : la section ne doit pas laisser un trou */
+    sec.style.display = 'none';
+    return;
+  }
 
   const L = DEFIS.defis;
   const reste = L.filter(d => !d.pris).length;
@@ -586,7 +591,9 @@ async function poserDefis(){
       + '</div>';
   }).join('');
 
-  document.getElementById('defis').style.display = '';
+  sec.style.display = '';
+  sec.classList.remove('attend');
+  sec.classList.add('venu');
   document.querySelectorAll('[data-d]').forEach(b => {
     b.onclick = () => encaisserDefi(b.dataset.d, b);
   });
