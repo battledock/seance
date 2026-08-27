@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#101f2e">
+<title>Battle Dock — L'aiguille</title>
+<link rel="stylesheet" href="couleurs.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{min-height:100%;background:var(--nuit-mer);color:var(--clair);
+  font-family:'Nunito',system-ui,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 14px) 14px
+  calc(env(safe-area-inset-bottom) + 30px)}
+
+.tete{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:11px;cursor:pointer;
+  border:3px solid var(--clair);background:transparent;display:flex;
+  align-items:center;justify-content:center}
+.tete .ret svg{width:17px;height:17px;stroke:var(--clair);fill:none;
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tete .q b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px}
+.tete .q span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--clair-faible);font-weight:800;margin-top:3px}
+
+/* la boussole, en tête : elle est le sujet */
+.bous{display:flex;justify-content:center;margin-bottom:18px}
+.bous svg{width:132px;height:132px}
+.aig{transform-box:fill-box;transform-origin:50% 50%;
+  animation:cherche 6s ease-in-out infinite}
+@keyframes cherche{
+  0%,100%{transform:rotate(128deg)} 22%{transform:rotate(136deg)}
+  48%{transform:rotate(120deg)} 71%{transform:rotate(133deg)}}
+
+/* le fil, comme une corde nouée */
+.fil{position:relative;padding-left:34px}
+.fil::before{content:'';position:absolute;left:13px;top:14px;bottom:14px;width:3px;
+  background:repeating-linear-gradient(180deg,
+    rgba(201,48,44,.55) 0 8px, rgba(201,48,44,.15) 8px 14px)}
+
+.acte{position:relative;margin-bottom:14px;padding:15px;border-radius:15px;
+  background:rgba(26,51,72,.6);border:3px solid var(--bord-nuit)}
+.acte::before{content:'';position:absolute;left:-27px;top:20px;width:13px;
+  height:13px;border-radius:50%;background:var(--nuit-mer);
+  border:3px solid rgba(242,230,207,.3)}
+.acte.fait::before{background:#2f8a5c;border-color:#8ce0a8}
+.acte.courant{border-color:var(--or);background:rgba(240,169,46,.09);
+  box-shadow:0 5px 22px rgba(240,169,46,.14)}
+.acte.courant::before{background:var(--or);border-color:#ffe08a;
+  animation:battre 2.4s ease-in-out infinite}
+@keyframes battre{0%,100%{box-shadow:0 0 0 0 rgba(240,169,46,.5)}
+  60%{box-shadow:0 0 0 9px rgba(240,169,46,0)}}
+.acte.loin{opacity:.42}
+
+.acte .n{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.acte .n i{font-style:normal;font-size:8.5px;letter-spacing:.18em;
+  text-transform:uppercase;font-weight:900;color:var(--clair-faible)}
+.acte .n b{font-family:'DM Serif Display',Georgia,serif;font-size:19px;line-height:1.15}
+.acte .ou{font-size:11px;font-weight:800;color:var(--or-pale)}
+.acte p{font-size:13.5px;line-height:1.7;color:var(--clair-doux);margin-top:8px}
+.acte p.parle{font-family:'Courier Prime',monospace;color:#fff;padding-left:13px;
+  border-left:3px solid var(--or-pale);margin-top:10px}
+.acte .tache{margin-top:11px;padding:11px 13px;border-radius:11px;
+  background:rgba(8,16,24,.5);border:2px solid var(--bord-nuit);
+  font-size:12.5px;line-height:1.55}
+.acte .tache b{display:block;font-size:8.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--clair-faible);margin-bottom:4px}
+.acte .paie{margin-top:9px;font-size:11.5px;font-weight:800;color:#8ce0a8}
+.acte button{width:100%;margin-top:12px;padding:14px;border-radius:12px;
+  cursor:pointer;font-family:inherit;font-size:14.5px;font-weight:900;
+  border:3px solid var(--nuit-mer);background:var(--or);color:#14202a}
+.acte button:disabled{background:rgba(242,230,207,.1);color:var(--clair-faible);
+  border-color:transparent;cursor:default}
+
+.fini{padding:22px 18px;border-radius:16px;text-align:center;
+  background:rgba(47,138,92,.14);border:3px solid #2f8a5c;margin-bottom:18px}
+.fini b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:21px}
+.fini p{font-size:13.5px;line-height:1.7;color:var(--clair-doux);margin-top:8px}
+
+/* la chute, quand elle tombe */
+#voile{position:fixed;inset:0;z-index:60;background:rgba(6,14,20,.86);
+  display:none;align-items:center;justify-content:center;padding:20px;
+  backdrop-filter:blur(6px)}
+#voile.on{display:flex}
+#voile .b{width:100%;max-width:380px;border-radius:18px;background:var(--mer-2);
+  border:3px solid var(--or);padding:22px;max-height:86vh;overflow-y:auto}
+#voile h3{font-family:'DM Serif Display',Georgia,serif;font-size:22px}
+#voile .ch{font-family:'Courier Prime',monospace;font-size:14.5px;line-height:1.75;
+  margin-top:14px;color:#fff}
+#voile .g{margin-top:16px;display:flex;flex-wrap:wrap;gap:7px}
+#voile .g span{padding:7px 11px;border-radius:11px;background:rgba(47,138,92,.16);
+  border:2px solid rgba(140,224,168,.36);font-size:12px;font-weight:800;
+  color:#8ce0a8}
+#voile button{width:100%;margin-top:18px;padding:14px;border-radius:12px;
+  cursor:pointer;font-family:inherit;font-size:15px;font-weight:900;
+  border:3px solid var(--nuit-mer);background:var(--or);color:#14202a}
+.rien{padding:26px 16px;text-align:center;font-size:13.5px;line-height:1.7;
+  color:var(--clair-faible)}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <button class="ret" id="ret" aria-label="Retour">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="q"><b>L'aiguille</b><span id="sous">—</span></span>
+</div>
+
+<div class="bous" id="bous"></div>
+<div id="w"></div>
+
+<div id="voile">
+  <div class="b">
+    <h3 id="v-titre">—</h3>
+    <p class="ch" id="v-chute"></p>
+    <div class="g" id="v-gains"></div>
+    <button id="v-ok">Continuer</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=5"></script>
+<script src="son.js?v=2"></script>
+<script>
+var $ = function(id){ return document.getElementById(id); };
+var F = null;
+var OU = { anse:'Marseille', barcelone:'Barcelone', palma:'Palma',
+           ajaccio:'Ajaccio' };
+
+function eur(n){ return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+
+/* la boussole : le cadran, la rose, et l'aiguille qui ne tient pas
+   en place. Elle ne pointe pas le nord — c'est tout le sujet. */
+function boussole(){
+  var s = '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">';
+  s += '<circle cx="60" cy="60" r="56" fill="#1a3348" stroke="#6d5334"'
+    + ' stroke-width="5"/>';
+  s += '<circle cx="60" cy="60" r="49" fill="#0e1c28" stroke="#4a3a24"'
+    + ' stroke-width="2"/>';
+  /* les graduations */
+  for (var i = 0; i < 32; i++){
+    var a = i * 11.25 * Math.PI / 180;
+    var gr = (i % 8 === 0) ? 11 : (i % 4 === 0) ? 7 : 4;
+    s += '<line x1="' + (60 + Math.sin(a) * 45).toFixed(1) + '" y1="'
+      + (60 - Math.cos(a) * 45).toFixed(1) + '" x2="'
+      + (60 + Math.sin(a) * (45 - gr)).toFixed(1) + '" y2="'
+      + (60 - Math.cos(a) * (45 - gr)).toFixed(1) + '" stroke="#8a7a58"'
+      + ' stroke-width="' + (i % 8 === 0 ? 2.4 : 1.2) + '"/>';
+  }
+  ['N','E','S','O'].forEach(function(l, i){
+    var a = i * 90 * Math.PI / 180;
+    s += '<text x="' + (60 + Math.sin(a) * 33).toFixed(1) + '" y="'
+      + (60 - Math.cos(a) * 33 + 5).toFixed(1) + '" text-anchor="middle"'
+      + ' font-family="Georgia,serif" font-size="13" fill="#c9b978">' + l + '</text>';
+  });
+  /* la rose des vents */
+  s += '<path d="M60 34 L65 60 L60 86 L55 60 z" fill="#2a4458"/>';
+  s += '<path d="M34 60 L60 55 L86 60 L60 65 z" fill="#22384a"/>';
+  /* l'aiguille, qui cherche le sud-est */
+  s += '<g class="aig">';
+  s += '<path d="M60 26 L66 60 L60 94 L54 60 z" fill="#c9302c"/>';
+  s += '<path d="M60 94 L66 60 L54 60 z" fill="#e8dcc4"/>';
+  s += '</g>';
+  s += '<circle cx="60" cy="60" r="5" fill="#c9a24a" stroke="#6d5334"'
+    + ' stroke-width="2"/>';
+  /* le verre */
+  s += '<path d="M26 30 q22 -14 46 -6" stroke="#fff" stroke-width="3"'
+    + ' fill="none" opacity=".14" stroke-linecap="round"/>';
+  return s + '</svg>';
+}
+
+function poser(){
+  if (!F || !F.ok){
+    $('w').innerHTML = '<p class="rien">Rien à afficher.</p>';
+    return;
+  }
+  $('sous').textContent = F.fini
+    ? 'Le fil est au bout'
+    : F.faits + ' sur ' + F.combien;
+
+  var h = '';
+  if (F.fini)
+    h += '<div class="fini"><b>Tu es allé au bout</b>'
+      + '<p>L\u2019aiguille s\u2019est arrêtée. Elle pointe l\u2019endroit '
+      + 'où tu te tiens.</p></div>';
+
+  h += '<div class="fil">' + (F.actes || []).map(function(a){
+    var cl = a.fait ? 'fait' : a.courant ? 'courant' : 'loin';
+    var s = '<div class="acte ' + cl + '">'
+      + '<div class="n"><i>Acte ' + a.acte + '</i>'
+      + (a.ou ? '<span class="ou">' + (OU[a.ou] || a.ou) + '</span>' : '')
+      + '</div><div class="n"><b>' + a.titre + '</b></div>';
+
+    /* on ne montre l'amorce que si l'acte est en cours ou passé :
+       les suivants restent des titres, sinon on se gâche l'histoire */
+    if (a.fait || a.courant) s += '<p>' + a.amorce + '</p>';
+    if (a.fait && a.chute) s += '<p class="parle">' + a.chute + '</p>';
+
+    if (a.courant){
+      s += '<div class="tache"><b>Ce qu\u2019il faut faire</b>' + a.tache + '</div>';
+      s += '<p class="paie">' + eur(a.ecus) + ' € et ' + a.xp + ' XP</p>';
+      s += '<button' + (a.possible ? ' data-go="1"' : ' disabled') + '>'
+        + (a.possible ? 'Y aller' : (a.ici ? 'Il te manque quelque chose'
+                                           : 'Ce n\u2019est pas ici')) + '</button>';
+    }
+    return s + '</div>';
+  }).join('') + '</div>';
+
+  $('w').innerHTML = h;
+  var b = document.querySelector('[data-go]');
+  if (b) b.onclick = avancer;
+}
+
+async function avancer(){
+  var b = document.querySelector('[data-go]');
+  b.disabled = true; b.textContent = '…';
+  var r = null;
+  try { r = await BD.agir('avancer_le_fil'); } catch(e){}
+  if (!r || !r.ok){
+    b.disabled = false; b.textContent = 'Y aller';
+    return;
+  }
+  BD.sonner('piece'); BD.vibrer([14, 60, 26]);
+  $('v-titre').textContent = r.titre;
+  $('v-chute').textContent = r.chute;
+  $('v-gains').innerHTML =
+    '<span>' + eur(r.ecus) + ' €</span><span>' + r.xp + ' XP</span>'
+    + (r.objet ? '<span>' + r.objet + '</span>' : '')
+    + (r.piece ? '<span>' + r.piece + '</span>' : '');
+  $('voile').className = 'on';
+}
+
+$('v-ok').onclick = async function(){
+  $('voile').className = '';
+  await charger();
+};
+
+async function charger(){
+  try { F = await BD.agir('le_fil'); } catch(e){ F = null; }
+  poser();
+}
+
+$('bous').innerHTML = boussole();
+$('ret').onclick = function(){ location.href = 'hub.html?v=7'; };
+charger();
+</script>
+</body>
+</html>
