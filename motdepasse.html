@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#101f2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Battledock — Nouveau mot de passe</title>
+<link rel="stylesheet" href="couleurs.css?v=1">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--nuit-mer);color:var(--clair);
+  font-family:'Nunito',system-ui,sans-serif}
+body{display:flex;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top) + 24px) 18px
+  calc(env(safe-area-inset-bottom) + 24px)}
+
+.carte{width:100%;max-width:380px}
+h1{font-family:'DM Serif Display',Georgia,serif;font-size:27px;line-height:1.15}
+.sous{font-size:13.5px;line-height:1.65;color:var(--clair-doux);margin-top:8px}
+
+.champ{margin-top:20px}
+.champ label{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:900;color:var(--clair-faible);margin-bottom:7px}
+.boite{display:flex;align-items:center;gap:8px;border-radius:13px;
+  background:var(--mer-2);border:2.5px solid var(--bord-nuit);padding:0 6px 0 14px}
+.boite:focus-within{border-color:var(--or)}
+.boite input{flex:1;min-width:0;background:transparent;border:0;outline:0;
+  padding:15px 0;font-family:inherit;font-size:16px;color:var(--clair)}
+.boite input::placeholder{color:rgba(242,230,207,.28)}
+.oeil{flex:0 0 auto;background:transparent;border:0;cursor:pointer;
+  font-family:inherit;font-size:12px;font-weight:800;color:var(--or);padding:10px}
+
+.regle{display:flex;gap:8px;align-items:center;margin-top:9px;font-size:12px;
+  color:var(--clair-faible)}
+.regle b{display:inline-block;width:9px;height:9px;border-radius:50%;
+  background:rgba(242,230,207,.2);flex:0 0 9px}
+.regle.ok{color:#8ce0a8}
+.regle.ok b{background:#8ce0a8}
+
+.principal{width:100%;margin-top:22px;padding:16px;border-radius:14px;cursor:pointer;
+  border:3px solid var(--nuit-mer);background:var(--or);color:#14202a;
+  font-family:inherit;font-size:16px;font-weight:900}
+.principal:disabled{background:rgba(242,230,207,.14);color:var(--clair-faible);
+  border-color:transparent;cursor:default}
+.principal:active:not(:disabled){transform:translateY(2px)}
+
+.msg{margin-top:16px;padding:13px 15px;border-radius:12px;font-size:13.5px;
+  line-height:1.6;display:none}
+.msg.on{display:block}
+.msg.mal{background:rgba(201,48,44,.16);border:2px solid rgba(201,48,44,.5);
+  color:#f0a89c}
+.msg.ok{background:rgba(47,138,92,.18);border:2px solid rgba(140,224,168,.44);
+  color:#a8e8c0}
+
+.retour{display:block;width:100%;margin-top:14px;padding:13px;border-radius:12px;
+  cursor:pointer;background:transparent;border:2.5px solid var(--bord-nuit);
+  color:var(--clair);font-family:inherit;font-size:14px;font-weight:800}
+</style>
+</head>
+<body>
+
+<div class="carte">
+  <h1>Un nouveau mot de passe</h1>
+  <p class="sous" id="sous">Choisis-en un que tu retiendras. Tu resteras connecté
+    ensuite.</p>
+
+  <div id="form">
+    <div class="champ">
+      <label for="mdp">Nouveau mot de passe</label>
+      <div class="boite">
+        <input type="password" id="mdp" autocomplete="new-password"
+          placeholder="••••••••" enterkeyhint="next">
+        <button type="button" class="oeil" data-cible="mdp">Voir</button>
+      </div>
+      <p class="regle" id="r-long"><b></b>Au moins 8 caractères</p>
+      <p class="regle" id="r-chiffre"><b></b>Au moins un chiffre</p>
+    </div>
+
+    <div class="champ">
+      <label for="mdp2">Le même, pour être sûr</label>
+      <div class="boite">
+        <input type="password" id="mdp2" autocomplete="new-password"
+          placeholder="••••••••" enterkeyhint="go">
+        <button type="button" class="oeil" data-cible="mdp2">Voir</button>
+      </div>
+      <p class="regle" id="r-pareil"><b></b>Les deux se ressemblent</p>
+    </div>
+
+    <button class="principal" id="valider" disabled>Enregistrer</button>
+  </div>
+
+  <p class="msg" id="msg"></p>
+  <button class="retour" id="retour">Revenir à la connexion</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = 'https://zpfkekiavlfphialvphi.supabase.co';
+const SUPABASE_KEY = 'sb_publishable__dfR2lEOwKjhhtavvJEvGw_KVACZnHP';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+
+function dire(t, bon){
+  const m = $('msg');
+  m.textContent = t;
+  m.className = 'msg on ' + (bon ? 'ok' : 'mal');
+}
+
+/* ---------- les trois règles, vérifiées en direct ---------- */
+function verifier(){
+  const a = $('mdp').value, b = $('mdp2').value;
+  const long = a.length >= 8;
+  const chiffre = /[0-9]/.test(a);
+  const pareil = a.length > 0 && a === b;
+  $('r-long').className = 'regle' + (long ? ' ok' : '');
+  $('r-chiffre').className = 'regle' + (chiffre ? ' ok' : '');
+  $('r-pareil').className = 'regle' + (pareil ? ' ok' : '');
+  $('valider').disabled = !(long && chiffre && pareil);
+}
+['mdp','mdp2'].forEach(id => $(id).addEventListener('input', verifier));
+
+document.querySelectorAll('.oeil').forEach(b => {
+  b.addEventListener('click', () => {
+    const c = $(b.dataset.cible);
+    const cache = c.type === 'password';
+    c.type = cache ? 'text' : 'password';
+    b.textContent = cache ? 'Cacher' : 'Voir';
+  });
+});
+
+/* ---------- le lien du courriel ouvre une session temporaire ----------
+   Sans elle, on ne peut rien changer : c'est elle qui prouve que la
+   personne a bien reçu le message. */
+let PRET = false;
+
+async function attendreLaSession(){
+  const { data } = await sb.auth.getSession();
+  if (data && data.session){ PRET = true; return true; }
+  return false;
+}
+
+sb.auth.onAuthStateChange((ev, session) => {
+  if (session){ PRET = true; $('form').style.display = ''; $('msg').className = 'msg'; }
+});
+
+/* Supabase peut aussi renvoyer une erreur en clair dans l'adresse :
+   lien déjà utilisé, expiré, ou mal recopié. On la lit et on le dit. */
+function erreurDeLien(){
+  const f = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const q = new URLSearchParams(location.search);
+  return f.get('error_description') || q.get('error_description')
+      || f.get('error') || q.get('error');
+}
+
+(async () => {
+  const err = erreurDeLien();
+  if (err){
+    $('form').style.display = 'none';
+    $('sous').textContent = 'Ce lien n\u2019a pas fonctionné.';
+    dire(/expired|invalid/i.test(err)
+      ? 'Le lien a expiré ou a déjà servi. Redemandes-en un depuis l\u2019écran '
+        + 'de connexion — ils ne durent qu\u2019une heure.'
+      : 'Le lien n\u2019a pas été accepté. Redemandes-en un depuis la connexion.',
+      false);
+    return;
+  }
+
+  /* le jeton arrive soit dans le fragment, soit déjà consommé par la
+     bibliothèque ; on laisse un instant à l'un comme à l'autre */
+  if (await attendreLaSession()) return;
+  setTimeout(async () => {
+    if (await attendreLaSession()) return;
+    $('form').style.display = 'none';
+    $('sous').textContent = 'Ce lien n\u2019est plus valable.';
+    dire('Le lien a expiré, ou il a déjà servi. Redemandes-en un depuis '
+      + 'l\u2019écran de connexion — ils ne durent qu\u2019une heure.', false);
+  }, 1600);
+})();
+
+$('valider').addEventListener('click', async () => {
+  if (!PRET) return dire('Ce lien n\u2019est plus valable.', false);
+  const b = $('valider');
+  b.disabled = true; b.textContent = 'Enregistrement…';
+  try {
+    const { error } = await sb.auth.updateUser({ password: $('mdp').value });
+    if (error) throw error;
+    $('form').style.display = 'none';
+    $('sous').textContent = 'C\u2019est fait.';
+    dire('Ton mot de passe est changé. Tu es connecté : on t\u2019emmène au port.',
+      true);
+    setTimeout(() => location.href = 'jeu.html', 1400);
+  } catch (e) {
+    b.disabled = false; b.textContent = 'Enregistrer';
+    dire(/weak|short|least/i.test(e.message || '')
+      ? 'Ce mot de passe est trop faible. Rallonge-le.'
+      : 'Ça n\u2019a pas marché. Redemande un lien depuis la connexion.', false);
+  }
+});
+
+$('retour').addEventListener('click', () => location.href = 'index.html');
+</script>
+</body>
+</html>
