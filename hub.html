@@ -35,6 +35,27 @@ body::before{background:linear-gradient(180deg,
   animation:houle 1.15s ease-in-out infinite}
 @keyframes houle{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
 
+/* la carte des premiers pas, en tête : une seule chose à la fois */
+.carte-pas{border-radius:16px;border:3px solid var(--encre);background:var(--creme);
+  overflow:hidden;margin-bottom:22px}
+.carte-pas .h{display:flex;align-items:flex-start;gap:13px;padding:16px 16px 0}
+.carte-pas .rd{flex:0 0 36px;height:36px;border-radius:50%;background:var(--or);
+  border:3px solid var(--encre);display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',Georgia,serif;font-size:18px;color:var(--encre)}
+.carte-pas .rd.fait{background:#2f8a5c;color:var(--creme);border-color:#1e6b44}
+.carte-pas .t{flex:1;min-width:0}
+.carte-pas .t b{display:block;font-family:'DM Serif Display',Georgia,serif;
+  font-size:20px;line-height:1.2}
+.carte-pas .t span{display:block;font-size:13px;line-height:1.6;
+  color:rgba(18,48,63,.6);margin-top:7px}
+.carte-pas .b{display:flex;gap:8px;padding:14px 16px 16px}
+.carte-pas .b button{flex:1;padding:13px;border-radius:12px;cursor:pointer;
+  font-family:inherit;font-size:14.5px;font-weight:900;
+  border:3px solid var(--encre);background:var(--creme)}
+.carte-pas .b button.vif{background:var(--or)}
+.carte-pas .paie{padding:0 16px 14px;font-size:12px;font-weight:800;
+  color:rgba(18,48,63,.45)}
+
 /* ---------- les trois du jour ----------
    Ce qu'il y a à faire aujourd'hui, avant même les lieux. */
 #defis{margin:0 0 22px}
@@ -321,6 +342,11 @@ body::before{background:linear-gradient(180deg,
     <span class="tr"></span>
   </button>
 
+  <section id="pas" style="display:none">
+    <h2 class="dt">Tes premiers pas<em id="p-num"></em></h2>
+    <div class="carte-pas" id="p-carte"></div>
+  </section>
+
   <section id="defis" style="display:none">
     <h2 class="dt">Les trois du jour<em id="d-reste"></em></h2>
     <div id="d-liste"></div>
@@ -345,7 +371,7 @@ body::before{background:linear-gradient(180deg,
 <script>
 /* rien ne se montre tant que tout n'est pas là */
 function paraitre(){
-  ['liv', 'rade', 'defis', 'tuiles', 'pied'].forEach(k => {
+  ['liv', 'rade', 'pas', 'defis', 'tuiles', 'pied'].forEach(k => {
     const e = document.getElementById(k);
     if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
   });
@@ -565,6 +591,64 @@ let hubEtat = {}, D = null;
 let PALMA = { aLettre:false, pere:false };
 
 /* ============================================================
+   LES PREMIERS PAS
+   Une seule chose à la fois, dans l'ordre. La carte disparaît
+   pour de bon quand les six sont faits.
+   ============================================================ */
+let PAS = null;
+
+async function poserPas(){
+  const sec = document.getElementById('pas');
+  try { PAS = await BD.agir('mes_premiers_pas'); } catch(e){ PAS = null; }
+  if (!PAS || !PAS.ok || PAS.fini){
+    sec.style.display = 'none';
+    return;
+  }
+
+  document.getElementById('p-num').textContent = PAS.numero + ' sur ' + PAS.combien;
+
+  let h = '<div class="h">'
+    + '<span class="rd' + (PAS.fait ? ' fait' : '') + '">'
+    +   (PAS.fait ? '✓' : PAS.numero) + '</span>'
+    + '<span class="t"><b>' + PAS.titre + '</b>'
+    + '<span>' + PAS.note + '</span></span></div>';
+
+  h += '<p class="paie">' + PAS.ecus.toLocaleString('fr-FR') + ' € et '
+    + PAS.xp + ' XP à la clé</p>';
+
+  h += '<div class="b">';
+  if (PAS.fait){
+    h += '<button class="vif" id="p-prendre">C\'est fait — encaisser</button>';
+  } else if (PAS.ou_aller){
+    h += '<button class="vif" id="p-aller">' + (PAS.bouton || 'Y aller') + '</button>';
+  } else {
+    h += '<button id="p-attend" disabled>Quand ce sera fait</button>';
+  }
+  h += '</div>';
+
+  document.getElementById('p-carte').innerHTML = h;
+  sec.style.display = '';
+  sec.classList.remove('attend');
+  sec.classList.add('venu');
+
+  const a = document.getElementById('p-aller');
+  if (a) a.onclick = () => location.href = PAS.ou_aller;
+  const pr = document.getElementById('p-prendre');
+  if (pr) pr.onclick = encaisserPas;
+}
+
+async function encaisserPas(){
+  const b = document.getElementById('p-prendre');
+  b.disabled = true; b.textContent = '…';
+  let r = null;
+  try { r = await BD.agir('prendre_pas', { p_k: PAS.k }); } catch(e){}
+  if (!r || !r.ok){ b.disabled = false; b.textContent = 'C\'est fait — encaisser'; return; }
+  BD.vibrer([12, 40, 22]);
+  BD.sonner('piece');
+  await poserPas();
+}
+
+/* ============================================================
    LES TROIS DU JOUR
    Le serveur tire, mesure et paie. Ici on affiche, et on encaisse.
    ============================================================ */
@@ -753,6 +837,7 @@ document.getElementById('ouv-ok').onclick = () => {
        capitaines naviguent et livrent. Le serveur ne les réveille
        qu'une fois toutes les six minutes, quoi qu'on demande. */
     BD.agir('faire_vivre_les_ports').catch(function(){});
+    poserPas();
     poserDefis();
 
     VECU = (d.rencontres || []).slice();
