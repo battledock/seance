@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#101f2e" id="tc">
+<title>Battle Dock — Le peintre</title>
+<link rel="stylesheet" href="couleurs.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{min-height:100%;background:var(--nuit-mer);color:var(--clair);
+  font-family:'Nunito',system-ui,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 14px) 15px
+  calc(env(safe-area-inset-bottom) + 30px)}
+
+.tete{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.tete .ret{flex:0 0 40px;height:40px;border-radius:11px;cursor:pointer;
+  border:3px solid var(--clair);background:transparent;display:flex;
+  align-items:center;justify-content:center}
+.tete .ret svg{width:17px;height:17px;stroke:var(--clair);fill:none;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.tete .q b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px}
+.tete .q span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--clair-faible);font-weight:800;margin-top:3px}
+
+.sc{border-radius:16px;overflow:hidden;border:3px solid var(--clair);
+  background:var(--mer-2)}
+.sc svg{display:block;width:100%;height:auto}
+
+.dit{margin-top:16px;display:flex;flex-direction:column;gap:13px}
+.dit p{font-size:14.5px;line-height:1.7;color:var(--clair-doux);
+  opacity:0;transform:translateY(8px);animation:venir .6s forwards}
+.dit p.parle{font-family:'Courier Prime',monospace;color:#fff;padding-left:14px;
+  border-left:3px solid var(--or-pale)}
+@keyframes venir{to{opacity:1;transform:none}}
+
+.b{display:flex;gap:8px;margin-top:18px}
+.b button{flex:1;padding:15px;border-radius:13px;cursor:pointer;font-family:inherit;
+  font-size:15px;font-weight:900;border:3px solid var(--nuit-mer);
+  background:var(--or);color:#14202a}
+.b button:disabled{background:rgba(242,230,207,.14);color:var(--clair-faible);
+  border-color:transparent;cursor:default}
+
+.jauge{display:flex;gap:7px;margin-top:16px}
+.jauge i{flex:1;height:8px;border-radius:5px;background:rgba(242,230,207,.14);
+  border:2px solid rgba(242,230,207,.2)}
+.jauge i.on{background:var(--or-pale);border-color:var(--or)}
+
+h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
+  color:var(--clair-faible);margin:26px 2px 10px}
+
+.mur{background:#2a1c12;border-radius:15px;padding:13px;border:3px solid #4a3524;
+  display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.mur .t svg{display:block;width:100%;height:auto}
+.mur .t b{display:block;text-align:center;font-size:10.5px;margin-top:5px;
+  color:rgba(242,230,207,.5);font-family:'Courier Prime',monospace;line-height:1.35}
+.mur .t.moi b{color:var(--or-pale)}
+
+.rien{padding:24px 16px;text-align:center;font-size:13.5px;line-height:1.7;
+  color:var(--clair-faible)}
+.mot{font-size:12.5px;line-height:1.7;color:var(--clair-faible);margin-top:14px;
+  text-align:center}
+
+.pinceau{animation:peindre 2.4s ease-in-out infinite;transform-box:fill-box;
+  transform-origin:80% 90%}
+@keyframes peindre{0%,100%{transform:rotate(0) translate(0,0)}
+  30%{transform:rotate(-7deg) translate(-4px,-6px)}
+  60%{transform:rotate(5deg) translate(3px,4px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <button class="ret" id="ret" aria-label="Retour">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <span class="q"><b>Le peintre</b><span>Sur le quai — Marseille</span></span>
+</div>
+
+<div class="sc" id="sc"></div>
+<div id="w"></div>
+
+<h2 id="h-mur" style="display:none">Le mur de la taverne</h2>
+<div class="mur" id="mur" style="display:none"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=5"></script>
+<script src="son.js?v=2"></script>
+<script>
+/* ---------- un tirage stable, propre à chaque joueur ---------- */
+function graine(s){
+  let x = 0;
+  for (let i = 0; i < s.length; i++) x = (x * 31 + s.charCodeAt(i)) % 2147483647;
+  return () => { x = (x * 1103515245 + 12345) % 2147483647; return x / 2147483647; };
+}
+
+const PEAUX = ['#f2d3b6','#e5bc96','#cf9b6f','#a97048','#7d4c2c'];
+const CHEV  = ['#2e2028','#5a4030','#8a7050','#c9a24a','#9a3a20'];
+const VESTE = ['#8a2c24','#2e5a4a','#3a4a6a','#7d5c2a','#5a3050'];
+
+/* ---------- le portrait peint ----------
+   De la peinture, pas un dessin : des touches visibles, des couleurs
+   qui débordent, et des proportions fausses. */
+function portrait(nom, l){
+  const r = graine(nom);
+  const W = 200, H = 250;
+  const peau = PEAUX[Math.floor(r() * PEAUX.length)];
+  const chev = CHEV[Math.floor(r() * CHEV.length)];
+  const veste = VESTE[Math.floor(r() * VESTE.length)];
+
+  /* les fautes du peintre : c'est là qu'est la ressemblance ratée */
+  const oeilH   = (r() - .5) * 16;      /* un œil plus haut que l'autre */
+  const nez     = 1 + r() * 1.5;        /* le nez, souvent trop grand */
+  const oreille = 1 + r() * 1.8;
+  const menton  = 0.8 + r() * 0.9;
+  const tete    = 0.85 + r() * 0.4;
+  const penche  = (r() - .5) * 10;
+
+  let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+
+  /* le cadre doré, épais et bosselé */
+  s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#6d4a24"/>';
+  s += '<rect x="5" y="5" width="' + (W-10) + '" height="' + (H-10) + '" fill="#c9a24a"/>';
+  s += '<rect x="9" y="9" width="' + (W-18) + '" height="' + (H-18) + '" fill="#8a6a30"/>';
+  s += '<rect x="14" y="14" width="' + (W-28) + '" height="' + (H-28) + '" fill="#3a2a1c"/>';
+
+  /* la toile : un fond brossé, jamais uni */
+  s += '<rect x="16" y="16" width="' + (W-32) + '" height="' + (H-32) + '" fill="#4a4030"/>';
+  for (let i = 0; i < 40; i++){
+    const x = 16 + r() * (W-32), y = 16 + r() * (H-32);
+    s += '<rect x="' + x.toFixed(0) + '" y="' + y.toFixed(0) + '" width="'
+      + (10 + r() * 26).toFixed(0) + '" height="' + (4 + r() * 7).toFixed(0)
+      + '" fill="' + ['#544838','#413828','#5e5140','#3a3226'][Math.floor(r()*4)]
+      + '" opacity="' + (.3 + r() * .4).toFixed(2) + '"'
+      + ' transform="rotate(' + ((r()-.5)*30).toFixed(0) + ' ' + x.toFixed(0)
+      + ' ' + y.toFixed(0) + ')"/>';
+  }
+
+  s += '<g transform="translate(100,140) rotate(' + penche.toFixed(1) + ')">';
+
+  /* les épaules et la veste */
+  s += '<path d="M-62 90 q6 -52 62 -54 q56 2 62 54 z" fill="' + veste + '"/>';
+  for (let i = 0; i < 10; i++)
+    s += '<rect x="' + (-60 + r() * 120).toFixed(0) + '" y="'
+      + (40 + r() * 48).toFixed(0) + '" width="' + (12 + r()*20).toFixed(0)
+      + '" height="6" fill="#000" opacity="' + (.06 + r()*.1).toFixed(2) + '"/>';
+  /* le col, mal placé */
+  s += '<path d="M-16 40 l16 26 l16 -26 l-8 -6 h-16 z" fill="#e8dcc4"/>';
+
+  /* le cou, trop long ou trop court */
+  s += '<rect x="-13" y="6" width="26" height="' + (34 * menton).toFixed(0)
+    + '" fill="' + peau + '"/>';
+
+  /* les oreilles, avant la tête : elles dépassent */
+  s += '<ellipse cx="' + (-44 * tete).toFixed(0) + '" cy="-14" rx="'
+    + (8 * oreille).toFixed(0) + '" ry="' + (12 * oreille).toFixed(0)
+    + '" fill="' + peau + '"/>';
+  s += '<ellipse cx="' + (44 * tete).toFixed(0) + '" cy="-14" rx="'
+    + (8 * oreille).toFixed(0) + '" ry="' + (12 * oreille).toFixed(0)
+    + '" fill="' + peau + '"/>';
+
+  /* la tête */
+  s += '<ellipse cx="0" cy="-22" rx="' + (42 * tete).toFixed(0) + '" ry="52" fill="'
+    + peau + '"/>';
+  /* les touches de peinture sur le visage : ça déborde */
+  for (let i = 0; i < 12; i++)
+    s += '<ellipse cx="' + ((r()-.5) * 70).toFixed(0) + '" cy="'
+      + (-60 + r() * 76).toFixed(0) + '" rx="' + (5 + r()*9).toFixed(0)
+      + '" ry="' + (3 + r()*5).toFixed(0) + '" fill="'
+      + (r() > .5 ? '#ffffff' : '#000000') + '" opacity="' + (.05 + r()*.09).toFixed(2)
+      + '"/>';
+
+  /* les cheveux, posés à la truelle */
+  s += '<path d="M' + (-44*tete).toFixed(0) + ' -34 q4 -46 44 -46 q40 0 44 46'
+    + ' q-14 -22 -44 -22 q-30 0 -44 22 z" fill="' + chev + '"/>';
+  for (let i = 0; i < 6; i++)
+    s += '<rect x="' + (-40 + r()*80).toFixed(0) + '" y="' + (-76 + r()*24).toFixed(0)
+      + '" width="' + (8 + r()*18).toFixed(0) + '" height="5" fill="#000"'
+      + ' opacity="' + (.1 + r()*.14).toFixed(2) + '"/>';
+
+  /* les yeux — l'un plus haut, et pas de la même taille */
+  s += '<ellipse cx="-16" cy="' + (-30 + oeilH).toFixed(0) + '" rx="7" ry="'
+    + (4 + r()*3).toFixed(1) + '" fill="#efe6da"/>';
+  s += '<circle cx="-16" cy="' + (-30 + oeilH).toFixed(0) + '" r="3" fill="#2e2028"/>';
+  s += '<ellipse cx="17" cy="-30" rx="' + (6 + r()*3).toFixed(1) + '" ry="5"'
+    + ' fill="#efe6da"/>';
+  s += '<circle cx="17" cy="-30" r="3" fill="#2e2028"/>';
+  /* les sourcils, très expressifs malgré eux */
+  s += '<path d="M-25 ' + (-42 + oeilH).toFixed(0) + ' q9 -6 18 -1" stroke="' + chev
+    + '" stroke-width="4" fill="none" stroke-linecap="round"/>';
+  s += '<path d="M8 -40 q9 -5 18 2" stroke="' + chev + '" stroke-width="4"'
+    + ' fill="none" stroke-linecap="round"/>';
+
+  /* le nez, gloire du peintre */
+  s += '<path d="M0 -30 q' + (-5 * nez).toFixed(0) + ' ' + (16 * nez).toFixed(0)
+    + ' 0 ' + (20 * nez).toFixed(0) + ' q' + (7 * nez).toFixed(0) + ' 2 '
+    + (8 * nez).toFixed(0) + ' -4" stroke="#00000055" stroke-width="3"'
+    + ' fill="none" stroke-linecap="round"/>';
+  s += '<ellipse cx="0" cy="' + (-30 + 20 * nez).toFixed(0) + '" rx="'
+    + (7 * nez).toFixed(0) + '" ry="' + (5 * nez).toFixed(0) + '" fill="' + peau
+    + '" opacity=".8"/>';
+
+  /* la bouche : une ligne, et rien d'autre */
+  s += '<path d="M-13 ' + (2 + 8 * menton).toFixed(0) + ' q13 '
+    + (r() > .5 ? 6 : -5) + ' 26 0" stroke="#8a4a3a" stroke-width="3.4"'
+    + ' fill="none" stroke-linecap="round"/>';
+
+  s += '</g>';
+
+  /* le vernis, et la signature */
+  s += '<rect x="16" y="16" width="' + (W-32) + '" height="' + (H-32)
+    + '" fill="#c9a24a" opacity=".07"/>';
+  s += '<text x="' + (W-28) + '" y="' + (H-26) + '" text-anchor="end"'
+    + ' font-family="Courier Prime,monospace" font-size="9" fill="#e8dcc4"'
+    + ' opacity=".5">A. Ferrandi</text>';
+
+  /* la plaque, sous le cadre */
+  if (l !== 0){
+    s += '<rect x="' + (W/2-52) + '" y="' + (H-16) + '" width="104" height="14"'
+      + ' rx="3" fill="#c9a24a"/>';
+    s += '<text x="' + (W/2) + '" y="' + (H-6) + '" text-anchor="middle"'
+      + ' font-family="Courier Prime,monospace" font-size="9" fill="#3a2a1c">'
+      + nom + '</text>';
+  }
+  return s + '</svg>';
+}
+
+/* ---------- la scène : le peintre à son chevalet ---------- */
+function atelier(seance){
+  const W = 480, H = 300;
+  let s = '<defs><linearGradient id="c" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="#2a4a60"/><stop offset="100%" stop-color="#8a6a48"/>'
+    + '</linearGradient></defs>';
+  s += '<rect width="' + W + '" height="' + H + '" fill="url(#c)"/>';
+
+  /* le quai, derrière */
+  for (let i = 0; i < 26; i++)
+    s += '<rect x="' + (i * 20) + '" y="' + (150 + (i % 3) * 6) + '" width="18"'
+      + ' height="60" fill="' + ['#6d5238','#5c4530','#7d5f42'][i % 3] + '"/>';
+  s += '<rect x="0" y="205" width="' + W + '" height="95" fill="#4a3a2c"/>';
+
+  /* le chevalet */
+  s += '<path d="M120 290 L165 130 M250 290 L205 130 M150 230 h70" stroke="#6d4a30"'
+    + ' stroke-width="7" fill="none" stroke-linecap="round"/>';
+  /* la toile, de dos ou de face selon la séance */
+  s += '<rect x="132" y="120" width="106" height="118" fill="#e8dcc4"'
+    + ' stroke="#5c4530" stroke-width="5"/>';
+  if (seance >= 1){
+    /* les touches de la toile sont tirées d'une graine fixe : la scène
+       ne doit pas se réinventer à chaque affichage */
+    const t = graine('toile' + seance);
+    for (let i = 0; i < 6 * seance; i++)
+      s += '<rect x="' + (140 + t() * 84).toFixed(0) + '" y="'
+        + (128 + t() * 100).toFixed(0) + '" width="'
+        + (8 + t() * 20).toFixed(0) + '" height="7" fill="'
+        + ['#8a2c24','#4a4030','#c9a24a','#2e2028'][i % 4] + '" opacity=".6"/>';
+  }
+
+  /* le peintre, de dos, et son bras qui peint */
+  s += '<ellipse cx="300" cy="288" rx="46" ry="10" fill="#2a1c14" opacity=".4"/>';
+  s += '<path d="M262 290 q6 -74 40 -76 q34 2 40 76 z" fill="#5a4a6a"/>';
+  s += '<circle cx="302" cy="196" r="24" fill="#c9925e"/>';
+  s += '<path d="M278 190 q6 -26 24 -26 q18 0 24 26 q-10 -12 -24 -12 q-14 0 -24 12 z"'
+    + ' fill="#3a2a30"/>';
+  /* le béret, évidemment */
+  s += '<ellipse cx="302" cy="172" rx="30" ry="12" fill="#8a2c24"/>';
+  s += '<circle cx="302" cy="164" r="4" fill="#8a2c24"/>';
+  /* le bras au pinceau */
+  s += '<g class="pinceau">';
+  s += '<path d="M268 216 q-40 -6 -58 -34" stroke="#5a4a6a" stroke-width="15"'
+    + ' fill="none" stroke-linecap="round"/>';
+  s += '<circle cx="208" cy="180" r="8" fill="#c9925e"/>';
+  s += '<path d="M208 180 l-30 -18" stroke="#6d4a30" stroke-width="4"'
+    + ' stroke-linecap="round"/>';
+  s += '<path d="M178 162 l-8 -5" stroke="#2e2028" stroke-width="6"'
+    + ' stroke-linecap="round"/>';
+  s += '</g>';
+  /* la palette */
+  s += '<ellipse cx="352" cy="238" rx="28" ry="19" fill="#8a6a48"'
+    + ' stroke="#5c4530" stroke-width="3"/>';
+  ['#8a2c24','#2e5a4a','#c9a24a','#e8dcc4'].forEach((c, i) =>
+    s += '<circle cx="' + (340 + i * 8) + '" cy="' + (232 + (i % 2) * 10)
+      + '" r="4" fill="' + c + '"/>');
+
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">'
+    + s + '</svg>';
+}
+
+
+/* ============================================================
+   LA PAGE
+   ============================================================ */
+var P = null, MOI = null;
+
+function dits(L){
+  return '<div class="dit">' + L.map(function(p, i){
+    return '<p' + (p[0] === '\u00ab' ? ' class="parle"' : '')
+      + ' style="animation-delay:' + (.1 + i * .6).toFixed(2) + 's">' + p + '</p>';
+  }).join('') + '</div>';
+}
+
+function poser(){
+  if (!P || !P.ok) return;
+
+  if (!P.ici){
+    document.getElementById('sc').innerHTML = atelier(0);
+    document.getElementById('w').innerHTML =
+      '<p class="rien">Le peintre travaille sur le quai de Marseille.</p>';
+    return;
+  }
+
+  /* le portrait fini : on le montre, une bonne fois */
+  if (P.fini){
+    document.getElementById('sc').innerHTML =
+      '<div style="padding:20px;display:flex;justify-content:center">'
+      + portrait(MOI || 'Toi') + '</div>';
+    document.getElementById('w').innerHTML = dits([
+      'Ce n\u2019est pas toi. Ce n\u2019est m\u00eame pas quelqu\u2019un que tu connais.',
+      '\u00ab Les gens vont vous reconna\u00eetre tout de suite. \u00bb'
+    ]) + '<p class="mot">\u00ab ' + (P.titre || '') + ' \u00bb, accroch\u00e9 '
+      + 'au mur de la taverne.</p>';
+    montrerLeMur();
+    return;
+  }
+
+  /* on ne l'a pas encore rencontré */
+  if (!P.rencontre){
+    document.getElementById('sc').innerHTML = atelier(0);
+    document.getElementById('w').innerHTML = dits([
+      'Un homme au b\u00e9ret t\u2019arr\u00eate sur le quai. Il a un chevalet '
+      + 'sous le bras et de la peinture jusqu\u2019aux coudes.',
+      '\u00ab Vous avez une t\u00eate. Une vraie t\u00eate. Je veux la peindre. \u00bb',
+      'Il ne demande pas d\u2019argent. Il demande trois s\u00e9ances.'
+    ]) + '<div class="b"><button id="go">Accepter de poser</button></div>';
+    document.getElementById('go').onclick = rencontrer;
+    montrerLeMur();
+    return;
+  }
+
+  /* les séances */
+  var s = P.seances;
+  document.getElementById('sc').innerHTML = atelier(s);
+
+  var mots = [
+    ['Il installe son chevalet et te fait mettre debout, face au large.',
+     '\u00ab Ne souriez pas. Personne ne sourit sur un portrait s\u00e9rieux. \u00bb'],
+    ['Il a repeint tout le visage depuis hier. Tu n\u2019as pas le droit de regarder.',
+     '\u00ab La ressemblance viendra. Elle vient toujours \u00e0 la fin. \u00bb'],
+    ['Il recule de trois pas, plisse les yeux, et hoche la t\u00eate longuement.',
+     '\u00ab Encore une s\u00e9ance et c\u2019est vous. \u00bb']
+  ][Math.min(2, s)];
+
+  var h = dits(P.deja_pose_aujourdhui
+    ? ['Tu as pos\u00e9 aujourd\u2019hui. Il range ses pinceaux.',
+       '\u00ab Revenez demain. La lumi\u00e8re ne sera pas la m\u00eame. \u00bb']
+    : mots);
+
+  h += '<div class="jauge">'
+    + [0,1,2].map(function(i){
+        return '<i class="' + (i < s ? 'on' : '') + '"></i>';
+      }).join('') + '</div>';
+
+  h += '<div class="b"><button id="go"' + (P.peut_poser ? '' : ' disabled') + '>'
+    + (P.peut_poser
+        ? (s >= 2 ? 'Poser une derni\u00e8re fois' : 'Poser')
+        : 'Revenir demain') + '</button></div>';
+
+  document.getElementById('w').innerHTML = h;
+  var g = document.getElementById('go');
+  if (g && P.peut_poser) g.onclick = poserPour;
+  montrerLeMur();
+}
+
+async function montrerLeMur(){
+  var M = null;
+  try { M = await BD.agir('le_mur'); } catch(e){ return; }
+  if (!M || !M.length) return;
+  document.getElementById('h-mur').style.display = '';
+  var el = document.getElementById('mur');
+  el.style.display = '';
+  el.innerHTML = M.slice(0, 8).map(function(x){
+    return '<div class="t' + (x.moi ? ' moi' : '') + '">' + portrait(x.qui)
+      + '<b>' + x.qui + '<br>\u00ab ' + (x.titre || '') + ' \u00bb</b></div>';
+  }).join('');
+}
+
+async function rencontrer(){
+  var b = document.getElementById('go');
+  b.disabled = true;
+  try { await BD.agir('rencontrer_le_peintre'); } catch(e){}
+  BD.sonner('clic');
+  await charger();
+}
+
+async function poserPour(){
+  var b = document.getElementById('go');
+  b.disabled = true; b.textContent = 'Tu poses\u2026';
+  var x = null;
+  try { x = await BD.agir('poser_pour_le_peintre'); } catch(e){}
+  if (!x || !x.ok){ await charger(); return; }
+  if (x.fini){ BD.sonner('piece'); BD.vibrer([14, 60, 26]); }
+  else BD.sonner('charge');
+  await charger();
+}
+
+async function charger(){
+  var d = null;
+  try { d = await BD.charger(); } catch(e){}
+  MOI = d && d.pseudo ? d.pseudo : 'Toi';
+  try { P = await BD.agir('chez_le_peintre'); } catch(e){ P = null; }
+  poser();
+}
+
+document.getElementById('ret').onclick = function(){ location.href = 'hub.html?v=3'; };
+charger();
+</script>
+</body>
+</html>
