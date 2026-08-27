@@ -8,12 +8,20 @@
 <link rel="stylesheet" href="couleurs.css?v=2">
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+/* ============================================================
+   L'ÉQUIPEMENT
+   Deux lieux dans une seule page, et ils ne se ressemblent pas :
+   la garde-robe est froide comme une cabine, l'étal est chaud
+   comme une échoppe de bois. C'est le changement de matière qui
+   fait qu'on sait où l'on est sans lire le titre.
+   ============================================================ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
 html,body{min-height:100%;background:var(--nuit-mer);color:var(--clair);
   font-family:'Nunito',system-ui,sans-serif}
 body{padding:calc(env(safe-area-inset-top) + 14px) 14px
-  calc(env(safe-area-inset-bottom) + 30px)}
+  calc(env(safe-area-inset-bottom) + 30px);transition:background .4s}
+body.etal{background:#1a120a}
 
 .tete{display:flex;align-items:center;gap:11px;margin-bottom:14px}
 .tete .ret{flex:0 0 40px;height:40px;border-radius:11px;cursor:pointer;
@@ -25,79 +33,125 @@ body{padding:calc(env(safe-area-inset-top) + 14px) 14px
 .tete .q b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px}
 .tete .q span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--clair-faible);font-weight:800;margin-top:3px}
-.tete .eu{flex:0 0 auto;padding:9px 13px;border-radius:12px;background:var(--mer-2);
-  border:2.5px solid var(--bord-nuit);font-size:14px;font-weight:900}
+.tete .eu{flex:0 0 auto;padding:9px 13px;border-radius:12px;background:rgba(8,16,24,.5);
+  border:2.5px solid var(--bord-nuit);font-size:14px;font-weight:900;
+  font-variant-numeric:tabular-nums}
 
-.onglets{display:flex;gap:7px;margin-bottom:16px}
-.onglets button{flex:1;padding:12px 6px;border-radius:13px;cursor:pointer;
+.onglets{display:flex;gap:7px;margin-bottom:18px}
+.onglets button{flex:1;padding:13px 6px;border-radius:13px;cursor:pointer;
   font-family:inherit;font-size:14px;font-weight:800;
-  border:3px solid rgba(242,230,207,.22);background:transparent;color:var(--clair)}
-.onglets button.on{background:var(--mer-2);border-color:var(--or)}
+  border:3px solid rgba(242,230,207,.2);background:transparent;color:var(--clair)}
+.onglets button.on{background:rgba(242,230,207,.08);border-color:var(--or)}
 
 /* ---------- la silhouette et ses six emplacements ---------- */
-.corps{display:grid;grid-template-columns:1fr 116px 1fr;gap:8px;
-  align-items:center;margin-bottom:20px}
+.corps{position:relative;display:grid;grid-template-columns:1fr 108px 1fr;
+  gap:7px;align-items:center;margin-bottom:18px;padding:14px 0;
+  border-radius:18px;background:
+    radial-gradient(ellipse at 50% 42%, rgba(240,169,46,.09), transparent 62%),
+    rgba(8,16,24,.4);
+  border:2.5px solid var(--bord-nuit)}
 .corps .fig{grid-column:2}
 .corps .fig svg{display:block;width:100%;height:auto}
-.emp{display:flex;flex-direction:column;gap:8px}
-.emp .e{padding:9px 10px;border-radius:12px;background:var(--mer-2);
-  border:2.5px solid var(--bord-nuit);cursor:pointer;min-height:56px;
-  display:flex;flex-direction:column;justify-content:center}
-.emp .e.vide{border-style:dashed;opacity:.55}
-.emp .e i{display:block;font-style:normal;font-size:8px;letter-spacing:.14em;
+.emp{display:flex;flex-direction:column;gap:7px}
+.emp .e{padding:8px 10px;border-radius:11px;background:rgba(26,51,72,.7);
+  border:2px solid var(--bord-nuit);cursor:pointer;min-height:52px;
+  display:flex;flex-direction:column;justify-content:center;
+  transition:border-color .16s,background .16s}
+.emp .e.vide{border-style:dashed;opacity:.5}
+.emp .e.r1{border-color:#5d8fa8} .emp .e.r2{border-color:#3f9e6b}
+.emp .e.r3{border-color:#b07acb} .emp .e.r4{border-color:var(--or)}
+.emp .e i{display:block;font-style:normal;font-size:7.5px;letter-spacing:.15em;
   text-transform:uppercase;font-weight:900;color:var(--clair-faible)}
-.emp .e b{display:block;font-size:12.5px;line-height:1.3;margin-top:3px}
+.emp .e b{display:block;font-size:12px;line-height:1.3;margin-top:3px}
 .emp.d{text-align:right}
 
+/* le total de ce que tu portes */
+.total{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.total span{padding:7px 11px;border-radius:11px;background:rgba(47,138,92,.12);
+  border:2px solid rgba(140,224,168,.3);font-size:11.5px;font-weight:800}
+.total span b{color:#8ce0a8}
+.total .rien{background:rgba(242,230,207,.05);border-color:var(--bord-nuit);
+  color:var(--clair-faible)}
+
+/* ============================================================
+   L'ÉTAL — une étagère de bois, pas une liste
+   ============================================================ */
+.rayon{margin-bottom:22px}
+.rayon .titre{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.rayon .titre b{font-family:'DM Serif Display',Georgia,serif;font-size:19px;
+  color:#f0d9a8}
+.rayon .titre .tr{flex:1;height:2px;background:linear-gradient(90deg,
+  rgba(240,169,46,.4), transparent)}
+.planche{border-radius:14px;padding:11px;background:
+  repeating-linear-gradient(90deg, #33210f 0 38px, #392612 38px 76px);
+  border:3px solid #1c1208;box-shadow:0 5px 0 #14100a, 0 10px 22px rgba(0,0,0,.4)}
+
 /* ---------- une pièce ---------- */
-.piece{display:flex;gap:12px;padding:13px;border-radius:15px;margin-bottom:9px;
-  background:var(--mer-2);border:3px solid var(--bord-nuit)}
-.piece.r1{border-color:#5d8fa8} .piece.r2{border-color:#3f9e6b}
-.piece.r3{border-color:#b07acb} .piece.r4{border-color:var(--or);
-  box-shadow:0 0 0 1px rgba(240,169,46,.35), 0 6px 20px rgba(240,169,46,.18)}
+.piece{display:flex;gap:12px;padding:12px;border-radius:13px;margin-bottom:8px;
+  background:rgba(10,20,28,.72);border:2.5px solid rgba(242,230,207,.14);
+  position:relative;overflow:hidden}
+.piece:last-child{margin-bottom:0}
+.piece.r1{border-color:#5d8fa8}
+.piece.r2{border-color:#3f9e6b}
+.piece.r3{border-color:#b07acb;box-shadow:inset 0 0 24px rgba(176,122,203,.14)}
+.piece.r4{border-color:var(--or);
+  box-shadow:inset 0 0 30px rgba(240,169,46,.16), 0 0 0 1px rgba(240,169,46,.3)}
 .piece.portee{background:rgba(240,169,46,.1)}
-.piece .ic{flex:0 0 54px;height:54px;border-radius:12px;background:rgba(8,16,24,.5);
-  border:2px solid rgba(242,230,207,.14);overflow:hidden}
+.piece.portee::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--or)}
+
+.piece .ic{flex:0 0 56px;height:56px;border-radius:12px;
+  background:rgba(4,10,16,.6);border:2px solid rgba(242,230,207,.1);
+  overflow:hidden;position:relative}
 .piece .ic svg{display:block;width:100%;height:100%}
+.piece.r3 .ic,.piece.r4 .ic{border-color:rgba(240,169,46,.3)}
+
 .piece .co{flex:1;min-width:0}
-.piece .co b{display:block;font-size:15px;line-height:1.25}
-.piece .co .no{display:block;font-size:11.5px;line-height:1.5;
+.piece .co b{display:block;font-size:14.5px;line-height:1.25}
+.piece .co .no{display:block;font-size:11px;line-height:1.5;
   color:var(--clair-faible);margin-top:3px;font-family:'Courier Prime',monospace}
-.piece .bn{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.piece .bn{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
 .piece .bn span{padding:3px 7px;border-radius:8px;background:rgba(140,224,168,.14);
-  border:1.5px solid rgba(140,224,168,.34);font-size:10.5px;font-weight:800;
-  color:#8ce0a8}
+  border:1.5px solid rgba(140,224,168,.32);font-size:10px;font-weight:800;
+  color:#8ce0a8;white-space:nowrap}
+
 .piece .ac{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;
   justify-content:center;align-items:flex-end}
 .piece .ac button{padding:10px 13px;border-radius:11px;cursor:pointer;
   font-family:inherit;font-size:12.5px;font-weight:900;
   border:3px solid var(--nuit-mer);background:var(--or);color:#14202a;
   white-space:nowrap}
-.piece .ac button.sobre{background:transparent;border-color:rgba(242,230,207,.3);
+.piece .ac button.sobre{background:transparent;border-color:rgba(242,230,207,.28);
   color:var(--clair)}
-.piece .ac button:disabled{background:rgba(242,230,207,.1);color:var(--clair-faible);
+.piece .ac button:disabled{background:rgba(242,230,207,.09);color:var(--clair-faible);
   border-color:transparent;cursor:default}
-.piece .ac .pr{font-size:13px;font-weight:900}
+.piece .ac .pr{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums;
+  white-space:nowrap}
 .piece .ac .pr.non{color:#e0765c}
-.rar{font-size:8px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;
-  color:var(--clair-faible);margin-left:6px}
+.piece .ac .jours{font-size:9.5px;color:var(--clair-faible);font-weight:700}
+
+.rar{display:inline-block;font-size:7.5px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:900;padding:2px 6px;border-radius:7px;
+  margin-left:7px;vertical-align:2px;background:rgba(242,230,207,.1);
+  color:var(--clair-faible)}
+.r1 .rar{background:rgba(93,143,168,.22);color:#9ccbdf}
+.r2 .rar{background:rgba(63,158,107,.22);color:#8ce0a8}
+.r3 .rar{background:rgba(176,122,203,.24);color:#d8b0ea}
+.r4 .rar{background:var(--or);color:#14202a}
 
 h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
   color:var(--clair-faible);margin:22px 2px 10px}
 .rien{padding:26px 16px;text-align:center;font-size:13.5px;line-height:1.7;
   color:var(--clair-faible);border:3px dashed rgba(242,230,207,.16);
   border-radius:15px}
-.msg{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:13.5px;
-  line-height:1.55;display:none}
-.msg.on{display:block}
-.msg.mal{background:rgba(201,48,44,.16);border:2px solid rgba(201,48,44,.45);
-  color:#f0a89c}
-.msg.ok{background:rgba(47,138,92,.18);border:2px solid rgba(140,224,168,.44);
-  color:#a8e8c0}
-.total{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.total span{padding:6px 10px;border-radius:10px;background:var(--mer-2);
-  border:2px solid rgba(140,224,168,.3);font-size:11.5px;font-weight:800}
-.total span b{color:#8ce0a8}
+.msg{position:fixed;left:14px;right:14px;
+  bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:40;
+  padding:13px 15px;border-radius:13px;font-size:13.5px;line-height:1.55;
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity .2s,transform .2s}
+.msg.on{opacity:1;transform:none}
+.msg.mal{background:rgba(201,48,44,.9);border:2.5px solid #8a1f1c;color:#fff}
+.msg.ok{background:rgba(47,138,92,.92);border:2.5px solid #1e6b44;color:#fff}
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
 </style>
 </head>
@@ -134,6 +188,13 @@ var OU = { anse:'Marseille', barcelone:'Barcelone', palma:'Palma',
            ajaccio:'Ajaccio' };
 
 function eur(n){ return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+
+/* Un bon jour de quai rapporte environ 3 000 €. Dire le prix en
+   journées de travail est plus parlant qu'un nombre à cinq chiffres. */
+function jours(prix){
+  var j = Math.round((Number(prix) || 0) / 3000);
+  return j <= 1 ? 'un jour de quai' : j + ' jours de quai';
+}
 
 function dire(t, bon){
   var m = $('msg');
@@ -290,7 +351,8 @@ function poserGarde(){
 
   var gauche = P.slice(0, 3), droite = P.slice(3);
   var caseVide = function(p){
-    return '<div class="e' + (p.porte ? '' : ' vide') + '" data-place="' + p.k + '">'
+    return '<div class="e' + (p.porte ? ' r' + p.porte.rarete : ' vide')
+      + '" data-place="' + p.k + '">'
       + '<i>' + p.nom + '</i>'
       + '<b>' + (p.porte ? p.porte.nom : 'Rien') + '</b></div>';
   };
@@ -303,10 +365,10 @@ function poserGarde(){
 
   /* le total, en clair */
   var lignes = Object.keys(T).filter(function(k){ return T[k] > 0; });
-  if (lignes.length)
-    h += '<div class="total">' + lignes.map(function(k){
-      return '<span>' + NOMS[k] + ' <b>+' + T[k] + '</b></span>';
-    }).join('') + '</div>';
+  h += '<div class="total">' + (lignes.length
+    ? lignes.map(function(k){
+        return '<span>' + NOMS[k] + ' <b>+' + T[k] + '</b></span>'; }).join('')
+    : '<span class="rien">Tu ne portes rien. Aucun bonus.</span>') + '</div>';
 
   h += '<h2>Ton coffre</h2>';
   h += A.length ? A.map(ligne).join('')
@@ -341,7 +403,10 @@ function poserEtal(){
   (B.places || []).forEach(function(pl){
     var L = parPlace[pl.k];
     if (!L) return;
-    h += '<h2>' + pl.nom + '</h2>' + L.map(ligne).join('');
+    /* chaque emplacement est un rayon de l'échoppe, posé sur sa planche */
+    h += '<div class="rayon"><div class="titre"><b>' + pl.nom + '</b>'
+      + '<span class="tr"></span></div>'
+      + '<div class="planche">' + L.map(ligne).join('') + '</div></div>';
   });
   $('w').innerHTML = h;
   brancher();
@@ -361,7 +426,8 @@ function ligne(p){
       : (!p.assez_grand
           ? '<button disabled>Niveau ' + p.niveau_min + '</button>'
           : '<span class="pr' + (p.assez ? '' : ' non') + '">' + eur(p.prix)
-            + ' €</span><button data-acheter="' + p.k + '"'
+            + ' €</span><span class="jours">' + jours(p.prix) + '</span>'
+            + '<button data-acheter="' + p.k + '"'
             + (p.assez ? '' : ' disabled') + '>Acheter</button>');
   } else {
     act = p.porte
@@ -442,6 +508,7 @@ $('onglets').addEventListener('click', function(e){
   document.querySelectorAll('#onglets button').forEach(function(z){
     z.className = (z.dataset.v === VUE) ? 'on' : '';
   });
+  document.body.className = (VUE === 'etal') ? 'etal' : '';
   VUE === 'etal' ? poserEtal() : poserGarde();
 });
 
