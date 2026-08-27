@@ -75,3 +75,10 @@ html.sans-anim *::after{
 html.sans-decor #sc,
 html.sans-decor .decor,
 html.sans-decor .fond{ opacity:.28 !important; }
+
+/* La taille de l'affichage.
+   Presque toutes les tailles du jeu sont écrites en pixels : changer
+   la taille de base ne les touchait pas, et le réglage ne faisait
+   rien. On agrandit donc l'affichage entier, ce qui marche vraiment
+   et se voit tout de suite. */
+html{ zoom:var(--txt, 1); }

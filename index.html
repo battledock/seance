@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Battledock — Port de Marseille</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="couleurs.css?v=1">
+<link rel="stylesheet" href="couleurs.css?v=2">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -152,9 +152,6 @@ body{
 }
 .principal:active{transform:scale(.985);background:var(--ocre-fonce)}
 .principal:disabled{opacity:.55;cursor:default}
-
-.bascule.oublie{margin-top:10px;margin-bottom:2px}
-.bascule.oublie button{font-size:13px;opacity:.75}
 
 .bascule{
   margin-top:16px;text-align:center;
@@ -533,9 +530,6 @@ body{
 
       <button class="principal" id="btn-connexion">Continuer</button>
 
-      <p class="bascule oublie">
-        <button type="button" id="btn-oubli">Mot de passe oublié ?</button></p>
-
       <p class="bascule">Pas encore embauché ? <button type="button" data-aller="inscription">Créer un compte</button></p>
     </div>
 
@@ -544,7 +538,7 @@ body{
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="bd.js?v=3"></script>
+<script src="bd.js?v=4"></script>
 <script>
 const SUPABASE_URL = 'https://zpfkekiavlfphialvphi.supabase.co';
 const SUPABASE_KEY = 'sb_publishable__dfR2lEOwKjhhtavvJEvGw_KVACZnHP';
@@ -678,31 +672,6 @@ $('btn-connexion').addEventListener('click', async () => {
     montrerMessage(traduire(e.message));
     liberer(btn);
   }
-});
-
-/* ---------- le mot de passe oublié ----------
-   On envoie un lien à l'adresse donnée. Supabase renvoie ensuite
-   le joueur sur motdepasse.html, où il en choisit un nouveau.
-   On ne dit jamais si l'adresse existe ou non : sinon n'importe
-   qui pourrait savoir qui a un compte ici. */
-$('btn-oubli').addEventListener('click', async () => {
-  const email = $('c-email').value.trim();
-  if (!email || !email.includes('@'))
-    return montrerMessage('Écris ton adresse au-dessus, puis reclique ici.');
-
-  const btn = $('btn-oubli');
-  btn.disabled = true;
-  const avant = btn.textContent;
-  btn.textContent = 'Envoi…';
-  try {
-    await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: location.href.replace(/[^/]*$/, '') + 'motdepasse.html'
-    });
-  } catch (e) { /* on reste muet : voir le commentaire ci-dessus */ }
-  montrerMessage('Si un compte existe pour cette adresse, le lien part maintenant. '
-    + 'Regarde ta boîte, et les indésirables.', 'ok');
-  btn.disabled = false;
-  btn.textContent = avant;
 });
 
 sb.auth.getSession().then(async ({ data }) => {

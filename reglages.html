@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#fdf6e6">
 <title>Battle Dock — Réglages</title>
 <link rel="stylesheet" href="couleurs.css?v=2">
-<link rel="stylesheet" href="chaud.css?v=2">
+<link rel="stylesheet" href="chaud.css?v=3">
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 body{padding:calc(env(safe-area-inset-top) + 16px) 15px
@@ -118,7 +118,8 @@ h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
     <button class="bascule" id="b-secousse" aria-label="Vibrations"><i></i></button>
   </div>
   <div class="li">
-    <span class="tx"><b>La taille du texte</b></span>
+    <span class="tx"><b>La taille de l’affichage</b>
+      <span>Tout le jeu, pas seulement le texte</span></span>
     <span class="trois" id="t-texte">
       <button data-t="petit">Petit</button>
       <button data-t="normal">Normal</button>
@@ -163,7 +164,7 @@ h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="bd.js?v=3"></script>
+<script src="bd.js?v=4"></script>
 <script>
 const $ = id => document.getElementById(id);
 
