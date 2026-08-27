@@ -339,14 +339,14 @@ function poserLit(){
   };
 }
 
-document.getElementById('retour').onclick = () => location.href = 'hub.html?v=3';
+document.getElementById('retour').onclick = () => location.href = 'hub.html?v=7';
 
 (async () => {
   try {
     MOI = await BD.charger();
     if (!MOI){ location.href = 'index.html'; return; }
     if (MOI.parti_le){ location.href = 'mer.html'; return; }
-    if (MOI.port !== 'barcelone'){ location.href = 'hub.html?v=3'; return; }
+    if (MOI.port !== 'barcelone'){ location.href = 'hub.html?v=7'; return; }
 
     BOUTIQUE = await BD.agir('le_tailleur');
     LIT = await BD.agir('la_pension');

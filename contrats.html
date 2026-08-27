@@ -315,7 +315,7 @@ async function dessiner(){
 
 /* on revient d'où l'on vient : l'atelier de Pere renvoie chez lui */
 document.getElementById('retour').onclick = () => {
-  let ou = 'hub.html?v=3';
+  let ou = 'hub.html?v=7';
   try { if (sessionStorage.getItem('bd-venu') === 'pere') ou = 'pere.html'; } catch(e){}
   try { sessionStorage.removeItem('bd-venu'); } catch(e){}
   location.href = ou;

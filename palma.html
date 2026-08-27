@@ -1278,7 +1278,7 @@ document.getElementById('voile').onclick = () => basculerContrats(false);
   por.innerHTML = BD.avatarSVG(d) + '<span class="nm">' + (d.pseudo || '') + '</span>';
   const sv = por.querySelector('svg');
   if (sv) sv.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-  por.onclick = () => location.href = 'hub.html?v=3';
+  por.onclick = () => location.href = 'hub.html?v=7';
   /* on retient le port : le hub s'ouvrira du bon ciel */
   try { localStorage.setItem('bd-port', d.port || 'palma'); } catch(e){}
 
