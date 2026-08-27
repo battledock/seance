@@ -572,7 +572,7 @@ const TUILES = [
   { k:'sacoche', ou:'toi', em:'🎒', t:'Ta sacoche', s:'Ce que tu portes',
     f:() => location.href = 'sacoche.html' },
   { k:'fiche', ou:'toi', em:'📋', t:'Ta fiche', s:'Ce que tu sais faire',
-    f:() => location.href = 'fiche.html' },
+    f:() => location.href = 'fiche.html?v=2' },
   { k:'reglages', ou:'toi', em:'⚙️', t:'Réglages',
     s:'Confort, compte, déconnexion',
     f:() => location.href = 'reglages.html' },
@@ -628,7 +628,7 @@ async function poserAtouts(){
   sec.style.display = '';
   sec.classList.remove('attend');
   sec.classList.add('venu');
-  document.getElementById('a-go').onclick = () => location.href = 'fiche.html';
+  document.getElementById('a-go').onclick = () => location.href = 'fiche.html?v=2';
 }
 
 /* ============================================================

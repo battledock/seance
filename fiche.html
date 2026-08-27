@@ -43,6 +43,15 @@ html{background:var(--h5,#2b6f92)}
 body::before{background:linear-gradient(180deg,
   var(--h1,#f5a53a) 0%, var(--h2,#eeb455) 16%, var(--h3,#c9b978) 38%,
   var(--h4,#3f87a6) 70%, var(--h5,#2b6f92) 100%)}
+
+/* le mot d'alerte, en bas de l'écran */
+.dit-bas{position:fixed;left:14px;right:14px;
+  bottom:calc(env(safe-area-inset-bottom) + 16px);z-index:40;
+  padding:13px 15px;border-radius:13px;font-size:13.5px;line-height:1.5;
+  background:rgba(201,48,44,.16);border:2.5px solid rgba(201,48,44,.5);
+  color:#f0a89c;opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity .2s,transform .2s}
+.dit-bas.on{opacity:1;transform:none}
 </style>
 <style>
 .perso{display:flex;align-items:center;gap:15px;padding:16px;margin-bottom:14px;
@@ -181,6 +190,22 @@ function blocService(){
     + '</div>';
 }
 
+/* un mot quand quelque chose ne passe pas : sans lui, un échec est
+   invisible et le joueur croit que le jeu est cassé. */
+function alerte(t){
+  let e = document.getElementById('dit');
+  if (!e){
+    e = document.createElement('p');
+    e.id = 'dit';
+    e.className = 'dit-bas';
+    document.body.appendChild(e);
+  }
+  e.textContent = t;
+  e.classList.add('on');
+  clearTimeout(alerte._t);
+  alerte._t = setTimeout(() => e.classList.remove('on'), 4000);
+}
+
 function dessiner(){
   const d = D;
   const V = Object.assign({}, d.competences || {},
@@ -241,12 +266,24 @@ function dessiner(){
       occupe = true;
       document.querySelectorAll('.plus').forEach(x => x.disabled = true);
       try {
-        const r = await BD.agir('placer_point', { p_quoi: b.dataset.k });
+        /* la fonction attend « quoi », pas « p_quoi » : avec le mauvais
+           nom, l'appel échouait en silence et les points restaient
+           bloqués. jeu.html, lui, avait le bon depuis toujours. */
+        const r = await BD.agir('placer_point', { quoi: b.dataset.k });
         if (r && r.ok){
           Object.assign(D, await BD.charger());
           try { ETAT = await BD.agir('mon_etat'); } catch(e2){}
+          if (window.BD && BD.sonner) BD.sonner('piece');
+        } else {
+          /* un échec muet, c'est ce qui a fait perdre des jours :
+             on le dit maintenant. */
+          alerte(r && r.pourquoi === 'pas_de_point'
+            ? 'Tu n\'as plus de point à placer.'
+            : 'Le point n\'a pas été placé. Réessaie.');
         }
-      } catch(e){}
+      } catch(e){
+        alerte('Le point n\'a pas été placé. Réessaie.');
+      }
       occupe = false;
       dessiner();
     });
