@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#fdf6e6">
+<title>Battle Dock — Ton rival</title>
+<link rel="stylesheet" href="couleurs.css?v=2">
+<link rel="stylesheet" href="chaud.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+body{padding:calc(env(safe-area-inset-top) + 16px) 15px
+  calc(env(safe-area-inset-bottom) + 30px)}
+
+.tete{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.tete .q{flex:1;min-width:0}
+.tete .q b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:26px;
+  line-height:1.1}
+.tete .q span{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(18,48,63,.45);font-weight:800;margin-top:4px}
+.tete button{flex:0 0 auto;padding:11px 16px;border-radius:13px;cursor:pointer;
+  border:3px solid var(--encre);background:var(--creme);color:var(--encre);
+  font-family:inherit;font-size:14px;font-weight:800}
+
+/* le portrait, en grand */
+.lui{border-radius:18px;overflow:hidden;border:3px solid var(--encre);
+  background:var(--creme);margin-bottom:16px}
+.lui .h{display:flex;align-items:center;gap:14px;padding:16px}
+.lui .av{flex:0 0 62px;height:62px;border-radius:14px;overflow:hidden;
+  background:#dfe8ee;border:3px solid var(--encre)}
+.lui .av svg{display:block;width:100%;height:100%}
+.lui .n{flex:1;min-width:0}
+.lui .n b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:24px;
+  line-height:1.1}
+.lui .n span{display:block;font-size:12.5px;color:rgba(18,48,63,.55);margin-top:4px}
+
+/* la haine, en jauge */
+.haine{padding:0 16px 16px}
+.haine .t{display:flex;justify-content:space-between;font-size:9px;
+  letter-spacing:.16em;text-transform:uppercase;font-weight:900;
+  color:rgba(18,48,63,.45);margin-bottom:7px}
+.haine .ba{height:11px;border-radius:7px;background:rgba(18,48,63,.1);
+  overflow:hidden;border:2px solid var(--encre)}
+.haine .ba i{display:block;height:100%;background:var(--rouge);transition:width .5s}
+.haine p{font-size:12.5px;line-height:1.55;color:rgba(18,48,63,.6);margin-top:9px}
+
+h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
+  color:rgba(18,48,63,.45);margin:24px 2px 10px}
+
+/* le duel de la semaine */
+.duel{display:flex;align-items:stretch;border-radius:16px;overflow:hidden;
+  border:3px solid var(--encre);background:var(--creme)}
+.duel .c{flex:1;padding:16px 12px;text-align:center}
+.duel .c b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:40px;
+  line-height:1}
+.duel .c span{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:800;color:rgba(18,48,63,.5);margin-top:6px}
+.duel .c.mene{background:var(--or)}
+.duel .vs{flex:0 0 auto;display:flex;align-items:center;padding:0 4px;
+  font-family:'DM Serif Display',Georgia,serif;font-size:17px;
+  color:rgba(18,48,63,.4)}
+
+.bilan{display:flex;gap:8px;margin-top:9px}
+.bilan span{flex:1;padding:11px;border-radius:12px;text-align:center;
+  background:var(--creme2);border:2px solid rgba(18,48,63,.14);font-size:13px;
+  font-weight:800}
+.bilan span i{font-style:normal;display:block;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(18,48,63,.45);margin-bottom:4px}
+
+/* la route qu'il vise */
+.route{border-radius:15px;border:3px solid var(--encre);background:var(--creme);
+  padding:15px 16px}
+.route b{display:block;font-size:16px}
+.route span{display:block;font-size:13px;line-height:1.6;color:rgba(18,48,63,.6);
+  margin-top:7px}
+.route .av2{display:inline-block;margin-top:10px;padding:7px 12px;border-radius:11px;
+  background:rgba(201,48,44,.12);border:2px solid rgba(201,48,44,.4);
+  font-size:12.5px;font-weight:800;color:#a8241f}
+
+.rien{padding:28px 18px;text-align:center;font-size:14px;line-height:1.75;
+  color:rgba(18,48,63,.55);border:3px dashed rgba(18,48,63,.2);border-radius:16px}
+
+.solde{margin-bottom:16px;padding:16px;border-radius:15px;
+  border:3px solid var(--encre);font-size:14.5px;line-height:1.6}
+.solde.gagne{background:rgba(47,138,92,.14);border-color:#2f8a5c}
+.solde.perdu{background:rgba(201,48,44,.1);border-color:rgba(201,48,44,.5)}
+.solde b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:20px;
+  margin-bottom:6px}
+
+.agir{width:100%;margin-top:12px;padding:15px;border-radius:14px;cursor:pointer;
+  font-family:inherit;font-size:15px;font-weight:900;
+  border:3px solid var(--encre);background:var(--creme)}
+</style>
+</head>
+<body>
+
+<div class="tete">
+  <span class="q"><b>Ton rival</b><span id="sous">—</span></span>
+  <button id="retour">‹ Retour</button>
+</div>
+
+<div id="w"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="bd.js?v=4"></script>
+<script>
+const $ = id => document.getElementById(id);
+const OU = { anse:'Marseille', barcelone:'Barcelone', palma:'Palma',
+             ajaccio:'Ajaccio' };
+let R = null;
+
+function eur(n){ return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+
+function tete(x){
+  try { return BD.avatarSVG(x); }
+  catch(e){ return '<svg viewBox="0 0 16 16"><rect width="16" height="16"'
+    + ' fill="#dfe8ee"/></svg>'; }
+}
+
+function humeur(n){
+  return n >= 80 ? 'Il ne pense plus qu\u2019à toi.'
+       : n >= 55 ? 'Il te suit de près, et ça se voit.'
+       : n >= 30 ? 'Il commence à te trouver encombrant.'
+       : 'Il te regarde faire, pour l\u2019instant.';
+}
+
+function depuisQuand(iso){
+  const j = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  return j < 1 ? 'depuis aujourd\u2019hui'
+       : j === 1 ? 'depuis hier' : 'depuis ' + j + ' jours';
+}
+
+function poser(){
+  if (!R || !R.ok){
+    $('w').innerHTML = '<p class="rien">Rien à afficher.</p>';
+    return;
+  }
+  if (R.aucun){
+    $('sous').textContent = 'Personne, encore';
+    $('w').innerHTML = '<p class="rien">Personne ne t\u2019a encore remarqué.'
+      + (R.pourquoi === 'trop_tot'
+          ? '<br><br>Il faut être au moins niveau ' + R.faut
+            + ' pour qu\u2019on s\u2019intéresse à toi.'
+          : '') + '</p>';
+    return;
+  }
+
+  $('sous').textContent = R.qui + ' · ' + depuisQuand(R.depuis);
+  const d = R.duel || {};
+  const rt = R.ma_route;
+  let s = '';
+
+  /* le solde de la semaine passée, s'il vient de tomber */
+  if (R.solde){
+    s += '<div class="solde ' + (R.solde.gagne ? 'gagne' : 'perdu') + '">'
+      + '<b>' + (R.solde.gagne ? 'Tu l\u2019as eu cette semaine'
+                               : 'Il t\u2019a eu cette semaine') + '</b>'
+      + R.solde.moi + ' livraisons contre ' + R.solde.lui + '.'
+      + (R.solde.prime ? ' Tu empoches ' + eur(R.solde.prime) + ' €.' : '')
+      + '</div>';
+  }
+
+  s += '<div class="lui"><div class="h">'
+    + '<span class="av">' + tete(R) + '</span>'
+    + '<span class="n"><b>' + R.qui + '</b>'
+    + '<span>Niveau ' + R.niveau + ' · ' + (OU[R.ou] || 'en mer')
+    + ' · palier ' + R.barque + '</span></span></div>'
+    + '<div class="haine"><div class="t"><span>Ce qu\u2019il te veut</span>'
+    + '<span>' + R.animosite + ' / 100</span></div>'
+    + '<div class="ba"><i style="width:' + R.animosite + '%"></i></div>'
+    + '<p>' + humeur(R.animosite) + '</p></div></div>';
+
+  s += '<h2>Le duel de la semaine</h2><div class="duel">'
+    + '<span class="c' + (d.moi >= d.lui ? ' mene' : '') + '"><b>' + (d.moi || 0)
+    + '</b><span>toi</span></span>'
+    + '<span class="vs">contre</span>'
+    + '<span class="c' + (d.lui > d.moi ? ' mene' : '') + '"><b>' + (d.lui || 0)
+    + '</b><span>lui</span></span></div>'
+    + '<div class="bilan">'
+    + '<span><i>Gagnés</i>' + (d.gagnes || 0) + '</span>'
+    + '<span><i>Perdus</i>' + (d.perdus || 0) + '</span>'
+    + '<span><i>Sa caisse</i>' + eur(R.euros_lui) + ' €</span>'
+    + '</div>';
+
+  s += '<h2>Ce qu\u2019il vise</h2>';
+  s += rt
+    ? '<div class="route"><b>' + (rt.k || '—') + ' vers '
+      + (OU[rt.vers] || rt.vers) + '</b>'
+      + '<span>Ta route la plus fréquentée : ' + rt.combien
+      + ' livraisons ces deux dernières semaines. Il le sait.</span>'
+      + '<span class="av2">Il y débarque la même marchandise pour faire '
+      + 'tomber tes prix.</span></div>'
+    : '<p class="rien">Tu n\u2019as pas encore de route régulière.<br>'
+      + 'Tant qu\u2019il ne sait pas où tu vends, il ne peut rien contre toi.</p>';
+
+  s += '<button class="agir" id="lui-ecrire">Lui écrire un mot</button>';
+
+  $('w').innerHTML = s;
+  const b = $('lui-ecrire');
+  if (b) b.onclick = () => location.href = 'courrier.html';
+}
+
+(async () => {
+  try { R = await BD.agir('mon_rival'); } catch(e){ R = null; }
+  poser();
+})();
+
+$('retour').addEventListener('click', () => history.length > 1
+  ? history.back() : location.href = 'hub.html?v=3');
+</script>
+</body>
+</html>
