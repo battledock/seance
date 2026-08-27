@@ -43,6 +43,10 @@ html{background:var(--h5,#2b6f92)}
 body::before{background:linear-gradient(180deg,
   var(--h1,#f5a53a) 0%, var(--h2,#eeb455) 16%, var(--h3,#c9b978) 38%,
   var(--h4,#3f87a6) 70%, var(--h5,#2b6f92) 100%)}
+
+/* ce que la négociation a arraché : dit, plutôt qu'appliqué en silence */
+.prix .nego{display:block;font-size:11.5px;font-weight:800;color:#2f8a5c;
+  margin-top:3px}
 </style>
 <style>
 /* la route */
@@ -149,6 +153,8 @@ function paraitre(){
   if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
 }
 
+let BONUS = null;
+
 const OU = { anse:'Marseille', marseille:'Marseille', barcelone:'Barcelone',
              palma:'Palma', ajaccio:'Ajaccio' };
 const POURQUOI = {
@@ -184,6 +190,8 @@ async function dessiner(){
   const L = document.getElementById('liste');
   let r;
   try { r = await BD.agir('contrats_du_jour'); } catch(e){ r = null; }
+  /* ce que tes compétences t'ont rapporté : on le dira sur chaque contrat */
+  try { BONUS = await BD.agir('mes_bonus'); } catch(e){}
 
   if (!r || !r.ok){
     L.innerHTML = '<p class="rien">'
@@ -250,7 +258,11 @@ async function dessiner(){
       +   (c.reduit
             ? '<span class="sur">au lieu de ' + c.paie_pleine
               + ' € — ta cale n\'est pas vide</span>'
-            : ecartPrix(c.demande)) + '</div>'
+            : ecartPrix(c.demande))
+      +   (BONUS && BONUS.nego
+            ? '<span class="nego">dont +' + BONUS.nego
+              + ' % arrachés à la négociation</span>' : '')
+      + '</div>'
       + '<div class="mk">'
       +   '<div class="tt"><span>Le marché à ' + (OU[c.vers] || c.vers) + '</span>'
       +   '<span>' + m.titre + '</span></div>'

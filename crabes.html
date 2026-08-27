@@ -1027,7 +1027,9 @@ async function relever(){
   }
   CHOISI = x.crabe.id;
   await charger();
-  dire('Tu remontes ' + x.crabe.nom + ' — ' + QUAL[x.crabe.qualite].n.toLowerCase() + '.');
+  /* on dit ce que l'instinct a apporté : sinon il agit sans qu'on le sache */
+  dire('Tu remontes ' + x.crabe.nom + ' — ' + QUAL[x.crabe.qualite].n.toLowerCase()
+    + '.' + (x.flair ? ' Ton instinct t\'a ouvert l\'œil (+' + x.flair + ' %).' : ''));
   BD.vibrer(x.crabe.qualite >= 3 ? [20,60,30,60,40] : 22); BD.sonner('piece');
 }
 

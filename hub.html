@@ -342,6 +342,11 @@ body::before{background:linear-gradient(180deg,
     <span class="tr"></span>
   </button>
 
+  <section id="atouts" style="display:none">
+    <h2 class="dt">Ce que tu sais faire<em id="a-pts"></em></h2>
+    <div class="carte-pas" id="a-carte"></div>
+  </section>
+
   <section id="pas" style="display:none">
     <h2 class="dt">Tes premiers pas<em id="p-num"></em></h2>
     <div class="carte-pas" id="p-carte"></div>
@@ -371,7 +376,7 @@ body::before{background:linear-gradient(180deg,
 <script>
 /* rien ne se montre tant que tout n'est pas là */
 function paraitre(){
-  ['liv', 'rade', 'pas', 'defis', 'tuiles', 'pied'].forEach(k => {
+  ['liv', 'rade', 'atouts', 'pas', 'defis', 'tuiles', 'pied'].forEach(k => {
     const e = document.getElementById(k);
     if (e){ e.classList.remove('attend'); e.classList.add('venu'); }
   });
@@ -592,6 +597,36 @@ let VECU = [];
 let hubEtat = {}, D = null;
 /* où en est-on avec la maison derrière la Seu */
 let PALMA = { aLettre:false, pere:false };
+
+/* ============================================================
+   DES POINTS QUI DORMENT
+   Deux joueurs sur trois en avaient quatre sans le savoir : rien
+   ne le leur disait. La carte ne paraît que s'il y en a, et elle
+   dit ce que chaque point rapporterait.
+   ============================================================ */
+async function poserAtouts(){
+  const sec = document.getElementById('atouts');
+  let A = null;
+  try { A = await BD.agir('mes_atouts'); } catch(e){}
+  if (!A || !A.ok || !A.points){ sec.style.display = 'none'; return; }
+
+  document.getElementById('a-pts').textContent =
+    A.points + (A.points > 1 ? ' points' : ' point');
+
+  document.getElementById('a-carte').innerHTML =
+    '<div class="h"><span class="rd">' + A.points + '</span>'
+    + '<span class="t"><b>' + (A.points > 1
+        ? 'Tu as ' + A.points + ' points à placer'
+        : 'Tu as un point à placer') + '</b>'
+    + '<span>Chaque point te rend meilleur pour de bon : plus de cale, '
+    + 'des contrats mieux payés, moins d\'énergie en mer.</span></span></div>'
+    + '<div class="b"><button class="vif" id="a-go">Choisir</button></div>';
+
+  sec.style.display = '';
+  sec.classList.remove('attend');
+  sec.classList.add('venu');
+  document.getElementById('a-go').onclick = () => location.href = 'fiche.html';
+}
 
 /* ============================================================
    LES PREMIERS PAS
@@ -840,6 +875,7 @@ document.getElementById('ouv-ok').onclick = () => {
        capitaines naviguent et livrent. Le serveur ne les réveille
        qu'une fois toutes les six minutes, quoi qu'on demande. */
     BD.agir('faire_vivre_les_ports').catch(function(){});
+    poserAtouts();
     poserPas();
     poserDefis();
 
