@@ -51,6 +51,26 @@ h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
   background:transparent;color:var(--encre)}
 .trois button.on{background:var(--or);border-color:var(--encre)}
 
+/* ---------- changer de nom ---------- */
+.trois2{flex:0 0 auto;padding:10px 15px;border-radius:11px;cursor:pointer;
+  font-family:inherit;font-size:13.5px;font-weight:800;
+  border:2.5px solid var(--encre);background:var(--creme2);color:var(--encre)}
+.li.nb{padding-top:0}
+.li.nb input{width:100%;padding:14px;border-radius:12px;
+  border:2.5px solid rgba(18,48,63,.22);background:var(--creme2);
+  font-family:inherit;font-size:16px;color:var(--encre);outline:0}
+.li.nb input:focus{border-color:var(--or)}
+.n-etat{padding:0 16px 12px;font-size:12.5px;line-height:1.55;
+  color:rgba(18,48,63,.55)}
+.n-etat.mal{color:#a8241f}
+.n-etat.bien{color:#1e6b44}
+.li.deux2{gap:8px;padding-top:0}
+.li.deux2 button{flex:1;padding:13px;border-radius:12px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:900;
+  border:3px solid var(--encre);background:var(--creme)}
+.li.deux2 button.oui{background:var(--or)}
+.li.deux2 button:disabled{opacity:.42;cursor:default}
+
 .agir{width:100%;padding:15px;border-radius:14px;cursor:pointer;margin-top:10px;
   font-family:inherit;font-size:15.5px;font-weight:900;
   border:3px solid var(--encre);background:var(--creme);color:var(--encre)}
@@ -137,6 +157,27 @@ h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
   </div>
 </div>
 
+<h2>Ton nom</h2>
+<div class="bloc">
+  <div class="li">
+    <span class="tx"><b id="n-actuel">…</b>
+      <span id="n-sous">C'est sous ce nom qu'on te connaît sur les quais.</span></span>
+    <button class="trois2" id="n-ouvrir">Changer</button>
+  </div>
+  <div id="n-form" style="display:none">
+    <div class="li nb">
+      <input id="n-champ" maxlength="18" placeholder="Ton nouveau nom"
+        autocomplete="off" spellcheck="false">
+    </div>
+    <p class="n-etat" id="n-etat">3 à 18 caractères, lettres et chiffres.</p>
+    <div class="li deux2">
+      <button id="n-annuler">Annuler</button>
+      <button class="oui" id="n-payer" disabled>Payer et changer</button>
+    </div>
+  </div>
+</div>
+<p class="mot" id="n-mot"></p>
+
 <h2>Ton compte</h2>
 <div class="bloc">
   <p class="compte" id="compte">…</p>
@@ -214,7 +255,102 @@ document.querySelectorAll('#t-texte button').forEach(b => {
   }
   $('compte').innerHTML = 'Tu joues sous le nom de <b>' + (d.pseudo || '—')
     + '</b>, niveau ' + (d.niveau || 1) + '.';
+  await lireLeNom();
 })();
+
+/* ============================================================
+   CHANGER DE NOM
+   Le serveur décide de tout : le prix, ce qui est permis, ce qui
+   est déjà pris. Ici on ne fait qu'aider à voir clair avant de
+   payer, et on n'active le bouton que si le nom a une chance.
+   ============================================================ */
+let NOM = null;
+
+function euro(n){ return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+
+async function lireLeNom(){
+  try { NOM = await BD.agir('mon_nom'); } catch(e){ NOM = null; }
+  if (!NOM || !NOM.ok) return;
+  $('n-actuel').textContent = NOM.pseudo || '—';
+  $('n-sous').textContent = NOM.deja
+    ? 'Changé ' + NOM.deja + ' fois. Le prochain coûte ' + euro(NOM.prix) + ' €.'
+    : 'Le premier changement coûte ' + euro(NOM.prix) + ' €.';
+  const A = NOM.anciens || [];
+  $('n-mot').textContent = A.length
+    ? 'Avant, on t\u2019appelait ' + A.map(x => x.ancien).join(', ') + '.'
+    : '';
+}
+
+/* ce qu'on peut vérifier sans déranger le serveur */
+function juger(){
+  const v = $('n-champ').value.trim().replace(/\s+/g, ' ');
+  const e = $('n-etat');
+  const b = $('n-payer');
+  if (!NOM || !NOM.ok) return;
+
+  let souci = null;
+  if (v.length < 3) souci = 'Trois caractères au minimum.';
+  else if (v.length > 18) souci = 'Dix-huit caractères au maximum.';
+  else if (!/^[\p{L}\p{N} '-]+$/u.test(v))
+    souci = 'Lettres, chiffres, espace, tiret et apostrophe seulement.';
+  else if (v.toLowerCase() === (NOM.pseudo || '').toLowerCase())
+    souci = 'C\u2019est déjà ton nom.';
+  else if (NOM.euros < NOM.prix)
+    souci = 'Il te manque ' + euro(NOM.prix - NOM.euros) + ' €.';
+
+  e.className = 'n-etat' + (souci ? ' mal' : v ? ' bien' : '');
+  e.textContent = souci
+    || (v ? 'Tu deviendras « ' + v +' » pour ' + euro(NOM.prix) + ' €.'
+          : '3 à 18 caractères, lettres et chiffres.');
+  b.disabled = !!souci || !v;
+}
+
+$('n-ouvrir').addEventListener('click', () => {
+  $('n-form').style.display = '';
+  $('n-ouvrir').style.display = 'none';
+  $('n-champ').focus();
+  juger();
+});
+$('n-annuler').addEventListener('click', () => {
+  $('n-form').style.display = 'none';
+  $('n-ouvrir').style.display = '';
+  $('n-champ').value = '';
+});
+$('n-champ').addEventListener('input', juger);
+
+$('n-payer').addEventListener('click', async () => {
+  const b = $('n-payer');
+  b.disabled = true; b.textContent = 'Enregistrement…';
+  let r = null;
+  try { r = await BD.agir('changer_de_nom', { p_nom: $('n-champ').value }); }
+  catch(e){}
+  b.textContent = 'Payer et changer';
+
+  if (!r || !r.ok){
+    const q = r && r.pourquoi;
+    $('n-etat').className = 'n-etat mal';
+    $('n-etat').textContent =
+        q === 'deja_pris'   ? 'Ce nom est déjà porté par quelqu\u2019un.'
+      : q === 'trop_cher'   ? 'Il te faut ' + euro(r.faut) + ' €.'
+      : q === 'trop_court'  ? 'Trois caractères au minimum.'
+      : q === 'trop_long'   ? 'Dix-huit caractères au maximum.'
+      : q === 'caracteres'  ? 'Ce nom contient des caractères interdits.'
+      : q === 'deja_le_tien'? 'C\u2019est déjà ton nom.'
+      : 'Le changement n\u2019a pas abouti.';
+    b.disabled = false;
+    return;
+  }
+
+  $('n-form').style.display = 'none';
+  $('n-ouvrir').style.display = '';
+  $('n-champ').value = '';
+  await lireLeNom();
+  const d = await BD.charger();
+  if (d) $('compte').innerHTML = 'Tu joues sous le nom de <b>' + r.pseudo
+    + '</b>, niveau ' + (d.niveau || 1) + '.';
+  dire('Te voilà « ' + r.pseudo + ' ». ' + euro(r.paye)
+    + ' € payés. Le prochain changement coûtera ' + euro(r.prochain) + ' €.', true);
+});
 
 $('retour').addEventListener('click', () => history.length > 1
   ? history.back() : location.href = 'hub.html?v=3');
