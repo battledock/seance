@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#050d16">
 <title>Battledock — Visite médicale</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="couleurs.css?v=1">
 <style>
 :root{--nuit:#050d16;--brume:#7fa3c0;--sable:#e8e2d4;--ocre:#e0913a;--ocre-f:#a3611f;--papier:#e9e4d6;--encre:#2b2a26;--tampon:#b5342b}
@@ -13,7 +13,7 @@
 html,body{height:100%}
 body{
   background:var(--nuit);color:var(--sable);
-  font-family:'Barlow',system-ui,sans-serif;overflow-x:hidden;
+  font-family:'Nunito',system-ui,sans-serif;overflow-x:hidden;
   background-image:radial-gradient(90% 40% at 50% 0%, rgba(30,61,89,.5), transparent 62%);
   background-attachment:fixed;
 }
@@ -25,7 +25,7 @@ body{
 
 .entete{text-align:center;margin-bottom:18px}
 .entete .sur{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--brume);margin-bottom:8px;padding-left:.34em}
-.entete h1{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.03em;line-height:1.05}
+.entete h1{font-family:'DM Serif Display',Georgia,serif;font-size:30px;letter-spacing:.03em;line-height:1.05}
 
 /* --- le medecin --- */
 .toubib{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
@@ -60,7 +60,7 @@ body{
 .bulle::before{content:"";position:absolute;left:-7px;top:18px;border:7px solid transparent;border-right-color:rgba(233,228,214,.94);border-left:0}
 .bulle em{font-style:normal;color:#7a756a;font-size:12.5px;display:block;margin-top:5px}
 .bulle .note{display:block;margin-top:9px;padding-top:8px;border-top:1px dotted rgba(43,42,38,.25);
-  font-family:'Courier Prime',monospace;font-size:12px;color:#8a5a2e}
+  font-family:'Nunito',system-ui,sans-serif;font-size:12px;color:#8a5a2e}
 
 .etape{display:none}
 .etape.on{display:block;animation:entre .35s ease-out}
@@ -69,7 +69,7 @@ body{
 /* --- test de la vue --- */
 .tableau{
   background:var(--papier);border-radius:12px;padding:22px 14px;text-align:center;
-  font-family:'Courier Prime',monospace;font-weight:700;color:var(--encre);margin-bottom:16px;
+  font-family:'Nunito',system-ui,sans-serif;font-weight:700;color:var(--encre);margin-bottom:16px;
 }
 .tableau div{letter-spacing:.28em;line-height:1.9}
 .tableau .l1{font-size:30px}
@@ -93,7 +93,7 @@ body{
   padding:22px;margin-bottom:16px;text-align:center;
 }
 .cadran{
-  font-family:'Courier Prime',monospace;font-size:38px;font-weight:700;color:var(--ocre);
+  font-family:'Nunito',system-ui,sans-serif;font-size:38px;font-weight:700;color:var(--ocre);
   letter-spacing:.04em;
 }
 .cadran small{font-size:15px;color:var(--brume);letter-spacing:.1em}
@@ -104,7 +104,7 @@ body{
 .choix button{
   width:100%;text-align:left;background:rgba(10,28,46,.75);
   border:1px solid rgba(127,163,192,.2);border-radius:10px;padding:14px 16px;
-  font-family:'Barlow',sans-serif;font-size:15px;color:var(--sable);cursor:pointer;
+  font-family:'Nunito',system-ui,sans-serif;font-size:15px;color:var(--sable);cursor:pointer;
   transition:transform .12s,border-color .2s,background .2s;
 }
 .choix button:active{transform:scale(.985)}
@@ -113,7 +113,7 @@ body{
   color:var(--ocre);margin-bottom:8px}
 .champ input{
   width:100%;background:rgba(5,13,22,.55);border:1px solid rgba(127,163,192,.2);
-  border-radius:10px;padding:14px 15px;font-family:'Courier Prime',monospace;
+  border-radius:10px;padding:14px 15px;font-family:'Nunito',system-ui,sans-serif;
   font-size:16px;color:var(--sable);text-transform:uppercase;letter-spacing:.1em;
 }
 .champ input:focus{outline:none;border-color:var(--ocre)}
@@ -124,7 +124,7 @@ body{
   background:linear-gradient(180deg,rgba(5,13,22,0),rgba(5,13,22,.92) 32%,var(--nuit))}
 .barre .dedans{max-width:460px;margin:0 auto}
 .principal{width:100%;background:var(--ocre);border:0;border-radius:10px;padding:17px;
-  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
+  font-family:'Nunito',system-ui,sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
   text-transform:uppercase;color:#1a0f02;cursor:pointer;transition:transform .12s,background .2s}
 .principal:active{transform:scale(.985);background:var(--ocre-f)}
 .principal:disabled{opacity:.45;cursor:default}
@@ -132,21 +132,21 @@ body{
 /* --- le dossier final --- */
 .dossier{
   background:var(--papier);color:var(--encre);border-radius:14px;padding:22px 20px;
-  position:relative;overflow:hidden;font-family:'Courier Prime',monospace;
+  position:relative;overflow:hidden;font-family:'Nunito',system-ui,sans-serif;
 }
 .dossier::after{
   content:"";position:absolute;inset:0;pointer-events:none;
   background:repeating-linear-gradient(0deg,transparent,transparent 26px,rgba(43,42,38,.05) 26px,rgba(43,42,38,.05) 27px);
 }
-.dossier h3{font-family:'Barlow',sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#7a756a;margin-bottom:3px}
-.dossier .nom{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.03em;margin-bottom:16px}
+.dossier h3{font-family:'Nunito',system-ui,sans-serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#7a756a;margin-bottom:3px}
+.dossier .nom{font-family:'DM Serif Display',Georgia,serif;font-size:26px;letter-spacing:.03em;margin-bottom:16px}
 .dossier .l{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dotted rgba(43,42,38,.25);font-size:12.5px}
 .dossier .l span{color:#7a756a}
 .dossier .l b{text-align:right;font-weight:700}
 .tampon{
   position:absolute;right:14px;bottom:14px;
   border:3px solid var(--tampon);color:var(--tampon);
-  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.14em;
+  font-family:'DM Serif Display',Georgia,serif;font-size:26px;letter-spacing:.14em;
   padding:4px 14px;transform:rotate(-13deg) scale(2.4);opacity:0;border-radius:4px;
 }
 .tampon.pose{animation:frappe .45s cubic-bezier(.2,.9,.3,1.2) forwards}
@@ -162,11 +162,17 @@ body{
 .avatar-final p b{color:var(--sable);font-weight:600}
 
 .rejouer{width:100%;margin-top:14px;background:none;border:1px solid rgba(127,163,192,.28);
-  border-radius:10px;padding:13px;font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;
+  border-radius:10px;padding:13px;font-family:'Nunito',system-ui,sans-serif;font-size:11px;font-weight:600;
   letter-spacing:.16em;text-transform:uppercase;color:var(--brume);cursor:pointer}
 @media (prefers-reduced-motion:reduce){
   .etape.on,.buste,.tete,.bras,.fumee{animation:none}
   .paupieres{animation:none;transform:scaleY(0)}.tampon.pose{animation:none;opacity:.88;transform:rotate(-13deg)}}
+
+/* ---------- la voix des gens ----------
+   Courier Prime ne sert plus qu'à ça : ce qu'un personnage dit.
+   Le reste de la page est en Nunito, comme dans tout le jeu. */
+.parle, .dit p.parle, .voix{
+  font-family:'Courier Prime',monospace;letter-spacing:-.01em}
 </style>
 </head>
 <body>

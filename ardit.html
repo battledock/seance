@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#101f2e">
 <title>Battle Dock — Ardit</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="couleurs.css?v=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
 html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
-  font-family:'Courier Prime',monospace;color:#fff}
+  font-family:'Nunito',system-ui,sans-serif;color:#fff}
 
 /* la rue s'efface derrière : on est là pour lire */
 #rue{position:fixed;left:0;right:0;top:0;height:42%;overflow:hidden}
@@ -42,7 +42,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
 .avert button{margin-top:8px;padding:17px 42px;border:0;border-radius:9px;cursor:pointer;
   background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
   box-shadow:0 6px 26px rgba(240,196,106,.3);
-  font-family:'Courier Prime',monospace;font-size:15px;font-weight:700;letter-spacing:.08em}
+  font-family:'Nunito',system-ui,sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em}
 .avert button:active{transform:scale(.985)}
 
 /* ================= lui ================= */
@@ -88,7 +88,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
   padding:16px 17px;border:1.5px solid rgba(255,255,255,.22);border-radius:11px;
   background:rgba(18,28,46,.82);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;
-  font-family:'Courier Prime',monospace;transition:transform .11s,border-color .2s,background .2s}
+  font-family:'Nunito',system-ui,sans-serif;transition:transform .11s,border-color .2s,background .2s}
 .choix button:active{transform:scale(.987);background:rgba(28,40,62,.9)}
 .choix button b{display:block;font-size:15.5px;font-weight:700;color:#fff;line-height:1.5}
 .choix button span.s{display:block;font-size:12.5px;color:rgba(255,255,255,.56);
@@ -126,7 +126,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
   margin-top:3px;font-family:system-ui,sans-serif;line-height:1.5}
 .fin button{margin-top:10px;padding:17px 40px;border:0;border-radius:9px;cursor:pointer;
   background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
-  font-family:'Courier Prime',monospace;font-size:15px;font-weight:700;letter-spacing:.08em}
+  font-family:'Nunito',system-ui,sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em}
 
 /* ================= le décor ================= */
 .linge{animation:flotte 9s ease-in-out infinite}
@@ -154,6 +154,12 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
 @keyframes souffle{0%,100%{transform:translateY(0)}50%{transform:translateY(-.6px)}}
 .signe{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+/* ---------- la voix des gens ----------
+   Courier Prime ne sert plus qu'à ça : ce qu'un personnage dit.
+   Le reste de la page est en Nunito, comme dans tout le jeu. */
+.parle, .dit p.parle, .voix{
+  font-family:'Courier Prime',monospace;letter-spacing:-.01em}
 </style></style>
 </head>
 <body>

@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#101f2e">
 <title>Battle Dock — Barcelone</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="couleurs.css?v=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
 html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
-  font-family:'Courier Prime',monospace;color:#fff}
+  font-family:'Nunito',system-ui,sans-serif;color:#fff}
 
 #ville{position:fixed;inset:0;
   /* la scène est dessinée une fois pour toutes : on ne fait que
@@ -45,7 +45,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
 
 .act{display:flex;flex-direction:column;gap:9px;margin-top:24px}
 .act button{width:100%;padding:16px;border:0;border-radius:9px;cursor:pointer;
-  font-family:'Courier Prime',monospace;font-size:14px;font-weight:700;letter-spacing:.06em;
+  font-family:'Nunito',system-ui,sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;
   transition:transform .12s}
 .act button:active{transform:scale(.985)}
 .act .or{background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
@@ -104,7 +104,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
   display:flex;align-items:center;gap:6px;padding:4px 9px 4px 4px;border-radius:20px;
   background:rgba(12,26,42,.74);border:1.5px solid rgba(255,255,255,.24);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  white-space:nowrap;transition:transform .16s;font-family:'Courier Prime',monospace;
+  white-space:nowrap;transition:transform .16s;font-family:'Nunito',system-ui,sans-serif;
   color:#fff;box-shadow:0 3px 12px rgba(6,16,28,.4)}
 .eti:active{transform:translate(-50%,-100%) scale(.94)}
 .eti .em{width:18px;height:18px;flex:0 0 18px;display:flex;align-items:center;
@@ -127,7 +127,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
 .fi .h .em{flex:0 0 40px;height:40px;display:flex;align-items:center;justify-content:center}
 .fi .h .em svg{width:23px;height:23px}
 .fi .h .tx{flex:1;min-width:0}
-.fi .h b{display:block;font-size:16px;font-weight:700;font-family:'Courier Prime',monospace}
+.fi .h b{display:block;font-size:16px;font-weight:700;font-family:'Nunito',system-ui,sans-serif}
 .fi .h span{display:block;font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;
   font-family:system-ui,sans-serif}
 .fi .h .fer{background:none;border:0;cursor:pointer;color:rgba(255,255,255,.44);
@@ -137,11 +137,17 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
   border-bottom:1px solid rgba(255,255,255,.07);font-family:system-ui,sans-serif}
 .fi li:last-child{border-bottom:0}
 .fi li span{color:rgba(255,255,255,.46)}
-.fi li b{font-family:'Courier Prime',monospace}
+.fi li b{font-family:'Nunito',system-ui,sans-serif}
 .amarre.a1{animation-duration:7.8s;animation-delay:-2s}
 .amarre.a2{animation-duration:5.6s;animation-delay:-3.4s}
 .amarre.a3{animation-duration:8.6s;animation-delay:-1.2s}
 
+
+/* ---------- la voix des gens ----------
+   Courier Prime ne sert plus qu'à ça : ce qu'un personnage dit.
+   Le reste de la page est en Nunito, comme dans tout le jeu. */
+.parle, .dit p.parle, .voix{
+  font-family:'Courier Prime',monospace;letter-spacing:-.01em}
 </style>
 </head>
 <body>
@@ -1175,7 +1181,7 @@ function barqueQ(n, route){
 
   /* ---------- le nom peint (20) ---------- */
   if (n >= 20)
-    s += `<text x="${g(L*.1)}" y="${(flot - H*.34).toFixed(1)}" font-family="Bebas Neue,sans-serif"
+    s += `<text x="${g(L*.1)}" y="${(flot - H*.34).toFixed(1)}" font-family="Georgia,serif"
       font-size="8.4" letter-spacing="1.2" fill="#f2e6c8" opacity=".85">LA ZIZOUIN</text>`;
 
   /* ---------- l'eau, selon l'allure ---------- */

@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#050d16">
 <title>Battledock — Le trajet</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="couleurs.css?v=1">
 <style>
 :root{--nuit:#050d16;--brume:#7fa3c0;--sable:#e8e2d4;--ocre:#e0913a;--ocre-f:#a3611f;--encre:#2b2a26}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
-body{background:var(--nuit);color:var(--sable);font-family:'Barlow',system-ui,sans-serif;
+body{background:var(--nuit);color:var(--sable);font-family:'Nunito',system-ui,sans-serif;
      display:flex;flex-direction:column}
 
 /* ---------- la fenêtre du panorama ---------- */
@@ -94,7 +94,7 @@ body{background:var(--nuit);color:var(--sable);font-family:'Barlow',system-ui,sa
 @keyframes flotteEt{0%{transform:translateY(6px)}100%{transform:translateY(-38px)}}
 .r-texte{
   position:absolute;left:0;right:0;top:38%;text-align:center;
-  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.14em;
+  font-family:'DM Serif Display',Georgia,serif;font-size:26px;letter-spacing:.14em;
   color:#fff3dd;text-shadow:0 3px 18px rgba(0,0,0,.75);
   opacity:0;transition:opacity .6s;padding:0 20px;
 }
@@ -106,11 +106,11 @@ body{background:var(--nuit);color:var(--sable);font-family:'Barlow',system-ui,sa
   pointer-events:auto;padding:24px;
 }
 .r-titre.on{display:flex;animation:apparait .8s ease-out}
-.r-titre h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,13vw,64px);
+.r-titre h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(40px,13vw,64px);
   letter-spacing:.06em;color:#fff3dd;text-shadow:0 4px 24px rgba(0,0,0,.6)}
 .r-titre p{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:#e2c9a8}
 .r-titre button{margin-top:10px;background:var(--ocre);border:0;border-radius:10px;
-  padding:16px 28px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;
+  padding:16px 28px;font-family:'Nunito',system-ui,sans-serif;font-size:13px;font-weight:600;
   letter-spacing:.16em;text-transform:uppercase;color:#1a0f02;cursor:pointer}
 .vue.secousse{animation:secousse .8s ease-out}
 @keyframes secousse{0%,100%{transform:translate(0,0)}
@@ -131,7 +131,7 @@ body{background:var(--nuit);color:var(--sable);font-family:'Barlow',system-ui,sa
 .choix button{
   width:100%;text-align:left;background:rgba(10,28,46,.85);
   border:1px solid rgba(127,163,192,.22);border-radius:10px;padding:14px 16px;
-  font-family:'Barlow',sans-serif;font-size:15px;color:var(--sable);cursor:pointer;
+  font-family:'Nunito',system-ui,sans-serif;font-size:15px;color:var(--sable);cursor:pointer;
 }
 .choix button:active{transform:scale(.985)}
 /* --- le gardien s'anime --- */
@@ -170,7 +170,7 @@ body{background:var(--nuit);color:var(--sable);font-family:'Barlow',system-ui,sa
 
 .stop{
   position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;
-  display:none;font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.1em;
+  display:none;font-family:'DM Serif Display',Georgia,serif;font-size:26px;letter-spacing:.1em;
   color:#e05c4a;text-shadow:0 2px 12px rgba(0,0,0,.7);pointer-events:none;
 }
 .fin{
@@ -180,11 +180,11 @@ body{background:var(--nuit);color:var(--sable);font-family:'Barlow',system-ui,sa
 }
 .fin.on{display:flex;animation:apparait .5s ease-out}
 @keyframes apparait{from{opacity:0}to{opacity:1}}
-.fin h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.03em}
+.fin h2{font-family:'DM Serif Display',Georgia,serif;font-size:30px;letter-spacing:.03em}
 .fin p{font-size:14px;color:#9dbcd4;max-width:320px;line-height:1.55}
 .fin button{
   background:var(--ocre);border:0;border-radius:10px;padding:16px 26px;
-  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
+  font-family:'Nunito',system-ui,sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
   text-transform:uppercase;color:#1a0f02;cursor:pointer;
 }
 @media (prefers-reduced-motion:reduce){

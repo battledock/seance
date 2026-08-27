@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#17110b">
 <title>Battle Dock — L'atelier de Pere</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="couleurs.css?v=1">
 <style>
 /* ============================================================
@@ -17,7 +17,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
 html,body{height:100%;overflow:hidden;background:var(--nuit-bois);
-  font-family:'Courier Prime',monospace;color:#fff}
+  font-family:'Nunito',system-ui,sans-serif;color:#fff}
 
 #sc{position:fixed;left:0;right:0;top:0;height:52%;overflow:hidden;
   opacity:0;transition:opacity .5s}
@@ -96,7 +96,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-bois);
 .gestes button{width:100%;text-align:left;padding:15px 16px;
   border:1.5px solid rgba(246,228,200,.18);border-radius:11px;
   background:rgba(38,27,17,.75);cursor:pointer;
-  font-family:'Courier Prime',monospace;transition:transform .13s,border-color .2s}
+  font-family:'Nunito',system-ui,sans-serif;transition:transform .13s,border-color .2s}
 .gestes button:active{transform:scale(.987)}
 .gestes button:disabled{cursor:default;opacity:.9}
 .gestes .l1{display:flex;align-items:baseline;gap:10px}
@@ -117,7 +117,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-bois);
 /* ---------- le chargement ---------- */
 .charger{width:100%;margin-top:14px;padding:17px;border-radius:12px;cursor:pointer;
   border:1.5px solid rgba(200,160,90,.5);background:rgba(52,38,20,.7);
-  font-family:'Courier Prime',monospace;display:flex;align-items:center;gap:13px;
+  font-family:'Nunito',system-ui,sans-serif;display:flex;align-items:center;gap:13px;
   transition:transform .13s}
 .charger:active{transform:scale(.99)}
 .charger .ic{flex:0 0 34px;height:34px}
@@ -171,6 +171,12 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-bois);
 #charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#c8a05a;
   animation:va 1.15s ease-in-out infinite}
 @keyframes va{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+
+/* ---------- la voix des gens ----------
+   Courier Prime ne sert plus qu'à ça : ce qu'un personnage dit.
+   Le reste de la page est en Nunito, comme dans tout le jeu. */
+.parle, .dit p.parle, .voix{
+  font-family:'Courier Prime',monospace;letter-spacing:-.01em}
 </style>
 </head>
 <body>

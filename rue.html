@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#101f2e">
 <title>Battle Dock — La Barceloneta</title>
-<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="couleurs.css?v=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;user-select:none}
 html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
-  font-family:'Courier Prime',monospace;color:#fff}
+  font-family:'Nunito',system-ui,sans-serif;color:#fff}
 #rue{position:fixed;inset:0;
   /* la ruelle est dessinée une fois pour toutes : on ne fait que
      l'éclairer autrement selon l'heure qu'il est chez le joueur */
@@ -71,7 +71,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
   padding:11px 3px;border:1.5px solid rgba(255,255,255,.24);border-radius:9px;
   background:rgba(24,30,44,.56);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer;
-  font-family:'Courier Prime',monospace;transition:transform .11s}
+  font-family:'Nunito',system-ui,sans-serif;transition:transform .11s}
 .lieux button:active{transform:scale(.95)}
 .lieux button:disabled{opacity:.42;cursor:default}
 .lieux button.vif{border-color:rgba(240,196,106,.72);background:rgba(52,44,26,.62)}
@@ -108,7 +108,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
 .ct .cale{display:flex;align-items:center;gap:9px;padding:11px 15px;
   border-bottom:1px solid rgba(255,255,255,.14);font-size:10.5px;
   color:rgba(255,255,255,.6);font-family:system-ui,sans-serif}
-.ct .cale b{color:#f0c46a;font-family:'Courier Prime',monospace;font-size:13px}
+.ct .cale b{color:#f0c46a;font-family:'Nunito',system-ui,sans-serif;font-size:13px}
 
 .ct ul{list-style:none;padding:8px}
 .ct li{border-radius:8px;padding:13px;margin-bottom:8px;
@@ -129,7 +129,7 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
   font-family:system-ui,sans-serif}
 .ct li button{flex:0 0 auto;padding:9px 18px;border:0;border-radius:7px;cursor:pointer;
   background:linear-gradient(180deg,#f6cd76,#dca94a);color:#1c1a16;
-  font-family:'Courier Prime',monospace;font-size:11.5px;font-weight:700;letter-spacing:.05em}
+  font-family:'Nunito',system-ui,sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.05em}
 .ct li button:disabled{background:rgba(255,255,255,.09);color:rgba(255,255,255,.4);
   cursor:default}
 .ct li .fait{font-size:11px;color:#8ce0a8;font-weight:700;letter-spacing:.05em}
@@ -268,6 +268,12 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
 #charge .fl i{display:block;width:38%;height:100%;border-radius:2px;background:#fffaf0;
   animation:houle 1.15s ease-in-out infinite}
 @keyframes houle{0%{transform:translateX(-115%)}100%{transform:translateX(275%)}}
+
+/* ---------- la voix des gens ----------
+   Courier Prime ne sert plus qu'à ça : ce qu'un personnage dit.
+   Le reste de la page est en Nunito, comme dans tout le jeu. */
+.parle, .dit p.parle, .voix{
+  font-family:'Courier Prime',monospace;letter-spacing:-.01em}
 </style>
 </head>
 <body>
@@ -1309,7 +1315,7 @@ function barqueQ(n, route){
 
   /* ---------- le nom peint (20) ---------- */
   if (n >= 20)
-    s += `<text x="${g(L*.1)}" y="${(flot - H*.34).toFixed(1)}" font-family="Bebas Neue,sans-serif"
+    s += `<text x="${g(L*.1)}" y="${(flot - H*.34).toFixed(1)}" font-family="Georgia,serif"
       font-size="8.4" letter-spacing="1.2" fill="#f2e6c8" opacity=".85">LA ZIZOUIN</text>`;
 
   /* ---------- l'eau, selon l'allure ---------- */

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#050d16">
 <title>Battledock — Dotation d'entrée</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="couleurs.css?v=1">
 <style>
 :root{--nuit:#050d16;--brume:#7fa3c0;--sable:#e8e2d4;--ocre:#e0913a;--ocre-f:#a3611f;
@@ -14,7 +14,7 @@
 html,body{height:100%}
 body{
   background:var(--nuit);color:var(--sable);
-  font-family:'Barlow',system-ui,sans-serif;overflow-x:hidden;
+  font-family:'Nunito',system-ui,sans-serif;overflow-x:hidden;
   background-image:radial-gradient(100% 45% at 50% 0%, rgba(42,90,122,.5), transparent 64%);
   background-attachment:fixed;
 }
@@ -22,7 +22,7 @@ body{
 
 .entete{text-align:center;margin-bottom:18px}
 .entete .sur{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--brume);margin-bottom:8px;padding-left:.34em}
-.entete h1{font-family:'Bebas Neue',sans-serif;font-size:31px;letter-spacing:.03em;line-height:1.05}
+.entete h1{font-family:'DM Serif Display',Georgia,serif;font-size:31px;letter-spacing:.03em;line-height:1.05}
 .entete .intro{margin-top:9px;font-size:13.5px;color:#9dbcd4;line-height:1.5}
 
 /* --- la machine --- */
@@ -56,15 +56,15 @@ body{
 .bande{position:absolute;left:0;right:0;top:0;transition:none}
 .bande span{
   display:block;height:62px;line-height:62px;text-align:center;
-  font-family:'Courier Prime',monospace;font-weight:700;font-size:34px;color:#22201c;
+  font-family:'Nunito',system-ui,sans-serif;font-weight:700;font-size:34px;color:#22201c;
 }
 .espace{flex:0 0 8px}
 .devise{
-  align-self:center;font-family:'Courier Prime',monospace;font-weight:700;
+  align-self:center;font-family:'Nunito',system-ui,sans-serif;font-weight:700;
   font-size:30px;color:#8fa3ad;padding-left:4px;
 }
 .montant{
-  text-align:center;font-family:'Courier Prime',monospace;font-weight:700;
+  text-align:center;font-family:'Nunito',system-ui,sans-serif;font-weight:700;
   font-size:22px;margin-top:14px;letter-spacing:.02em;color:#8fa3ad;min-height:28px;
 }
 .montant.maigre{color:#c96a5c;animation:tombe .5s ease-out}
@@ -79,7 +79,7 @@ body{
   display:flex;justify-content:space-between;align-items:center;
   margin:14px 2px 0;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brume);
 }
-.tirages b{font-family:'Courier Prime',monospace;color:var(--sable);letter-spacing:0}
+.tirages b{font-family:'Nunito',system-ui,sans-serif;color:var(--sable);letter-spacing:0}
 
 /* --- le guichetier --- */
 .guichet{display:flex;gap:12px;align-items:flex-start;margin-bottom:18px}
@@ -97,12 +97,12 @@ body{
 
 .recu{
   background:var(--papier);color:var(--encre);border-radius:4px;padding:18px 16px 24px;
-  font-family:'Courier Prime',monospace;display:none;
+  font-family:'Nunito',system-ui,sans-serif;display:none;
   clip-path:polygon(0 0,100% 0,100% calc(100% - 7px),93% 100%,86% calc(100% - 7px),79% 100%,72% calc(100% - 7px),65% 100%,58% calc(100% - 7px),51% 100%,44% calc(100% - 7px),37% 100%,30% calc(100% - 7px),23% 100%,16% calc(100% - 7px),9% 100%,2% calc(100% - 7px),0 100%);
 }
 .recu.on{display:block;animation:entre .4s ease-out}
 @keyframes entre{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.recu h3{font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;text-align:center;color:#7a756a;margin-bottom:12px}
+.recu h3{font-family:'Nunito',system-ui,sans-serif;font-size:10px;letter-spacing:.24em;text-transform:uppercase;text-align:center;color:#7a756a;margin-bottom:12px}
 .recu .l{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:5px 0}
 .recu .sep{border-top:1px dashed rgba(43,42,38,.35);margin:9px 0}
 .recu .tot{font-size:16px;font-weight:700}
@@ -113,15 +113,21 @@ body{
   background:linear-gradient(180deg,rgba(5,13,22,0),rgba(5,13,22,.92) 32%,var(--nuit))}
 .barre .dedans{max-width:460px;margin:0 auto;display:flex;gap:9px}
 .principal{flex:1;background:var(--ocre);border:0;border-radius:10px;padding:17px;
-  font-family:'Barlow',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
+  font-family:'Nunito',system-ui,sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;
   text-transform:uppercase;color:#1a0f02;cursor:pointer;transition:transform .12s,background .2s}
 .principal:active{transform:scale(.985);background:var(--ocre-f)}
 .principal:disabled{opacity:.45;cursor:default}
 .second{flex:0 0 auto;background:none;border:1px solid rgba(127,163,192,.3);border-radius:10px;
-  padding:17px 18px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;
+  padding:17px 18px;font-family:'Nunito',system-ui,sans-serif;font-size:12px;font-weight:600;
   letter-spacing:.12em;text-transform:uppercase;color:var(--brume);cursor:pointer}
 .second:disabled{opacity:.35;cursor:default}
 @media (prefers-reduced-motion:reduce){.g-buste,.montant{animation:none}.g-paup{animation:none;transform:scaleY(0)}.recu.on{animation:none}}
+
+/* ---------- la voix des gens ----------
+   Courier Prime ne sert plus qu'à ça : ce qu'un personnage dit.
+   Le reste de la page est en Nunito, comme dans tout le jeu. */
+.parle, .dit p.parle, .voix{
+  font-family:'Courier Prime',monospace;letter-spacing:-.01em}
 </style>
 </head>
 <body>
