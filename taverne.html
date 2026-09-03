@@ -753,7 +753,9 @@ function poser(r){
   const chezSoi = AR && AR.etat === 'finie';
 
   /* elle est revenue de Majorque : elle a quelque chose à dire */
-  if (r.revenue && !localStorage.getItem('bd-nuria-revenue')){
+  let dejaDit = false;
+  try { dejaDit = !!localStorage.getItem('bd-nuria-revenue'); } catch(e){}
+  if (r.revenue && !dejaDit){
     try { localStorage.setItem('bd-nuria-revenue', '1'); } catch(e){}
     document.getElementById('w').innerHTML = '<div class="dit">'
       + '<p style="animation-delay:.1s">La taverne a rouvert. Elle est derrière '
