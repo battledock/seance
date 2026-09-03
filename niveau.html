@@ -100,7 +100,12 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
 .e2{animation-duration:3.2s;animation-delay:-2.6s}
 .e3{animation-duration:6.8s;animation-delay:-.7s}
 @keyframes scint{0%,100%{opacity:.15}50%{opacity:.7}}
-@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important}
+  /* sans animation, ce qui n'apparaissait que par l'animation
+     resterait invisible : on le montre tout de suite */
+  .bas, .ecl, .et, .gain, .halo, .lueur{opacity:1 !important;transform:none !important}
+}
 
 /* ---------- le feu d'artifice ---------- */
 #feu{position:fixed;inset:0;z-index:9;pointer-events:none;
