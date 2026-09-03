@@ -1556,15 +1556,40 @@ function poserMiquel(vecue){
   if (vecue){ g.querySelector('.signe')?.remove(); return; }
   g.style.cursor = 'pointer';
   g.onclick = () => location.href = 'miquel.html';
-  /* une zone plus large, pour ne pas avoir à viser */
-  const b = g.getBBox();
-  const z = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-  z.setAttribute('x', b.x - 14); z.setAttribute('y', b.y - 6);
-  z.setAttribute('width', b.width + 28); z.setAttribute('height', b.height + 12);
-  z.setAttribute('fill', 'transparent');
-  z.style.cursor = 'pointer';
-  z.onclick = () => location.href = 'miquel.html';
-  svg.appendChild(z);
+
+  /* une zone plus large, pour ne pas avoir à viser.
+     getBBox peut jeter ou renvoyer 0 tant que le SVG n'est pas
+     vraiment mis en page (arrivée sur la page, écran de charge,
+     Safari iOS) : dans ce cas on retente, puis on retombe sur une
+     zone calculée à la main. Sans ça, le type n'est pas cliquable
+     et il ne se passe rien quand on tape dessus. */
+  if (svg.querySelector('.zone-miquel')) return;
+  const poser = (x, y, w, h) => {
+    const z = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    z.setAttribute('class', 'zone-miquel');
+    z.setAttribute('x', x); z.setAttribute('y', y);
+    z.setAttribute('width', w); z.setAttribute('height', h);
+    z.setAttribute('fill', 'transparent');
+    z.style.cursor = 'pointer';
+    z.onclick = () => location.href = 'miquel.html';
+    svg.appendChild(z);
+  };
+  let essais = 0;
+  const tenter = () => {
+    if (!document.body.contains(g)) return;      /* le SVG a été redessiné */
+    if (svg.querySelector('.zone-miquel')) return;
+    let b = null;
+    try { b = g.getBBox(); } catch(e){ b = null; }
+    if (b && b.width > 1 && b.height > 1){
+      poser(b.x - 18, b.y - 8, b.width + 36, b.height + 16);
+      return;
+    }
+    if (++essais < 12){ requestAnimationFrame(tenter); return; }
+    /* dernier recours : là où on sait qu'il se tient */
+    const d = 11.5, x = projX(2.6, d), y = sol(d), H = px(1.76, d);
+    poser(x - H * .38, y - H * 1.12, H * .76, H * 1.2);
+  };
+  tenter();
 }
 
 /* ---------- la fiche du joueur ---------- */
