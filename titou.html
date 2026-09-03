@@ -147,7 +147,12 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-mer);
 @keyframes monte{0%{opacity:.22;transform:translate(0,0) scale(1)}
   100%{opacity:0;transform:translate(3px,-9px) scale(1.7)}}
 .signe{display:none}
-@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important}
+  /* sans animation, ce qui n'apparaissait que par l'animation
+     resterait invisible : on le montre tout de suite */
+  .choix, .lignes p{opacity:1 !important;transform:none !important}
+}
 
 /* ---------- ce qui vit sur le quai ---------- */
 .onde{will-change:transform}
