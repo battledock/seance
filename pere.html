@@ -159,7 +159,12 @@ html,body{height:100%;overflow:hidden;background:var(--nuit-bois);
 /* les fils de chaîne vibrent à peine */
 .chaine{animation:vibre 3.4s ease-in-out infinite}
 @keyframes vibre{0%,50%,100%{transform:translateY(0)}58%{transform:translateY(1.2px)}}
-@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important}
+  /* sans animation, ce qui n'apparaissait que par l'animation
+     resterait invisible : on le montre tout de suite */
+  .dit p{opacity:1 !important;transform:none !important}
+}
 
 #charge{position:fixed;inset:0;z-index:90;background:#17110b;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
