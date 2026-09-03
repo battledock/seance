@@ -168,7 +168,12 @@ h2 em{font-style:normal;color:#d4a03a;letter-spacing:.1em}
   transform-origin:0 50%}
 @keyframes remue{0%,100%{transform:rotate(0)}50%{transform:rotate(-16deg)}}
 
-@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important}
+  /* sans animation, ce qui n'apparaissait que par l'animation
+     resterait invisible : on le montre tout de suite */
+  .dit p, .rideau b{opacity:1 !important;transform:none !important}
+}
 
 /* ---------- la piste : le numéro se joue en plein écran ---------- */
 #piste{position:fixed;inset:0;z-index:70;background:#3a1420;display:none;
