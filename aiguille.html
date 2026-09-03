@@ -82,7 +82,7 @@ body{padding:calc(env(safe-area-inset-top) + 14px) 14px
 /* la chute, quand elle tombe */
 #voile{position:fixed;inset:0;z-index:60;background:rgba(6,14,20,.86);
   display:none;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(6px)}
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 #voile.on{display:flex}
 #voile .b{width:100%;max-width:380px;border-radius:18px;background:var(--mer-2);
   border:3px solid var(--or);padding:22px;max-height:86vh;overflow-y:auto}
