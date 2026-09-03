@@ -68,7 +68,12 @@ h2{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:900;
 @keyframes peindre{0%,100%{transform:rotate(0) translate(0,0)}
   30%{transform:rotate(-7deg) translate(-4px,-6px)}
   60%{transform:rotate(5deg) translate(3px,4px)}}
-@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important}
+  /* sans animation, ce qui n'apparaissait que par l'animation
+     resterait invisible : on le montre tout de suite */
+  .dit p{opacity:1 !important;transform:none !important}
+}
 </style>
 </head>
 <body>
