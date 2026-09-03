@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f7edd8">
+<title>Battle Dock — La Course des Clarks</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* La palette du jeu, recopiée ici pour que l'aperçu tienne tout seul
+   (dans le repo, c'est couleurs.css).
+
+   Le registre JOUR : fond crème, contours d'encre. C'est celui des
+   pages où l'on compare et où l'on décide — contrats, boutique. Une
+   affiche de fête appartient à cette famille, pas à celle des
+   rencontres nocturnes. */
+:root{
+  --encre:#12303f; --encre-fort:#0b2230;
+  --creme:#fdf6e6; --creme2:#f7edd8; --creme3:#e8e2d4;
+  --or:#f0a92e; --or-pale:#f0c46a; --rouge:#c9302c;
+  --vert:#2f8a5c; --bleu:#2d7ba8;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+html,body{background:var(--creme2);font-family:'Nunito',system-ui,sans-serif;
+  color:var(--encre)}
+body{padding-bottom:calc(env(safe-area-inset-bottom) + 30px)}
+
+/* ================= LE DÉCOR ================= */
+/* Le môle en plein jour : on voit tout, et le ciel de Marseille fait
+   la moitié du travail. Aucun voile sombre par-dessus — c'est une
+   fête, elle a le droit d'être claire. */
+#decor{position:relative;height:34vh;min-height:225px;max-height:290px;
+  overflow:hidden;border-bottom:4px solid var(--encre)}
+#decor svg{display:block;width:100%;height:100%}
+.fanion{animation:balance 4.6s ease-in-out infinite;transform-origin:50% 0}
+.fanion:nth-child(even){animation-duration:5.4s}
+@keyframes balance{0%,100%{transform:rotate(-2.4deg)}50%{transform:rotate(2.4deg)}}
+.fumee{animation:monte 6s ease-in-out infinite}
+@keyframes monte{0%{opacity:.34;transform:translateY(0)}100%{opacity:0;transform:translateY(-17px)}}
+.gyro{animation:clignote 1.5s ease-in-out infinite}
+@keyframes clignote{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ================= L'AFFICHE ================= */
+.affiche{margin:-30px 16px 0;position:relative;z-index:3;
+  background:var(--creme);border:3px solid var(--encre);border-radius:20px;
+  padding:19px 18px 17px;text-align:center}
+.affiche .sur{display:inline-block;padding:5px 13px;border-radius:12px;
+  background:var(--rouge);color:#fff;border:2.5px solid var(--encre);
+  font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.affiche h1{font-family:'DM Serif Display',Georgia,serif;font-size:34px;
+  line-height:1.06;margin:11px 0 7px}
+.affiche .lieu{font-size:13.5px;font-weight:700;color:rgba(18,48,63,.6)}
+
+/* ================= LES CARTES ================= */
+.corps{padding:15px 16px 0}
+.carte{background:var(--creme);border:3px solid var(--encre);border-radius:18px;
+  padding:16px 17px;margin-bottom:14px}
+.carte h2{font-size:11px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(18,48,63,.5);margin-bottom:13px}
+
+/* les trois jours */
+.jours{display:flex;gap:9px}
+.jour{flex:1;text-align:center;padding:12px 4px;border-radius:13px;
+  background:rgba(18,48,63,.05);border:2.5px solid rgba(18,48,63,.16)}
+.jour.fait{background:#eaf6ee;border-color:var(--vert)}
+.jour.aujourdhui{background:#fff3d8;border-color:var(--or)}
+.jour b{display:block;font-family:'DM Serif Display',Georgia,serif;font-size:23px;
+  line-height:1}
+.jour span{display:block;font-size:10px;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(18,48,63,.52);margin-top:5px}
+.jour.fait span{color:var(--vert)}
+.jour.aujourdhui span{color:#a8761a}
+.reste{margin-top:13px;font-size:13.5px;font-weight:600;text-align:center;
+  color:rgba(18,48,63,.66);line-height:1.5}
+.reste em{font-style:normal;font-weight:800;color:var(--encre)}
+
+/* la bourse */
+.ligne{display:flex;align-items:center;gap:12px;padding:11px 13px;
+  border-radius:13px;margin-bottom:8px;border:2.5px solid rgba(18,48,63,.14);
+  background:rgba(18,48,63,.03)}
+.ligne:last-of-type{margin-bottom:0}
+.ligne.or{background:#fff3d8;border-color:var(--or)}
+.ligne .rang{width:29px;height:29px;flex:0 0 29px;border-radius:50%;
+  border:2.5px solid var(--encre);display:flex;align-items:center;
+  justify-content:center;font-size:13px;font-weight:900}
+.r1{background:var(--or)} .r2{background:#d9d9d9} .r3{background:#d9a06a}
+.r4{background:rgba(18,48,63,.1)}
+.ligne .quoi{flex:1;font-size:14.5px;font-weight:700}
+.ligne .combien{font-family:'DM Serif Display',Georgia,serif;font-size:24px;
+  color:var(--vert)}
+.aparte{margin-top:13px;padding:11px 13px;border-radius:12px;
+  background:rgba(45,123,168,.09);border:2px solid rgba(45,123,168,.24);
+  font-size:13px;font-weight:600;line-height:1.6;color:#1d5877}
+
+/* le classement */
+.rg{display:flex;align-items:center;gap:11px;padding:11px 4px;
+  border-bottom:2px solid rgba(18,48,63,.09);font-size:14.5px;font-weight:700}
+.rg:last-child{border-bottom:0}
+.rg .n{width:23px;font-size:13px;font-weight:800;color:rgba(18,48,63,.42)}
+.rg .nom{flex:1}
+.rg .t{font-family:'Courier Prime',monospace;font-size:14px;font-weight:700;
+  color:rgba(18,48,63,.72)}
+.rg.moi{background:#fff3d8;border:2.5px solid var(--or);border-radius:13px;
+  margin:5px -6px;padding:11px 10px}
+.rg.moi .n{color:#a8761a}
+.rg.moi .t{color:var(--encre)}
+.vide{margin-top:11px;font-size:13px;font-weight:600;line-height:1.6;
+  color:rgba(18,48,63,.55);text-align:center}
+
+/* ce que Momo raconte */
+.dit{display:flex;gap:13px;align-items:flex-start;
+  background:var(--creme);border:3px solid var(--encre);border-radius:18px;
+  padding:15px 16px;margin-bottom:14px}
+.dit .tete{width:42px;height:42px;flex:0 0 42px;border-radius:50%;
+  border:2.5px solid var(--encre);background:var(--or);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',Georgia,serif;font-size:20px}
+.dit .txt .qui{font-size:10px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(18,48,63,.5);margin-bottom:6px}
+.dit .txt p{font-family:'Courier Prime',monospace;font-size:13.5px;
+  line-height:1.7}
+
+/* le bouton */
+.principal{display:block;width:100%;padding:18px;border-radius:16px;
+  background:var(--or);border:3px solid var(--encre);cursor:pointer;
+  font-family:'DM Serif Display',Georgia,serif;font-size:22px;color:var(--encre);
+  transition:transform .12s}
+.principal:active{transform:translateY(2px)}
+.principal:disabled{background:var(--creme3);color:rgba(18,48,63,.45);
+  cursor:default}
+.sous{margin-top:11px;text-align:center;font-size:13px;font-weight:600;
+  color:rgba(18,48,63,.6);line-height:1.55}
+.sous b{color:var(--encre)}
+.sous a{color:#a8761a}
+.retour{display:block;width:100%;margin-top:11px;padding:14px;border-radius:16px;
+  background:none;border:2.5px solid rgba(18,48,63,.2);cursor:pointer;
+  font-family:'Nunito',system-ui,sans-serif;font-size:12.5px;font-weight:800;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(18,48,63,.6)}
+
+@media (prefers-reduced-motion:reduce){ *{animation:none !important} }
+</style>
+</head>
+<body>
+
+<div id="decor"></div>
+
+<div class="affiche">
+  <span class="sur">Trois jours seulement</span>
+  <h1>La Course des Clarks</h1>
+  <p class="lieu">Marseille · Quai 84, le môle est barré</p>
+</div>
+
+<div class="corps">
+
+  <div class="dit">
+    <div class="tete">M</div>
+    <div class="txt">
+      <div class="qui">Momo, chef d'équipe</div>
+      <p id="momo">« Trois jours, le môle est à nous. On a barré le quai
+        avec des pneus et des palettes, et la Capitainerie a fermé les yeux.
+        Une course par jour, pas plus — après, faut bien travailler. »</p>
+    </div>
+  </div>
+
+  <div class="carte">
+    <h2>La fête</h2>
+    <div class="jours" id="jours"></div>
+    <p class="reste" id="reste"></p>
+  </div>
+
+  <div class="carte">
+    <h2>La bourse</h2>
+    <div class="ligne or"><span class="rang r1">1</span>
+      <span class="quoi">Le vainqueur</span><span class="combien">500 €</span></div>
+    <div class="ligne"><span class="rang r2">2</span>
+      <span class="quoi">Deuxième</span><span class="combien">250 €</span></div>
+    <div class="ligne"><span class="rang r3">3</span>
+      <span class="quoi">Troisième</span><span class="combien">100 €</span></div>
+    <div class="ligne"><span class="rang r4">·</span>
+      <span class="quoi">Être venu courir</span><span class="combien">25 €</span></div>
+    <p class="aparte">Un tour sous 25 secondes : 50 € de plus.
+      Au classement, c'est ton meilleur temps des trois jours qui compte.</p>
+  </div>
+
+  <div class="carte">
+    <h2>Le tableau du môle</h2>
+    <div id="rangs"></div>
+  </div>
+
+  <button class="principal" id="courir">Prendre le départ</button>
+  <p class="sous" id="sous"></p>
+  <button class="retour" onclick="location.href='hub.html'">Retourner sur le quai</button>
+
+</div>
+
+<script>
+/* ============================================================
+   LE DÉCOR — LE MÔLE EN FÊTE, À MIDI
+   Un lieu qu'on ne voit que pendant l'événement. En plein jour :
+   le quai barré, les banderoles d'un portique à l'autre, la foule
+   sur les conteneurs, la ligne de départ à la chaux.
+   ============================================================ */
+var W = 480, H = 300;
+
+function ciel(){
+  return '<defs>'
+    + '<linearGradient id="g-ciel" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0" stop-color="#4a9ec8"/>'
+    +   '<stop offset=".55" stop-color="#8fc9e0"/>'
+    +   '<stop offset="1" stop-color="#d8ecf2"/>'
+    + '</linearGradient>'
+    + '<linearGradient id="g-mer" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0" stop-color="#2d7ba8"/>'
+    +   '<stop offset="1" stop-color="#1d5f88"/>'
+    + '</linearGradient>'
+    + '<linearGradient id="g-quai" x1="0" y1="0" x2="0" y2="1">'
+    +   '<stop offset="0" stop-color="#c9bda2"/>'
+    +   '<stop offset="1" stop-color="#a2977f"/>'
+    + '</linearGradient>'
+    + '<pattern id="g-rayures" width="14" height="9" patternUnits="userSpaceOnUse">'
+    +   '<rect width="7" height="9" fill="#fdf6e6"/></pattern>'
+    + '</defs>'
+    + '<rect width="' + W + '" height="' + H + '" fill="url(#g-ciel)"/>'
+    + nuage(88, 74, 1.1) + nuage(300, 60, .85) + nuage(410, 92, .7);
+}
+
+function nuage(x, y, e){
+  return '<g transform="translate(' + x + ',' + y + ') scale(' + e + ')"'
+    + ' fill="#fdf6e6" opacity=".9">'
+    + '<ellipse cx="0" cy="0" rx="26" ry="11"/>'
+    + '<ellipse cx="-16" cy="4" rx="17" ry="8"/>'
+    + '<ellipse cx="17" cy="4" rx="19" ry="8"/></g>';
+}
+
+function mouettes(){
+  var s = '<g stroke="#12303f" stroke-width="2" fill="none" opacity=".55">';
+  [[70,50],[100,64],[138,42],[330,56]].forEach(function(p){
+    s += '<path d="M' + p[0] + ',' + p[1] + ' q6,-6 12,0 q6,-6 12,0"/>';
+  });
+  return s + '</g>';
+}
+
+/* la colline et la Bonne Mère : on est bien à Marseille */
+function colline(){
+  return '<path d="M0,152 L48,122 L92,138 L132,112 L172,140 L200,130 L216,152 Z"'
+    + ' fill="#8aa89a" stroke="#12303f" stroke-width="2" stroke-linejoin="round"/>'
+    + '<path d="M0,152 L48,122 L74,132 L60,152 Z" fill="#a3bdaf"/>'
+    + '<rect x="129" y="92" width="5" height="22" fill="#12303f"/>'
+    + '<circle cx="131.5" cy="88" r="5" fill="#f0a92e" stroke="#12303f" stroke-width="2"/>';
+}
+
+function mer(){
+  var s = '<rect x="0" y="152" width="' + W + '" height="30" fill="url(#g-mer)"/>';
+  s += '<g stroke="#fdf6e6" stroke-width="2" fill="none" opacity=".5">';
+  for (var i = 0; i < 13; i++){
+    var x = (i * 39 + 10) % W, y = 158 + (i % 3) * 7;
+    s += '<path d="M' + x + ',' + y + ' q6,-4 12,0"/>';
+  }
+  return s + '</g>';
+}
+
+/* les deux portiques : c'est entre eux que les banderoles sont tendues */
+function portique(x, ech){
+  var h = 100 * ech, l = 66 * ech, t = 176;
+  return '<g fill="#3f5668" stroke="#12303f" stroke-width="2.4">'
+    + '<rect x="' + x + '" y="' + (t - h) + '" width="' + (6 * ech) + '" height="' + h + '"/>'
+    + '<rect x="' + (x + l - 6 * ech) + '" y="' + (t - h) + '" width="' + (6 * ech) + '" height="' + h + '"/>'
+    + '<rect x="' + x + '" y="' + (t - h) + '" width="' + l + '" height="' + (7 * ech) + '"/>'
+    + '<rect x="' + (x + l * .28) + '" y="' + (t - h + 7 * ech) + '" width="' + (l * .44) + '" height="' + (12 * ech) + '" rx="3"/>'
+    + '</g>'
+    + '<circle class="gyro" cx="' + (x + l / 2) + '" cy="' + (t - h - 4) + '" r="4.6"'
+    + ' fill="#c9302c" stroke="#12303f" stroke-width="2"/>';
+}
+
+/* les banderoles : deux guirlandes de fanions en courbe */
+function guirlande(x1, y1, x2, y2, creux, n, decal){
+  var cols = ['#c9302c','#f0a92e','#2f8a5c','#fdf6e6','#2d7ba8'];
+  var s = '<path d="M' + x1 + ',' + y1 + ' Q' + ((x1 + x2) / 2) + ','
+        + creux + ' ' + x2 + ',' + y2 + '" stroke="#12303f" stroke-width="2" fill="none"/>';
+  for (var i = 1; i < n; i++){
+    var u = i / n, v = 1 - u;
+    var px = v * v * x1 + 2 * v * u * ((x1 + x2) / 2) + u * u * x2;
+    var py = v * v * y1 + 2 * v * u * creux + u * u * y2;
+    s += '<g class="fanion" style="transform-origin:' + px.toFixed(1) + 'px ' + py.toFixed(1) + 'px">'
+      +  '<path d="M' + (px - 6).toFixed(1) + ',' + py.toFixed(1)
+      +  ' L' + (px + 6).toFixed(1) + ',' + py.toFixed(1)
+      +  ' L' + px.toFixed(1) + ',' + (py + 15).toFixed(1) + ' Z" fill="'
+      +  cols[(i + decal) % cols.length] + '" stroke="#12303f" stroke-width="1.6"'
+      +  ' stroke-linejoin="round"/></g>';
+  }
+  return s;
+}
+
+function quai(){
+  return '<rect x="0" y="182" width="' + W + '" height="118" fill="url(#g-quai)"/>'
+    + '<rect x="0" y="182" width="' + W + '" height="6" fill="#8a7f68"/>'
+    + '<line x1="0" y1="188" x2="480" y2="188" stroke="#12303f" stroke-width="2.4"/>'
+    + damier(78, 246, 324, 16)
+    + '<text x="240" y="296" text-anchor="middle"'
+    + ' font-family="DM Serif Display,Georgia,serif" font-size="76"'
+    + ' fill="rgba(18,48,63,.07)">84</text>';
+}
+
+function damier(x, y, l, h){
+  var s = '', c = 18, n = Math.round(l / c);
+  for (var i = 0; i < n; i++){
+    for (var j = 0; j < 2; j++){
+      s += '<rect x="' + (x + i * c) + '" y="' + (y + j * (h / 2))
+        +  '" width="' + c + '" height="' + (h / 2) + '" fill="'
+        +  ((i + j) % 2 ? '#fdf6e6' : '#12303f') + '"/>';
+    }
+  }
+  return s;
+}
+
+/* les conteneurs empilés en tribune, et la foule dessus */
+function tribune(x, base){
+  var cols = ['#c9503c','#2d7ba8','#d9a83c','#4e7a5e'];
+  var s = '';
+  for (var e = 0; e < 3; e++){
+    for (var i = 0; i < 3 - e; i++){
+      var cx = x + i * 50 + e * 25, cy = base - e * 27;
+      s += '<g stroke="#12303f" stroke-width="2.2">'
+        +  '<rect x="' + cx + '" y="' + cy + '" width="48" height="26" rx="2" fill="'
+        +  cols[(i + e) % cols.length] + '"/></g>'
+        +  '<rect x="' + cx + '" y="' + cy + '" width="48" height="4" fill="rgba(253,246,230,.3)"/>';
+      for (var k = 1; k < 6; k++){
+        s += '<line x1="' + (cx + k * 8) + '" y1="' + (cy + 5) + '" x2="' + (cx + k * 8)
+          +  '" y2="' + (cy + 22) + '" stroke="rgba(18,48,63,.28)" stroke-width="1.6"/>';
+      }
+    }
+  }
+  /* la foule au sommet */
+  var haut = base - 2 * 27;
+  var peau = ['#c08256','#8a5a38','#d8a077'];
+  var habits = ['#c9302c','#2d7ba8','#f0a92e','#2f8a5c'];
+  for (var g = 0; g < 6; g++){
+    var gx = x + 30 + g * 15, gh = 13 + (g % 3) * 2;
+    s += '<g stroke="#12303f" stroke-width="1.8" stroke-linejoin="round">'
+      +  '<path d="M' + (gx - 4) + ',' + haut + ' q4,-' + gh + ' 8,0 Z" fill="'
+      +  habits[g % 4] + '"/>'
+      +  '<circle cx="' + gx + '" cy="' + (haut - gh - 2.5) + '" r="3.6" fill="'
+      +  peau[g % 3] + '"/></g>';
+  }
+  return s;
+}
+
+/* le stand de merguez, qui fume */
+function stand(x, y){
+  return '<g stroke="#12303f" stroke-width="2.2">'
+    + '<rect x="' + x + '" y="' + y + '" width="64" height="30" rx="3" fill="#e8dcc0"/>'
+    + '<rect x="' + (x - 5) + '" y="' + (y - 9) + '" width="74" height="10" rx="3" fill="#c9302c"/>'
+    + '</g>'
+    + '<rect x="' + (x - 5) + '" y="' + (y - 9) + '" width="74" height="10"'
+    + ' fill="url(#g-rayures)" opacity=".45"/>'
+    + '<circle cx="' + (x + 50) + '" cy="' + (y + 10) + '" r="3.4" fill="#f0a92e"'
+    + ' stroke="#12303f" stroke-width="1.8"/>'
+    + '<g class="fumee" fill="rgba(253,246,230,.85)">'
+    +   '<ellipse cx="' + (x + 16) + '" cy="' + (y - 16) + '" rx="7" ry="4.5"/>'
+    +   '<ellipse cx="' + (x + 23) + '" cy="' + (y - 25) + '" rx="5" ry="3.4"/>'
+    + '</g>';
+}
+
+/* les clarks sur la ligne, vus de trois quarts arrière */
+function clark(x, y, col, ech){
+  var e = ech || 1;
+  return '<g transform="translate(' + x + ',' + y + ') scale(' + e + ')"'
+    + ' stroke="#12303f" stroke-width="2.2" stroke-linejoin="round">'
+    + '<ellipse cx="0" cy="22" rx="23" ry="5" fill="rgba(18,48,63,.2)" stroke="none"/>'
+    + '<rect x="-21" y="8" width="10" height="14" rx="3" fill="#22282e"/>'
+    + '<rect x="11" y="8" width="10" height="14" rx="3" fill="#22282e"/>'
+    + '<rect x="-18" y="-15" width="36" height="32" rx="5" fill="' + col + '"/>'
+    + '<rect x="-16" y="-38" width="4" height="24" fill="#3f5668"/>'
+    + '<rect x="12" y="-38" width="4" height="24" fill="#3f5668"/>'
+    + '<rect x="-18" y="-43" width="36" height="5" rx="2" fill="#3f5668"/>'
+    + '<circle cx="0" cy="-23" r="6" fill="#c08256"/>'
+    + '<rect x="-7" y="-17" width="14" height="10" rx="3" fill="#f0a92e"/>'
+    + '<rect x="-14" y="15" width="5" height="13" fill="#9aa2a8"/>'
+    + '<rect x="9" y="15" width="5" height="13" fill="#9aa2a8"/>'
+    + '</g>';
+}
+
+function dessiner(){
+  var s = '<svg viewBox="0 40 ' + W + ' 260" preserveAspectRatio="xMidYMid slice"'
+        + ' xmlns="http://www.w3.org/2000/svg">'
+        + ciel() + colline() + mouettes() + mer()
+        + portique(24, 1) + portique(360, .9)
+        + guirlande(56, 84, 384, 92, 148, 12, 0)
+        + guirlande(56, 102, 384, 110, 174, 11, 2)
+        + quai()
+        + tribune(-24, 234) + tribune(382, 238)
+        + stand(196, 202)
+        + clark(148, 266, '#c9302c', 1.05)
+        + clark(238, 272, '#f0a92e', 1.12)
+        + clark(320, 262, '#2d7ba8', .98)
+        + '</svg>';
+  document.getElementById('decor').innerHTML = s;
+}
+dessiner();
+
+/* ============================================================
+   L'ÉVÉNEMENT
+   Dans le vrai jeu : une table `fetes` avec ses dates, et
+   `conclure_course_clarks()` côté Postgres qui verse la bourse.
+   Ici, tout est en local pour que l'aperçu se tienne seul.
+   ============================================================ */
+var CLE = 'bd-fete-clarks';
+
+function lire(){
+  try { return JSON.parse(localStorage.getItem(CLE)) || {courses:[]}; }
+  catch(e){ return {courses:[]}; }
+}
+
+/* les huit capitaines du jeu, venus courir eux aussi */
+var CAPITAINES = [
+  { nom:'Le Grec',       t:41.8 },
+  { nom:'Nine Ferrer',   t:43.2 },
+  { nom:'Sauveur Pons',  t:44.6 },
+  { nom:'Gaspard Vidau', t:46.1 },
+  { nom:'Ondine Roux',   t:47.9 },
+  { nom:'Mireia Sans',   t:49.4 },
+  { nom:'Barthélemy',    t:52.0 },
+  { nom:'Colomba',       t:55.3 }
+];
+
+function poserJours(){
+  var n = (lire().courses || []).length, h = '';
+  for (var j = 1; j <= 3; j++){
+    var faite = n >= j, aujourd = n === j - 1;
+    h += '<div class="jour' + (faite ? ' fait' : aujourd ? ' aujourdhui' : '') + '">'
+      +  '<b>J' + j + '</b><span>'
+      +  (faite ? 'couru' : aujourd ? 'à courir' : 'à venir') + '</span></div>';
+  }
+  document.getElementById('jours').innerHTML = h;
+
+  var reste = 3 - n;
+  document.getElementById('reste').innerHTML = reste > 0
+    ? 'Il te reste <em>' + reste + '</em> ' + (reste > 1 ? 'courses' : 'course')
+      + ' · la fête ferme après la troisième'
+    : 'La fête est finie. Le môle rouvre au travail demain.';
+}
+
+function poserClassement(){
+  var c = lire().courses || [], moi = null;
+  c.forEach(function(x){ if (moi === null || x.temps < moi) moi = x.temps; });
+
+  var tous = CAPITAINES.slice();
+  if (moi !== null) tous.push({ nom:'Toi', t:moi, moi:true });
+  tous.sort(function(a, b){ return a.t - b.t; });
+
+  var h = '';
+  tous.forEach(function(x, i){
+    h += '<div class="rg' + (x.moi ? ' moi' : '') + '">'
+      +  '<span class="n">' + (i + 1) + '</span>'
+      +  '<span class="nom">' + x.nom + '</span>'
+      +  '<span class="t">' + x.t.toFixed(1) + 's</span></div>';
+  });
+  if (moi === null){
+    h += '<p class="vide">Tu n\'as pas encore couru.'
+      +  ' Les capitaines, eux, ont déjà posé leurs temps.</p>';
+  }
+  document.getElementById('rangs').innerHTML = h;
+}
+
+function poserBouton(){
+  var d = lire(), n = (d.courses || []).length;
+  var b = document.getElementById('courir'), s = document.getElementById('sous');
+
+  if (n >= 3){
+    b.disabled = true;
+    b.textContent = 'La fête est terminée';
+    var total = 0;
+    d.courses.forEach(function(x){ total += x.gain || 0; });
+    s.innerHTML = 'Trois courses, <b>' + total + ' €</b> ramassés. '
+      + '<a href="#" onclick="recommencer();return false">Refaire l\'aperçu</a>';
+    return;
+  }
+  b.textContent = n === 0 ? 'Prendre le départ' : 'Courir le jour ' + (n + 1);
+  b.onclick = function(){ location.href = 'course-clark.html'; };
+
+  if (n === 0){
+    s.textContent = 'Trois tours du môle. Le doigt sur l\'écran pour diriger.';
+  } else {
+    var der = d.courses[n - 1];
+    s.innerHTML = 'Dernière course : <b>' + der.place
+      + (der.place === 1 ? 'er' : 'e') + '</b> en ' + der.temps.toFixed(1)
+      + 's, <b>' + der.gain + ' €</b> · seul ton meilleur temps compte.';
+  }
+}
+
+function recommencer(){
+  try { localStorage.removeItem(CLE); } catch(e){}
+  location.reload();
+}
+
+/* Momo ne dit pas la même chose selon où tu en es */
+function poserMomo(){
+  var n = (lire().courses || []).length, p = document.getElementById('momo');
+  if (n === 1){
+    p.textContent = '« Bon. T\'as vu le môle, maintenant. Demain tu connais'
+      + ' les virages, alors plus d\'excuse. »';
+  } else if (n === 2){
+    p.textContent = '« Dernière chance demain. Le Grec a mis 41.8 — si tu'
+      + ' passes sous ça, je paie la tournée moi-même. »';
+  } else if (n >= 3){
+    p.textContent = '« Fini. On démonte les banderoles, les pneus retournent'
+      + ' au dépôt. L\'année prochaine, peut-être. »';
+  }
+}
+
+poserJours();
+poserClassement();
+poserBouton();
+poserMomo();
+</script>
+</body>
+</html>
