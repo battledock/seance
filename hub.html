@@ -492,8 +492,24 @@ const FAMILLES = [
   { k:'autres', t:'Les autres' }
 ];
 
+/* ---------- LA COURSE DES CLARKS ----------
+   Trois jours, et le mole rouvre au travail. Les dates sont ecrites
+   ici en attendant la table `fetes` cote Postgres : tant que c'est
+   le client qui decide, personne ne gagne rien de reel. */
+const FETE_CLARKS = { debut:'2026-09-03', fin:'2026-09-05' };
+function feteOuverte(){
+  const j = new Date().toISOString().slice(0, 10);
+  return j >= FETE_CLARKS.debut && j <= FETE_CLARKS.fin;
+}
+
 const TUILES = [
   /* ---- Marseille ---- */
+  /* trois jours par an : le mole est barre, on y court en clark.
+     La tuile s'efface d'elle-meme quand la fete est finie. */
+  { k:'fete_clarks', ou:'attend', ici:'anse', em:'🏁', t:'La course des clarks',
+    s:'Trois jours. Le môle est barré.', teinte:'chantier',
+    cache: () => !feteOuverte(),
+    f:() => location.href = 'fete-clarks.html' },
   { k:'contrats', ou:'attend', ici:'anse', em:'🏷️', t:'Les contrats',
     s:'Ce qu\'on te propose',
     f:() => location.href = 'contrats.html' },
