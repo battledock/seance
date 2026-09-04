@@ -54,24 +54,24 @@ const BD = (() => {
       + "html{background:#2b6f92}"
       + "body{min-height:100%;overflow-x:hidden;background:transparent;color:var(--creme);"
       + "font-family:'Nunito',system-ui,sans-serif}"
-      + '#ciel{position:fixed;left:0;right:0;top:0;height:36%;z-index:0;background:#f0a94e}'
-      + '#eau{position:fixed;left:0;right:0;bottom:0;height:64%;z-index:0;'
+      + '#ciel{position:fixed;left:0;right:0;top:0;height:29%;z-index:0;background:#f0a94e}'
+      + '#eau{position:fixed;left:0;right:0;bottom:0;height:71%;z-index:0;'
       + 'background:#2b6f92;border-top:4px solid var(--encre)}'
       /* le disque, arrêté au zénith : le temps ne passe plus */
-      + '#disque{position:fixed;z-index:1;left:50%;top:15%;width:19vw;max-width:88px;'
-      + 'aspect-ratio:1;border-radius:50%;margin-left:-9.5vw;transform:translateX(0);'
+      + '#disque{position:fixed;z-index:1;left:50%;top:9%;width:16vw;max-width:74px;'
+      + 'aspect-ratio:1;border-radius:50%;margin-left:-8vw;transform:translateX(0);'
       + 'background:#fff0c4;border:4px solid var(--encre)}'
-      + '@media(min-width:492px){#disque{margin-left:-44px}}'
+      + '@media(min-width:492px){#disque{margin-left:-37px}}'
       /* la houle continue : le port vit même quand on ferme */
       + '.houle{position:fixed;left:-60%;right:-60%;z-index:2;height:5px;border-radius:3px;'
       + 'background:repeating-linear-gradient(90deg,#fdf6e6 0 26px,transparent 26px 62px);'
       + 'will-change:transform}'
-      + '.h1{bottom:54%;opacity:.16;animation:file 14s linear infinite}'
-      + '.h2{bottom:46%;opacity:.2;height:6px;animation:file 10s linear infinite reverse}'
-      + '.h3{bottom:38%;opacity:.26;height:8px;animation:file 7s linear infinite}'
+      + '.h1{bottom:62%;opacity:.16;animation:file 14s linear infinite}'
+      + '.h2{bottom:55%;opacity:.2;height:6px;animation:file 10s linear infinite reverse}'
+      + '.h3{bottom:47%;opacity:.26;height:8px;animation:file 7s linear infinite}'
       + '@keyframes file{to{transform:translateX(62px)}}'
       /* la barque, au mouillage */
-      + '#bq{position:fixed;left:50%;bottom:63%;z-index:2;width:84px;margin-left:-42px;'
+      + '#bq{position:fixed;left:50%;bottom:70%;z-index:2;width:72px;margin-left:-36px;'
       + 'animation:souleve 4.8s ease-in-out infinite;will-change:transform}'
       + '#bq svg{display:block;width:100%;height:auto;'
       + 'animation:penche 4.8s ease-in-out infinite;transform-origin:50% 88%}'
@@ -90,7 +90,11 @@ const BD = (() => {
       /* ce qu'on en dit, à même l'eau */
       + '.bas{position:fixed;left:18px;right:18px;z-index:5;'
       + 'bottom:calc(env(safe-area-inset-bottom) + 20px);text-align:center;'
-      + 'max-height:56vh;overflow-y:auto;-webkit-overflow-scrolling:touch}'
+      + 'max-height:68vh;overflow-y:auto;-webkit-overflow-scrolling:touch;'
+      + 'scrollbar-width:none}'
+      + '.bas::-webkit-scrollbar{display:none}'
+      /* de quoi signaler qu'il y a à lire plus bas */
+      + '.bas{-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14px)}'
       + ".bas p{font-family:'DM Serif Display',Georgia,serif;font-size:15.5px;line-height:1.42;"
       + 'text-shadow:0 2px 12px rgba(8,24,38,.4)}'
       + '.bas .pt{display:flex;gap:8px;justify-content:center;margin-top:20px}'
@@ -108,6 +112,25 @@ const BD = (() => {
       + 'color:rgba(253,246,230,.94)}'
       + ".pts li::before{content:'';position:absolute;left:14px;top:16px;width:8px;"
       + 'height:8px;border-radius:50%;background:var(--or)}'
+      /* le mode d'emploi : quatre gestes, numérotés, qu'on lit en dix secondes */
+      + '.soustitre{margin:22px 0 10px;font-family:\'Nunito\',sans-serif;font-size:10px;'
+      + 'font-weight:800;letter-spacing:.26em;text-transform:uppercase;'
+      + 'color:rgba(253,246,230,.62);text-shadow:none}'
+      + '.tuto{list-style:none;counter-reset:e;margin:0 auto;max-width:340px;'
+      + 'text-align:left;display:flex;flex-direction:column;gap:8px}'
+      + '.tuto li{counter-increment:e;position:relative;padding:11px 14px 11px 46px;'
+      + 'border-radius:14px;background:rgba(253,246,230,.1);'
+      + 'border:1px solid rgba(253,246,230,.16)}'
+      + ".tuto li::before{content:counter(e);position:absolute;left:12px;top:11px;"
+      + 'width:24px;height:24px;border-radius:50%;background:var(--or);'
+      + 'color:var(--encre);font-family:\'Nunito\',sans-serif;font-size:13px;'
+      + 'font-weight:800;display:flex;align-items:center;justify-content:center;'
+      + 'text-shadow:none}'
+      + '.tuto li b{display:block;font-family:\'Nunito\',sans-serif;font-size:13.5px;'
+      + 'font-weight:800;color:var(--creme);text-shadow:none}'
+      + '.tuto li span{display:block;margin-top:3px;font-family:\'Nunito\',sans-serif;'
+      + 'font-size:12.5px;font-weight:500;line-height:1.45;'
+      + 'color:rgba(253,246,230,.78);text-shadow:none}'
       /* l'échéance, en évidence : c'est la seule information qu'on cherche */
       + '.quand{display:inline-block;margin-top:18px;padding:10px 18px;border-radius:999px;'
       + 'background:var(--or);color:var(--encre);font-family:\'Nunito\',sans-serif;'
@@ -144,6 +167,12 @@ const BD = (() => {
       + (m.points && m.points.length
           ? '<ul class="pts">' + m.points.map(function(t){
               return '<li>' + t + '</li>'; }).join('') + '</ul>'
+          : '')
+      + (m.etapes && m.etapes.length
+          ? '<p class="soustitre">Comment on joue</p>'
+            + '<ol class="tuto">' + m.etapes.map(function(e){
+                return '<li><b>' + e.t + '</b><span>' + e.d + '</span></li>';
+              }).join('') + '</ol>'
           : '')
       + (m.quand ? '<p class="quand">' + m.quand + '</p>' : '')
       + '<span class="pt"><i></i><i></i><i></i></span>'
