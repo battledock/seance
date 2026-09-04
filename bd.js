@@ -51,26 +51,27 @@ const BD = (() => {
       + '*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;'
       + '-webkit-user-select:none;user-select:none}'
       + ':root{--encre:#12303f;--creme:#fdf6e6;--creme2:#f7edd8;--or:#f0a92e}'
-      + "html,body{height:100%;overflow:hidden;background:#2b6f92;color:var(--creme);"
+      + "html{background:#2b6f92}"
+      + "body{min-height:100%;overflow-x:hidden;background:transparent;color:var(--creme);"
       + "font-family:'Nunito',system-ui,sans-serif}"
-      + '#ciel{position:fixed;left:0;right:0;top:0;height:58%;z-index:-3;background:#f0a94e}'
-      + '#eau{position:fixed;left:0;right:0;bottom:0;height:42%;z-index:-3;'
+      + '#ciel{position:fixed;left:0;right:0;top:0;height:36%;z-index:0;background:#f0a94e}'
+      + '#eau{position:fixed;left:0;right:0;bottom:0;height:64%;z-index:0;'
       + 'background:#2b6f92;border-top:4px solid var(--encre)}'
       /* le disque, arrêté au zénith : le temps ne passe plus */
-      + '#disque{position:fixed;z-index:-2;left:50%;top:22%;width:26vw;max-width:128px;'
-      + 'aspect-ratio:1;border-radius:50%;margin-left:-13vw;transform:translateX(0);'
+      + '#disque{position:fixed;z-index:1;left:50%;top:15%;width:19vw;max-width:88px;'
+      + 'aspect-ratio:1;border-radius:50%;margin-left:-9.5vw;transform:translateX(0);'
       + 'background:#fff0c4;border:4px solid var(--encre)}'
-      + '@media(min-width:492px){#disque{margin-left:-64px}}'
+      + '@media(min-width:492px){#disque{margin-left:-44px}}'
       /* la houle continue : le port vit même quand on ferme */
-      + '.houle{position:fixed;left:-60%;right:-60%;z-index:-1;height:5px;border-radius:3px;'
+      + '.houle{position:fixed;left:-60%;right:-60%;z-index:2;height:5px;border-radius:3px;'
       + 'background:repeating-linear-gradient(90deg,#fdf6e6 0 26px,transparent 26px 62px);'
       + 'will-change:transform}'
-      + '.h1{bottom:32%;opacity:.16;animation:file 14s linear infinite}'
-      + '.h2{bottom:24%;opacity:.2;height:6px;animation:file 10s linear infinite reverse}'
-      + '.h3{bottom:13%;opacity:.26;height:8px;animation:file 7s linear infinite}'
+      + '.h1{bottom:54%;opacity:.16;animation:file 14s linear infinite}'
+      + '.h2{bottom:46%;opacity:.2;height:6px;animation:file 10s linear infinite reverse}'
+      + '.h3{bottom:38%;opacity:.26;height:8px;animation:file 7s linear infinite}'
       + '@keyframes file{to{transform:translateX(62px)}}'
       /* la barque, au mouillage */
-      + '#bq{position:fixed;left:50%;bottom:37%;z-index:0;width:118px;margin-left:-59px;'
+      + '#bq{position:fixed;left:50%;bottom:63%;z-index:2;width:84px;margin-left:-42px;'
       + 'animation:souleve 4.8s ease-in-out infinite;will-change:transform}'
       + '#bq svg{display:block;width:100%;height:auto;'
       + 'animation:penche 4.8s ease-in-out infinite;transform-origin:50% 88%}'
@@ -79,17 +80,18 @@ const BD = (() => {
       + '@keyframes penche{0%{transform:rotate(2.2deg)}25%{transform:rotate(0)}'
       + '50%{transform:rotate(-2.2deg)}75%{transform:rotate(0)}100%{transform:rotate(2.2deg)}}'
       /* le mot, écrit à même le ciel */
-      + '.haut{position:fixed;left:24px;right:24px;z-index:3;'
+      + '.haut{position:fixed;left:22px;right:22px;z-index:5;'
       + 'top:calc(env(safe-area-inset-top) + 30px)}'
       + '.haut .su{font-size:10px;font-weight:800;letter-spacing:.28em;'
       + 'text-transform:uppercase;color:rgba(253,246,230,.68)}'
       + ".haut h1{font-family:'DM Serif Display',Georgia,serif;font-weight:400;"
-      + 'font-size:clamp(34px,11vw,52px);line-height:1;margin-top:10px;'
+      + 'font-size:clamp(30px,8.6vw,44px);line-height:1.04;margin-top:9px;'
       + 'text-shadow:0 3px 0 rgba(18,48,63,.24)}'
       /* ce qu'on en dit, à même l'eau */
-      + '.bas{position:fixed;left:24px;right:24px;z-index:4;'
-      + 'bottom:calc(env(safe-area-inset-bottom) + 26px);text-align:center}'
-      + ".bas p{font-family:'DM Serif Display',Georgia,serif;font-size:17px;line-height:1.45;"
+      + '.bas{position:fixed;left:18px;right:18px;z-index:5;'
+      + 'bottom:calc(env(safe-area-inset-bottom) + 20px);text-align:center;'
+      + 'max-height:56vh;overflow-y:auto;-webkit-overflow-scrolling:touch}'
+      + ".bas p{font-family:'DM Serif Display',Georgia,serif;font-size:15.5px;line-height:1.42;"
       + 'text-shadow:0 2px 12px rgba(8,24,38,.4)}'
       + '.bas .pt{display:flex;gap:8px;justify-content:center;margin-top:20px}'
       + '.bas .pt i{width:9px;height:9px;border-radius:50%;background:var(--creme);'
@@ -98,6 +100,18 @@ const BD = (() => {
       + '.bas .pt i:nth-child(3){animation-delay:.44s}'
       + '@keyframes bat{0%,100%{opacity:.24}50%{opacity:1}}'
       /* la clé, discrète : elle ne se réveille qu'au toucher */
+      /* ce qui change, énuméré : on lit vite ce qu'on vient perdre et gagner */
+      + '.pts{list-style:none;margin:18px auto 0;max-width:340px;text-align:left;'
+      + 'display:flex;flex-direction:column;gap:8px}'
+      + '.pts li{position:relative;padding:10px 13px 10px 32px;border-radius:13px;'
+      + 'background:rgba(8,24,38,.42);font-size:13px;font-weight:600;line-height:1.42;'
+      + 'color:rgba(253,246,230,.94)}'
+      + ".pts li::before{content:'';position:absolute;left:14px;top:16px;width:8px;"
+      + 'height:8px;border-radius:50%;background:var(--or)}'
+      /* l'échéance, en évidence : c'est la seule information qu'on cherche */
+      + '.quand{display:inline-block;margin-top:18px;padding:10px 18px;border-radius:999px;'
+      + 'background:var(--or);color:var(--encre);font-family:\'Nunito\',sans-serif;'
+      + 'font-size:12.5px;font-weight:800;letter-spacing:.02em;text-shadow:none}'
       + '.cle{display:flex;gap:8px;margin-top:26px;opacity:.42;transition:opacity .3s}'
       + '.cle:focus-within{opacity:1}'
       + '.cle input{flex:1;min-width:0;padding:14px;border-radius:15px;text-align:center;'
@@ -127,6 +141,11 @@ const BD = (() => {
       + '<div class="haut"><p class="su">Le port est fermé</p>'
       + '<h1>' + (m.titre || 'On remet tout en état') + '</h1></div>'
       + '<div class="bas"><p>' + (m.mot || 'Reviens dans un moment.') + '</p>'
+      + (m.points && m.points.length
+          ? '<ul class="pts">' + m.points.map(function(t){
+              return '<li>' + t + '</li>'; }).join('') + '</ul>'
+          : '')
+      + (m.quand ? '<p class="quand">' + m.quand + '</p>' : '')
       + '<span class="pt"><i></i><i></i><i></i></span>'
       + '<div class="cle"><input id="m-mdp" type="password" placeholder="code"'
       + ' autocomplete="off"><button id="m-ok">Entrer</button></div>'
