@@ -6,22 +6,18 @@
 <meta name="theme-color" content="#f2ece0">
 <title>Battle Dock Fight</title>
 <style>
-:root{
-  --encre:#141414; --papier:#f2ece0; --blanc:#fff;
-  --rouge:#e8452c; --jaune:#ffd029; --cyan:#2ec4c9; --rose:#f26fa8; --gris:#6d6a63;
-}
+:root{--encre:#141414;--papier:#f2ece0;--blanc:#fff;--rouge:#e8452c;--jaune:#ffd029;
+  --cyan:#2ec4c9;--rose:#f26fa8;--gris:#6d6a63}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--papier);color:var(--encre);
   font-family:"Arial Black","Arial Narrow",Helvetica,sans-serif;
   -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;overscroll-behavior:none}
 body{overflow:hidden}
 button{font-family:inherit;cursor:pointer;color:inherit}
-
 #formes{position:fixed;inset:0;z-index:0;pointer-events:none}
 #formes i{position:absolute;display:block}
-
 .ecran{position:fixed;inset:0;z-index:1;display:none;flex-direction:column;
-  padding:calc(16px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));
+  padding:calc(14px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));
   overflow-y:auto;-webkit-overflow-scrolling:touch}
 .ecran.on{display:flex}
 .bandeau{display:flex;gap:5px;flex:0 0 auto}
@@ -29,8 +25,7 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .bandeau i:nth-child(1){background:var(--rouge)}.bandeau i:nth-child(2){background:var(--jaune)}
 .bandeau i:nth-child(3){background:var(--cyan)}.bandeau i:nth-child(4){background:var(--rose)}
 .bandeau i:nth-child(5){background:var(--encre)}
-
-.logo{margin-top:24px}
+.logo{margin-top:22px}
 .logo span{display:block;text-transform:uppercase;line-height:.8;font-style:italic;
   letter-spacing:-.035em;font-size:clamp(42px,14.5vw,100px)}
 .logo .m1{text-shadow:5px 5px 0 var(--jaune)}
@@ -38,121 +33,108 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .logo .m3{margin-top:.08em;display:inline-block;background:var(--encre);color:var(--papier);
   padding:.04em .22em .09em;transform:rotate(-2.5deg);letter-spacing:.16em;
   font-size:clamp(26px,8.4vw,58px);box-shadow:6px 6px 0 var(--cyan)}
-.accroche{font-family:Georgia,serif;font-size:14px;line-height:1.7;max-width:33ch;margin-top:18px;color:#2b2a27}
-
-.menu{margin-top:auto;display:grid;gap:10px;padding-top:22px}
+.accroche{font-family:Georgia,serif;font-size:14px;line-height:1.7;max-width:33ch;margin-top:16px;color:#2b2a27}
+.menu{margin-top:auto;display:grid;gap:10px;padding-top:20px}
 .bt{border:3px solid var(--encre);background:var(--blanc);padding:15px;
-  font:900 15px/1 "Arial Black",sans-serif;letter-spacing:.05em;text-transform:uppercase;
+  font:900 15px/1 "Arial Black",sans-serif;letter-spacing:.04em;text-transform:uppercase;
   text-align:left;box-shadow:6px 6px 0 var(--encre);display:flex;justify-content:space-between;
   align-items:center;gap:10px}
 .bt em{font-style:normal;font-size:19px}
 .bt:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--encre)}
 .bt.jaune{background:var(--jaune)}.bt.cyan{background:var(--cyan)}
-.bt.rose{background:var(--rose)}.bt.noir{background:var(--encre);color:var(--papier)}
-.bt.petit{padding:10px 12px;font-size:12px;box-shadow:4px 4px 0 var(--encre)}
+.bt.rose{background:var(--rose)}.bt.petit{padding:10px 12px;font-size:12px;box-shadow:4px 4px 0 var(--encre)}
 .bt[disabled]{opacity:.4;box-shadow:3px 3px 0 var(--gris);border-color:var(--gris)}
-
-.tete{display:flex;align-items:center;gap:11px;margin-top:14px}
-.tete h2{font-size:clamp(23px,7.6vw,40px);text-transform:uppercase;font-style:italic;
+.tete{display:flex;align-items:center;gap:10px;margin-top:12px}
+.tete h2{font-size:clamp(22px,7.4vw,38px);text-transform:uppercase;font-style:italic;
   letter-spacing:-.03em;line-height:.9;flex:1}
 .tete h2 b{color:var(--rouge);font-weight:inherit}
 .retour{flex:0 0 auto;width:42px;height:42px;border:3px solid var(--encre);background:var(--blanc);
   font-size:18px;box-shadow:4px 4px 0 var(--encre)}
-.retour:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--encre)}
 .bourse{flex:0 0 auto;border:3px solid var(--encre);background:var(--jaune);padding:8px 10px;
   font:900 13px/1 "Arial Black",sans-serif;box-shadow:4px 4px 0 var(--encre);white-space:nowrap}
-
-.collant{position:sticky;top:-2px;z-index:5;margin:10px -18px 0;padding:10px 18px 12px;
-  background:var(--papier);border-bottom:3px solid var(--encre);display:flex;gap:14px;align-items:center}
-.collant canvas{width:120px;height:154px;image-rendering:pixelated;flex:0 0 auto;
+.collant{position:sticky;top:-2px;z-index:5;margin:10px -18px 0;padding:10px 18px 10px;
+  background:var(--papier);border-bottom:3px solid var(--encre);display:flex;gap:13px}
+.collant canvas{width:118px;height:152px;image-rendering:pixelated;flex:0 0 auto;
   border:3px solid var(--encre);box-shadow:5px 5px 0 var(--rouge);
   background:repeating-linear-gradient(45deg,#fff 0 10px,#eee6d6 10px 20px)}
-.resume{flex:1;min-width:0}
+.resume{flex:1;min-width:0;display:flex;flex-direction:column}
 .resume .n{font:900 15px/1.15 "Arial Black",sans-serif;text-transform:uppercase;word-break:break-word}
-.resume .a{font:400 12px/1.5 Georgia,serif;color:#4a4842;margin-top:5px}
-.jauges{margin-top:8px;display:grid;gap:4px}
+.resume .a{font:400 12px/1.45 Georgia,serif;color:#4a4842;margin-top:4px}
+.jauges{margin-top:7px;display:grid;gap:4px}
 .jauges .j{display:flex;align-items:center;gap:6px;font:900 9px/1 "Arial Black",sans-serif;
-  letter-spacing:.08em;text-transform:uppercase}
-.jauges .j span{width:52px}
+  letter-spacing:.06em;text-transform:uppercase}
+.jauges .j span{width:50px}
 .jauges .j b{flex:1;height:9px;background:var(--blanc);border:2px solid var(--encre);display:flex}
 .jauges .j b i{width:16.6%;border-right:2px solid var(--encre)}
-.jauges .j b i.p{background:var(--rouge)}
-.jauges .j b i:last-child{border-right:0}
-.tourner{display:flex;gap:6px;margin-top:8px}
-.tourner button{flex:1;border:3px solid var(--encre);background:var(--blanc);padding:7px;
-  font:900 10px/1 "Arial Black",sans-serif;text-transform:uppercase;box-shadow:3px 3px 0 var(--encre)}
-
+.jauges .j b i.p{background:var(--rouge)}.jauges .j b i:last-child{border-right:0}
+.poses{display:flex;gap:5px;margin-top:auto;padding-top:8px}
+.poses button{flex:1;border:3px solid var(--encre);background:var(--blanc);padding:6px 2px;
+  font:900 9px/1 "Arial Black",sans-serif;text-transform:uppercase;box-shadow:2px 2px 0 var(--encre)}
+.poses button.on{background:var(--encre);color:var(--papier)}
 .onglets{display:flex;gap:6px;overflow-x:auto;margin:0 -18px;padding:12px 18px 4px;scrollbar-width:none}
 .onglets::-webkit-scrollbar{display:none}
 .onglets button{flex:0 0 auto;border:3px solid var(--encre);background:var(--blanc);padding:9px 12px;
   font:900 11px/1 "Arial Black",sans-serif;text-transform:uppercase;box-shadow:3px 3px 0 var(--encre)}
 .onglets button.on{background:var(--encre);color:var(--papier);box-shadow:3px 3px 0 var(--cyan)}
-
-.rub{margin-top:16px;font:900 11px/1 "Arial Black",sans-serif;letter-spacing:.16em;
+.rub{margin-top:15px;font:900 11px/1 "Arial Black",sans-serif;letter-spacing:.14em;
   text-transform:uppercase;display:flex;align-items:center;gap:9px;color:#2b2a27}
 .rub::after{content:"";flex:1;height:3px;background:var(--encre)}
-.rangee{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.rangee{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
 .opt{border:3px solid var(--encre);background:var(--blanc);padding:9px 11px;
   font:900 11.5px/1 "Arial Black",sans-serif;text-transform:uppercase;
   box-shadow:3px 3px 0 var(--encre);position:relative}
 .opt.actif{background:var(--encre);color:var(--papier);box-shadow:3px 3px 0 var(--rouge)}
-.opt.bloque{opacity:.42}
+.opt.bloque{opacity:.4}
 .opt .r{position:absolute;top:-6px;right:-6px;width:12px;height:12px;border:2px solid var(--encre);border-radius:50%}
-.pastel{width:40px;height:40px;padding:0;border:3px solid var(--encre);box-shadow:3px 3px 0 var(--encre)}
+.pastel{width:38px;height:38px;padding:0;border:3px solid var(--encre);box-shadow:3px 3px 0 var(--encre)}
 .pastel.actif{box-shadow:3px 3px 0 var(--rouge);outline:3px solid var(--encre);outline-offset:3px}
-
 .liste{margin-top:14px;border:3px solid var(--encre);background:var(--blanc);box-shadow:6px 6px 0 var(--encre)}
 .liste .r{display:flex;justify-content:space-between;gap:10px;padding:12px;
   border-bottom:3px solid var(--encre);font:900 12.5px/1.3 "Arial Black",sans-serif;text-transform:uppercase}
 .liste .r:last-child{border-bottom:0}
 .liste .r small{font:400 12px/1.45 Georgia,serif;text-transform:none;color:#4a4842;display:block;margin-top:4px}
 .liste .r .d{flex:0 0 auto;color:var(--rouge)}
-.note{font-family:Georgia,serif;font-size:13px;line-height:1.7;margin-top:14px;color:#4a4842}
-
-.billet{margin:16px auto 0;width:min(330px,94%);border:4px solid var(--encre);background:var(--blanc);
+.note{font-family:Georgia,serif;font-size:13px;line-height:1.7;margin-top:13px;color:#4a4842}
+.billet{margin:14px auto 0;width:min(330px,96%);border:4px solid var(--encre);background:var(--blanc);
   box-shadow:9px 9px 0 var(--encre);padding:16px;position:relative;overflow:hidden}
 .billet .haut{display:flex;justify-content:space-between;font:900 9.5px/1 "Arial Black",sans-serif;
   letter-spacing:.14em;text-transform:uppercase;border-bottom:3px solid var(--encre);padding-bottom:9px}
 .billet .poste{font-size:clamp(24px,8vw,40px);text-transform:uppercase;font-style:italic;
-  line-height:.95;margin-top:14px;letter-spacing:-.02em}
-.billet .desc{font:400 13px/1.6 Georgia,serif;color:#3b3934;margin-top:9px}
-.billet .bonus{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
+  line-height:.95;margin-top:13px;letter-spacing:-.02em}
+.billet .desc{font:400 13px/1.6 Georgia,serif;color:#3b3934;margin-top:8px}
+.billet .bonus{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .billet .bonus span{border:3px solid var(--encre);padding:6px 9px;
   font:900 11px/1 "Arial Black",sans-serif;text-transform:uppercase;background:var(--jaune)}
-.billet .rarete{position:absolute;top:44px;right:-34px;transform:rotate(38deg);
-  padding:5px 40px;font:900 10px/1 "Arial Black",sans-serif;letter-spacing:.18em;
-  text-transform:uppercase;color:#fff;border-top:3px solid var(--encre);border-bottom:3px solid var(--encre)}
-.pile{margin:20px auto 0;width:min(330px,94%);height:180px;border:4px dashed var(--encre);
+.billet .rarete{position:absolute;top:42px;right:-34px;transform:rotate(38deg);padding:5px 40px;
+  font:900 10px/1 "Arial Black",sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#fff;
+  border-top:3px solid var(--encre);border-bottom:3px solid var(--encre)}
+.pile{margin:16px auto 0;width:min(330px,96%);height:150px;border:4px dashed var(--encre);
   display:flex;align-items:center;justify-content:center;text-align:center;
   font:900 13px/1.5 "Arial Black",sans-serif;text-transform:uppercase;padding:20px;
   background:repeating-linear-gradient(45deg,#fff 0 12px,#efe7d8 12px 24px)}
 .tire{animation:tire .5s ease-out}
 @keyframes tire{0%{transform:translateY(30px) rotate(-6deg);opacity:0}100%{transform:none;opacity:1}}
-
 .coffre{border:3px solid var(--encre);background:var(--blanc);box-shadow:6px 6px 0 var(--encre);
-  padding:14px;margin-top:12px;display:flex;gap:13px;align-items:center}
-.coffre canvas{width:66px;height:66px;image-rendering:pixelated;flex:0 0 auto;
+  padding:13px;margin-top:11px;display:flex;gap:12px;align-items:center}
+.coffre canvas{width:62px;height:62px;image-rendering:pixelated;flex:0 0 auto;
   border:3px solid var(--encre);background:#efe7d8}
 .coffre .txt{flex:1;min-width:0}
-.coffre .txt h3{font-size:15px;text-transform:uppercase;font-style:italic}
-.coffre .txt p{font:400 12px/1.5 Georgia,serif;color:#4a4842;margin-top:4px}
-.coffre .txt .odds{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
+.coffre .txt h3{font-size:14px;text-transform:uppercase;font-style:italic}
+.coffre .txt p{font:400 12px/1.5 Georgia,serif;color:#4a4842;margin-top:3px}
+.coffre .txt .odds{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
 .coffre .txt .odds i{font:900 9px/1 "Arial Black",sans-serif;color:#fff;padding:4px 5px;
   border:2px solid var(--encre);font-style:normal}
-
 #tirage{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;
-  justify-content:center;background:rgba(20,20,20,.93);padding:26px;text-align:center;color:var(--papier)}
+  justify-content:center;background:rgba(20,20,20,.93);padding:24px;text-align:center;color:var(--papier)}
 #tirage.on{display:flex}
 #tirage .carte{border:4px solid var(--papier);background:var(--papier);color:var(--encre);
-  padding:22px 18px;width:min(320px,92%);box-shadow:0 0 0 6px var(--encre);animation:tire .45s ease-out}
-#tirage .carte canvas{width:104px;height:104px;image-rendering:pixelated;margin-bottom:8px}
+  padding:20px 18px;width:min(320px,92%);box-shadow:0 0 0 6px var(--encre);animation:tire .45s ease-out}
+#tirage .carte canvas{width:104px;height:104px;image-rendering:pixelated;margin-bottom:6px}
 #tirage .carte .rar{font:900 10px/1 "Arial Black",sans-serif;letter-spacing:.22em;
-  text-transform:uppercase;color:#fff;padding:6px;margin:-22px -18px 14px}
-#tirage .carte h3{font-size:22px;text-transform:uppercase;font-style:italic;line-height:1}
-#tirage .carte p{font:400 13px/1.6 Georgia,serif;color:#3b3934;margin-top:8px}
-#tirage .apres{margin-top:20px;display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
-.centre{text-align:center;align-items:center;justify-content:center}
-.gros{font-size:clamp(28px,9.5vw,54px);text-transform:uppercase;font-style:italic;line-height:.92}
+  text-transform:uppercase;color:#fff;padding:6px;margin:-20px -18px 12px}
+#tirage .carte h3{font-size:21px;text-transform:uppercase;font-style:italic;line-height:1}
+#tirage .carte p{font:400 13px/1.6 Georgia,serif;color:#3b3934;margin-top:7px}
+#tirage .apres{margin-top:18px;display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
 </style>
 </head>
 <body>
@@ -161,69 +143,62 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 <main class="ecran on" id="e-accueil">
   <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="logo"><span class="m1">Battle</span><span class="m2">Dock</span><span class="m3">Fight</span></div>
-  <p class="accroche" id="accroche-accueil">Six adversaires sur le port. Deux manches gagnantes. Un docker qui monte, nuit après nuit.</p>
+  <p class="accroche" id="accroche">Six adversaires sur le port. Deux manches gagnantes. Un docker qui monte, nuit après nuit.</p>
   <div class="menu">
     <button class="bt jaune" data-va="billet">Commencer <em>▸</em></button>
     <button class="bt cyan" data-va="vestiaire">Vestiaire <em>▸</em></button>
-    <button class="bt rose" data-va="boutique">Coffres <em>▸</em></button>
+    <button class="bt rose" data-va="boutique">Caisses <em>▸</em></button>
+    <button class="bt" onclick="location.href='fight.html#enligne'">Jouer en ligne <em>▸</em></button>
     <button class="bt" data-va="palmares">Palmarès <em>▸</em></button>
-    <button class="bt" data-va="commandes">Commandes <em>▸</em></button>
   </div>
 </main>
 
 <main class="ecran" id="e-vestiaire">
   <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="tete">
-    <button class="retour" data-va="accueil">◀</button>
-    <h2>Ton <b>docker</b></h2>
-    <div class="bourse" id="bourse-v">0 ¤</div>
-  </div>
+  <div class="tete"><button class="retour" data-va="accueil">◀</button>
+    <h2>Ton <b>docker</b></h2><div class="bourse" id="b-v">0 €</div></div>
   <div class="collant">
     <canvas id="apercu" width="96" height="124"></canvas>
     <div class="resume">
-      <div class="n" id="res-nom">Sans nom</div>
-      <div class="a" id="res-arme">Mains nues</div>
-      <div class="jauges" id="res-jauges"></div>
-      <div class="tourner">
-        <button id="bt-face">Face / dos</button>
-        <button id="bt-coup">Frapper</button>
+      <div class="n" id="r-nom">Sans nom</div>
+      <div class="a" id="r-arme"></div>
+      <div class="jauges" id="r-jauges"></div>
+      <div class="poses" id="poses">
+        <button data-p="debout" class="on">Repos</button>
+        <button data-p="marche">Marche</button>
+        <button data-p="garde">Garde</button>
+        <button data-p="coup">Coup</button>
       </div>
     </div>
   </div>
-  <div style="display:flex;gap:8px;margin-top:12px">
+  <div style="display:flex;gap:8px;margin-top:11px">
     <input id="nom" maxlength="16" placeholder="TON NOM" autocomplete="off" spellcheck="false"
       style="flex:1;min-width:0;border:3px solid #141414;background:#fff;padding:11px;
       font:900 14px/1 'Arial Black',sans-serif;text-transform:uppercase">
-    <button class="bt petit" id="bt-hasard">Au sort</button>
+    <button class="bt petit" id="hasard">Au sort</button>
   </div>
   <div class="onglets" id="onglets"></div>
   <div id="options"></div>
-  <div class="menu"><button class="bt jaune" id="bt-valider">Enregistrer <em>▸</em></button></div>
+  <div class="menu"><button class="bt jaune" data-va="accueil">Enregistrer <em>▸</em></button></div>
 </main>
 
 <main class="ecran" id="e-billet">
   <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="tete">
-    <button class="retour" data-va="accueil">◀</button>
-    <h2>Le <b>billet</b></h2>
-    <div class="bourse" id="bourse-b">0 ¤</div>
-  </div>
-  <p class="note">Chaque nuit, le bureau d'embauche distribue les postes. Tire ton billet : il décide de ce que tu vaux sur le quai jusqu'au prochain combat.</p>
+  <div class="tete"><button class="retour" data-va="accueil">◀</button>
+    <h2>Le <b>billet</b></h2><div class="bourse" id="b-b">0 €</div></div>
+  <p class="note">Le bureau d'embauche distribue les postes. Ton billet décide de ce que tu vaux sur le quai jusqu'au prochain combat, et de ce qu'on te paie.</p>
   <div id="zone-billet"><div class="pile">Pile de billets<br>du bureau d'embauche</div></div>
   <div class="menu">
-    <button class="bt jaune" id="bt-tirer">Tirer un billet <em>▸</em></button>
-    <button class="bt" id="bt-quai" disabled>Descendre sur le quai <em>▸</em></button>
+    <button class="bt jaune" id="tirer">Tirer un billet <em>▸</em></button>
+    <button class="bt" id="quai" disabled>Descendre sur le quai <em>▸</em></button>
   </div>
 </main>
 
 <main class="ecran" id="e-boutique">
   <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="tete">
-    <button class="retour" data-va="accueil">◀</button>
-    <h2>Les <b>coffres</b></h2>
-    <div class="bourse" id="bourse-c">0 ¤</div>
-  </div>
-  <p class="note">Ce qui traîne dans les conteneurs mal fermés. Le contenu est tiré au sort. Un doublon te rend des pièces.</p>
+  <div class="tete"><button class="retour" data-va="accueil">◀</button>
+    <h2>Les <b>caisses</b></h2><div class="bourse" id="b-c">0 €</div></div>
+  <p class="note">Ce qui traîne dans les conteneurs mal fermés. Contenu tiré au sort ; un doublon te rend des euros.</p>
   <div id="coffres"></div>
   <div class="rub">Butin</div>
   <p class="note" id="stat-butin"></p>
@@ -235,411 +210,84 @@ button{font-family:inherit;cursor:pointer;color:inherit}
   <div class="tete"><button class="retour" data-va="accueil">◀</button><h2>Le <b>palmarès</b></h2></div>
   <div class="liste" id="liste-adv"></div>
   <p class="note" id="note-palmares"></p>
-</main>
-
-<main class="ecran" id="e-commandes">
-  <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="tete"><button class="retour" data-va="accueil">◀</button><h2>Les <b>commandes</b></h2></div>
-  <div class="liste">
-    <div class="r"><span>Se déplacer<small>◀ ▶ · flèches ou Q / D</small></span></div>
-    <div class="r"><span>Sauter<small>Bouton Sauter · flèche haut ou Z</small></span></div>
-    <div class="r"><span>Coup sec<small>Rapide, relance un combo · touche J</small></span></div>
-    <div class="r"><span>Coup lourd<small>Lent, casse une garde tenue trop longtemps · touche K</small></span></div>
-    <div class="r"><span>Garder<small>Grignote quand même des points de vie · touche S</small></span></div>
-    <div class="r"><span>Rage<small>Jauge pleine : enchaînement qui traverse la garde · touche L</small></span></div>
-  </div>
-  <p class="note">Deux manches gagnantes par adversaire, 75 secondes chacune. Ton arme change la portée et la vitesse de tes coups.</p>
-</main>
-
-<main class="ecran centre" id="e-pret">
-  <div class="gros" id="pret-titre">Prêt.</div>
-  <p class="accroche" id="pret-texte" style="text-align:left"></p>
-  <div class="menu" style="width:min(340px,100%)">
-    <button class="bt jaune" onclick="location.href='fight.html'">Descendre sur le quai <em>▸</em></button>
-    <button class="bt" data-va="vestiaire">Retoucher le docker <em>▸</em></button>
-    <button class="bt" data-va="accueil">Accueil <em>▸</em></button>
-  </div>
+  <div class="menu"><button class="bt jaune" onclick="location.href='fight.html'">Au combat <em>▸</em></button></div>
 </main>
 
 <div id="tirage">
-  <div class="carte" id="carte-butin"></div>
+  <div class="carte" id="carte"></div>
   <div class="apres">
-    <button class="bt petit jaune" id="bt-encore">Rouvrir</button>
-    <button class="bt petit" id="bt-fermer">Fermer</button>
+    <button class="bt petit jaune" id="encore">Rouvrir</button>
+    <button class="bt petit" id="fermer" style="background:#f2ece0">Fermer</button>
   </div>
 </div>
 
+<script src="bdf.js"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-const hasard=a=>a[Math.random()*a.length|0];
+const hasardDe=a=>a[Math.random()*a.length|0];
+const {RARETES,CAT,RUBRIQUES,ONGLETS,POSTES,ADVERSAIRES,item,lookDefaut,statsDe,
+  dessinerDocker,dessinerArme,px}=BDF;
 
-const RARETES={
-  base:{nom:'De série',c:'#8d8a82',rendu:0},
-  commun:{nom:'Commun',c:'#8d8a82',rendu:15},
-  peu:{nom:'Peu commun',c:'#4e9c5a',rendu:35},
-  rare:{nom:'Rare',c:'#3a6fd8',rendu:80},
-  epique:{nom:'Épique',c:'#c14fd6',rendu:190},
-  leg:{nom:'Légendaire',c:'#f0a020',rendu:450}
-};
+const PRENOMS=['Nino','Saïd','Marlène','Gino','Yassine','Bruno','Kader','Lucie','Ange','Fatou','Milo','Zora','Rachid','Perle'];
+const SURNOMS=['le Crochet','Deux-Sacs','la Grue','Poings Sales','le Môle','Sans Gants','la Corde','Quart de Nuit','Tête de Fer'];
 
-const TEINTS=['#f4d3b0','#e8bd91','#d19d6f','#b07a4a','#8a5a30','#5d3a20','#3b2415'];
-const CHEVEUX_C=['#2a2119','#4a2f1c','#7a5230','#b8933f','#c9c3bb','#e8452c','#2ec4c9','#f26fa8'];
-const VESTE_C=['#e8452c','#ffd029','#2ec4c9','#f26fa8','#3a5ba0','#4e8c4a','#e8dcc0','#2b2b2b','#8a4b2a','#6b4a8c'];
-const BAS_C=['#33414a','#2b2b33','#5a4632','#1f3a44','#6d4a4a','#8a8577','#1b1b1b','#3f5d3a'];
-
-const CAT={
-  carrure:[
-    {id:'fluet',nom:'Fluet',larg:15,ep:1,f:1,v:6,e:2},
-    {id:'sec',nom:'Sec',larg:18,ep:2,f:2,v:5,e:3},
-    {id:'solide',nom:'Solide',larg:22,ep:3,f:3,v:3,e:4},
-    {id:'massif',nom:'Massif',larg:27,ep:4,f:5,v:2,e:5},
-    {id:'ours',nom:'Ours du quai',larg:31,ep:5,f:6,v:1,e:6,r:'epique'}
-  ],
-  cheveux:[
-    {id:'court',nom:'Court'},{id:'ras',nom:'Ras'},{id:'chauve',nom:'Chauve'},
-    {id:'milong',nom:'Mi-long'},{id:'queue',nom:'Queue'},{id:'afro',nom:'Afro'},
-    {id:'crete',nom:'Crête',r:'peu'},{id:'dreads',nom:'Dreads',r:'peu'},
-    {id:'banane',nom:'Banane',r:'rare'}
-  ],
-  barbe:[
-    {id:'rase',nom:'Rasé'},{id:'bouc',nom:'Bouc'},{id:'moust',nom:'Moustache'},
-    {id:'courte',nom:'Courte'},{id:'pleine',nom:'Pleine'},
-    {id:'bacchantes',nom:'Bacchantes',r:'peu'},{id:'tressee',nom:'Barbe tressée',r:'rare'}
-  ],
-  haut:[
-    {id:'marcel',nom:'Marcel'},{id:'veste',nom:'Veste de quart'},{id:'chemise',nom:'Chemise ouverte'},
-    {id:'hv',nom:'Gilet jaune'},{id:'bleu',nom:'Bleu de travail'},{id:'torse',nom:'Torse nu'},
-    {id:'marin',nom:'Marinière',r:'peu'},{id:'cire',nom:'Ciré de pêche',r:'peu'},
-    {id:'cloute',nom:'Blouson clouté',r:'rare'},{id:'costume',nom:'Costume du chef',r:'epique'},
-    {id:'peignoir',nom:'Peignoir du dimanche',r:'leg'}
-  ],
-  bas:[
-    {id:'toile',nom:'Pantalon toile'},{id:'treillis',nom:'Treillis'},{id:'jean',nom:'Jean'},
-    {id:'short',nom:'Short'},{id:'cuir',nom:'Cuir',r:'rare'},{id:'paillettes',nom:'À paillettes',r:'epique'}
-  ],
-  pieds:[
-    {id:'brodequins',nom:'Brodequins'},{id:'bottes',nom:'Bottes'},{id:'baskets',nom:'Baskets'},
-    {id:'sabots',nom:'Sabots',r:'peu'},{id:'santiags',nom:'Santiags dorées',r:'rare'},
-    {id:'palmes',nom:'Palmes',r:'epique'}
-  ],
-  tete:[
-    {id:'rien',nom:'Rien'},{id:'bonnet',nom:'Bonnet'},{id:'casque',nom:'Casque'},
-    {id:'casquette',nom:'Casquette'},{id:'envers',nom:'Casquette à l’envers'},
-    {id:'foulard',nom:'Foulard'},{id:'bandeau',nom:'Bandeau'},
-    {id:'bob',nom:'Bob',r:'peu'},{id:'paille',nom:'Chapeau de paille',r:'peu'},
-    {id:'soudeur',nom:'Casque de soudeur',r:'rare'},{id:'cornes',nom:'Casque à cornes',r:'epique'},
-    {id:'couronne',nom:'Couronne du port',r:'leg'},{id:'mouette',nom:'Mouette posée',r:'leg'}
-  ],
-  visage:[
-    {id:'rien',nom:'Rien'},{id:'lunettes',nom:'Lunettes noires'},{id:'cicatrice',nom:'Cicatrice'},
-    {id:'cloppe',nom:'Clope au bec'},{id:'curedent',nom:'Cure-dent'},
-    {id:'masque',nom:'Masque anti-poussière',r:'peu'},{id:'cacheoeil',nom:'Cache-œil',r:'rare'},
-    {id:'peinture',nom:'Peinture de guerre',r:'epique'}
-  ],
-  mains:[
-    {id:'nues',nom:'Nues',f:0,v:1},{id:'bandes',nom:'Bandes',f:1,v:0},
-    {id:'manut',nom:'Gants de manut.',f:1,v:0},{id:'mitaines',nom:'Mitaines',f:1,v:0},
-    {id:'boxe',nom:'Gants de boxe',f:2,v:-1,r:'peu'},
-    {id:'menage',nom:'Gants de ménage',f:0,v:2,r:'peu'},
-    {id:'or',nom:'Gants dorés',f:3,v:0,r:'leg'}
-  ],
-  dos:[
-    {id:'rien',nom:'Rien'},{id:'crochet',nom:'Crochet de docker'},{id:'sac',nom:'Sac de jute'},
-    {id:'thermos',nom:'Thermos',r:'peu'},{id:'filet',nom:'Filet',r:'peu'},
-    {id:'cape',nom:'Cape de bâche',r:'rare'},{id:'ailes',nom:'Ailes de mouette',r:'leg'}
-  ],
-  arme:[
-    {id:'aucune',nom:'Mains nues',f:0,v:2,p:0,d:'Rien dans les mains. Rapide, honnête.'},
-    {id:'crochet',nom:'Crochet de quai',f:2,v:1,p:1,d:'L’outil du métier. Accroche et tire.'},
-    {id:'molette',nom:'Clé à molette géante',f:4,v:-1,p:2,r:'peu',d:'Serre les boulons et les mâchoires.'},
-    {id:'poisson',nom:'Thon congelé',f:3,v:0,p:2,r:'peu',d:'Encore un peu givré. Ça claque.'},
-    {id:'baguette',nom:'Baguette de la veille',f:1,v:3,p:2,r:'peu',d:'Rassie depuis mardi. Elle siffle.'},
-    {id:'cone',nom:'Cône de chantier',f:2,v:2,p:2,r:'peu',d:'Se porte aussi sur la tête.'},
-    {id:'rame',nom:'Rame de barque',f:3,v:0,p:3,r:'rare',d:'Longue portée, prend le vent.'},
-    {id:'poele',nom:'Poêle à paella',f:4,v:-1,p:2,r:'rare',d:'Sonne comme une cloche d’église.'},
-    {id:'extincteur',nom:'Extincteur',f:4,v:-2,p:1,r:'rare',d:'Lourd, mais la mousse aveugle.'},
-    {id:'epuisette',nom:'Épuisette à oursins',f:1,v:3,p:4,r:'rare',d:'Attrape tout ce qui passe.'},
-    {id:'saucisson',nom:'Saucisson de concours',f:3,v:1,p:2,r:'epique',d:'Séché trois ans. Dur comme un gourdin.'},
-    {id:'ancre',nom:'Ancre de poche',f:6,v:-3,p:1,r:'epique',d:'Personne ne sait comment tu la soulèves.'},
-    {id:'bouee',nom:'Bouée canard',f:1,v:4,p:3,r:'epique',d:'Grince. Déconcentre l’adversaire.'},
-    {id:'grue',nom:'Grue miniature',f:6,v:-2,p:5,r:'leg',d:'Volée au modélisme du port. Fonctionne.'},
-    {id:'pieddebiche',nom:'Pied-de-biche doré',f:5,v:1,p:2,r:'leg',d:'Ouvre les conteneurs et les gardes.'}
-  ]
-};
-const RUBRIQUES=[
-  {c:'carrure',nom:'Carrure',type:'opt'},
-  {c:'teint',nom:'Teint',type:'coul',src:()=>TEINTS},
-  {c:'cheveux',nom:'Cheveux',type:'opt'},
-  {c:'cheveuxC',nom:'Couleur des cheveux',type:'coul',src:()=>CHEVEUX_C},
-  {c:'barbe',nom:'Poils',type:'opt'},
-  {c:'haut',nom:'Haut',type:'opt'},
-  {c:'hautC',nom:'Couleur du haut',type:'coul',src:()=>VESTE_C},
-  {c:'bas',nom:'Bas',type:'opt'},
-  {c:'basC',nom:'Couleur du bas',type:'coul',src:()=>BAS_C},
-  {c:'pieds',nom:'Chaussures',type:'opt'},
-  {c:'tete',nom:'Sur la tête',type:'opt'},
-  {c:'visage',nom:'Visage',type:'opt'},
-  {c:'mains',nom:'Mains',type:'opt'},
-  {c:'dos',nom:'Dans le dos',type:'opt'},
-  {c:'arme',nom:'Arme',type:'opt'}
-];
-const ONGLETS=[
-  {id:'corps',nom:'Corps',rubs:['carrure','teint','cheveux','cheveuxC','barbe']},
-  {id:'tenue',nom:'Tenue',rubs:['haut','hautC','bas','basC','pieds']},
-  {id:'access',nom:'Accessoires',rubs:['tete','visage','mains','dos']},
-  {id:'armes',nom:'Armes',rubs:['arme']}
-];
-
-const POSTES=[
-  {id:'secu',nom:'Sécurité',poids:26,r:'commun',pieces:35,
-   d:'Tu tiens la barrière. Tu vois tout venir.',b:{endurance:1}},
-  {id:'bequille',nom:'Béquille',poids:22,r:'commun',pieces:40,
-   d:'Tu cales, tu soutiens, tu encaisses.',b:{endurance:2}},
-  {id:'docker',nom:'Docker simple',poids:20,r:'commun',pieces:45,
-   d:'Le poste de base. Rien de plus, rien de moins.',b:{force:1,endurance:1}},
-  {id:'taquet',nom:'Taquet terre',poids:14,r:'peu',pieces:65,
-   d:'Tu bloques les charges au sol. Les bras suivent.',b:{force:2}},
-  {id:'pointeur',nom:'Pointeur',poids:9,r:'rare',pieces:95,
-   d:'Tu comptes tout ce qui passe. Tu lis l’adversaire.',b:{vitesse:2,rage:1}},
-  {id:'chauffeur',nom:'Chauffeur',poids:7,r:'rare',pieces:110,
-   d:'Cabine, levier, vitesse. Tu ne marches jamais.',b:{vitesse:3}},
-  {id:'chef',nom:'Chef de service',poids:2,r:'leg',pieces:260,
-   d:'Le quai entier travaille pour toi cette nuit.',b:{force:3,vitesse:2,endurance:3,rage:2}}
-];
-
-const ADVERSAIRES=[
-  {n:'Le Nouveau',d:'Il a signé la semaine dernière. Il frappe fort et mal.'},
-  {n:'Fatou la Grue',d:'Vingt ans en cabine. Elle voit venir les coups d’en haut.'},
-  {n:'Rachid Deux-Sacs',d:'Deux sacs par main. Sa garde est un mur.'},
-  {n:'La Môme Sète',d:'Boxeuse le dimanche. Elle ne reste jamais en face.'},
-  {n:'Le Contremaître',d:'Il tient les feuilles de paie et les rancunes.'},
-  {n:'Arachné',d:'Personne ne sait qui c’est. Elle dort dans les câbles de la grue.'}
-];
-const PRENOMS=['Nino','Saïd','Marlène','Gino','Yassine','Bruno','Kader','Lucie','Ange','Fatou','Milo','Zora'];
-const SURNOMS=['le Crochet','Deux-Sacs','la Grue','Poings Sales','le Môle','Sans Gants','la Corde','Quart de Nuit'];
-
-const defaut=()=>({
-  nom:'',carrure:'solide',teint:1,cheveux:'court',cheveuxC:0,barbe:'rase',
-  haut:'veste',hautC:0,bas:'toile',basC:0,pieds:'brodequins',
-  tete:'bonnet',visage:'rien',mains:'bandes',dos:'crochet',arme:'aucune',
-  pieces:220,debloque:[],niveau:0,victoires:0,poste:null,coffres:0
-});
+const defaut=()=>Object.assign(lookDefaut(),{nom:'',euros:220,debloque:[],niveau:0,victoires:0,coffres:0});
 let d=defaut();
-const CLE='bdf.v2';
-function sauver(){ try{localStorage.setItem(CLE,JSON.stringify(d));}catch(e){} }
-try{ const b=localStorage.getItem(CLE); if(b) d=Object.assign(defaut(),JSON.parse(b)); }catch(e){}
+const CLE='bdf.v3';
+try{
+  const b=localStorage.getItem(CLE)||localStorage.getItem('bdf.v2');
+  if(b){const o=JSON.parse(b);if(o.pieces!==undefined&&o.euros===undefined)o.euros=o.pieces;d=Object.assign(defaut(),o);}
+}catch(e){}
+function sauver(){try{localStorage.setItem(CLE,JSON.stringify(d));}catch(e){}}
 
-const item=(cat,id)=>CAT[cat].find(x=>x.id===id)||CAT[cat][0];
 const debloque=(cat,it)=>!it.r||d.debloque.includes(cat+':'+it.id);
-function stats(){
-  const c=item('carrure',d.carrure),m=item('mains',d.mains),a=item('arme',d.arme);
-  const p=d.poste?POSTES.find(x=>x.id===d.poste):null,bp=p?p.b:{};
-  return{
-    force:Math.max(1,Math.min(6,c.f+(m.f||0)+(a.f||0)+(bp.force||0))),
-    vitesse:Math.max(1,Math.min(6,c.v+(m.v||0)+(a.v||0)+(bp.vitesse||0))),
-    endurance:Math.max(1,Math.min(6,c.e+(bp.endurance||0))),
-    portee:Math.max(1,Math.min(6,1+c.ep+(a.p||0)))
-  };
-}
 
-/* ---------------------------- sprite ---------------------------- */
-function px(g,x,y,w,h,c){g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
-function assombrir(c,f){
-  const n=parseInt(c.slice(1),16);
-  const r=Math.max(0,Math.min(255,(n>>16)-f)),v=Math.max(0,Math.min(255,((n>>8)&255)-f)),b=Math.max(0,Math.min(255,(n&255)-f));
-  return '#'+((r<<16)|(v<<8)|b).toString(16).padStart(6,'0');
-}
-let vueDos=false,animCoup=0;
+/* ---------------- aperçu ---------------- */
+let poseCourante='debout',faux={look:d,etat:'debout',coup:null,sol:1,sens:1};
+const apercu=$('apercu'),actx=apercu.getContext('2d');actx.imageSmoothingEnabled=false;
+$('poses').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  poseCourante=b.dataset.p;
+  document.querySelectorAll('#poses button').forEach(x=>x.classList.toggle('on',x===b));
+});
+(function boucle(t){
+  requestAnimationFrame(boucle);
+  if(!$('e-vestiaire').classList.contains('on'))return;
+  actx.clearRect(0,0,apercu.width,apercu.height);
+  faux.look=d;faux.etat=poseCourante;
+  if(poseCourante==='coup'){
+    const c=Math.floor(t/22)%40;
+    faux.coup={t:c,dep:8,act:8,fin:24,por:30+statsDe(d).portee*2,haut:0};
+    faux.etat='coup';
+  }else faux.coup=null;
+  actx.save();actx.translate(apercu.width/2,apercu.height-10);
+  dessinerDocker(actx,faux,t);
+  actx.restore();
+})(0);
 
-function dessiner(cv,t){
-  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
-  g.clearRect(0,0,cv.width,cv.height);
-  const c=item('carrure',d.carrure);
-  const peau=TEINTS[d.teint],peauO=assombrir(peau,40),chev=CHEVEUX_C[d.cheveuxC];
-  const hautC=VESTE_C[d.hautC],basC=BAS_C[d.basC];
-  const cx=cv.width/2,sol=cv.height-10;
-  const resp=Math.sin(t/430)>0?0:1;
-  const coup=animCoup>0; if(animCoup>0) animCoup--;
-  const l=c.larg,torse=l-2,hJ=30,hT=27;
-  const yT=sol-hJ-hT-resp,yTete=yT-16;
-
-  px(g,cx-l/2-2,sol+1,l+4,3,'rgba(20,20,20,.2)');
-
-  const bas=item('bas',d.bas);
-  const hBas=bas.id==='short'?15:hJ;
-  px(g,cx-l/2,sol-hJ,l,hJ,peau); px(g,cx-l/2,sol-hJ,l,3,peauO);
-  const cbas=bas.id==='paillettes'?(Math.sin(t/90)>0?'#f2d24a':'#c9a227'):bas.id==='cuir'?'#241f22':basC;
-  px(g,cx-l/2,sol-hBas,l,hBas,cbas);
-  px(g,cx-1,sol-hBas,2,hBas,assombrir(cbas,26));
-  if(bas.id==='treillis'){px(g,cx-l/2,sol-hBas+5,l,4,assombrir(cbas,22));px(g,cx-l/2+3,sol-hBas+14,5,5,assombrir(cbas,14));}
-  if(bas.id==='jean') px(g,cx-l/2,sol-hBas,l,2,assombrir(cbas,-18));
-
-  const pieds=item('pieds',d.pieds);
-  const cch={brodequins:'#3a2a1c',bottes:'#2b3a45',baskets:'#e8e2d4',sabots:'#8a6a3a',santiags:'#d9a520',palmes:'#2ec4c9'}[pieds.id]||'#2b2b2b';
-  const hch=pieds.id==='bottes'?12:5;
-  px(g,cx-l/2-1,sol-hch,l/2+1,hch,cch); px(g,cx,sol-hch,l/2+1,hch,cch);
-  if(pieds.id==='palmes'){px(g,cx-l/2-7,sol-3,l/2+7,3,cch);px(g,cx,sol-3,l/2+7,3,cch);}
-  if(pieds.id==='santiags') px(g,cx-l/2-1,sol-hch,l+2,2,'#fff0b8');
-
-  const haut=item('haut',d.haut);
-  px(g,cx-torse/2,yT,torse,hT+3,peau); px(g,cx-torse/2,yT,3,hT+3,peauO);
-  const met=(cc,large,haute,y0)=>{px(g,cx-large/2,y0,large,haute,cc);
-    px(g,cx-large/2,y0,3,haute,assombrir(cc,30));px(g,cx+large/2-3,y0,3,haute,assombrir(cc,-16));};
-  switch(haut.id){
-    case 'torse': break;
-    case 'marcel': met(hautC,torse-6,hT+3,yT); break;
-    case 'chemise': met(hautC,torse,hT+3,yT); px(g,cx-3,yT,6,hT+3,peau); break;
-    case 'hv': met('#f2d024',torse,hT+3,yT);
-      px(g,cx-torse/2,yT+9,torse,3,'#e4e4e4'); px(g,cx-torse/2,yT+17,torse,3,'#e4e4e4'); break;
-    case 'marin': met('#f0ece2',torse,hT+3,yT);
-      for(let i=0;i<7;i++) px(g,cx-torse/2,yT+2+i*4,torse,2,'#28468c'); break;
-    case 'cire': met('#f2b134',torse+2,hT+5,yT-1); px(g,cx-torse/2-1,yT+hT,torse+2,3,'#c98a1a'); break;
-    case 'cloute': met('#241f22',torse,hT+3,yT);
-      for(let i=0;i<4;i++){px(g,cx-torse/2+3,yT+4+i*6,2,2,'#d8d8d8');px(g,cx+torse/2-5,yT+4+i*6,2,2,'#d8d8d8');} break;
-    case 'costume': met('#22262e',torse,hT+3,yT);
-      px(g,cx-4,yT,8,hT+3,'#f0ece2'); px(g,cx-2,yT+3,4,10,'#b23a48'); break;
-    case 'peignoir': met('#f2ece0',torse+2,hT+5,yT-1);
-      px(g,cx-2,yT,4,hT+4,'#e0d8c6'); px(g,cx-torse/2,yT+hT-4,torse,3,'#c9c0aa'); break;
-    case 'bleu': met(hautC,torse,hT+3,yT); px(g,cx-5,yT+8,10,7,assombrir(hautC,26)); break;
-    default: met(hautC,torse,hT+3,yT);
-  }
-  if(haut.id!=='peignoir') px(g,cx-torse/2,sol-hJ-3,torse,4,'#2b2b2b');
-
-  const dosI=item('dos',d.dos);
-  if(!vueDos){
-    if(dosI.id==='crochet'){px(g,cx-torse/2-4,yT+8,3,10,'#8a8577');px(g,cx-torse/2-6,yT+16,5,3,'#8a8577');}
-    if(dosI.id==='thermos'){px(g,cx+torse/2+1,yT+9,5,12,'#c94a3a');px(g,cx+torse/2+1,yT+9,5,3,'#d8d8d8');}
-  }else{
-    if(dosI.id==='sac'){px(g,cx-torse/2+2,yT+4,torse-4,18,'#b8996a');px(g,cx-torse/2+2,yT+4,torse-4,3,'#8a7448');}
-    if(dosI.id==='filet'){for(let i=0;i<5;i++) px(g,cx-torse/2+i*4,yT+6,2,16,'rgba(232,226,212,.8)');}
-  }
-  if(dosI.id==='cape') px(g,cx-torse/2-3,yT+2,torse+6,hT+12,'rgba(40,60,70,.85)');
-  if(dosI.id==='ailes'){
-    const b=Math.sin(t/160)*2;
-    px(g,cx-torse/2-13,yT+2+b,12,4,'#f4f0e6'); px(g,cx-torse/2-13,yT+6+b,9,3,'#ddd7c8');
-    px(g,cx+torse/2+1,yT+2-b,12,4,'#f4f0e6'); px(g,cx+torse/2+4,yT+6-b,9,3,'#ddd7c8');
-  }
-
-  const bl=Math.max(5,c.ep+3),bal=Math.sin(t/380);
-  const manche=(haut.id==='marcel'||haut.id==='torse')?peau:
-    haut.id==='hv'?'#f2d024':haut.id==='marin'?'#f0ece2':haut.id==='cire'?'#f2b134':
-    haut.id==='cloute'?'#241f22':haut.id==='costume'?'#22262e':haut.id==='peignoir'?'#f2ece0':hautC;
-  px(g,cx-torse/2-bl,yT+4+bal,bl,16,assombrir(manche,22));
-  const brasY=coup?yT+2:yT+4-bal, brasL=coup?bl+10:bl;
-  px(g,cx+torse/2,brasY,brasL,coup?7:16,manche);
-
-  const mI=item('mains',d.mains);
-  const mainC={nues:peau,bandes:'#e8e2d4',mitaines:'#3a2f28',manut:'#b8b0a0',
-    boxe:'#e8452c',menage:'#f26fa8',or:'#e0b020'}[mI.id]||peau;
-  const mx=cx+torse/2+brasL-1,my=coup?brasY:brasY+15;
-  px(g,mx,my,7,7,mainC);
-  if(mI.id==='or') px(g,mx,my,7,2,'#fff0b8');
-  px(g,cx-torse/2-bl,yT+19+bal,6,6,assombrir(mainC,20));
-
-  dessinerArme(g,d.arme,mx+7,my+3,t,coup);
-
-  const tw=14,th=15,tx=cx-tw/2,ty=yTete-resp;
-  px(g,tx,ty,tw,th,peau); px(g,tx,ty,3,th,peauO); px(g,tx+2,ty+th,tw-4,3,peauO);
-  if(!vueDos){
-    px(g,tx+3,ty+6,2,2,'#1b1b1b'); px(g,tx+9,ty+6,2,2,'#1b1b1b');
-    px(g,tx+5,ty+11,4,1,assombrir(peau,55));
-  }
-  const ch=d.cheveux;
-  if(ch!=='chauve'){
-    px(g,tx-1,ty-2,tw+2,vueDos?9:4,chev);
-    if(ch==='milong'){px(g,tx-2,ty,3,11,chev);px(g,tx+tw-1,ty,3,11,chev);}
-    if(ch==='queue'){px(g,tx+tw,ty+1,4,3,chev);px(g,tx+tw+2,ty+3,3,7,chev);}
-    if(ch==='afro') px(g,tx-4,ty-6,tw+8,9,chev);
-    if(ch==='crete') px(g,tx+4,ty-8,6,7,chev);
-    if(ch==='dreads'){for(let i=0;i<4;i++) px(g,tx-2+i*4,ty-1,3,12+((i%2)*4),chev);}
-    if(ch==='banane'){px(g,tx-1,ty-6,tw+3,5,chev);px(g,tx+tw-2,ty-8,5,4,chev);}
-    if(ch==='ras') px(g,tx-1,ty-1,tw+2,3,chev);
-  }
-  if(!vueDos){
-    const cb=assombrir(chev,10);
-    switch(d.barbe){
-      case 'pleine': px(g,tx,ty+9,tw,6,cb);px(g,tx-1,ty+5,2,7,cb);px(g,tx+tw-1,ty+5,2,7,cb); break;
-      case 'courte': px(g,tx+1,ty+10,tw-2,4,cb); break;
-      case 'bouc': px(g,tx+5,ty+11,4,4,cb); break;
-      case 'moust': px(g,tx+4,ty+9,7,2,cb); break;
-      case 'bacchantes': px(g,tx+2,ty+9,11,2,cb);px(g,tx+1,ty+8,2,2,cb);px(g,tx+12,ty+8,2,2,cb); break;
-      case 'tressee': px(g,tx,ty+9,tw,5,cb);px(g,tx+4,ty+14,6,7,cb);px(g,tx+4,ty+18,6,2,'#d9a520'); break;
-    }
-    switch(d.visage){
-      case 'lunettes': px(g,tx+1,ty+5,tw-2,4,'#1b1b1b');px(g,tx+2,ty+6,3,2,'#3a3a3a'); break;
-      case 'cicatrice': px(g,tx+3,ty+3,1,7,'#b25a4a'); break;
-      case 'cloppe': px(g,tx+10,ty+11,7,2,'#f0ece2');px(g,tx+17,ty+11,2,2,'#e8452c'); break;
-      case 'curedent': px(g,tx+10,ty+11,6,1,'#c9a870'); break;
-      case 'masque': px(g,tx+1,ty+8,tw-2,6,'#e0dcd2');px(g,tx+1,ty+10,tw-2,1,'#b8b0a0'); break;
-      case 'cacheoeil': px(g,tx+2,ty+5,5,4,'#1b1b1b');px(g,tx,ty+4,tw,1,'#1b1b1b'); break;
-      case 'peinture': px(g,tx+1,ty+5,tw-2,2,'#e8452c');px(g,tx+2,ty+9,4,2,'#2ec4c9');px(g,tx+9,ty+9,4,2,'#2ec4c9'); break;
-    }
-  }
-  switch(d.tete){
-    case 'bonnet': px(g,tx-1,ty-5,tw+2,7,'#2b3a45');px(g,tx-1,ty+1,tw+2,3,'#22303a'); break;
-    case 'casque': px(g,tx-2,ty-6,tw+4,7,'#ffd029');px(g,tx-5,ty+1,tw+10,2,'#e8b81c');px(g,tx+2,ty-8,4,3,'#ffd029'); break;
-    case 'casquette': px(g,tx-1,ty-5,tw+2,6,'#e8452c');px(g,tx-7,ty+1,9,2,'#c9331f'); break;
-    case 'envers': px(g,tx-1,ty-5,tw+2,6,'#2ec4c9');px(g,tx+tw-1,ty+1,9,2,'#1f9ba0'); break;
-    case 'foulard': px(g,tx-1,ty-3,tw+2,5,'#f26fa8');px(g,tx-4,ty+2,4,9,'#f26fa8'); break;
-    case 'bandeau': px(g,tx-1,ty+2,tw+2,3,'#2ec4c9');px(g,tx+tw,ty+3,6,2,'#2ec4c9'); break;
-    case 'bob': px(g,tx-2,ty-5,tw+4,5,'#8fb08a');px(g,tx-6,ty,tw+12,3,'#8fb08a'); break;
-    case 'paille': px(g,tx-2,ty-5,tw+4,5,'#e8c86a');px(g,tx-8,ty,tw+16,3,'#e8c86a');px(g,tx-2,ty-2,tw+4,2,'#b23a48'); break;
-    case 'soudeur': px(g,tx-2,ty-6,tw+4,8,'#3a4a52');px(g,tx-2,ty+2,tw+4,9,'#22303a');px(g,tx+1,ty+5,tw-2,3,'#2ec4c9'); break;
-    case 'cornes': px(g,tx-1,ty-5,tw+2,6,'#6b5b45');px(g,tx-5,ty-9,4,6,'#e8e2d4');px(g,tx+tw+1,ty-9,4,6,'#e8e2d4'); break;
-    case 'couronne': px(g,tx-2,ty-5,tw+4,5,'#f0a020');px(g,tx-2,ty-9,3,5,'#f0a020');
-      px(g,tx+5,ty-10,3,6,'#f0a020');px(g,tx+tw-1,ty-9,3,5,'#f0a020');px(g,tx+6,ty-12,2,2,'#e8452c'); break;
-    case 'mouette': px(g,tx+1,ty-9,11,6,'#f4f0e6');px(g,tx+9,ty-11,5,4,'#f4f0e6');
-      px(g,tx+13,ty-10,3,2,'#f2b134');px(g,tx+11,ty-11,1,1,'#1b1b1b');px(g,tx+1,ty-4,9,2,'#d8d2c4'); break;
-  }
-}
-
-function dessinerArme(g,id,x,y,t,coup){
-  const s=(a,b,w,h,c)=>px(g,x+a,y+b,w,h,c);
-  switch(id){
-    case 'crochet': s(-1,-2,3,12,'#8a8577'); s(-3,8,6,3,'#8a8577'); break;
-    case 'molette': s(-1,-16,4,20,'#b8b0a0'); s(-4,-22,10,7,'#b8b0a0'); s(-1,-21,4,4,'#efe7d8'); break;
-    case 'poisson': s(-2,-10,12,14,'#7fa8c4'); s(10,-6,5,6,'#5f88a4'); s(0,-6,2,2,'#1b1b1b'); break;
-    case 'baguette': s(0,-4,22,5,'#d9a95a'); s(2,-4,18,2,'#e8c07a'); break;
-    case 'rame': s(0,-3,26,4,'#b8996a'); s(24,-8,8,14,'#8a7448'); break;
-    case 'poele': s(0,-2,16,3,'#3a3a3a'); s(14,-9,12,15,'#2b2b2b'); s(17,-6,7,9,'#c9a227'); break;
-    case 'extincteur': s(-2,-16,10,20,'#c9331f'); s(1,-20,4,5,'#b8b0a0'); s(-2,-11,10,3,'#efe7d8'); break;
-    case 'cone': s(-4,-14,14,4,'#e8452c'); s(-1,-24,8,11,'#e8452c'); s(0,-19,6,3,'#f0ece2'); break;
-    case 'epuisette': s(0,-2,20,3,'#b8996a'); s(18,-12,3,16,'#8a8577'); s(21,-12,10,16,'rgba(232,226,212,.55)'); break;
-    case 'saucisson': s(0,-4,20,8,'#8c4a44'); s(2,-4,16,2,'#a85d55'); s(4,-1,3,3,'#e8dcc0'); s(11,1,3,3,'#e8dcc0'); break;
-    case 'ancre': s(1,-18,4,22,'#5f6b72'); s(-4,-14,14,3,'#5f6b72'); s(-6,0,6,4,'#5f6b72'); s(6,0,6,4,'#5f6b72'); break;
-    case 'bouee': {const b=Math.sin(t/140);s(-2,-12+b,18,16,'#ffd029');s(12,-18+b,8,7,'#ffd029');
-      s(19,-16+b,4,3,'#e8452c');s(15,-16+b,2,2,'#1b1b1b'); break;}
-    case 'grue': s(0,-4,4,8,'#e8452c'); s(0,-26,4,24,'#f2b134'); s(2,-26,18,3,'#f2b134');
-      s(17,-23,2,10,'#8a8577'); s(15,-13,6,5,'#5f6b72'); break;
-    case 'pieddebiche': s(0,-2,20,4,'#f0a020'); s(18,-8,5,10,'#f0a020'); s(-4,-4,6,4,'#d9a520'); break;
-  }
-  if(coup&&id!=='aucune'){ px(g,x+8,y-8,3,3,'rgba(242,177,52,.85)'); px(g,x+14,y-3,2,2,'rgba(242,177,52,.6)'); }
-}
-
-/* ---------------------------- vestiaire ---------------------------- */
+/* ---------------- vestiaire ---------------- */
 let ongletActif='corps';
-function construireOnglets(){
-  const z=$('onglets'); z.innerHTML='';
+function onglets(){
+  const z=$('onglets');z.innerHTML='';
   ONGLETS.forEach(o=>{
     const b=document.createElement('button');
-    b.textContent=o.nom; b.className=ongletActif===o.id?'on':'';
-    b.onclick=()=>{ongletActif=o.id;construireOnglets();construireOptions();};
+    b.textContent=o.nom;b.className=ongletActif===o.id?'on':'';
+    b.onclick=()=>{ongletActif=o.id;onglets();options();};
     z.appendChild(b);
   });
 }
-function construireOptions(){
-  const z=$('options'); z.innerHTML='';
-  const o=ONGLETS.find(x=>x.id===ongletActif);
-  o.rubs.forEach(cle=>{
+function options(){
+  const z=$('options');z.innerHTML='';
+  ONGLETS.find(x=>x.id===ongletActif).rubs.forEach(cle=>{
     const rub=RUBRIQUES.find(r=>r.c===cle);
-    const t=document.createElement('div'); t.className='rub'; t.textContent=rub.nom; z.appendChild(t);
-    const r=document.createElement('div'); r.className='rangee'; z.appendChild(r);
-    if(rub.type==='coul'){
-      rub.src().forEach((coul,i)=>{
+    const t=document.createElement('div');t.className='rub';t.textContent=rub.nom;z.appendChild(t);
+    const r=document.createElement('div');r.className='rangee';z.appendChild(r);
+    if(rub.coul){
+      rub.coul().forEach((c,i)=>{
         const b=document.createElement('button');
-        b.className='pastel'+(d[cle]===i?' actif':''); b.style.background=coul;
-        b.onclick=()=>{d[cle]=i;sauver();construireOptions();majResume();};
+        b.className='pastel'+(d[cle]===i?' actif':'');b.style.background=c;
+        b.onclick=()=>{d[cle]=i;sauver();options();resume();};
         r.appendChild(b);
       });
     }else{
@@ -650,207 +298,175 @@ function construireOptions(){
         b.textContent=(ok?'':'🔒 ')+it.nom;
         if(it.r){const s=document.createElement('span');s.className='r';s.style.background=RARETES[it.r].c;b.appendChild(s);}
         b.onclick=()=>{
-          if(!ok){ b.textContent='Dans un coffre'; setTimeout(construireOptions,900); return; }
-          d[cle]=it.id; sauver(); construireOptions(); majResume();
+          if(!ok){b.textContent='Dans une caisse';setTimeout(options,900);return;}
+          d[cle]=it.id;sauver();options();resume();
         };
         r.appendChild(b);
       });
     }
   });
 }
-function majResume(){
-  const s=stats(),a=item('arme',d.arme);
-  $('res-nom').textContent=d.nom||'Sans nom';
-  $('res-arme').textContent=a.nom+(d.poste?' · '+POSTES.find(p=>p.id===d.poste).nom:'');
+function resume(){
+  const s=statsDe(d);
+  $('r-nom').textContent=d.nom||'Sans nom';
+  $('r-arme').textContent=item('arme',d.arme).nom+(d.poste?' · '+POSTES.find(p=>p.id===d.poste).nom:'');
   const j=(n,v)=>'<div class="j"><span>'+n+'</span><b>'+
     Array.from({length:6},(_,i)=>'<i class="'+(i<v?'p':'')+'"></i>').join('')+'</b></div>';
-  $('res-jauges').innerHTML=j('Force',s.force)+j('Vitesse',s.vitesse)+j('Endur.',s.endurance)+j('Portée',s.portee);
+  $('r-jauges').innerHTML=j('Force',s.force)+j('Vitesse',s.vitesse)+j('Endur.',s.endurance)+j('Portée',s.portee);
   bourses();
 }
-function bourses(){ ['bourse-v','bourse-b','bourse-c'].forEach(id=>{const e=$(id); if(e) e.textContent=d.pieces+' ¤';}); }
+function bourses(){['b-v','b-b','b-c'].forEach(i=>{const e=$(i);if(e)e.textContent=d.euros+' €';});}
 
 $('nom').value=d.nom;
 $('nom').addEventListener('input',e=>{
   d.nom=e.target.value.toUpperCase().slice(0,16);
-  if(e.target.value!==d.nom) e.target.value=d.nom;
-  sauver(); majResume();
+  if(e.target.value!==d.nom)e.target.value=d.nom;
+  sauver();resume();
 });
-$('bt-hasard').onclick=()=>{
-  d.nom=(hasard(PRENOMS)+' '+hasard(SURNOMS)).toUpperCase(); $('nom').value=d.nom;
+$('hasard').onclick=()=>{
+  d.nom=(hasardDe(PRENOMS)+' '+hasardDe(SURNOMS)).toUpperCase();$('nom').value=d.nom;
   RUBRIQUES.forEach(r=>{
-    if(r.type==='coul') d[r.c]=Math.random()*r.src().length|0;
-    else d[r.c]=hasard(CAT[r.c].filter(x=>debloque(r.c,x))).id;
+    if(r.coul)d[r.c]=Math.random()*r.coul().length|0;
+    else d[r.c]=hasardDe(CAT[r.c].filter(x=>debloque(r.c,x))).id;
   });
-  sauver(); construireOptions(); majResume();
+  sauver();options();resume();
 };
-$('bt-face').onclick=()=>{vueDos=!vueDos;};
-$('bt-coup').onclick=()=>{animCoup=26;};
-$('bt-valider').onclick=()=>{sauver();aller('accueil');};
 
-/* ---------------------------- billet ---------------------------- */
-function tirerPoste(){
-  const total=POSTES.reduce((s,p)=>s+p.poids,0);
-  let r=Math.random()*total;
-  for(const p of POSTES){ r-=p.poids; if(r<=0) return p; }
-  return POSTES[0];
-}
-$('bt-tirer').onclick=()=>{
-  const p=tirerPoste();
-  d.poste=p.id; d.pieces+=p.pieces; sauver();
-  const b=p.b,tags=[];
-  if(b.force) tags.push('Force +'+b.force);
-  if(b.vitesse) tags.push('Vitesse +'+b.vitesse);
-  if(b.endurance) tags.push('Endurance +'+b.endurance);
-  if(b.rage) tags.push('Rage +'+b.rage);
-  tags.push('+'+p.pieces+' ¤');
+/* ---------------- billet ---------------- */
+$('tirer').onclick=()=>{
+  const total=POSTES.reduce((s,p)=>s+p.poids,0);let r=Math.random()*total,p=POSTES[0];
+  for(const q of POSTES){r-=q.poids;if(r<=0){p=q;break;}}
+  d.poste=p.id;d.euros+=p.euros;sauver();
+  const tags=[];
+  if(p.b.f)tags.push('Force +'+p.b.f);
+  if(p.b.v)tags.push('Vitesse +'+p.b.v);
+  if(p.b.e)tags.push('Endurance +'+p.b.e);
+  if(p.b.rg)tags.push('Rage +'+p.b.rg);
+  tags.push('+'+p.euros+' €');
   $('zone-billet').innerHTML='<div class="billet tire">'+
     '<div class="rarete" style="background:'+RARETES[p.r].c+'">'+RARETES[p.r].nom+'</div>'+
     '<div class="haut"><span>Bureau d’embauche</span><span>Quart de nuit</span></div>'+
     '<div class="poste">'+p.nom+'</div><div class="desc">'+p.d+'</div>'+
     '<div class="bonus">'+tags.map(x=>'<span>'+x+'</span>').join('')+'</div></div>';
-  $('bt-tirer').innerHTML='Retirer un billet <em>▸</em>';
-  $('bt-quai').disabled=false;
-  bourses();
+  $('tirer').innerHTML='Retirer un billet <em>▸</em>';
+  $('quai').disabled=false;bourses();
 };
-$('bt-quai').onclick=()=>{ sauver(); location.href='fight.html'; };
+$('quai').onclick=()=>{sauver();location.href='fight.html';};
 
-/* ---------------------------- coffres ---------------------------- */
+/* ---------------- caisses ---------------- */
 const COFFRES=[
   {id:'bois',nom:'Caisse en bois',prix:120,d:'Ce qui tombe des palettes.',
    odds:{commun:.62,peu:.28,rare:.08,epique:.017,leg:.003}},
   {id:'fer',nom:'Caisse cerclée',prix:300,d:'Fermée au fil de fer, donc intéressante.',
    odds:{commun:.34,peu:.36,rare:.22,epique:.07,leg:.01}},
-  {id:'scelle',nom:'Conteneur scellé',prix:750,d:'Numéro effacé. Personne ne viendra le réclamer.',
+  {id:'scelle',nom:'Conteneur scellé',prix:750,d:'Numéro effacé. Personne ne le réclamera.',
    odds:{commun:.06,peu:.24,rare:.40,epique:.24,leg:.06}}
 ];
 function dessinerCoffre(cv,type){
-  const g=cv.getContext('2d'); g.imageSmoothingEnabled=false;
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
   const c={bois:['#b8996a','#8a7448'],fer:['#8a8577','#5f6b72'],scelle:['#4a6b74','#2b4750']}[type];
-  g.clearRect(0,0,cv.width,cv.height);
-  px(g,4,10,24,18,c[0]); px(g,4,10,24,4,c[1]); px(g,4,16,24,2,c[1]);
-  px(g,14,18,4,6,'#f2b134'); px(g,4,26,24,2,c[1]);
+  g.clearRect(0,0,32,32);
+  px(g,4,10,24,18,c[0]);px(g,4,10,24,4,c[1]);px(g,4,16,24,2,c[1]);
+  px(g,14,18,4,6,'#f2b134');px(g,4,26,24,2,c[1]);
   if(type!=='bois'){px(g,8,10,3,18,c[1]);px(g,21,10,3,18,c[1]);}
-  if(type==='scelle') px(g,12,6,8,5,'#e8452c');
+  if(type==='scelle')px(g,12,6,8,5,'#e8452c');
 }
-function construireBoutique(){
-  const z=$('coffres'); z.innerHTML='';
+function boutique(){
+  const z=$('coffres');z.innerHTML='';
   COFFRES.forEach(c=>{
-    const el=document.createElement('div'); el.className='coffre';
-    const cv=document.createElement('canvas'); cv.width=32; cv.height=32;
-    const txt=document.createElement('div'); txt.className='txt';
-    txt.innerHTML='<h3>'+c.nom+'</h3><p>'+c.d+'</p><div class="odds">'+
-      Object.entries(c.odds).map(([r,v])=>'<i style="background:'+RARETES[r].c+'">'+Math.round(v*100)+'%</i>').join('')+
-      '</div>';
+    const el=document.createElement('div');el.className='coffre';
+    const cv=document.createElement('canvas');cv.width=32;cv.height=32;
+    const t=document.createElement('div');t.className='txt';
+    t.innerHTML='<h3>'+c.nom+'</h3><p>'+c.d+'</p><div class="odds">'+
+      Object.entries(c.odds).map(([r,v])=>'<i style="background:'+RARETES[r].c+'">'+Math.round(v*100)+'%</i>').join('')+'</div>';
     const b=document.createElement('button');
-    b.className='bt petit jaune'; b.textContent=c.prix+' ¤';
-    b.disabled=d.pieces<c.prix; b.onclick=()=>ouvrirCoffre(c);
-    el.append(cv,txt,b); z.appendChild(el); dessinerCoffre(cv,c.id);
+    b.className='bt petit jaune';b.textContent=c.prix+' €';b.disabled=d.euros<c.prix;
+    b.onclick=()=>ouvrir(c);
+    el.append(cv,t,b);z.appendChild(el);dessinerCoffre(cv,c.id);
   });
   const total=Object.keys(CAT).reduce((s,k)=>s+CAT[k].filter(x=>x.r).length,0);
-  $('stat-butin').textContent=d.debloque.length+' pièces d’équipement trouvées sur '+total+
+  $('stat-butin').textContent=d.debloque.length+' pièces trouvées sur '+total+
     ' · '+d.coffres+' caisse'+(d.coffres>1?'s':'')+' ouverte'+(d.coffres>1?'s':'');
 }
-function poolRarete(r){
-  const out=[]; Object.keys(CAT).forEach(cat=>CAT[cat].forEach(it=>{if(it.r===r) out.push({cat,it});}));
-  return out;
-}
-let dernierCoffre=null;
-function ouvrirCoffre(c){
-  if(d.pieces<c.prix) return;
-  d.pieces-=c.prix; d.coffres++; dernierCoffre=c;
-  let r=Math.random(),choisie='commun';
-  for(const k in c.odds){ r-=c.odds[k]; if(r<=0){choisie=k;break;} }
-  let pool=poolRarete(choisie).filter(x=>!d.debloque.includes(x.cat+':'+x.it.id));
-  let doublon=false;
-  if(!pool.length){ pool=poolRarete(choisie); doublon=true; }
-  if(!pool.length){ pool=poolRarete('peu'); doublon=true; }
-  const pick=hasard(pool), cat=pick.cat, it=pick.it;
+function pool(r){const o=[];Object.keys(CAT).forEach(c=>CAT[c].forEach(i=>{if(i.r===r)o.push({c,i});}));return o;}
+let dernier=null;
+function ouvrir(c){
+  if(d.euros<c.prix)return;
+  d.euros-=c.prix;d.coffres++;dernier=c;
+  let r=Math.random(),ch='commun';
+  for(const k in c.odds){r-=c.odds[k];if(r<=0){ch=k;break;}}
+  let p=pool(ch).filter(x=>!d.debloque.includes(x.c+':'+x.i.id)),doublon=false;
+  if(!p.length){p=pool(ch);doublon=true;}
+  if(!p.length){p=pool('peu');doublon=true;}
+  const {c:cat,i:it}=hasardDe(p);
   let rendu=0;
-  if(doublon){ rendu=RARETES[choisie].rendu; d.pieces+=rendu; }
-  else d.debloque.push(cat+':'+it.id);
+  if(doublon){rendu=RARETES[ch].rendu;d.euros+=rendu;}else d.debloque.push(cat+':'+it.id);
   sauver();
-
-  const nomCat={carrure:'Carrure',cheveux:'Cheveux',barbe:'Poils',haut:'Haut',bas:'Bas',
-    pieds:'Chaussures',tete:'Tête',visage:'Visage',mains:'Mains',dos:'Dos',arme:'Arme'}[cat]||cat;
-  $('carte-butin').innerHTML='<div class="rar" style="background:'+RARETES[choisie].c+'">'+RARETES[choisie].nom+'</div>'+
-    '<canvas id="cv-butin" width="52" height="52"></canvas><h3>'+it.nom+'</h3><p>'+nomCat+
-    (it.d?' · '+it.d:'')+(doublon?'<br><b>Doublon</b> — rendu '+rendu+' ¤':'')+'</p>';
-  const g=$('cv-butin').getContext('2d'); g.imageSmoothingEnabled=false;
-  if(cat==='arme'){ g.save(); g.translate(8,36); dessinerArme(g,it.id,0,0,0,false); g.restore(); }
+  const nomCat={carrure:'Carrure',cheveux:'Cheveux',barbe:'Poils',tatouage:'Tatouage',haut:'Haut',
+    bas:'Bas',ceinture:'Ceinture',pieds:'Chaussures',tete:'Tête',visage:'Visage',boucle:'Oreille',
+    mains:'Mains',dos:'Dos',arme:'Arme',expression:'Expression'}[cat]||cat;
+  $('carte').innerHTML='<div class="rar" style="background:'+RARETES[ch].c+'">'+RARETES[ch].nom+'</div>'+
+    '<canvas id="cvb" width="52" height="52"></canvas><h3>'+it.nom+'</h3><p>'+nomCat+
+    (it.d?' · '+it.d:'')+(doublon?'<br><b>Doublon</b> — rendu '+rendu+' €':'')+'</p>';
+  const g=$('cvb').getContext('2d');g.imageSmoothingEnabled=false;
+  if(cat==='arme'){g.save();g.translate(9,34);dessinerArme(g,it.id,0,0,0);g.restore();}
   else{
-    const avant=d[cat]; d[cat]=it.id;
-    const tmp=document.createElement('canvas'); tmp.width=96; tmp.height=124;
-    dessiner(tmp,0); d[cat]=avant;
-    g.drawImage(tmp,26,4,44,50,2,0,48,52);
+    const avant=d[cat];d[cat]=it.id;
+    const tmp=document.createElement('canvas');tmp.width=96;tmp.height=124;
+    const tg=tmp.getContext('2d');tg.imageSmoothingEnabled=false;
+    tg.save();tg.translate(48,114);dessinerDocker(tg,{look:d,etat:'debout',coup:null,sol:1,sens:1},0);tg.restore();
+    d[cat]=avant;g.drawImage(tmp,26,26,44,48,2,0,48,52);
   }
   $('tirage').classList.add('on');
-  $('bt-encore').disabled=d.pieces<c.prix;
-  $('bt-encore').textContent='Rouvrir · '+c.prix+' ¤';
+  $('encore').disabled=d.euros<c.prix;$('encore').textContent='Rouvrir · '+c.prix+' €';
 }
-$('bt-fermer').onclick=()=>{$('tirage').classList.remove('on');construireBoutique();bourses();};
-$('bt-encore').onclick=()=>{if(dernierCoffre) ouvrirCoffre(dernierCoffre);};
+$('fermer').onclick=()=>{$('tirage').classList.remove('on');boutique();bourses();};
+$('encore').onclick=()=>{if(dernier)ouvrir(dernier);};
 
-/* ---------------------------- navigation ---------------------------- */
-function aller(nom){
+/* ---------------- navigation ---------------- */
+function aller(n){
   document.querySelectorAll('.ecran').forEach(e=>{
-    const on=e.id==='e-'+nom; e.classList.toggle('on',on); if(on) e.scrollTop=0;
-  });
-  if(nom==='vestiaire'){construireOnglets();construireOptions();majResume();}
-  if(nom==='boutique') construireBoutique();
-  if(nom==='palmares') construirePalmares();
-  if(nom==='billet') bourses();
-  if(nom==='pret') construirePret();
-  location.hash=nom;
+    const on=e.id==='e-'+n;e.classList.toggle('on',on);if(on)e.scrollTop=0;});
+  if(n==='vestiaire'){onglets();options();resume();}
+  if(n==='boutique')boutique();
+  if(n==='palmares')palmares();
+  if(n==='billet')bourses();
+  if(n==='accueil')sauver();
+  location.hash=n;
 }
-document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-va]'); if(b) aller(b.dataset.va);
-});
-function construirePalmares(){
-  const l=$('liste-adv'); l.innerHTML='';
+document.addEventListener('click',e=>{const b=e.target.closest('[data-va]');if(b)aller(b.dataset.va);});
+function palmares(){
+  const l=$('liste-adv');l.innerHTML='';
   ADVERSAIRES.forEach((a,i)=>{
     const battu=i<d.niveau,courant=i===d.niveau;
-    const r=document.createElement('div'); r.className='r';
-    r.innerHTML='<span>'+(battu||courant?a.n:'? ? ?')+'<small>'+
+    const r=document.createElement('div');r.className='r';
+    r.innerHTML='<span>'+(battu||courant?a.nom:'? ? ?')+'<small>'+
       (battu||courant?a.d:'Pas encore rencontré.')+'</small></span><span class="d">'+
       (battu?'Battu':(courant?'À venir':'—'))+'</span>';
     l.appendChild(r);
   });
   $('note-palmares').textContent=(d.nom||'Docker sans nom')+' · '+d.victoires+
-    ' victoire'+(d.victoires>1?'s':'')+' sur six · '+d.pieces+' ¤ en poche.';
+    ' victoire'+(d.victoires>1?'s':'')+' · '+d.euros+' € en poche.';
 }
-function construirePret(){
-  const a=ADVERSAIRES[Math.min(d.niveau,5)],p=d.poste?POSTES.find(x=>x.id===d.poste):null;
-  $('pret-titre').textContent=d.nom||'Prêt.';
-  $('pret-texte').innerHTML='Poste de la nuit : <b>'+(p?p.nom:'aucun')+'</b>.<br>Adversaire : <b>'+
-    a.n+'</b>. '+a.d+'<br><br>Le moteur de combat se branche ici : docker, arme et billet sont déjà prêts à lui être passés.';
-}
-
-/* ---------------------------- boucle + départ ---------------------------- */
-const apercu=$('apercu');
-(function boucle(t){
-  requestAnimationFrame(boucle);
-  if($('e-vestiaire').classList.contains('on')) dessiner(apercu,t);
-})(0);
 
 (()=>{
-  const z=$('formes'),cs=['#e8452c','#ffd029','#2ec4c9','#f26fa8','#141414'],out=[];
+  const z=$('formes'),cs=['#e8452c','#ffd029','#2ec4c9','#f26fa8','#141414'],o=[];
   for(let i=0;i<15;i++){
     const c=cs[i%5],x=Math.random()*100,y=Math.random()*100,s=14+Math.random()*44,r=Math.random()*360,t=i%4;
     let st='left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;transform:rotate('+r+'deg);opacity:.3;';
-    if(t===0) st+='background:'+c+';border-radius:50%;';
-    else if(t===1) st+='background:'+c+';height:'+(s/3)+'px;';
-    else if(t===2) st+='border:4px solid '+c+';';
+    if(t===0)st+='background:'+c+';border-radius:50%;';
+    else if(t===1)st+='background:'+c+';height:'+(s/3)+'px;';
+    else if(t===2)st+='border:4px solid '+c+';';
     else st+='background:repeating-linear-gradient(45deg,'+c+' 0 5px,transparent 5px 10px);';
-    out.push('<i style="'+st+'"></i>');
+    o.push('<i style="'+st+'"></i>');
   }
-  z.innerHTML=out.join('');
+  z.innerHTML=o.join('');
 })();
-
 bourses();
-if(d.nom) $('accroche-accueil').innerHTML='Ton docker <b>'+d.nom+'</b> t’attend. '+
-  d.victoires+' victoire'+(d.victoires>1?'s':'')+' sur six · '+d.pieces+' ¤.';
+if(d.nom)$('accroche').innerHTML='Ton docker <b>'+d.nom+'</b> t’attend. '+
+  d.victoires+' victoire'+(d.victoires>1?'s':'')+' · '+d.euros+' €.';
 const dep=(location.hash||'').replace('#','');
-if(['vestiaire','billet','boutique','palmares','commandes'].includes(dep)) aller(dep);
+if(['vestiaire','billet','boutique','palmares'].includes(dep))aller(dep);
 </script>
 </body>
 </html>
