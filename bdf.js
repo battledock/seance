@@ -619,8 +619,27 @@ function dessinerArene(g,n,W,H,SOL,t){
   const h=g.createRadialGradient(392,42,6,392,42,170);
   h.addColorStop(0,a.halo+'40');h.addColorStop(1,a.halo+'00');
   g.fillStyle=h;g.fillRect(180,0,300,SOL);
-  g.fillStyle='rgba(255,255,255,.07)';
-  for(let i=0;i<26;i++)g.fillRect((i*97)%W,(i*53)%110,1,1);
+  // étoiles
+  g.fillStyle='rgba(255,255,255,.5)';
+  for(let i=0;i<34;i++){const x=(i*97)%W,y=(i*53)%108;
+    g.globalAlpha=.25+.35*Math.abs(Math.sin(t/700+i));g.fillRect(x,y,1,1);}
+  g.globalAlpha=1;
+  // lune
+  if(a.deco!=='digue'&&a.deco!=='hangar'){
+    g.fillStyle='rgba(244,238,220,.9)';g.beginPath();g.arc(64,38,11,0,7);g.fill();
+    g.fillStyle=a.ciel[0];g.beginPath();g.arc(59,34,10,0,7);g.fill();
+  }
+  // nuages lents
+  g.fillStyle='rgba(255,255,255,.045)';
+  for(let i=0;i<3;i++){const x=((t/(90+i*40))+i*180)%(W+120)-60;
+    g.fillRect(x,26+i*22,72,7);g.fillRect(x+14,20+i*22,44,7);}
+  // mouettes
+  g.strokeStyle='rgba(242,236,224,.45)';g.lineWidth=1;
+  for(let i=0;i<3;i++){
+    const x=((t/(55+i*22))+i*150)%(W+60)-30, y=40+i*17+Math.sin(t/380+i)*6,
+          o=Math.sin(t/90+i*2)*3;
+    g.beginPath();g.moveTo(x-4,y);g.lineTo(x,y-o);g.lineTo(x+4,y);g.stroke();
+  }
 
   const boite=(x,y,w,hh,c)=>{g.fillStyle=c;g.fillRect(x,y,w,hh);
     g.fillStyle='rgba(0,0,0,.24)';for(let i=6;i<w;i+=8)g.fillRect(x+i,y+3,2,hh-6);
@@ -679,11 +698,37 @@ function dessinerArene(g,n,W,H,SOL,t){
       for(let i=0;i<20;i++)g.fillRect((i*83)%W,(i*37)%90,1,1);break;
     }
   }
+  // public : silhouettes de dockers qui bougent au fond
+  const nuit=a.deco!=='digue';
+  for(let i=0;i<22;i++){
+    const x=6+i*22+((i%3)*4), b=Math.sin(t/(300+i*17)+i)*1.6;
+    const hh=16+((i*7)%9);
+    g.fillStyle=nuit?'rgba(8,12,16,.72)':'rgba(50,28,26,.6)';
+    g.fillRect(x,SOL-hh+b,9,hh);
+    g.beginPath();g.arc(x+4.5,SOL-hh+b-2,4,0,7);g.fill();
+    if(i%4===0){ // bras levés
+      g.fillRect(x-3,SOL-hh-4+b,3,8);g.fillRect(x+9,SOL-hh-4-b,3,8);
+    }
+  }
+  g.fillStyle=a.halo+'10';g.fillRect(0,SOL-26,W,26);
+
   g.fillStyle=a.sol;g.fillRect(0,SOL,W,H-SOL);
   g.fillStyle='rgba(255,255,255,.06)';g.fillRect(0,SOL,W,3);
   g.fillStyle='rgba(0,0,0,.22)';
   for(let x=0;x<W;x+=24)g.fillRect(x,SOL+9,12,2);
   g.fillStyle=a.halo+'14';g.fillRect(0,SOL+22,W,3);
+
+  // premier plan : caisses et cordages, hors du champ de combat
+  g.fillStyle='rgba(6,9,12,.9)';
+  g.fillRect(0,H-30,26,30);g.fillRect(W-30,H-34,30,34);
+  g.fillStyle='rgba(255,255,255,.05)';g.fillRect(0,H-30,26,2);g.fillRect(W-30,H-34,30,2);
+  g.strokeStyle='rgba(6,9,12,.85)';g.lineWidth=3;
+  g.beginPath();g.moveTo(-4,H-26);g.quadraticCurveTo(W/2,H-12,W+4,H-30);g.stroke();
+
+  // vignette
+  const v=g.createRadialGradient(W/2,H/2,90,W/2,H/2,290);
+  v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.45)');
+  g.fillStyle=v;g.fillRect(0,0,W,H);
 }
 
 global.BDF={RARETES,TEINTS,CHEVEUX_C,YEUX_C,VESTE_C,BAS_C,CAT,RUBRIQUES,ONGLETS,POSTES,
