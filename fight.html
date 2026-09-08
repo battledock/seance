@@ -8,12 +8,30 @@
 <style>
 :root{--encre:#141414;--papier:#f2ece0;--rouge:#e8452c;--jaune:#ffd029;--cyan:#2ec4c9}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#0d0d0d;color:var(--papier);overflow:hidden;
+html,body{height:100%;background:#0b1016;color:var(--papier);overflow:hidden;
   font-family:"Arial Black","Arial Narrow",Helvetica,sans-serif;
   -webkit-tap-highlight-color:transparent;touch-action:none;overscroll-behavior:none}
 button{font-family:inherit;color:inherit;cursor:pointer}
-#scene{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center}
+#fond{position:fixed;inset:0;z-index:0;overflow:hidden;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(242,177,52,.16),transparent 55%),
+    linear-gradient(180deg,#0d1620 0%,#101b24 45%,#0a1015 100%)}
+#fond .bandes{position:absolute;inset:-20%;opacity:.06;
+  background:repeating-linear-gradient(52deg,#f2ece0 0 6px,transparent 6px 40px)}
+#fond .blocs i{position:absolute;display:block;opacity:.14}
+#fond .lueur{position:absolute;left:50%;top:44%;width:130vw;height:60vh;transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse,rgba(46,196,201,.18),transparent 62%)}
+#scene{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;padding-top:calc(10px + env(safe-area-inset-top))}
+.cadre{position:relative;padding:0;border:4px solid #141414;
+  box-shadow:0 0 0 3px rgba(242,236,224,.5), 10px 10px 0 rgba(232,69,44,.85), 0 22px 60px rgba(0,0,0,.65)}
 canvas#c{display:block;width:100%;image-rendering:pixelated;background:#000}
+.enseigne{display:flex;align-items:center;gap:8px;margin:10px 0 8px;
+  font:900 11px/1 "Arial Black",sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#8fa0aa}
+.enseigne b{color:#ffd029;letter-spacing:.1em}
+.enseigne i{display:block;width:26px;height:4px;background:#e8452c;font-style:normal}
+.sousliste{display:flex;gap:6px;margin-top:9px;font:900 9px/1 "Arial Black",sans-serif;
+  letter-spacing:.18em;text-transform:uppercase;color:#5c6b74}
 .cmd{position:fixed;bottom:0;z-index:6;display:none;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
 .cmd.on{display:grid}
 #cmd1{left:0;right:0;padding-left:14px;padding-right:14px}
@@ -63,10 +81,29 @@ canvas#c{display:block;width:100%;image-rendering:pixelated;background:#000}
 .listec .v{color:var(--jaune);flex:0 0 auto}
 .listec button{border:3px solid var(--jaune);background:transparent;color:var(--jaune);
   padding:8px 11px;font:900 11px/1 "Arial Black",sans-serif;text-transform:uppercase}
+.etape{display:flex;gap:12px;margin-top:18px;padding-top:16px;border-top:3px solid rgba(242,236,224,.25)}
+.etape.bloquee{opacity:.42;pointer-events:none}
+.etape .num{flex:0 0 auto;width:34px;height:34px;border:3px solid var(--jaune);color:var(--jaune);
+  display:flex;align-items:center;justify-content:center;font:900 16px/1 "Arial Black",sans-serif}
+.etape .txt{flex:1;min-width:0}
+.etape h3{font-size:16px;text-transform:uppercase;font-style:italic;letter-spacing:-.02em}
+.etape .aide{font-family:Georgia,serif;font-size:13px;line-height:1.6;color:#a8a296;margin-top:6px}
+.etape .champ{margin-top:10px}
+.etat{margin-top:10px;font:900 10px/1.4 "Arial Black",sans-serif;letter-spacing:.1em;
+  text-transform:uppercase;color:#8a857a;display:flex;align-items:center;gap:7px}
+.etat::before{content:"";width:9px;height:9px;border-radius:50%;background:#6d6a63;flex:0 0 auto}
+.etat.ok{color:#8fb08a}.etat.ok::before{background:#8fb08a}
+.etat.attente{color:var(--jaune)}.etat.attente::before{background:var(--jaune);animation:p 1s infinite}
+.etat.err{color:var(--rouge)}.etat.err::before{background:var(--rouge)}
 </style>
 </head>
 <body>
-<div id="scene"><canvas id="c"></canvas></div>
+<div id="fond"><div class="bandes"></div><div class="lueur"></div><div class="blocs" id="blocs"></div></div>
+<div id="scene">
+  <div class="enseigne"><i></i><span id="ens">Battle Dock <b>Fight</b></span><i></i></div>
+  <div class="cadre"><canvas id="c"></canvas></div>
+  <div class="sousliste" id="sousligne"></div>
+</div>
 
 <div class="cmd" id="cmd1">
   <div class="manette">
@@ -104,17 +141,36 @@ canvas#c{display:block;width:100%;image-rendering:pixelated;background:#000}
 </div>
 
 <div class="pan" id="p-net">
-  <h1>En <b>ligne</b></h1>
-  <p id="net-txt">Inscris ton docker, puis ouvre une table ou rejoins celle de quelqu'un.</p>
-  <input class="champ" id="pseudo" maxlength="16" placeholder="TON PSEUDO" autocomplete="off">
-  <button class="bt jaune" id="inscrire">S’inscrire / se connecter <span>▸</span></button>
-  <div class="mini">Tables ouvertes <span id="rafraichi"></span></div>
-  <div class="listec" id="salons"><div><span>Aucune table pour l’instant<small>Ouvre la tienne, les autres la verront.</small></span></div></div>
-  <button class="bt cyan" id="ouvrir-table" disabled>Ouvrir ma table <span>▸</span></button>
-  <button class="bt" id="rafraichir">Rafraîchir <span>▸</span></button>
-  <div class="mini">Joueurs inscrits</div>
+  <h1>Jouer <b>en ligne</b></h1>
+  <p>Deux joueurs, chacun sur son téléphone. L'un ouvre une table, l'autre la rejoint depuis la liste. Rien à installer.</p>
+
+  <div class="etape" id="et1">
+    <div class="num">1</div>
+    <div class="txt">
+      <h3>Choisis ton pseudo</h3>
+      <p class="aide">C'est le nom que les autres verront, et celui qui garde ton score.</p>
+      <input class="champ" id="pseudo" maxlength="16" placeholder="TON PSEUDO" autocomplete="off">
+      <button class="bt jaune" id="inscrire">Entrer dans le port <span>▸</span></button>
+      <div class="etat" id="etat1">Pas encore connecté</div>
+    </div>
+  </div>
+
+  <div class="etape bloquee" id="et2">
+    <div class="num">2</div>
+    <div class="txt">
+      <h3>Ouvre ta table, ou rejoins-en une</h3>
+      <p class="aide">Ouvrir une table : tu attends qu'un joueur te rejoigne. Rejoindre : le combat démarre tout de suite.</p>
+      <button class="bt cyan" id="ouvrir-table" disabled>Ouvrir ma table et attendre <span>▸</span></button>
+      <div class="mini">Tables ouvertes <span id="rafraichi"></span></div>
+      <div class="listec" id="salons"></div>
+      <button class="bt" id="rafraichir">Rafraîchir la liste <span>▸</span></button>
+      <div class="etat" id="etat2"></div>
+    </div>
+  </div>
+
+  <div class="mini">Meilleurs dockers</div>
   <div class="listec" id="joueurs"></div>
-  <button class="bt" data-pan="menu">Retour <span>▸</span></button>
+  <button class="bt" data-pan="menu">Retour au quai <span>▸</span></button>
 </div>
 
 <div class="pan" id="p-fin">
@@ -174,7 +230,7 @@ const CRIS={
 };
 
 const cv=$('c'),ctx=cv.getContext('2d');cv.width=W;cv.height=H;ctx.imageSmoothingEnabled=false;
-function redim(){const l=Math.min(window.innerWidth,window.innerHeight*.6);
+function redim(){const l=Math.min(window.innerWidth-28,window.innerHeight*.56);
   cv.style.width=Math.floor(l)+'px';cv.style.height=Math.floor(l*H/W)+'px';}
 addEventListener('resize',redim);redim();
 
@@ -379,7 +435,7 @@ function demarrer(m,look,ia,ar,inverse){
   J1.manches=0;J2.manches=0;round=1;
   document.querySelectorAll('.pan').forEach(p=>p.classList.remove('on'));
   $('cmd1').classList.add('on');$('cmd2').classList.toggle('on',m==='local');
-  nouveauRound();
+  nouveauRound();majEnseigne();
 }
 function lancerSolo(){
   const a=ADVERSAIRES[Math.min(niveau,ADVERSAIRES.length-1)];
@@ -515,6 +571,26 @@ function boucle(t){
 }
 requestAnimationFrame(boucle);
 
+/* ---------------- habillage de fond ---------------- */
+(()=>{
+  const z=$('blocs'),cs=['#e8452c','#ffd029','#2ec4c9','#f26fa8'],o=[];
+  for(let i=0;i<10;i++){
+    const c=cs[i%4],x=Math.random()*100,y=Math.random()*100,s=30+Math.random()*90,r=Math.random()*360;
+    let st='left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;transform:rotate('+r+'deg);';
+    if(i%3===0)st+='background:'+c+';border-radius:50%;';
+    else if(i%3===1)st+='border:6px solid '+c+';';
+    else st+='background:repeating-linear-gradient(45deg,'+c+' 0 6px,transparent 6px 14px);';
+    o.push('<i style="'+st+'"></i>');
+  }
+  z.innerHTML=o.join('');
+})();
+function majEnseigne(){
+  if(!J1){$('ens').innerHTML='Battle Dock <b>Fight</b>';$('sousligne').textContent='';return;}
+  $('ens').innerHTML=J1.nom+' <b>vs</b> '+J2.nom;
+  $('sousligne').textContent=ARENES[arene].nom+' · '+
+    (mode==='solo'?'Carrière':mode==='local'?'Deux joueurs':'En ligne');
+}
+
 /* ---------------- joystick ---------------- */
 let gardeBouton=false;
 document.querySelectorAll('.b.garde').forEach(b=>{
@@ -574,30 +650,38 @@ function envoyerEtat(){
     act:f.coup.act,por:f.coup.por,haut:f.coup.haut,multi:f.coup.multi}:null});
   canal.send({type:'broadcast',event:'etat',payload:{a:p(J1),b:p(J2),temps,phase,msg,msgT,arene}});
 }
+function etat(id,txt,cls){const e=$(id);if(!e)return;e.textContent=txt;e.className='etat'+(cls?' '+cls:'');}
 async function inscrire(){
   const p=($('pseudo').value||'').toUpperCase().trim();
-  if(p.length<3){$('net-txt').textContent='Il faut au moins 3 caractères.';return;}
+  if(p.length<3){etat('etat1','Il faut au moins 3 caractères','err');return;}
+  etat('etat1','Connexion…','attente');
   pseudo=p;monLook.nom=p;
-  const c=client();
-  const {error}=await c.from('bdf_joueurs').upsert({pseudo:p,look:monLook,vu_le:new Date().toISOString()},{onConflict:'pseudo'});
-  $('net-txt').textContent=error?('Inscription impossible : '+error.message):('Connecté en tant que '+p+'.');
-  $('ouvrir-table').disabled=!!error;
-  if(!error){listerJoueurs();listerSalons();}
+  const {error}=await client().from('bdf_joueurs').upsert(
+    {pseudo:p,look:monLook,vu_le:new Date().toISOString()},{onConflict:'pseudo'});
+  if(error){etat('etat1','Connexion impossible : '+error.message,'err');return;}
+  etat('etat1','Connecté : '+p,'ok');
+  $('et2').classList.remove('bloquee');
+  $('ouvrir-table').disabled=false;
+  etat('etat2','Choisis une table, ou ouvre la tienne');
+  listerJoueurs();listerSalons();
+  if(!auto)auto=setInterval(()=>{if($('p-net').classList.contains('on')&&!canal)listerSalons();},5000);
 }
+let auto=null;
 async function listerJoueurs(){
   const {data}=await client().from('bdf_joueurs').select('pseudo,victoires,defaites').order('victoires',{ascending:false}).limit(10);
-  $('joueurs').innerHTML=(data&&data.length?data:[]).map(j=>
-    '<div><span>'+j.pseudo+'<small>'+(j.victoires||0)+' victoire(s) · '+(j.defaites||0)+' défaite(s)</small></span></div>'
+  $('joueurs').innerHTML=(data&&data.length?data:[]).map((j,i)=>
+    '<div><span>'+(i+1)+'. '+j.pseudo+'<small>'+(j.victoires||0)+' victoire'+((j.victoires||0)>1?'s':'')+
+    ' · '+(j.defaites||0)+' défaite'+((j.defaites||0)>1?'s':'')+'</small></span></div>'
   ).join('')||'<div><span>Personne encore<small>Sois le premier inscrit.</small></span></div>';
 }
 async function listerSalons(){
   const {data}=await client().from('bdf_salons').select('*').eq('statut','ouvert').order('cree_le',{ascending:false}).limit(12);
   const z=$('salons');
-  if(!data||!data.length){z.innerHTML='<div><span>Aucune table ouverte<small>Ouvre la tienne, les autres la verront.</small></span></div>';return;}
+  if(!data||!data.length){z.innerHTML='<div><span>Aucune table ouverte<small>Ouvre la tienne : elle apparaîtra chez les autres en quelques secondes.</small></span></div>';return;}
   z.innerHTML='';
   data.forEach(s=>{
     const el=document.createElement('div');
-    el.innerHTML='<span>'+s.hote+'<small>table '+s.code+'</small></span>';
+    el.innerHTML='<span>'+s.hote+'<small>Table '+s.code+' · en attente</small></span>';
     const b=document.createElement('button');b.textContent='Rejoindre';
     b.onclick=()=>rejoindre(s);el.appendChild(b);z.appendChild(el);
   });
@@ -606,16 +690,18 @@ async function listerSalons(){
 async function ouvrirTable(){
   if(!pseudo)return;
   const code=codeAlea();codeTable=code;
-  await client().from('bdf_salons').insert({code,hote:pseudo,hote_look:monLook,statut:'ouvert'});
-  $('net-txt').textContent='Table '+code+' ouverte. En attente d’un adversaire…';
+  const {error}=await client().from('bdf_salons').insert({code,hote:pseudo,hote_look:monLook,statut:'ouvert'});
+  if(error){etat('etat2','Impossible d’ouvrir : '+error.message,'err');return;}
+  etat('etat2','Table '+code+' ouverte — en attente d’un adversaire','attente');
+  $('ouvrir-table').disabled=true;
   brancher(code,true);listerSalons();
 }
 async function rejoindre(s){
-  if(!pseudo){$('net-txt').textContent='Inscris-toi d’abord.';return;}
+  if(!pseudo){etat('etat2','Choisis d’abord un pseudo','err');return;}
   codeTable=s.code;
   await client().from('bdf_salons').update({statut:'plein',invite:pseudo}).eq('code',s.code);
+  etat('etat2','Connexion à la table de '+s.hote+'…','attente');
   brancher(s.code,false);
-  $('net-txt').textContent='Connexion à la table de '+s.hote+'…';
 }
 function brancher(code,hote){
   const c=client();
@@ -644,7 +730,7 @@ function brancher(code,hote){
   });
   canal.subscribe(st=>{
     if(st==='SUBSCRIBED'&&!hote)canal.send({type:'broadcast',event:'salut',payload:{look:monLook}});
-    if(st==='CHANNEL_ERROR')$('net-txt').textContent='Connexion temps réel impossible.';
+    if(st==='CHANNEL_ERROR')etat('etat2','Connexion temps réel impossible','err');
   });
 }
 async function majScore(vic){
