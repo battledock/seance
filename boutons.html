@@ -3,158 +3,205 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Battle Dock Fight — boutons</title>
+<title>Battle Dock Fight — boutons soignés</title>
 <style>
-:root{--trait:#2a1710;--creme:#fdf3e0;--sable:#f5dcae;
-  --ocre:#f2b134;--ocre-b:#b87a13;--terre:#d4472c;--terre-b:#8f2716;
-  --eau:#1d6b72;--eau-b:#0f4046;--bois:#7a4a2a;--bois-b:#4a2916}
+:root{
+  --trait:#2a1710;--creme:#fdf3e0;
+  --or1:#ffe9a8;--or2:#f7c948;--or3:#e09b16;--or4:#a86c08;
+  --tc1:#ff9d7c;--tc2:#e0492c;--tc3:#a82d15;--tc4:#6f1c0c;
+  --ea1:#6fd2d8;--ea2:#1d8a92;--ea3:#0f5057;--ea4:#083338;
+  --bo1:#c08a52;--bo2:#8a5a2e;--bo3:#5c3a1a;--bo4:#3a2410;
+  --vt1:#8fd699;--vt2:#4f9c5a;--vt3:#2f6b3a;--vt4:#1d4525;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100%;background:linear-gradient(180deg,#f0a05a,#d97b46 46%,#1d6b72 46%,#0e3f47);
-  font-family:"Arial Rounded MT Bold","Trebuchet MS",Verdana,sans-serif;font-weight:700;
-  color:var(--trait);padding:18px 16px 60px;-webkit-tap-highlight-color:transparent}
-button{font-family:inherit;font-weight:700;border:0;background:none;cursor:pointer;width:100%}
-h1{color:var(--creme);font-size:20px;font-style:italic;text-transform:uppercase;
-  -webkit-text-stroke:4px var(--trait);paint-order:stroke fill;margin-bottom:4px}
-.note{color:#fff2d8;font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:13px;
-  line-height:1.5;margin-bottom:16px;text-shadow:0 1px 2px rgba(0,0,0,.4)}
-.lot{background:rgba(253,243,224,.9);border:4px solid var(--trait);border-radius:20px;
-  padding:14px;margin-bottom:16px;box-shadow:0 7px 0 rgba(42,23,16,.5)}
-.lot h2{font-size:15px;text-transform:uppercase;margin-bottom:3px}
-.lot p{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12.5px;color:#6b4c34;margin-bottom:12px}
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+body{min-height:100%;
+  background:radial-gradient(circle at 50% 8%,#ffd79a,#f0a05a 30%,#d97b46 52%,#1d6b72 52%,#0c343b);
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",Verdana,sans-serif;font-weight:700;color:var(--trait);
+  padding:20px 16px 60px;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;font-weight:700;border:0;background:none;cursor:pointer;width:100%;display:block}
+h1{color:var(--creme);font-size:19px;font-style:italic;text-transform:uppercase;
+  -webkit-text-stroke:4px var(--trait);paint-order:stroke fill;text-align:center}
+.note{color:#fff2d8;font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:13px;line-height:1.55;
+  text-align:center;margin:8px 0 22px;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.sec{margin-bottom:24px}
+.eti{color:#fff2d8;font-size:11px;text-transform:uppercase;letter-spacing:.14em;margin-bottom:10px;
+  text-shadow:0 1px 3px rgba(0,0,0,.5);display:flex;align-items:center;gap:8px}
+.eti::after{content:"";flex:1;height:2px;background:rgba(255,242,216,.3);border-radius:2px}
 
-/* ---------- 1. BOMBÉ (actuel) ---------- */
-.b1{border:4px solid var(--trait);border-radius:20px;padding:17px;font-size:20px;font-style:italic;
-  text-transform:uppercase;color:var(--creme);text-shadow:0 3px 0 rgba(0,0,0,.4);position:relative;
-  overflow:hidden;background:linear-gradient(180deg,#ffd977,var(--ocre) 42%,var(--ocre-b));
-  box-shadow:0 8px 0 var(--ocre-b),0 14px 20px rgba(42,23,16,.35),inset 0 3px 0 rgba(255,255,255,.35)}
-.b1::before{content:"";position:absolute;left:10px;right:10px;top:6px;height:30%;border-radius:14px;
-  background:linear-gradient(180deg,rgba(255,255,255,.5),transparent)}
-.b1:active{transform:translateY(5px);box-shadow:0 3px 0 var(--ocre-b)}
+/* ================= système ================= */
+.k{position:relative;padding-bottom:9px;isolation:isolate}
+.k::before{content:"";position:absolute;left:0;right:0;bottom:0;height:32px;border-radius:22px;
+  background:var(--socle);border:3px solid rgba(42,23,16,.95);z-index:-1}
+.k::after{content:"";position:absolute;left:8px;right:8px;bottom:-5px;height:16px;border-radius:50%;
+  background:rgba(20,10,4,.4);filter:blur(7px);z-index:-2}
+.k .plaque{position:relative;border-radius:22px;padding:18px;overflow:hidden;display:flex;
+  align-items:center;gap:13px;border:3px solid rgba(42,23,16,.95);
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.55),inset 0 -11px 16px rgba(0,0,0,.3),
+    inset 0 0 0 2px rgba(255,255,255,.12);transition:transform .06s ease-out}
+.k:active .plaque{transform:translateY(8px)}
+.k .verre{position:absolute;left:8px;right:8px;top:5px;height:46%;pointer-events:none;
+  border-radius:18px 18px 46% 46%;
+  background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.05))}
+.k .bas{position:absolute;left:16px;right:16px;bottom:5px;height:5px;border-radius:5px;
+  background:rgba(255,255,255,.22);filter:blur(1px);pointer-events:none}
+.k .eclat{position:absolute;top:-25%;bottom:-25%;width:26%;left:-45%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
+  animation:balaye 5.5s ease-in-out infinite}
+@keyframes balaye{0%,76%{left:-45%}93%,100%{left:135%}}
+.k .med{position:relative;flex:0 0 auto;width:46px;height:46px;border-radius:50%;
+  background:radial-gradient(circle at 34% 26%,rgba(255,255,255,.55),rgba(255,255,255,0) 58%),
+    linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.45));
+  border:3px solid rgba(42,23,16,.9);display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 3px 7px rgba(0,0,0,.5),0 2px 0 rgba(255,255,255,.22)}
+.k .med canvas{width:26px;height:26px;image-rendering:pixelated;filter:drop-shadow(0 1px 0 rgba(0,0,0,.55))}
+.k .lib{position:relative;flex:1;min-width:0;text-align:left}
+.k .lib .t{display:block;font-size:21px;font-style:italic;text-transform:uppercase;color:var(--creme);
+  text-shadow:0 2px 0 rgba(0,0,0,.45),0 -1px 0 rgba(255,255,255,.2)}
+.k .lib .s{display:block;font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:11.5px;
+  color:rgba(255,255,255,.78);margin-top:3px;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.k .fl{position:relative;flex:0 0 auto;width:34px;height:34px;border-radius:50%;color:var(--creme);
+  background:rgba(255,255,255,.2);border:3px solid rgba(42,23,16,.5);font-size:14px;
+  display:flex;align-items:center;justify-content:center;box-shadow:inset 0 2px 0 rgba(255,255,255,.35)}
+.k.moyen .plaque{padding:13px;border-radius:18px}
+.k.moyen::before{border-radius:18px;height:28px}
+.k.moyen .lib .t{font-size:16px}
+.k.moyen .med{width:38px;height:38px}
+.k.moyen .med canvas{width:22px;height:22px}
 
-/* ---------- 2. PLANCHE CLOUÉE ---------- */
-.b2{border:4px solid var(--trait);border-radius:10px;padding:18px;font-size:20px;
-  text-transform:uppercase;color:#3a2113;position:relative;letter-spacing:.02em;
-  text-shadow:0 1px 0 rgba(255,225,180,.45);
-  background:
-    repeating-linear-gradient(90deg,rgba(90,55,25,.16) 0 3px,transparent 3px 11px),
-    linear-gradient(180deg,#d9a95a,#b8853f 60%,#8a6229);
-  box-shadow:0 8px 0 #5f4018,0 14px 20px rgba(42,23,16,.35)}
-.b2::before,.b2::after{content:"";position:absolute;top:9px;width:9px;height:9px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#f0e6d2,#6d6a63);border:2px solid #3a2113}
-.b2::before{left:10px}.b2::after{right:10px}
-.b2:active{transform:translateY(5px);box-shadow:0 3px 0 #5f4018}
+.or{--socle:#7d4f05}
+.or .plaque{background:linear-gradient(180deg,var(--or1),var(--or2) 38%,var(--or3) 78%,var(--or4))}
+.terre{--socle:#571407}
+.terre .plaque{background:linear-gradient(180deg,var(--tc1),var(--tc2) 40%,var(--tc3) 80%,var(--tc4))}
+.eau{--socle:#062629}
+.eau .plaque{background:linear-gradient(180deg,var(--ea1),var(--ea2) 40%,var(--ea3) 80%,var(--ea4))}
+.bois{--socle:#2c1a0b}
+.bois .plaque{background:repeating-linear-gradient(93deg,rgba(58,36,16,.15) 0 2px,transparent 2px 9px),
+  linear-gradient(180deg,var(--bo1),var(--bo2) 42%,var(--bo3) 82%,var(--bo4))}
+.vert{--socle:#14311a}
+.vert .plaque{background:linear-gradient(180deg,var(--vt1),var(--vt2) 40%,var(--vt3) 80%,var(--vt4))}
 
-/* ---------- 3. PLAQUE RIVETÉE ---------- */
-.b3{border:4px solid #1a2126;border-radius:8px;padding:18px;font-size:19px;text-transform:uppercase;
-  letter-spacing:.08em;color:#fdf3e0;text-shadow:0 2px 0 rgba(0,0,0,.55);position:relative;overflow:hidden;
-  background:linear-gradient(180deg,#7d8a93,#55636c 55%,#3a464e);
-  box-shadow:0 8px 0 #232c32,0 14px 20px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.28)}
-.b3 span{position:relative;z-index:1}
-.b3::before{content:"";position:absolute;inset:0;
-  background:repeating-linear-gradient(45deg,rgba(242,177,52,.85) 0 10px,rgba(26,33,38,.85) 10px 20px);
-  height:6px;top:auto;bottom:0}
-.b3 i{position:absolute;top:8px;width:8px;height:8px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#c9d3da,#4a565e);box-shadow:0 1px 0 rgba(0,0,0,.5)}
-.b3 i.g{left:10px}.b3 i.d{right:10px}
-.b3:active{transform:translateY(5px);box-shadow:0 3px 0 #232c32}
+/* ================= tuiles ================= */
+.grille{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.tu{position:relative;padding-bottom:7px;isolation:isolate}
+.tu::before{content:"";position:absolute;left:0;right:0;bottom:0;height:26px;border-radius:18px;
+  background:var(--socle);border:3px solid rgba(42,23,16,.95);z-index:-1}
+.tu .pl{position:relative;border-radius:18px;border:3px solid rgba(42,23,16,.95);overflow:hidden;
+  padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -9px 13px rgba(0,0,0,.3);transition:transform .06s}
+.tu:active .pl{transform:translateY(6px)}
+.tu .pl canvas{width:30px;height:30px;image-rendering:pixelated;position:relative;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.4))}
+.tu .pl span{position:relative;font-size:10.5px;text-transform:uppercase;color:var(--creme);
+  text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.tu .verre{position:absolute;left:6px;right:6px;top:4px;height:42%;pointer-events:none;
+  border-radius:14px 14px 46% 46%;background:linear-gradient(180deg,rgba(255,255,255,.5),transparent)}
+.tu.or .pl{background:linear-gradient(180deg,var(--or1),var(--or2) 45%,var(--or4))}
+.tu.vert .pl{background:linear-gradient(180deg,var(--vt1),var(--vt2) 45%,var(--vt4))}
+.tu.bois .pl{background:repeating-linear-gradient(93deg,rgba(58,36,16,.15) 0 2px,transparent 2px 9px),
+  linear-gradient(180deg,var(--bo1),var(--bo2) 45%,var(--bo4))}
+.tu.eau .pl{background:linear-gradient(180deg,var(--ea1),var(--ea2) 45%,var(--ea4))}
 
-/* ---------- 4. CAPSULE ---------- */
-.b4{border:5px solid var(--trait);border-radius:999px;padding:18px;font-size:21px;font-style:italic;
-  text-transform:uppercase;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35);position:relative;overflow:hidden;
-  background:linear-gradient(180deg,#ff9b7a,var(--terre) 45%,var(--terre-b));
-  box-shadow:0 9px 0 var(--terre-b),0 16px 24px rgba(42,23,16,.4)}
-.b4::before{content:"";position:absolute;left:16px;right:16px;top:6px;height:34%;border-radius:999px;
+/* ================= ronds ================= */
+.ronds{display:flex;gap:12px}
+.rd{position:relative;padding-bottom:6px;width:auto;isolation:isolate}
+.rd::before{content:"";position:absolute;left:0;bottom:0;width:54px;height:46px;border-radius:50%;
+  background:var(--socle);border:3px solid rgba(42,23,16,.95);z-index:-1}
+.rd .pl{position:relative;width:54px;height:54px;border-radius:50%;overflow:hidden;
+  border:3px solid rgba(42,23,16,.95);display:flex;align-items:center;justify-content:center;
+  font-size:19px;color:var(--creme);text-shadow:0 2px 0 rgba(0,0,0,.45);transition:transform .06s;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.5),inset 0 -9px 13px rgba(0,0,0,.3)}
+.rd:active .pl{transform:translateY(5px)}
+.rd .verre{position:absolute;left:5px;right:5px;top:4px;height:44%;border-radius:50%;pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,.55),transparent)}
-.b4:active{transform:translateY(6px);box-shadow:0 3px 0 var(--terre-b)}
-
-/* ---------- 5. BLOC ISO ---------- */
-.b5{border:4px solid var(--trait);border-radius:14px;padding:16px 18px 20px;font-size:20px;
-  font-style:italic;text-transform:uppercase;color:var(--creme);text-shadow:0 3px 0 rgba(0,0,0,.4);
-  position:relative;background:linear-gradient(180deg,#43b0b7,var(--eau) 50%,#155056);
-  box-shadow:0 4px 0 #10474d,0 8px 0 #0c383d,0 12px 0 #08282c,0 18px 22px rgba(0,0,0,.4)}
-.b5::before{content:"";position:absolute;left:8px;right:8px;top:5px;height:26%;border-radius:10px;
-  background:rgba(255,255,255,.3)}
-.b5:active{transform:translateY(8px);box-shadow:0 2px 0 #08282c}
-
-/* ---------- 6. ÉMAILLÉE ---------- */
-.b6{border:4px solid #f0ece2;border-radius:6px;padding:17px;font-size:19px;text-transform:uppercase;
-  letter-spacing:.12em;color:#f0ece2;position:relative;
-  background:linear-gradient(180deg,#2f6f7a,#194c56);
-  box-shadow:0 0 0 4px #12333a,0 9px 0 #0c262c,0 15px 22px rgba(0,0,0,.4)}
-.b6::before{content:"";position:absolute;left:7px;right:7px;top:5px;height:2px;background:rgba(255,255,255,.4)}
-.b6:active{transform:translateY(5px);box-shadow:0 0 0 4px #12333a,0 3px 0 #0c262c}
-
-/* ---------- 7. ÉTIQUETTE DE FRET ---------- */
-.b7{border:4px solid var(--trait);border-radius:12px;padding:17px 17px 17px 40px;font-size:19px;
-  text-transform:uppercase;color:#3a2113;text-align:left;position:relative;
-  background:linear-gradient(180deg,#fff5df,#efd9a8);
-  box-shadow:0 8px 0 #b09468,0 14px 20px rgba(42,23,16,.3)}
-.b7::before{content:"";position:absolute;left:14px;top:50%;transform:translateY(-50%);
-  width:12px;height:12px;border-radius:50%;border:4px solid var(--trait);background:#d97b46}
-.b7 em{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-style:normal;
-  font-size:14px;color:#a8875c}
-.b7:active{transform:translateY(5px);box-shadow:0 3px 0 #b09468}
-
-/* tuiles assorties */
-.t{border-radius:16px;padding:12px 6px;font-size:11px;text-transform:uppercase;text-align:center;
-  border:4px solid var(--trait);color:var(--creme);text-shadow:0 2px 0 rgba(0,0,0,.35)}
-.t1{background:linear-gradient(180deg,#9a6238,var(--bois) 55%,var(--bois-b));box-shadow:0 5px 0 var(--bois-b)}
-.t2{background:repeating-linear-gradient(90deg,rgba(90,55,25,.16) 0 3px,transparent 3px 11px),
-  linear-gradient(180deg,#d9a95a,#a8783a);box-shadow:0 5px 0 #5f4018;color:#3a2113;text-shadow:none;border-radius:8px}
-.t3{background:linear-gradient(180deg,#7d8a93,#46525a);box-shadow:0 5px 0 #232c32;border-radius:7px;border-color:#1a2126}
-.t4{background:linear-gradient(180deg,#6fbb79,#3d8b4c);box-shadow:0 5px 0 #2c6234;border-radius:999px}
-.t5{background:linear-gradient(180deg,#43b0b7,#176068);box-shadow:0 3px 0 #10474d,0 7px 0 #08282c}
-.t6{background:linear-gradient(180deg,#2f6f7a,#194c56);box-shadow:0 0 0 3px #12333a,0 7px 0 #0c262c;
-  border-color:#f0ece2;border-radius:5px}
-.t7{background:linear-gradient(180deg,#fff5df,#efd9a8);color:#3a2113;text-shadow:none;
-  box-shadow:0 5px 0 #b09468;border-radius:10px}
+.rd.or .pl{background:linear-gradient(180deg,var(--or1),var(--or2) 45%,var(--or4))}
+.rd.bois .pl{background:linear-gradient(180deg,var(--bo1),var(--bo2) 45%,var(--bo4))}
+.rd.eau .pl{background:linear-gradient(180deg,var(--ea1),var(--ea2) 45%,var(--ea4))}
+.rd.terre .pl{background:linear-gradient(180deg,var(--tc1),var(--tc2) 45%,var(--tc4))}
 </style>
 </head>
 <body>
-<h1>Sept familles de boutons</h1>
-<p class="note">Appuie sur chacun : l'enfoncement fait partie du style. Dis-moi le numéro (ou un mélange, par exemple 5 pour l'action principale et 2 pour les tuiles).</p>
+<h1>Boutons, deuxième passe</h1>
+<p class="note">Un seul système partout : socle en dessous, plaque bombée, reflet de verre, médaillon gravé, chevron. Appuie — la plaque descend dans son socle.</p>
 
-<div class="lot">
-  <h2>1 · Bombé</h2><p>Celui d'aujourd'hui. Rond, brillant, très Brawl Stars.</p>
-  <button class="b1">Combattre ▸</button>
-  <div class="duo"><div class="t t1">Vestiaire</div><div class="t t1">Caisses</div></div>
+<div class="sec">
+  <div class="eti">Action principale</div>
+  <button class="k terre">
+    <div class="plaque"><div class="verre"></div><div class="bas"></div><div class="eclat"></div>
+      <div class="med"><canvas class="ic" data-ic="gants"></canvas></div>
+      <div class="lib"><span class="t">Combattre</span><span class="s">Le Nouveau · Quai des Belges</span></div>
+      <div class="fl">▶</div></div>
+  </button>
+  <div style="height:12px"></div>
+  <button class="k or">
+    <div class="plaque"><div class="verre"></div><div class="bas"></div><div class="eclat"></div>
+      <div class="med"><canvas class="ic" data-ic="billet"></canvas></div>
+      <div class="lib"><span class="t">Tirer un billet</span><span class="s">Poste et paie de la nuit</span></div>
+      <div class="fl">▶</div></div>
+  </button>
 </div>
 
-<div class="lot">
-  <h2>2 · Planche clouée</h2><p>Bois de caisse, veinage, deux clous. Le plus « port ».</p>
-  <button class="b2">Combattre ▸</button>
-  <div class="duo"><div class="t t2">Vestiaire</div><div class="t t2">Caisses</div></div>
+<div class="sec">
+  <div class="eti">Actions secondaires</div>
+  <button class="k moyen vert">
+    <div class="plaque"><div class="verre"></div><div class="bas"></div>
+      <div class="med"><canvas class="ic" data-ic="casque"></canvas></div>
+      <div class="lib"><span class="t">Vestiaire</span></div><div class="fl">▶</div></div>
+  </button>
+  <div style="height:11px"></div>
+  <button class="k moyen bois">
+    <div class="plaque"><div class="verre"></div><div class="bas"></div>
+      <div class="med"><canvas class="ic" data-ic="caisse"></canvas></div>
+      <div class="lib"><span class="t">Ouvrir une caisse</span></div><div class="fl">▶</div></div>
+  </button>
+  <div style="height:11px"></div>
+  <button class="k moyen eau">
+    <div class="plaque"><div class="verre"></div><div class="bas"></div>
+      <div class="med"><canvas class="ic" data-ic="coupe"></canvas></div>
+      <div class="lib"><span class="t">Palmarès</span></div><div class="fl">▶</div></div>
+  </button>
 </div>
 
-<div class="lot">
-  <h2>3 · Plaque rivetée</h2><p>Acier de conteneur, rivets, bande hachurée de sécurité en bas.</p>
-  <button class="b3"><i class="g"></i><i class="d"></i><span>Combattre ▸</span></button>
-  <div class="duo"><div class="t t3">Vestiaire</div><div class="t t3">Caisses</div></div>
+<div class="sec">
+  <div class="eti">Tuiles</div>
+  <div class="grille">
+    <button class="tu or"><div class="pl"><div class="verre"></div><canvas class="ic" data-ic="billet"></canvas><span>Billet</span></div></button>
+    <button class="tu vert"><div class="pl"><div class="verre"></div><canvas class="ic" data-ic="casque"></canvas><span>Vestiaire</span></div></button>
+    <button class="tu bois"><div class="pl"><div class="verre"></div><canvas class="ic" data-ic="caisse"></canvas><span>Caisses</span></div></button>
+    <button class="tu eau"><div class="pl"><div class="verre"></div><canvas class="ic" data-ic="coupe"></canvas><span>Palmarès</span></div></button>
+  </div>
 </div>
 
-<div class="lot">
-  <h2>4 · Capsule</h2><p>Entièrement arrondi, gros reflet. Le plus tendre, très jeu mobile.</p>
-  <button class="b4">Combattre ▸</button>
-  <div class="duo"><div class="t t4">Vestiaire</div><div class="t t4">Caisses</div></div>
+<div class="sec">
+  <div class="eti">Petits ronds</div>
+  <div class="ronds">
+    <button class="rd bois"><div class="pl"><div class="verre"></div>◀</div></button>
+    <button class="rd or"><div class="pl"><div class="verre"></div>✕</div></button>
+    <button class="rd eau"><div class="pl"><div class="verre"></div>♪</div></button>
+    <button class="rd terre"><div class="pl"><div class="verre"></div>?</div></button>
+  </div>
 </div>
 
-<div class="lot">
-  <h2>5 · Bloc épais</h2><p>Trois couches d'ombre : le bouton a une vraie épaisseur, comme une brique.</p>
-  <button class="b5">Combattre ▸</button>
-  <div class="duo"><div class="t t5">Vestiaire</div><div class="t t5">Caisses</div></div>
-</div>
-
-<div class="lot">
-  <h2>6 · Plaque émaillée</h2><p>Panneau de port émaillé, double liseré clair. Sobre et net.</p>
-  <button class="b6">Combattre ▸</button>
-  <div class="duo"><div class="t t6">Vestiaire</div><div class="t t6">Caisses</div></div>
-</div>
-
-<div class="lot">
-  <h2>7 · Étiquette de fret</h2><p>Papier d'expédition, œillet à gauche, mention à droite.</p>
-  <button class="b7">Combattre <em>quai 3</em></button>
-  <div class="duo"><div class="t t7">Vestiaire</div><div class="t t7">Caisses</div></div>
-</div>
+<script src="bdf.js"></script>
+<script>
+const px=BDF.px;
+function icone(cv,type){
+  cv.width=32;cv.height=32;
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,32,32);
+  switch(type){
+    case 'billet':px(g,3,9,26,15,'#fff8e8');px(g,3,9,26,4,'#d4472c');
+      px(g,6,17,13,2,'#8d8073');px(g,6,21,10,2,'#8d8073');px(g,21,17,5,5,'#f2b134');break;
+    case 'casque':px(g,7,11,18,9,'#f2b134');px(g,4,19,24,4,'#b87a13');px(g,13,7,6,4,'#f2b134');
+      px(g,7,11,18,2,'#ffe08a');break;
+    case 'caisse':px(g,4,10,24,17,'#c08a52');px(g,4,10,24,3,'#e0b57e');px(g,4,17,24,2,'#4a2916');
+      px(g,13,19,6,6,'#f2b134');px(g,4,25,24,2,'#4a2916');break;
+    case 'coupe':px(g,10,6,12,11,'#ffe08a');px(g,6,8,4,6,'#f2b134');px(g,22,8,4,6,'#f2b134');
+      px(g,14,17,4,5,'#b87a13');px(g,9,22,14,5,'#9a6238');break;
+    case 'gants':px(g,4,12,11,11,'#f0e2c8');px(g,3,15,3,5,'#d8c8a8');
+      px(g,17,12,11,11,'#f0e2c8');px(g,26,15,3,5,'#d8c8a8');
+      px(g,4,12,11,2,'#fff8e8');px(g,17,12,11,2,'#fff8e8');break;
+  }
+}
+document.querySelectorAll('canvas.ic').forEach(c=>icone(c,c.dataset.ic));
+</script>
 </body>
 </html>
