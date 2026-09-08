@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Battle Dock Fight — boutons</title>
+<style>
+:root{--trait:#2a1710;--creme:#fdf3e0;--sable:#f5dcae;
+  --ocre:#f2b134;--ocre-b:#b87a13;--terre:#d4472c;--terre-b:#8f2716;
+  --eau:#1d6b72;--eau-b:#0f4046;--bois:#7a4a2a;--bois-b:#4a2916}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100%;background:linear-gradient(180deg,#f0a05a,#d97b46 46%,#1d6b72 46%,#0e3f47);
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",Verdana,sans-serif;font-weight:700;
+  color:var(--trait);padding:18px 16px 60px;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;font-weight:700;border:0;background:none;cursor:pointer;width:100%}
+h1{color:var(--creme);font-size:20px;font-style:italic;text-transform:uppercase;
+  -webkit-text-stroke:4px var(--trait);paint-order:stroke fill;margin-bottom:4px}
+.note{color:#fff2d8;font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:13px;
+  line-height:1.5;margin-bottom:16px;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.lot{background:rgba(253,243,224,.9);border:4px solid var(--trait);border-radius:20px;
+  padding:14px;margin-bottom:16px;box-shadow:0 7px 0 rgba(42,23,16,.5)}
+.lot h2{font-size:15px;text-transform:uppercase;margin-bottom:3px}
+.lot p{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12.5px;color:#6b4c34;margin-bottom:12px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+
+/* ---------- 1. BOMBÉ (actuel) ---------- */
+.b1{border:4px solid var(--trait);border-radius:20px;padding:17px;font-size:20px;font-style:italic;
+  text-transform:uppercase;color:var(--creme);text-shadow:0 3px 0 rgba(0,0,0,.4);position:relative;
+  overflow:hidden;background:linear-gradient(180deg,#ffd977,var(--ocre) 42%,var(--ocre-b));
+  box-shadow:0 8px 0 var(--ocre-b),0 14px 20px rgba(42,23,16,.35),inset 0 3px 0 rgba(255,255,255,.35)}
+.b1::before{content:"";position:absolute;left:10px;right:10px;top:6px;height:30%;border-radius:14px;
+  background:linear-gradient(180deg,rgba(255,255,255,.5),transparent)}
+.b1:active{transform:translateY(5px);box-shadow:0 3px 0 var(--ocre-b)}
+
+/* ---------- 2. PLANCHE CLOUÉE ---------- */
+.b2{border:4px solid var(--trait);border-radius:10px;padding:18px;font-size:20px;
+  text-transform:uppercase;color:#3a2113;position:relative;letter-spacing:.02em;
+  text-shadow:0 1px 0 rgba(255,225,180,.45);
+  background:
+    repeating-linear-gradient(90deg,rgba(90,55,25,.16) 0 3px,transparent 3px 11px),
+    linear-gradient(180deg,#d9a95a,#b8853f 60%,#8a6229);
+  box-shadow:0 8px 0 #5f4018,0 14px 20px rgba(42,23,16,.35)}
+.b2::before,.b2::after{content:"";position:absolute;top:9px;width:9px;height:9px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f0e6d2,#6d6a63);border:2px solid #3a2113}
+.b2::before{left:10px}.b2::after{right:10px}
+.b2:active{transform:translateY(5px);box-shadow:0 3px 0 #5f4018}
+
+/* ---------- 3. PLAQUE RIVETÉE ---------- */
+.b3{border:4px solid #1a2126;border-radius:8px;padding:18px;font-size:19px;text-transform:uppercase;
+  letter-spacing:.08em;color:#fdf3e0;text-shadow:0 2px 0 rgba(0,0,0,.55);position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#7d8a93,#55636c 55%,#3a464e);
+  box-shadow:0 8px 0 #232c32,0 14px 20px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.28)}
+.b3 span{position:relative;z-index:1}
+.b3::before{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,rgba(242,177,52,.85) 0 10px,rgba(26,33,38,.85) 10px 20px);
+  height:6px;top:auto;bottom:0}
+.b3 i{position:absolute;top:8px;width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#c9d3da,#4a565e);box-shadow:0 1px 0 rgba(0,0,0,.5)}
+.b3 i.g{left:10px}.b3 i.d{right:10px}
+.b3:active{transform:translateY(5px);box-shadow:0 3px 0 #232c32}
+
+/* ---------- 4. CAPSULE ---------- */
+.b4{border:5px solid var(--trait);border-radius:999px;padding:18px;font-size:21px;font-style:italic;
+  text-transform:uppercase;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35);position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#ff9b7a,var(--terre) 45%,var(--terre-b));
+  box-shadow:0 9px 0 var(--terre-b),0 16px 24px rgba(42,23,16,.4)}
+.b4::before{content:"";position:absolute;left:16px;right:16px;top:6px;height:34%;border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,255,255,.55),transparent)}
+.b4:active{transform:translateY(6px);box-shadow:0 3px 0 var(--terre-b)}
+
+/* ---------- 5. BLOC ISO ---------- */
+.b5{border:4px solid var(--trait);border-radius:14px;padding:16px 18px 20px;font-size:20px;
+  font-style:italic;text-transform:uppercase;color:var(--creme);text-shadow:0 3px 0 rgba(0,0,0,.4);
+  position:relative;background:linear-gradient(180deg,#43b0b7,var(--eau) 50%,#155056);
+  box-shadow:0 4px 0 #10474d,0 8px 0 #0c383d,0 12px 0 #08282c,0 18px 22px rgba(0,0,0,.4)}
+.b5::before{content:"";position:absolute;left:8px;right:8px;top:5px;height:26%;border-radius:10px;
+  background:rgba(255,255,255,.3)}
+.b5:active{transform:translateY(8px);box-shadow:0 2px 0 #08282c}
+
+/* ---------- 6. ÉMAILLÉE ---------- */
+.b6{border:4px solid #f0ece2;border-radius:6px;padding:17px;font-size:19px;text-transform:uppercase;
+  letter-spacing:.12em;color:#f0ece2;position:relative;
+  background:linear-gradient(180deg,#2f6f7a,#194c56);
+  box-shadow:0 0 0 4px #12333a,0 9px 0 #0c262c,0 15px 22px rgba(0,0,0,.4)}
+.b6::before{content:"";position:absolute;left:7px;right:7px;top:5px;height:2px;background:rgba(255,255,255,.4)}
+.b6:active{transform:translateY(5px);box-shadow:0 0 0 4px #12333a,0 3px 0 #0c262c}
+
+/* ---------- 7. ÉTIQUETTE DE FRET ---------- */
+.b7{border:4px solid var(--trait);border-radius:12px;padding:17px 17px 17px 40px;font-size:19px;
+  text-transform:uppercase;color:#3a2113;text-align:left;position:relative;
+  background:linear-gradient(180deg,#fff5df,#efd9a8);
+  box-shadow:0 8px 0 #b09468,0 14px 20px rgba(42,23,16,.3)}
+.b7::before{content:"";position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:12px;height:12px;border-radius:50%;border:4px solid var(--trait);background:#d97b46}
+.b7 em{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-style:normal;
+  font-size:14px;color:#a8875c}
+.b7:active{transform:translateY(5px);box-shadow:0 3px 0 #b09468}
+
+/* tuiles assorties */
+.t{border-radius:16px;padding:12px 6px;font-size:11px;text-transform:uppercase;text-align:center;
+  border:4px solid var(--trait);color:var(--creme);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.t1{background:linear-gradient(180deg,#9a6238,var(--bois) 55%,var(--bois-b));box-shadow:0 5px 0 var(--bois-b)}
+.t2{background:repeating-linear-gradient(90deg,rgba(90,55,25,.16) 0 3px,transparent 3px 11px),
+  linear-gradient(180deg,#d9a95a,#a8783a);box-shadow:0 5px 0 #5f4018;color:#3a2113;text-shadow:none;border-radius:8px}
+.t3{background:linear-gradient(180deg,#7d8a93,#46525a);box-shadow:0 5px 0 #232c32;border-radius:7px;border-color:#1a2126}
+.t4{background:linear-gradient(180deg,#6fbb79,#3d8b4c);box-shadow:0 5px 0 #2c6234;border-radius:999px}
+.t5{background:linear-gradient(180deg,#43b0b7,#176068);box-shadow:0 3px 0 #10474d,0 7px 0 #08282c}
+.t6{background:linear-gradient(180deg,#2f6f7a,#194c56);box-shadow:0 0 0 3px #12333a,0 7px 0 #0c262c;
+  border-color:#f0ece2;border-radius:5px}
+.t7{background:linear-gradient(180deg,#fff5df,#efd9a8);color:#3a2113;text-shadow:none;
+  box-shadow:0 5px 0 #b09468;border-radius:10px}
+</style>
+</head>
+<body>
+<h1>Sept familles de boutons</h1>
+<p class="note">Appuie sur chacun : l'enfoncement fait partie du style. Dis-moi le numéro (ou un mélange, par exemple 5 pour l'action principale et 2 pour les tuiles).</p>
+
+<div class="lot">
+  <h2>1 · Bombé</h2><p>Celui d'aujourd'hui. Rond, brillant, très Brawl Stars.</p>
+  <button class="b1">Combattre ▸</button>
+  <div class="duo"><div class="t t1">Vestiaire</div><div class="t t1">Caisses</div></div>
+</div>
+
+<div class="lot">
+  <h2>2 · Planche clouée</h2><p>Bois de caisse, veinage, deux clous. Le plus « port ».</p>
+  <button class="b2">Combattre ▸</button>
+  <div class="duo"><div class="t t2">Vestiaire</div><div class="t t2">Caisses</div></div>
+</div>
+
+<div class="lot">
+  <h2>3 · Plaque rivetée</h2><p>Acier de conteneur, rivets, bande hachurée de sécurité en bas.</p>
+  <button class="b3"><i class="g"></i><i class="d"></i><span>Combattre ▸</span></button>
+  <div class="duo"><div class="t t3">Vestiaire</div><div class="t t3">Caisses</div></div>
+</div>
+
+<div class="lot">
+  <h2>4 · Capsule</h2><p>Entièrement arrondi, gros reflet. Le plus tendre, très jeu mobile.</p>
+  <button class="b4">Combattre ▸</button>
+  <div class="duo"><div class="t t4">Vestiaire</div><div class="t t4">Caisses</div></div>
+</div>
+
+<div class="lot">
+  <h2>5 · Bloc épais</h2><p>Trois couches d'ombre : le bouton a une vraie épaisseur, comme une brique.</p>
+  <button class="b5">Combattre ▸</button>
+  <div class="duo"><div class="t t5">Vestiaire</div><div class="t t5">Caisses</div></div>
+</div>
+
+<div class="lot">
+  <h2>6 · Plaque émaillée</h2><p>Panneau de port émaillé, double liseré clair. Sobre et net.</p>
+  <button class="b6">Combattre ▸</button>
+  <div class="duo"><div class="t t6">Vestiaire</div><div class="t t6">Caisses</div></div>
+</div>
+
+<div class="lot">
+  <h2>7 · Étiquette de fret</h2><p>Papier d'expédition, œillet à gauche, mention à droite.</p>
+  <button class="b7">Combattre <em>quai 3</em></button>
+  <div class="duo"><div class="t t7">Vestiaire</div><div class="t t7">Caisses</div></div>
+</div>
+</body>
+</html>
