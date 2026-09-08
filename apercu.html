@@ -26,12 +26,9 @@ button{font-family:inherit;font-weight:700;color:inherit;cursor:pointer;border:0
 canvas{image-rendering:pixelated;display:block}
 
 /* ---------- fond ---------- */
-#ciel{position:fixed;inset:0;z-index:0;
-  background:linear-gradient(180deg,#f6c876 0%,#efa457 34%,#d97b46 62%,#1d6b72 62%,#124e55 100%)}
-#ciel::after{content:"";position:absolute;inset:0;
-  background:radial-gradient(circle at 50% 22%,rgba(255,240,200,.5),transparent 55%)}
-#vagues{position:fixed;left:0;right:0;bottom:0;height:38%;z-index:0;opacity:.4;
-  background:repeating-linear-gradient(180deg,rgba(255,255,255,.16) 0 2px,transparent 2px 13px)}
+#decor{position:fixed;inset:0;z-index:0;width:100%;height:100%;object-fit:cover}
+#voile{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,225,180,.12) 0%,transparent 30%,rgba(30,14,8,.35) 100%)}
 
 /* ---------- écrans ---------- */
 .ecran{position:fixed;inset:0;z-index:1;display:none;flex-direction:column;
@@ -54,29 +51,28 @@ canvas{image-rendering:pixelated;display:block}
 .esp{flex:1}
 
 /* ---------- logo ---------- */
-.logo{text-align:center;margin-top:8px;line-height:.86;text-transform:uppercase;font-style:italic}
-.logo .a{display:block;font-size:clamp(34px,11.5vw,66px);color:var(--creme);
-  -webkit-text-stroke:6px var(--trait);paint-order:stroke fill;
-  text-shadow:0 6px 0 rgba(42,23,16,.45);letter-spacing:-.02em}
-.logo .b{display:block;font-size:clamp(26px,9vw,52px);color:var(--ocre);
-  -webkit-text-stroke:6px var(--trait);paint-order:stroke fill;
-  text-shadow:0 6px 0 rgba(42,23,16,.45);letter-spacing:.04em;margin-top:2px}
+.logo{margin-top:4px;display:flex;justify-content:center}
+.logo svg{width:min(420px,96%);height:auto;filter:drop-shadow(0 8px 10px rgba(42,23,16,.5))}
 
 /* ---------- héros ---------- */
-.heros{flex:1;display:flex;align-items:flex-end;justify-content:center;position:relative;min-height:150px}
-.heros canvas{width:180px;height:232px;filter:drop-shadow(0 10px 10px rgba(42,23,16,.45))}
-.quai{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:78%;height:26px;
-  border-radius:50%;background:radial-gradient(ellipse,rgba(42,23,16,.4),transparent 70%)}
+.heros{flex:1;display:flex;align-items:flex-end;justify-content:center;position:relative;min-height:170px}
+.heros canvas{width:min(330px,94%);height:auto;filter:drop-shadow(0 12px 12px rgba(42,23,16,.45))}
 
 /* ---------- gros boutons ---------- */
-.gros{width:100%;border:4px solid var(--trait);border-radius:18px;padding:17px 18px;
-  font-size:22px;font-style:italic;text-transform:uppercase;color:var(--creme);
+.gros{width:100%;border:4px solid var(--trait);border-radius:20px;padding:18px;
+  font-size:23px;font-style:italic;text-transform:uppercase;color:var(--creme);letter-spacing:.01em;
   display:flex;align-items:center;justify-content:center;gap:10px;
-  text-shadow:0 3px 0 rgba(0,0,0,.35);position:relative;overflow:hidden;
-  background:linear-gradient(180deg,var(--ocre) 0%,var(--ocre) 48%,var(--ocre-b) 100%);
-  box-shadow:0 7px 0 var(--ocre-b),0 12px 18px rgba(42,23,16,.35);margin-top:12px}
-.gros::before{content:"";position:absolute;left:8px;right:8px;top:5px;height:32%;
-  border-radius:12px;background:rgba(255,255,255,.28)}
+  text-shadow:0 3px 0 rgba(0,0,0,.4);position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#ffd977 0%,var(--ocre) 42%,var(--ocre-b) 100%);
+  box-shadow:0 8px 0 var(--ocre-b),0 15px 22px rgba(42,23,16,.4),
+    inset 0 -6px 10px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.35);
+  margin-top:13px;transition:transform .05s}
+.gros::before{content:"";position:absolute;left:10px;right:10px;top:6px;height:30%;
+  border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0))}
+.gros::after{content:"";position:absolute;left:-40%;top:0;bottom:0;width:28%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);
+  animation:brille 4.5s ease-in-out infinite}
+@keyframes brille{0%,72%{left:-40%}88%,100%{left:120%}}
 .gros:active{transform:translateY(5px);box-shadow:0 2px 0 var(--ocre-b)}
 .gros.terre{background:linear-gradient(180deg,#e8654a,var(--terre) 48%,var(--terre-b));box-shadow:0 7px 0 var(--terre-b),0 12px 18px rgba(42,23,16,.35)}
 .gros.eau{background:linear-gradient(180deg,#38a1a9,var(--eau) 48%,var(--eau-b));box-shadow:0 7px 0 var(--eau-b),0 12px 18px rgba(42,23,16,.35)}
@@ -87,12 +83,15 @@ canvas{image-rendering:pixelated;display:block}
 
 /* ---------- rangée de tuiles ---------- */
 .tuiles{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
-.tuile{border:4px solid var(--trait);border-radius:16px;padding:9px 4px 7px;
+.tuile{border:4px solid var(--trait);border-radius:18px;padding:10px 4px 8px;position:relative;
+  overflow:hidden;
   display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--creme);
   font-size:11px;text-transform:uppercase;text-shadow:0 2px 0 rgba(0,0,0,.3);
   background:linear-gradient(180deg,#9a6238,var(--bois) 55%,var(--bois-b));
   box-shadow:0 5px 0 var(--bois-b)}
-.tuile canvas{width:30px;height:30px}
+.tuile canvas{width:32px;height:32px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}
+.tuile::before{content:"";position:absolute;left:6px;right:6px;top:4px;height:28%;border-radius:12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,0))}
 .tuile:active{transform:translateY(3px);box-shadow:0 2px 0 var(--bois-b)}
 .tuile.eau{background:linear-gradient(180deg,#38a1a9,var(--eau) 55%,var(--eau-b));box-shadow:0 5px 0 var(--eau-b)}
 .tuile.vert{background:linear-gradient(180deg,#6fbb79,var(--vert) 55%,var(--vert-b));box-shadow:0 5px 0 var(--vert-b)}
@@ -114,8 +113,8 @@ canvas{image-rendering:pixelated;display:block}
 .collant{position:sticky;top:0;z-index:5;margin-top:10px}
 .collant .dedans{display:flex;gap:12px;background:linear-gradient(180deg,#fff8e8,var(--sable));
   border:4px solid var(--trait);border-radius:20px;box-shadow:0 6px 0 rgba(42,23,16,.5);padding:11px}
-.collant canvas#apercu{width:104px;height:134px;flex:0 0 auto;border-radius:14px;
-  border:3px solid var(--trait);background:linear-gradient(180deg,#8fd0d6,#2d7f86)}
+.collant canvas#apercu{width:112px;height:140px;flex:0 0 auto;border-radius:14px;
+  border:3px solid var(--trait);background:#3c2a1c}
 .infos{flex:1;min-width:0;display:flex;flex-direction:column}
 .infos .nom{font-size:15px;text-transform:uppercase;word-break:break-word}
 .infos .arme{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12px;color:#6b4c34;margin-top:3px}
@@ -214,17 +213,12 @@ canvas{image-rendering:pixelated;display:block}
 </style>
 </head>
 <body>
-<div id="ciel"></div><div id="vagues"></div>
+<canvas id="decor" width="270" height="480"></canvas><div id="voile"></div>
 
 <!-- ================= ACCUEIL ================= -->
 <main class="ecran on" id="e-accueil">
-  <div class="barre">
-    <div class="pilule"><canvas class="ic" data-ic="euro"></canvas><span id="p-euros">0 €</span></div>
-    <div class="pilule eau"><span id="p-nuit">Nuit 1/6</span></div>
-    <div class="esp"></div>
-  </div>
-  <div class="logo"><span class="a">Battle Dock</span><span class="b">Fight</span></div>
-  <div class="heros"><div class="quai"></div><canvas id="heros" width="96" height="124"></canvas></div>
+  <div class="logo" id="logo"></div>
+  <div class="heros"><canvas id="heros" width="200" height="164"></canvas></div>
   <button class="gros terre" id="bt-jouer">Combattre ▸</button>
   <div class="tuiles">
     <button class="tuile" data-va="billet"><canvas class="ic" data-ic="billet"></canvas>Billet</button>
@@ -242,7 +236,7 @@ canvas{image-rendering:pixelated;display:block}
     <div class="pilule"><canvas class="ic" data-ic="euro"></canvas><span class="euros">0 €</span></div>
   </div>
   <div class="collant"><div class="dedans">
-    <canvas id="apercu" width="96" height="124"></canvas>
+    <canvas id="apercu" width="112" height="140"></canvas>
     <div class="infos">
       <div class="nom" id="r-nom">Sans nom</div>
       <div class="arme" id="r-arme"></div>
@@ -332,6 +326,57 @@ try{const b=localStorage.getItem(CLE)||localStorage.getItem('bdf.v2');
 const sauver=()=>{try{localStorage.setItem(CLE,JSON.stringify(d));}catch(e){}};
 const debloque=(c,i)=>!i.r||d.debloque.includes(c+':'+i.id);
 
+/* ---------------- logo ---------------- */
+$('logo').innerHTML=`
+<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="or" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff3c4"/><stop offset="38%" stop-color="#f7c948"/><stop offset="70%" stop-color="#e39a1c"/>
+      <stop offset="100%" stop-color="#b7710e"/>
+    </linearGradient>
+    <linearGradient id="rouge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff8a63"/><stop offset="45%" stop-color="#e0492c"/>
+      <stop offset="100%" stop-color="#96250f"/>
+    </linearGradient>
+    <linearGradient id="ruban" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e0492c"/><stop offset="100%" stop-color="#8f2716"/>
+    </linearGradient>
+  </defs>
+
+  <!-- cordage -->
+  <path d="M40 66 q220 -34 440 0" fill="none" stroke="#2a1710" stroke-width="12" stroke-linecap="round"/>
+  <path d="M40 66 q220 -34 440 0" fill="none" stroke="#d9a95a" stroke-width="6"
+        stroke-linecap="round" stroke-dasharray="12 9"/>
+
+  <!-- BATTLE -->
+  <g font-family="Arial Black, Arial, sans-serif" font-style="italic" text-anchor="middle">
+    <text x="260" y="132" font-size="86" fill="url(#or)" stroke="#2a1710" stroke-width="17"
+          paint-order="stroke" letter-spacing="-2">BATTLE</text>
+    <text x="260" y="132" font-size="86" fill="url(#or)" letter-spacing="-2">BATTLE</text>
+    <text x="260" y="127" font-size="86" fill="rgba(255,255,255,.35)" letter-spacing="-2"
+          clip-path="inset(0 0 62% 0)">BATTLE</text>
+
+    <!-- DOCK -->
+    <text x="150" y="196" font-size="60" fill="#fdf3e0" stroke="#2a1710" stroke-width="14"
+          paint-order="stroke" letter-spacing="1">DOCK</text>
+  </g>
+
+  <!-- ruban FIGHT -->
+  <g transform="translate(300 150) rotate(-4)">
+    <path d="M0 8 L214 0 L206 62 L0 70 Z" fill="url(#ruban)" stroke="#2a1710" stroke-width="7"/>
+    <path d="M8 16 L204 9 L201 26 L8 33 Z" fill="rgba(255,255,255,.22)"/>
+    <text x="106" y="53" font-family="Arial Black, Arial, sans-serif" font-style="italic"
+          font-size="46" text-anchor="middle" fill="#fdf3e0" stroke="#2a1710" stroke-width="8"
+          paint-order="stroke" letter-spacing="4">FIGHT</text>
+  </g>
+
+  <!-- crochet de docker -->
+  <g transform="translate(58 150) rotate(-16)" stroke="#2a1710" stroke-width="7" fill="#c9c3bb">
+    <rect x="0" y="0" width="12" height="46" rx="5"/>
+    <path d="M6 46 q-22 12 -6 28 q14 12 24 -4" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
 /* ---------------- icônes ---------------- */
 function icone(cv,type){
   cv.width=32;cv.height=32;
@@ -357,6 +402,134 @@ function icone(cv,type){
 }
 const majIcones=()=>document.querySelectorAll('canvas.ic').forEach(c=>icone(c,c.dataset.ic));
 
+/* ---------------- décor : le port de Marseille ---------------- */
+const dc=$('decor'),dg=dc.getContext('2d');dg.imageSmoothingEnabled=false;
+const DW=270,DH=480,MER=248;
+function decorPort(t){
+  // ciel
+  const g=dg.createLinearGradient(0,0,0,MER);
+  g.addColorStop(0,'#6b3f6b');g.addColorStop(.28,'#c95f52');
+  g.addColorStop(.58,'#f0a05a');g.addColorStop(1,'#ffd79a');
+  dg.fillStyle=g;dg.fillRect(0,0,DW,MER);
+  // soleil
+  const sy=MER-46+Math.sin(t/4000)*2;
+  const h=dg.createRadialGradient(176,sy,6,176,sy,86);
+  h.addColorStop(0,'rgba(255,236,170,.85)');h.addColorStop(1,'rgba(255,190,110,0)');
+  dg.fillStyle=h;dg.fillRect(60,sy-90,240,180);
+  dg.fillStyle='#fff0bd';dg.beginPath();dg.arc(176,sy,26,0,7);dg.fill();
+  // nuages
+  dg.fillStyle='rgba(255,220,190,.35)';
+  for(let i=0;i<4;i++){const x=((t/(120+i*55))+i*90)%(DW+90)-45;
+    dg.fillRect(x,52+i*20,64,7);dg.fillRect(x+13,45+i*20,38,7);}
+
+  // colline de Notre-Dame de la Garde (à droite)
+  dg.fillStyle='#6b3b34';
+  dg.beginPath();dg.moveTo(150,MER);dg.quadraticCurveTo(212,116,270,MER);dg.closePath();dg.fill();
+  dg.fillStyle='#7d453c';
+  dg.beginPath();dg.moveTo(160,MER);dg.quadraticCurveTo(212,126,268,MER);dg.closePath();dg.fill();
+  // basilique
+  const bx=205;
+  dg.fillStyle='#e8d6b4';dg.fillRect(bx-16,96,34,26);
+  dg.fillStyle='#d8c39c';dg.fillRect(bx-16,96,34,4);
+  for(let i=0;i<4;i++){dg.fillStyle='#8a6a4a';dg.fillRect(bx-12+i*8,104,4,10);}
+  dg.fillStyle='#e8d6b4';dg.fillRect(bx-5,60,12,38);
+  dg.fillStyle='#c9a86a';dg.fillRect(bx-4,52,10,9);            // statue dorée
+  dg.fillStyle='#f2c95a';dg.fillRect(bx-3,46,8,8);
+  dg.fillStyle='rgba(255,240,190,.35)';dg.fillRect(bx-6,44,14,3);
+
+  // collines à gauche + fort
+  dg.fillStyle='#5e352f';
+  dg.beginPath();dg.moveTo(-10,MER);dg.quadraticCurveTo(40,168,110,MER);dg.closePath();dg.fill();
+  dg.fillStyle='#3f2a26';dg.fillRect(6,178,40,MER-178);
+  dg.fillStyle='#4a322c';dg.fillRect(6,172,40,8);
+  for(let i=0;i<5;i++)dg.fillRect(6+i*9,166,5,7);
+  dg.fillStyle='#2f201d';dg.fillRect(44,150,10,MER-150);      // tour du fort
+  dg.fillStyle='#3f2a26';dg.fillRect(41,144,16,8);
+
+  // ville au bord de l'eau
+  for(let i=0;i<22;i++){
+    const x=i*13-4,hh=22+((i*37)%30),y=MER-hh;
+    dg.fillStyle=i%3?'#4a2f2c':'#402926';dg.fillRect(x,y,12,hh);
+    dg.fillStyle='#2f1e1c';dg.fillRect(x,y,12,2);
+    for(let f=0;f<3;f++){
+      if((i*7+f*5)%4===0){dg.fillStyle=Math.sin(t/900+i+f)>-.2?'rgba(255,206,120,.9)':'rgba(255,206,120,.35)';
+        dg.fillRect(x+3+(f%2)*5,y+5+f*6,3,3);}
+    }
+  }
+  // grues du port (silhouettes)
+  dg.strokeStyle='#33211e';dg.lineWidth=3;
+  [[24,196],[250,190]].forEach(([x,y],i)=>{
+    dg.beginPath();dg.moveTo(x,MER);dg.lineTo(x,y);dg.lineTo(x+(i?-34:34),y+9);dg.stroke();
+    dg.beginPath();dg.moveTo(x,y);dg.lineTo(x+(i?16:-16),y+16);dg.stroke();
+  });
+
+  // mer
+  const m=dg.createLinearGradient(0,MER,0,DH);
+  m.addColorStop(0,'#2b7d84');m.addColorStop(.5,'#1d6b72');m.addColorStop(1,'#0e3f47');
+  dg.fillStyle=m;dg.fillRect(0,MER,DW,DH-MER);
+  // reflet du soleil
+  for(let i=0;i<16;i++){
+    const y=MER+4+i*8, w=52-i*2+Math.sin(t/400+i)*10;
+    dg.fillStyle='rgba(255,214,150,'+(0.3-i*0.016)+')';
+    dg.fillRect(176-w/2+Math.sin(t/500+i*1.3)*5,y,w,3);
+  }
+  // clapot
+  for(let i=0;i<20;i++){
+    const y=MER+6+i*11, dx=Math.sin(t/700+i)*8;
+    dg.fillStyle='rgba(255,255,255,.10)';
+    dg.fillRect(dx+((i*53)%DW)-30,y,26,2);
+    dg.fillRect(dx+((i*97)%DW),y+4,16,2);
+  }
+  // barques
+  [[60,300,1],[210,344,-1],[120,392,1]].forEach(([x,y,sn],i)=>{
+    const b=Math.sin(t/620+i*2)*2;
+    dg.fillStyle='#f0e2c8';dg.fillRect(x-3,y-18+b,3,18);          // mât
+    dg.fillStyle=i%2?'#e0492c':'#f2b134';
+    dg.beginPath();dg.moveTo(x,y-18+b);dg.lineTo(x+sn*13,y-2+b);dg.lineTo(x,y-2+b);dg.closePath();dg.fill();
+    dg.fillStyle='#3f2a26';dg.fillRect(x-13,y+b,28,5);
+    dg.fillStyle='#2a1710';dg.fillRect(x-11,y+5+b,24,3);
+    dg.fillStyle='rgba(0,0,0,.18)';dg.fillRect(x-11,y+10+b,24,2);
+  });
+  // mouettes
+  dg.strokeStyle='rgba(253,243,224,.8)';dg.lineWidth=2;
+  for(let i=0;i<3;i++){
+    const x=((t/(70+i*30))+i*110)%(DW+50)-25, y=70+i*26+Math.sin(t/500+i)*8, o=Math.sin(t/110+i*2)*4;
+    dg.beginPath();dg.moveTo(x-6,y);dg.lineTo(x,y-o);dg.lineTo(x+6,y);dg.stroke();
+  }
+}
+
+/* ---------------- le quai sous le héros ---------------- */
+function quai(g,W,ySol,t){
+  // eau au pied du quai
+  g.fillStyle='rgba(13,63,71,.55)';g.fillRect(0,ySol+16,W,60);
+  for(let i=0;i<5;i++){
+    g.fillStyle='rgba(255,255,255,.10)';
+    g.fillRect(((i*67)+Math.sin(t/600+i)*10)%W-20,ySol+22+i*9,30,2);
+  }
+  // dalles de pierre
+  const hQ=18;
+  g.fillStyle='#c9a97a';g.fillRect(0,ySol,W,hQ);
+  g.fillStyle='#e0c393';g.fillRect(0,ySol,W,4);
+  g.fillStyle='#a8875c';g.fillRect(0,ySol+hQ-4,W,4);
+  for(let x=-6;x<W;x+=34){
+    g.fillStyle='#a8875c';g.fillRect(x+((Math.floor(ySol)%2)?0:8),ySol+4,3,hQ-8);
+  }
+  // rebord sombre
+  g.fillStyle='#2a1710';g.fillRect(0,ySol+hQ,W,3);
+  // bitte d'amarrage + cordage
+  const bx=W-30;
+  g.fillStyle='#3f4a52';g.fillRect(bx,ySol-14,12,15);
+  g.fillStyle='#586570';g.fillRect(bx-2,ySol-19,16,6);
+  g.fillStyle='#2a1710';g.fillRect(bx-2,ySol-19,16,2);
+  g.strokeStyle='#d9a95a';g.lineWidth=3;
+  g.beginPath();g.moveTo(bx+2,ySol-8);
+  g.quadraticCurveTo(bx-40,ySol+10+Math.sin(t/900)*2,bx-78,ySol-2);g.stroke();
+  // caisse
+  g.fillStyle='#9a6238';g.fillRect(12,ySol-20,26,20);
+  g.fillStyle='#c08a52';g.fillRect(12,ySol-20,26,3);
+  g.fillStyle='#4a2916';g.fillRect(12,ySol-12,26,3);g.fillRect(23,ySol-20,3,20);
+}
+
 /* ---------------- aperçus animés ---------------- */
 let pose='debout';
 const faux={look:d,etat:'debout',coup:null,sol:1,sens:1,garde:0,stun:0};
@@ -369,15 +542,41 @@ $('poses').addEventListener('click',e=>{
 (function boucle(t){
   requestAnimationFrame(boucle);
   faux.look=d;
+  if(!$('e-accueil').classList.contains('on')&&t%2<1)decorPort(t);
   if($('e-vestiaire').classList.contains('on')){
     faux.etat=pose;
     if(pose==='coup'){faux.coup={t:Math.floor(t/22)%40,dep:8,act:8,fin:24,
       por:30+statsDe(d).portee*2,haut:0};}else faux.coup=null;
-    ap.clearRect(0,0,96,124);ap.save();ap.translate(48,116);dessinerDocker(ap,faux,t);ap.restore();
+    ap.clearRect(0,0,112,140);
+    // mur de vestiaire
+    const mur=ap.createLinearGradient(0,0,0,112);
+    mur.addColorStop(0,'#3d5a63');mur.addColorStop(1,'#24404a');
+    ap.fillStyle=mur;ap.fillRect(0,0,112,112);
+    ap.fillStyle='rgba(255,255,255,.05)';
+    for(let x=0;x<112;x+=16)ap.fillRect(x,0,1,112);
+    ap.fillStyle='#2b4a54';ap.fillRect(6,16,26,96);      // casier
+    ap.fillStyle='#356069';ap.fillRect(6,16,26,3);
+    ap.fillStyle='#f2b134';ap.fillRect(27,60,3,6);
+    ap.fillStyle='rgba(242,177,52,.14)';ap.beginPath();
+    ap.moveTo(56,0);ap.lineTo(96,0);ap.lineTo(76,112);ap.lineTo(46,112);ap.closePath();ap.fill();
+    // sol en planches
+    ap.fillStyle='#6b4429';ap.fillRect(0,112,112,28);
+    ap.fillStyle='#7d5432';ap.fillRect(0,112,112,4);
+    ap.fillStyle='#4a2c18';
+    for(let x=-4;x<112;x+=19)ap.fillRect(x,112,2,28);
+    ap.fillStyle='rgba(0,0,0,.22)';ap.fillRect(0,112,112,2);
+    ap.save();ap.translate(56,132);
+    ap.fillStyle='rgba(0,0,0,.3)';ap.beginPath();ap.ellipse(0,1,15,4,0,0,7);ap.fill();
+    dessinerDocker(ap,faux,t);ap.restore();
   }
   if($('e-accueil').classList.contains('on')){
+    decorPort(t);
     faux.etat=(Math.floor(t/2800)%4===3)?'gagne':'debout';faux.coup=null;
-    he.clearRect(0,0,96,124);he.save();he.translate(48,116);dessinerDocker(he,faux,t);he.restore();
+    he.clearRect(0,0,200,164);
+    quai(he,200,118,t);
+    he.save();he.translate(100,118);
+    he.fillStyle='rgba(42,23,16,.32)';he.beginPath();he.ellipse(0,1,17,4,0,0,7);he.fill();
+    dessinerDocker(he,faux,t);he.restore();
   }
 })(0);
 
@@ -430,8 +629,7 @@ function resume(){
 }
 function sous(){
   document.querySelectorAll('.euros').forEach(e=>e.textContent=d.euros+' €');
-  $('p-euros').textContent=d.euros+' €';
-  $('p-nuit').textContent='Nuit '+Math.min(d.niveau+1,6)+'/6';
+
 }
 $('nom').value=d.nom;
 $('nom').addEventListener('input',e=>{
