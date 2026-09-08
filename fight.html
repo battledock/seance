@@ -303,7 +303,11 @@ function jauge(x,y,w,f,dr){
   ctx.fillStyle=f.rage>=100?'#ffd029':'#e8452c';ctx.fillRect(dr?rx+rw-rp:rx,ry,rp,5);
 }
 function ath(){
+  const mien=(mode==='enligne'&&role==='invite')?J2:J1;
   jauge(20,22,168,J1,false);jauge(W-188,22,168,J2,true);
+  ctx.fillStyle='#ffd029';ctx.font='900 8px "Arial Black",sans-serif';
+  ctx.textAlign=mien===J1?'left':'right';
+  if(mode!=='local')ctx.fillText('TOI',mien===J1?20:W-20,60);
   ctx.textAlign='center';ctx.fillStyle='#f2ece0';ctx.font='23px Georgia';
   ctx.fillText(Math.ceil(temps/60),W/2,34);
   ctx.font='9px Georgia';ctx.fillStyle='#8a857a';ctx.fillText(ARENES[arene].nom,W/2,50);
@@ -326,9 +330,10 @@ function nouveauRound(){
   temps=DUREE*60;parts=[];ecl=[];banniere=null;
   msg='MANCHE '+round;msgT=80;phase='annonce';zoom=1;ralenti=0;
 }
-function demarrer(m,look,ia,ar){
+function demarrer(m,look,ia,ar,inverse){
   mode=m;arene=ar??Math.floor(Math.random()*ARENES.length);
-  J1=new F(monLook,null);J2=new F(look,ia);
+  if(inverse){J1=new F(look,null);J2=new F(monLook,null);}
+  else{J1=new F(monLook,null);J2=new F(look,ia);}
   J1.manches=0;J2.manches=0;round=1;
   document.querySelectorAll('.pan').forEach(p=>p.classList.remove('on'));
   $('cmd1').classList.add('on');$('cmd2').classList.toggle('on',m==='local');
@@ -361,13 +366,24 @@ function finCombat(vic){
       $('suite-l').textContent='Remettre ça';$('suite').onclick=()=>lancerSolo();
     }
   }else{
-    $('fin-t').innerHTML=vic?J1.nom+' <b>gagne</b>':J2.nom+' <b>gagne</b>';
-    $('fin-p').textContent='Fin du combat.';
+    const mien = (mode==='enligne'&&role==='invite') ? !vic : vic;
+    const gagnant = vic?J1:J2;
+    if(mode==='enligne'){
+      $('fin-t').innerHTML=mien?'Tu <b>gagnes</b>':'Tu <b>perds</b>';
+      $('fin-p').textContent=gagnant.nom+' remporte le combat '+
+        J1.manches+' manches à '+J2.manches+'.';
+    }else{
+      $('fin-t').innerHTML=gagnant.nom+' <b>gagne</b>';
+      $('fin-p').textContent='Fin du combat.';
+    }
     $('suite-l').textContent='Revanche';
     $('suite').onclick=()=>{J1.manches=0;J2.manches=0;round=1;
       document.querySelectorAll('.pan').forEach(p=>p.classList.remove('on'));
       $('cmd1').classList.add('on');$('cmd2').classList.toggle('on',mode==='local');nouveauRound();};
-    if(mode==='enligne'&&pseudo)majScore(vic);
+    if(mode==='enligne'){
+      if(role==='hote'&&canal)canal.send({type:'broadcast',event:'termine',payload:{vic}});
+      if(pseudo)majScore(vic);
+    }
   }
 }
 const chev=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
@@ -381,6 +397,7 @@ function pas(){
   if(ralenti>0){ralenti--;if(ralenti%2)return;}
   if(phase==='annonce'){if(--msgT<=0){phase='combat';msg='ALLEZ !';msgT=34;}return;}
   if(phase==='fin'){J1.maj(J2,null);J2.maj(J1,null);effets();
+    if(mode==='enligne'&&role==='invite')return;
     if(--msgT<=0){if(J1.manches>=MANCHES)finCombat(true);else if(J2.manches>=MANCHES)finCombat(false);
       else{round++;nouveauRound();}}return;}
   if(phase!=='combat')return;
@@ -431,8 +448,9 @@ function boucle(t){
   if(!der)der=t;acc+=Math.min(120,t-der);der=t;
   while(acc>=PAS){pas();acc-=PAS;}
   rendre(t);
-  $('rg1').classList.toggle('pret',!!J1&&J1.rage>=100);
-  $('rg2').classList.toggle('pret',!!J2&&J2.rage>=100);
+  const moi=(mode==='enligne'&&role==='invite')?J2:J1;
+  $('rg1').classList.toggle('pret',!!moi&&moi.rage>=100);
+  $('rg2').classList.toggle('pret',!!J2&&mode==='local'&&J2.rage>=100);
   if(mode==='enligne'&&canal){
     if(role==='hote'&&phase!=='menu'&&t-dernier>50){dernier=t;envoyerEtat();}
     if(role==='invite'&&t-dernier>40){dernier=t;canal.send({type:'broadcast',event:'entree',payload:T[1]});}
@@ -505,9 +523,15 @@ function brancher(code,hote){
     canal.send({type:'broadcast',event:'demarre',payload:{look:monLook,arene}});
   });
   canal.on('broadcast',{event:'demarre'},({payload})=>{
-    if(hote)return;demarrer('enligne',payload.look,null,payload.arene);
+    if(hote)return;demarrer('enligne',payload.look,null,payload.arene,true);
   });
   canal.on('broadcast',{event:'entree'},({payload})=>{if(hote)distant=payload;});
+  canal.on('broadcast',{event:'termine'},({payload})=>{
+    if(hote||phase==='termine')return;
+    J1.manches=payload.vic?MANCHES:J1.manches;
+    J2.manches=payload.vic?J2.manches:MANCHES;
+    finCombat(payload.vic);
+  });
   canal.on('broadcast',{event:'etat'},({payload})=>{
     if(hote||!J1)return;
     Object.assign(J1,payload.a);Object.assign(J2,payload.b);
