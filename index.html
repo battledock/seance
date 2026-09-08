@@ -3,276 +3,163 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e2402f">
-<title>Battle Dock</title>
+<meta name="theme-color" content="#f4f1ea">
+<title>Battle Dock Life</title>
 <style>
-:root{--rouge:#e2402f;--navy:#232c49;--navy2:#2f3a5e;--vert:#9ee35c;--creme:#f4ecdc;--gris:#8d93a8}
+:root{
+  --fond:#f3f1ec; --carte:#ffffff; --encre:#2b2a27; --doux:#8a867e;
+  --vert:#4fa832; --vert-f:#3d8626; --champ:#f4f2ec; --bord:#e4e0d6;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%;background:#1a2138;color:var(--creme);
-  font-family:"Arial Black","Arial Narrow",Helvetica,sans-serif;
+html,body{min-height:100%;background:var(--fond);color:var(--encre);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
-body{overflow-x:hidden}
-button,a{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer;text-decoration:none}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:22px 18px;
+  background:
+    radial-gradient(900px 420px at 50% -10%, #e9f5df 0%, rgba(233,245,223,0) 70%),
+    radial-gradient(700px 380px at 100% 100%, #f6ecdd 0%, rgba(246,236,221,0) 70%),
+    var(--fond)}
+button,input{font-family:inherit;font-size:16px}
 
-.barre{position:sticky;top:0;z-index:20;display:flex;align-items:stretch;
-  padding-top:env(safe-area-inset-top);background:linear-gradient(180deg,rgba(26,33,56,.55),transparent)}
-.burger{width:66px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:16px}
-.burger i{display:block;height:5px;background:var(--creme);border-radius:2px;
-  box-shadow:0 1px 2px rgba(0,0,0,.4)}
-.barre .esp{flex:1}
-.barre a{display:flex;align-items:center;padding:16px 18px;font-size:14px;letter-spacing:.09em;
-  text-transform:uppercase}
-.barre .shop{background:var(--navy);color:var(--creme)}
-.barre .jouer{background:var(--vert);color:var(--navy)}
+.carte{width:100%;max-width:380px;background:var(--carte);border-radius:26px;padding:28px 22px 24px;
+  box-shadow:0 1px 2px rgba(43,42,39,.04),0 12px 34px rgba(43,42,39,.10)}
 
-.affiche{position:relative;margin-top:-72px}
-.affiche svg{display:block;width:100%;height:auto}
-.calque{position:absolute;left:0;right:0;pointer-events:none}
-.titre{top:9%;text-align:center;padding:0 14px}
-.titre .t{font-size:clamp(44px,14.5vw,96px);line-height:.84;color:var(--navy);letter-spacing:-.03em;
-  transform:skewY(-2deg);
-  text-shadow:
-    4px 0 0 rgba(244,236,220,.22), -3px -3px 0 rgba(10,14,26,.28),
-    0 8px 22px rgba(60,10,10,.35)}
-.titre .s{display:inline-block;margin-top:12px;background:var(--creme);color:var(--navy);
-  padding:6px 16px;font-size:clamp(12px,3.7vw,19px);letter-spacing:.1em;transform:rotate(-1.6deg);
-  box-shadow:4px 4px 0 rgba(20,26,44,.45)}
-.badges{bottom:7%;text-align:center;padding:0 14px}
-.badges .d{display:inline-block;background:var(--vert);color:var(--navy);padding:9px 18px;
-  font-size:clamp(25px,8.4vw,46px);transform:rotate(-1.2deg);letter-spacing:-.01em;
-  box-shadow:5px 5px 0 rgba(20,26,44,.45)}
-.badges .v{display:inline-block;margin-top:12px;background:var(--creme);color:var(--navy);
-  padding:7px 20px;font-size:clamp(17px,5.2vw,28px);letter-spacing:.08em;
-  box-shadow:4px 4px 0 rgba(20,26,44,.4)}
+.marque{text-align:center;margin-bottom:24px}
+.marque .rond{width:60px;height:60px;margin:0 auto;border-radius:19px;
+  background:linear-gradient(180deg,#7ed35c,var(--vert));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px rgba(79,168,50,.32)}
+.marque .rond svg{width:30px;height:30px;fill:#fff}
+.marque h1{font-size:23px;font-weight:650;letter-spacing:-.3px;margin-top:14px}
+.marque p{font-size:14px;color:var(--doux);margin-top:5px}
 
-.bande{background:var(--navy);padding:13px 0;overflow:hidden;white-space:nowrap;position:relative;z-index:2}
-.bande span{display:inline-block;color:var(--vert);font-size:15px;letter-spacing:.16em;
-  text-transform:uppercase;animation:defile 22s linear infinite}
-@keyframes defile{to{transform:translateX(-50%)}}
-.sections{background:var(--creme);color:var(--navy);padding:26px 16px 42px}
-.sections h2{font-size:27px;text-transform:uppercase}
-.sections p{font-family:"Trebuchet MS",Verdana,sans-serif;font-size:14.5px;line-height:1.65;
-  color:#4b5573;margin-top:10px;max-width:34ch}
-.grille{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:20px}
-.bloc{background:var(--navy);color:var(--creme);padding:15px}
-.bloc .n{font-size:28px;color:var(--vert)}
-.bloc .l{font-size:12px;letter-spacing:.07em;text-transform:uppercase;margin-top:4px}
-.cta{display:block;margin-top:22px;background:var(--rouge);color:var(--creme);text-align:center;
-  padding:19px;font-size:21px;text-transform:uppercase;letter-spacing:.06em;
-  box-shadow:6px 6px 0 var(--navy)}
-.cta:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--navy)}
-.pied{background:var(--navy);color:var(--gris);padding:18px;font-size:12px;letter-spacing:.07em;
-  text-transform:uppercase;text-align:center;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+.onglets{display:flex;background:var(--champ);border-radius:14px;padding:4px;margin-bottom:18px}
+.onglets button{flex:1;border:0;background:none;color:var(--doux);padding:10px;border-radius:11px;
+  font-weight:600;font-size:14.5px;cursor:pointer;transition:.18s}
+.onglets button.on{background:var(--carte);color:var(--encre);
+  box-shadow:0 1px 2px rgba(43,42,39,.08),0 2px 8px rgba(43,42,39,.06)}
+
+label{display:block;font-size:13px;color:var(--doux);margin:0 0 6px 3px}
+.champ{position:relative;margin-bottom:14px}
+.champ input{width:100%;background:var(--champ);border:1.5px solid transparent;border-radius:15px;
+  padding:15px 44px 15px 15px;color:var(--encre);outline:none;transition:.18s}
+.champ input::placeholder{color:#b3aea4}
+.champ input:focus{background:var(--carte);border-color:var(--vert)}
+.champ .oeil{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:38px;height:38px;
+  border:0;background:none;color:var(--doux);cursor:pointer;font-size:15px}
+
+.jouer{width:100%;border:0;border-radius:16px;padding:16px;margin-top:6px;
+  background:linear-gradient(180deg,#67c447,var(--vert));color:#fff;font-size:17px;font-weight:650;
+  cursor:pointer;box-shadow:0 5px 0 var(--vert-f),0 10px 22px rgba(79,168,50,.28);transition:.06s}
+.jouer:active{transform:translateY(4px);box-shadow:0 1px 0 var(--vert-f)}
+.jouer:disabled{opacity:.6;box-shadow:0 5px 0 #b9b5ac}
+
+.sep{display:flex;align-items:center;gap:12px;margin:20px 0 16px}
+.sep i{flex:1;height:1px;background:var(--bord)}
+.sep span{font-size:12px;color:#b3aea4;font-style:normal}
+
+.invite{width:100%;border:1.5px solid var(--bord);background:none;border-radius:15px;padding:14px;
+  color:var(--encre);font-size:14.5px;font-weight:600;cursor:pointer}
+.invite:active{background:var(--champ)}
+
+.msg{font-size:13.5px;line-height:1.5;border-radius:12px;padding:11px 13px;margin-bottom:14px;display:none}
+.msg.on{display:block}
+.msg.err{background:#fdeceb;color:#a3312a}
+.msg.ok{background:#eaf5e4;color:#2f6b22}
+.pied{text-align:center;font-size:12.5px;color:#b3aea4;margin-top:18px}
 </style>
 </head>
 <body>
+<div class="carte">
+  <div class="marque">
+    <div class="rond">
+      <svg viewBox="0 0 24 24"><path d="M12 3 2.5 10.2V21h6.6v-5.6h5.8V21h6.6V10.2z"/></svg>
+    </div>
+    <h1>Battle Dock Life</h1>
+    <p id="sous">Content de te revoir.</p>
+  </div>
 
-<div class="barre">
-  <button class="burger" aria-label="Menu"><i></i><i></i><i></i></button>
-  <div class="esp"></div>
-  <a class="shop" href="#le-jeu">Le jeu</a>
-  <a class="jouer" href="jeu.html">Jouer</a>
+  <div class="onglets">
+    <button id="t-co" class="on">Connexion</button>
+    <button id="t-in">Inscription</button>
+  </div>
+
+  <div class="msg" id="msg"></div>
+
+  <div id="bloc-pseudo" style="display:none">
+    <label for="pseudo">Pseudo</label>
+    <div class="champ"><input id="pseudo" autocomplete="nickname" maxlength="20" placeholder="Comment on t'appelle"></div>
+  </div>
+
+  <label for="email">Adresse e-mail</label>
+  <div class="champ"><input id="email" type="email" autocomplete="email" placeholder="toi@exemple.fr"></div>
+
+  <label for="mdp">Mot de passe</label>
+  <div class="champ">
+    <input id="mdp" type="password" autocomplete="current-password" placeholder="••••••••">
+    <button class="oeil" id="oeil" aria-label="Afficher le mot de passe">👁</button>
+  </div>
+
+  <button class="jouer" id="valider">Jouer</button>
+
+  <div class="sep"><i></i><span>ou</span><i></i></div>
+  <button class="invite" id="invite">Continuer sans compte</button>
+
+  <div class="pied">Ta partie est sauvegardée sur ton compte.</div>
 </div>
 
-<div class="affiche">
-<svg viewBox="0 0 720 1120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Affiche Battle Dock">
-<defs>
-  <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#b8261f"/><stop offset=".34" stop-color="#d5372a"/>
-    <stop offset=".62" stop-color="#ea5a2f"/><stop offset=".84" stop-color="#f79040"/>
-    <stop offset="1" stop-color="#fdb95c"/>
-  </linearGradient>
-  <radialGradient id="halo" cx=".5" cy=".5" r=".5">
-    <stop offset="0" stop-color="#fff6de" stop-opacity=".95"/>
-    <stop offset=".55" stop-color="#ffd88f" stop-opacity=".35"/>
-    <stop offset="1" stop-color="#ffb45c" stop-opacity="0"/>
-  </radialGradient>
-  <linearGradient id="tas" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#3b476e"/>
-    <stop offset="1" stop-color="#1b2340"/>
-  </linearGradient>
-  <linearGradient id="faisceau" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#9ee35c" stop-opacity=".75"/>
-    <stop offset="1" stop-color="#9ee35c" stop-opacity="0"/>
-  </linearGradient>
-  <filter id="grain">
-    <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="4" stitchTiles="stitch"/>
-    <feColorMatrix type="saturate" values="0"/>
-    <feComponentTransfer><feFuncA type="linear" slope=".22"/></feComponentTransfer>
-  </filter>
-  <filter id="flou"><feGaussianBlur stdDeviation="16"/></filter>
-</defs>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL='https://zpfkekiavlfphialvphi.supabase.co';
+const SB_KEY='sb_publishable__dfR2lEOwKjhhtavvJEvGw_KVACZnHP';
+const sb=createClient(SB_URL,SB_KEY);
 
-<rect width="720" height="1120" fill="url(#ciel)"/>
+const $=id=>document.getElementById(id);
+let mode='co';
 
-<!-- fumées -->
-<g fill="#8e1c1c" opacity=".22">
-  <path d="M-40 120 q120-46 250-6 t260-14 q120-24 260 18l0 54q-150-40-266-14t-256 12q-130 8-248-16z"/>
-  <path d="M-40 236 q150-56 300-10 t300-18l0 46q-160 26-300-4t-300 22z"/>
-  <path d="M120 46 q170-40 300 4 t260-10l0 40q-140 24-268-6t-292 6z"/>
-</g>
+function afficher(t,type){const m=$('msg');m.textContent=t;m.className='msg on '+(type||'');}
+function cacher(){$('msg').className='msg';}
 
-<!-- soleil -->
-<circle cx="360" cy="430" r="300" fill="url(#halo)"/>
-<circle cx="360" cy="430" r="196" fill="#f7efdc"/>
-<circle cx="360" cy="430" r="196" fill="#e2402f" opacity=".05"/>
+function basculer(m){
+  mode=m;cacher();
+  $('t-co').classList.toggle('on',m==='co');
+  $('t-in').classList.toggle('on',m==='in');
+  $('bloc-pseudo').style.display=m==='in'?'block':'none';
+  $('sous').textContent=m==='co'?'Content de te revoir.':'Deux champs et c’est parti.';
+  $('valider').textContent=m==='co'?'Jouer':'Créer mon compte';
+  $('mdp').autocomplete=m==='co'?'current-password':'new-password';
+}
+$('t-co').onclick=()=>basculer('co');
+$('t-in').onclick=()=>basculer('in');
+$('oeil').onclick=()=>{const c=$('mdp');c.type=c.type==='password'?'text':'password';};
 
-<!-- oiseaux -->
-<g stroke="#232c49" stroke-width="5" fill="none" stroke-linecap="round">
-  <path d="M96 296 q14-13 27 0 q13-13 27 0"/>
-  <path d="M150 350 q10-9 19 0 q9-9 19 0"/>
-  <path d="M212 268 q9-8 17 0 q8-8 17 0"/>
-  <path d="M520 236 q12-11 23 0 q11-11 23 0"/>
-  <path d="M596 306 q9-8 17 0 q8-8 17 0"/>
-</g>
-
-<!-- grue de fond -->
-<g stroke="#232c49" fill="#232c49" stroke-linecap="round">
-  <path d="M92 690 L92 250 L326 292" stroke-width="15" fill="none"/>
-  <path d="M92 250 L20 330" stroke-width="10" fill="none"/>
-  <path d="M258 285 L258 430" stroke-width="8" fill="none"/>
-  <rect x="228" y="430" width="60" height="42" rx="5"/>
-  <path d="M92 690 L52 690 M92 620 L140 640" stroke-width="9" fill="none"/>
-</g>
-
-<!-- cargo -->
-<g transform="translate(600 470) rotate(-4)">
-  <path d="M-130 0 L130 -16 L108 54 L-118 66 Z" fill="#2b3557"/>
-  <path d="M-130 0 L130 -16 L128 -4 L-128 12 Z" fill="#3d4a75"/>
-  <rect x="-52" y="-56" width="96" height="44" rx="6" fill="#2b3557"/>
-  <rect x="-30" y="-78" width="40" height="26" rx="5" fill="#374470"/>
-  <circle cx="-6" cy="-84" r="7" fill="#9ee35c"/>
-  <g fill="url(#faisceau)">
-    <path d="M-90 60 L-176 260 L-116 260 Z"/><path d="M-30 62 L-92 262 L-32 262 Z"/>
-    <path d="M34 60 L2 262 L58 262 Z"/>
-  </g>
-</g>
-
-<!-- colline de ferraille -->
-<path d="M-20 1120 L-20 900 Q90 800 190 856 Q262 760 340 826 Q400 736 470 810
-         Q548 748 616 838 Q680 880 740 880 L740 1120 Z" fill="url(#tas)"/>
-
-<!-- objets du tas -->
-<g fill="#2c3757" stroke="#1b2340" stroke-width="3">
-  <rect x="70" y="928" width="104" height="96" rx="8"/>
-  <circle cx="122" cy="976" r="30" fill="#3b476e"/>
-  <circle cx="122" cy="976" r="17" fill="#222b47"/>
-  <rect x="196" y="962" width="128" height="72" rx="6"/>
-  <rect x="212" y="978" width="92" height="42" rx="4" fill="#3f4c78"/>
-  <rect x="348" y="946" width="118" height="86" rx="7"/>
-  <rect x="366" y="964" width="82" height="50" rx="4" fill="#39456d"/>
-  <rect x="486" y="958" width="132" height="74" rx="7"/>
-  <rect x="502" y="972" width="46" height="46" rx="4" fill="#3f4c78"/>
-  <rect x="600" y="906" width="112" height="70" rx="6"/>
-  <rect x="26" y="1006" width="120" height="60" rx="8"/>
-</g>
-<g fill="#232c49">
-  <ellipse cx="250" cy="912" rx="46" ry="26"/><ellipse cx="250" cy="912" rx="20" ry="11" fill="#3b476e"/>
-  <ellipse cx="560" cy="900" rx="40" ry="22"/><ellipse cx="560" cy="900" rx="17" ry="9" fill="#3b476e"/>
-  <path d="M392 902 q40-32 96-14 l10 30 q-56-18-96 6z"/>
-</g>
-<!-- carcasse de voiture -->
-<g transform="translate(300 1024)" fill="#38446b" stroke="#1b2340" stroke-width="3">
-  <path d="M-140 40 L-118 -6 Q-58 -46 40 -44 Q118 -42 152 -2 L172 40 Z"/>
-  <path d="M-92 -6 Q-46 -34 26 -33 L34 -6 Z" fill="#4b598a"/>
-  <circle cx="-84" cy="44" r="26" fill="#1f2740"/><circle cx="106" cy="44" r="26" fill="#1f2740"/>
-</g>
-<!-- câbles -->
-<g stroke="#1b2340" stroke-width="8" fill="none" stroke-linecap="round">
-  <path d="M60 900 q120 96 250 22 t300 44"/>
-  <path d="M140 986 q140 60 250 4"/>
-</g>
-
-<!-- enceintes -->
-<g stroke="#151c33" stroke-width="4">
-  <g transform="translate(196 700)">
-    <rect x="0" y="0" width="118" height="196" rx="8" fill="#333e64"/>
-    <rect x="10" y="10" width="98" height="176" rx="6" fill="#28324f"/>
-    <circle cx="59" cy="66" r="30" fill="#1e2740"/><circle cx="59" cy="66" r="12" fill="#3f4c78"/>
-    <rect x="30" y="112" width="58" height="58" rx="5" fill="#1e2740"/>
-    <path d="M40 120 l38 42 M78 120 l-38 42" stroke="#3f4c78" stroke-width="6"/>
-  </g>
-  <g transform="translate(408 716)">
-    <rect x="0" y="0" width="118" height="184" rx="8" fill="#333e64"/>
-    <rect x="10" y="10" width="98" height="164" rx="6" fill="#28324f"/>
-    <circle cx="59" cy="62" r="28" fill="#1e2740"/><circle cx="59" cy="62" r="11" fill="#3f4c78"/>
-    <rect x="30" y="104" width="58" height="56" rx="5" fill="#1e2740"/>
-    <path d="M40 112 l38 40 M78 112 l-38 40" stroke="#3f4c78" stroke-width="6"/>
-  </g>
-</g>
-
-<!-- le docker -->
-<g transform="translate(360 700)">
-  <!-- manteau -->
-  <path d="M-46 -6 L-34 -108 Q-30 -132 -8 -138 L10 -138 Q32 -132 36 -108 L48 -6
-           L22 4 L18 -60 L-16 -60 L-20 4 Z" fill="#232c49"/>
-  <path d="M-34 -108 Q0 -96 34 -108 L38 -70 Q0 -58 -38 -70 Z" fill="#1a2340"/>
-  <!-- jambes -->
-  <rect x="-30" y="-8" width="26" height="72" rx="6" fill="#232c49"/>
-  <rect x="6" y="-8" width="26" height="72" rx="6" fill="#232c49"/>
-  <rect x="-36" y="56" width="36" height="18" rx="5" fill="#1a2340"/>
-  <rect x="4" y="56" width="36" height="18" rx="5" fill="#1a2340"/>
-  <!-- capuche et masque -->
-  <path d="M-26 -170 Q0 -190 26 -170 Q32 -146 24 -132 Q0 -122 -24 -132 Q-32 -146 -26 -170Z" fill="#232c49"/>
-  <path d="M-18 -156 Q0 -164 18 -156 L18 -140 Q0 -132 -18 -140 Z" fill="#38446b"/>
-  <rect x="-16" y="-152" width="12" height="7" rx="3" fill="#0f1730"/>
-  <rect x="4" y="-152" width="12" height="7" rx="3" fill="#0f1730"/>
-  <!-- bras + hampe -->
-  <path d="M30 -118 L64 -70 L52 -60 L20 -104 Z" fill="#232c49"/>
-  <path d="M-36 -116 L-58 -60 L-44 -52 L-22 -104 Z" fill="#232c49"/>
-  <rect x="-6" y="-360" width="11" height="300" rx="5" fill="#232c49" transform="rotate(14 0 -210)"/>
-</g>
-
-<!-- drapeau -->
-<g transform="translate(300 372) rotate(-4)">
-  <path d="M0 0 L236 34 L214 92 L236 150 L0 118 Z" fill="#232c49"/>
-  <path d="M8 12 L226 44 L220 62 L8 32 Z" fill="#38446b" opacity=".55"/>
-  <g transform="translate(96 56)" fill="#f4ecdc">
-    <circle cx="0" cy="0" r="26"/>
-    <rect x="-18" y="18" width="36" height="12" rx="5"/>
-    <circle cx="-9" cy="-4" r="7" fill="#232c49"/><circle cx="9" cy="-4" r="7" fill="#232c49"/>
-    <rect x="-4" y="6" width="8" height="9" rx="3" fill="#232c49"/>
-    <g transform="rotate(28)"><rect x="-44" y="34" width="88" height="10" rx="5"/></g>
-    <g transform="rotate(-28)"><rect x="-44" y="34" width="88" height="10" rx="5"/></g>
-  </g>
-</g>
-
-<!-- premier plan -->
-<g fill="#161d34">
-  <path d="M-20 1120 L-20 1044 q60-34 122-6 q40 18 44 82 z"/>
-  <path d="M740 1120 L740 1030 q-70-30-128 6 q-38 24-40 84 z"/>
-  <circle cx="58" cy="1058" r="7" fill="#9ee35c"/><circle cx="92" cy="1050" r="7" fill="#9ee35c"/>
-  <circle cx="662" cy="1046" r="7" fill="#9ee35c"/><circle cx="628" cy="1054" r="7" fill="#9ee35c"/>
-</g>
-
-<rect width="720" height="1120" filter="url(#grain)" opacity=".5" style="mix-blend-mode:multiply"/>
-<rect width="720" height="1120" fill="none"/>
-</svg>
-
-  <div class="calque titre">
-    <div class="t">BATTLE<br>DOCK</div>
-    <div class="s">LE PORT NE DORT JAMAIS</div>
-  </div>
-  <div class="calque badges">
-    <div class="d">SAISON 1 · 2026</div><br>
-    <div class="v">MARSEILLE</div>
-  </div>
-</div>
-
-<div class="bande"><span>Quatre quais à bâtir · Une équipe à nourrir · Des contrats à tenir · La marée n'attend pas · Quatre quais à bâtir · Une équipe à nourrir · Des contrats à tenir · La marée n'attend pas · </span></div>
-
-<div class="sections" id="le-jeu">
-  <h2>Un port à faire tourner</h2>
-  <p>Tu commences avec un portique et six dockers. Tu construis, tu embauches, tu prends des contrats. Le quai produit même quand tu n'es pas là.</p>
-  <div class="grille">
-    <div class="bloc"><div class="n">4</div><div class="l">quais</div></div>
-    <div class="bloc"><div class="n">∞</div><div class="l">niveaux</div></div>
-    <div class="bloc"><div class="n">3</div><div class="l">contrats</div></div>
-    <div class="bloc"><div class="n">0 €</div><div class="l">gratuit</div></div>
-  </div>
-  <a class="cta" href="jeu.html">Entrer sur le quai</a>
-</div>
-
-<div class="pied">battledock.fr · fait à Marseille</div>
+$('valider').onclick=async()=>{
+  const email=$('email').value.trim(), mdp=$('mdp').value, pseudo=$('pseudo').value.trim();
+  if(!email||!mdp){afficher('Il manque l’e-mail ou le mot de passe.','err');return;}
+  if(mode==='in'&&pseudo.length<3){afficher('Choisis un pseudo d’au moins 3 caractères.','err');return;}
+  if(mode==='in'&&mdp.length<8){afficher('Le mot de passe doit faire au moins 8 caractères.','err');return;}
+  const b=$('valider');b.disabled=true;b.textContent='Un instant…';cacher();
+  try{
+    if(mode==='co'){
+      const {error}=await sb.auth.signInWithPassword({email,password:mdp});
+      if(error)throw error;
+      location.href='jeu.html';
+    }else{
+      const {error}=await sb.auth.signUp({email,password:mdp,options:{data:{pseudo}}});
+      if(error)throw error;
+      afficher('Compte créé. Vérifie ta boîte mail pour confirmer, puis connecte-toi.','ok');
+      basculer('co');
+    }
+  }catch(e){
+    const t=(e&&e.message)||'';
+    afficher(/Invalid login/i.test(t)?'E-mail ou mot de passe incorrect.':
+      /already registered/i.test(t)?'Cette adresse a déjà un compte.':
+      'Ça n’a pas marché : '+t,'err');
+  }finally{b.disabled=false;b.textContent=mode==='co'?'Jouer':'Créer mon compte';}
+};
+$('invite').onclick=()=>{try{localStorage.setItem('bdl.invite','1');}catch(x){}location.href='jeu.html';};
+document.addEventListener('keydown',e=>{if(e.key==='Enter')$('valider').click();});
+sb.auth.getSession().then(({data})=>{if(data.session)location.href='jeu.html';});
+</script>
 </body>
 </html>
