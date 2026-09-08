@@ -1,684 +1,472 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#17131f">
-<title>Battledock</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f2ece0">
+<title>Battle Dock Fight</title>
 <style>
-/* ============================================================
-   VAL — l'accueil
-
-   Le décor est peint en pixels, en cinq plans qui ne bougent
-   pas à la même vitesse. Tout est calculé à partir de la
-   largeur réelle de l'écran : rien n'est figé à 390 px.
-   ============================================================ */
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none}
-html,body{height:100%;overflow:hidden;background:#17131f;
-  font-family:'Outfit',system-ui,sans-serif;color:#f6efe2}
-canvas{image-rendering:pixelated;image-rendering:-moz-crisp-edges}
-
-#decor{position:fixed;inset:0;overflow:hidden}
-#decor canvas{position:absolute;left:0;top:0;display:block}
-/* le fondu qui pose le texte : nul en haut, total en bas */
-#voile{position:fixed;inset:0;pointer-events:none;
-  background:
-    radial-gradient(120% 62% at 50% 8%,rgba(255,214,150,.16),transparent 62%),
-    linear-gradient(180deg,rgba(23,19,31,.42) 0%,rgba(23,19,31,0) 22%,
-      rgba(23,19,31,.05) 44%,rgba(23,19,31,.68) 70%,#17131f 92%)}
-
-/* ---------------- LA MARQUE ---------------- */
-.marque{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top) + 40px);
-  text-align:center;z-index:3;padding:0 26px}
-.filet{display:flex;align-items:center;justify-content:center;gap:11px;
-  color:rgba(246,239,226,.5)}
-.filet i{display:block;width:26px;height:1px;background:currentColor;opacity:.6}
-.filet span{font-size:9.5px;font-weight:700;letter-spacing:.38em;
-  text-transform:uppercase}
-.marque h1{margin-top:12px;font-family:'Fraunces',Georgia,serif;font-weight:700;
-  /* un mot long : on le laisse respirer sans jamais toucher les bords */
-  font-size:clamp(34px,10.4vw,58px);line-height:.96;letter-spacing:-.028em;
-  color:#fdf7ea;text-shadow:0 2px 0 rgba(58,32,18,.28),0 14px 40px rgba(12,8,20,.55)}
-.marque .ss{margin-top:12px;font-size:14.5px;font-weight:500;line-height:1.5;
-  color:rgba(246,239,226,.82);text-shadow:0 2px 14px rgba(12,8,20,.7)}
-
-/* ---------------- LA CARTE ---------------- */
-.carte{position:fixed;left:0;right:0;bottom:0;z-index:4;
-  padding:0 16px calc(env(safe-area-inset-bottom) + 16px)}
-.dedans{background:rgba(28,23,38,.72);backdrop-filter:blur(22px) saturate(140%);
-  -webkit-backdrop-filter:blur(22px) saturate(140%);
-  border:1px solid rgba(255,255,255,.11);border-radius:26px;
-  padding:15px 17px 17px;
-  box-shadow:0 -1px 0 rgba(255,255,255,.06) inset,0 24px 60px rgba(8,5,14,.6)}
-
-/* les trois chiffres, en frise */
-.frise{display:flex;align-items:center;justify-content:center;gap:0;
-  margin-bottom:14px}
-.frise div{flex:1;text-align:center}
-.frise b{display:block;font-family:'Fraunces',Georgia,serif;font-size:19px;
-  font-weight:700;color:#f5c96a}
-.frise span{display:block;margin-top:1px;font-size:9.5px;font-weight:700;
-  letter-spacing:.14em;text-transform:uppercase;color:rgba(246,239,226,.46)}
-.frise i{width:1px;height:26px;background:rgba(255,255,255,.1)}
-
-.onglets{display:flex;gap:3px;padding:3px;border-radius:13px;
-  background:rgba(0,0,0,.28)}
-.onglets button{flex:1;padding:11px;border:0;border-radius:10px;background:none;
-  color:rgba(246,239,226,.5);font-family:inherit;font-size:13px;font-weight:700;
-  cursor:pointer;transition:.2s}
-.onglets button[aria-selected="true"]{background:rgba(246,239,226,.11);
-  color:#f6efe2;box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
-
-.champ{margin-top:11px}
-.champ label{display:block;font-size:10px;font-weight:700;letter-spacing:.15em;
-  text-transform:uppercase;color:rgba(246,239,226,.44);margin-bottom:6px}
-.boite{display:flex;align-items:center;gap:10px;padding:14px 15px;
-  border-radius:14px;background:rgba(0,0,0,.26);
-  border:1px solid rgba(255,255,255,.09);transition:.2s}
-.boite:focus-within{border-color:rgba(245,201,106,.55);
-  box-shadow:0 0 0 3px rgba(245,201,106,.13)}
-.boite canvas{width:16px;height:16px;flex:0 0 16px;opacity:.75}
-.boite input{flex:1;min-width:0;border:0;background:none;color:#f6efe2;
-  font-family:inherit;font-size:15px;font-weight:500;
-  -webkit-user-select:text;user-select:text}
-.boite input:focus{outline:none}
-.boite input::placeholder{color:rgba(246,239,226,.28)}
-.boite .voir{font-size:10.5px;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:rgba(246,239,226,.42);cursor:pointer}
-
-.principal{position:relative;width:100%;margin-top:15px;padding:16px;border:0;
-  border-radius:15px;cursor:pointer;overflow:hidden;
-  background:linear-gradient(180deg,#f7cf76,#eab13f);
-  color:#3a2405;font-family:inherit;font-size:15.5px;font-weight:800;
-  box-shadow:0 8px 24px rgba(234,177,63,.26),
-    0 1px 0 rgba(255,255,255,.5) inset;transition:transform .1s}
-.principal:active{transform:translateY(2px)}
-/* un reflet qui passe lentement : ça suffit à donner de la matière */
-.principal::after{content:'';position:absolute;top:0;bottom:0;width:34%;
-  left:-40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),
-  transparent);animation:lueur 5.5s ease-in-out infinite}
-@keyframes lueur{0%,62%{left:-40%}88%,100%{left:120%}}
-
-.pied{margin-top:13px;text-align:center;font-size:12.5px;font-weight:500;
-  color:rgba(246,239,226,.42)}
-.pied b{color:#f5c96a;font-weight:700}
-.note{margin-top:9px;text-align:center;font-size:11px;
-  color:rgba(246,239,226,.28)}
-
-@media (prefers-reduced-motion:reduce){ *{animation:none !important} }
-</style>
-<style>
-/* ---- ce que la logique existante attend en plus ---- */
-.masque{display:none}
-.message{max-height:0;overflow:hidden;opacity:0;transition:.25s;
-  margin-top:0;text-align:center;font-size:13px;font-weight:600;
-  border-radius:12px;padding:0 13px}
-.message.visible{max-height:120px;opacity:1;margin-top:12px;padding:11px 13px}
-.message.erreur{background:rgba(201,82,74,.18);color:#f0a49c;
-  border:1px solid rgba(201,82,74,.4)}
-.message.ok{background:rgba(110,168,85,.18);color:#a8d98c;
-  border:1px solid rgba(110,168,85,.4)}
-.principal:disabled{opacity:.6;cursor:default}
-.principal:disabled::after{display:none}
-input:disabled{opacity:.5}
+:root{--encre:#141414;--papier:#f2ece0;--blanc:#fff;--rouge:#e8452c;--jaune:#ffd029;
+  --cyan:#2ec4c9;--rose:#f26fa8;--gris:#6d6a63}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--papier);color:var(--encre);
+  font-family:"Arial Black","Arial Narrow",Helvetica,sans-serif;
+  -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+body{overflow:hidden}
+button{font-family:inherit;cursor:pointer;color:inherit}
+#formes{position:fixed;inset:0;z-index:0;pointer-events:none}
+#formes i{position:absolute;display:block}
+.ecran{position:fixed;inset:0;z-index:1;display:none;flex-direction:column;
+  padding:calc(14px + env(safe-area-inset-top)) 18px calc(18px + env(safe-area-inset-bottom));
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ecran.on{display:flex}
+.bandeau{display:flex;gap:5px;flex:0 0 auto}
+.bandeau i{height:9px;flex:1}
+.bandeau i:nth-child(1){background:var(--rouge)}.bandeau i:nth-child(2){background:var(--jaune)}
+.bandeau i:nth-child(3){background:var(--cyan)}.bandeau i:nth-child(4){background:var(--rose)}
+.bandeau i:nth-child(5){background:var(--encre)}
+.logo{margin-top:22px}
+.logo span{display:block;text-transform:uppercase;line-height:.8;font-style:italic;
+  letter-spacing:-.035em;font-size:clamp(42px,14.5vw,100px)}
+.logo .m1{text-shadow:5px 5px 0 var(--jaune)}
+.logo .m2{color:var(--rouge);margin-left:.14em;text-shadow:5px 5px 0 var(--encre)}
+.logo .m3{margin-top:.08em;display:inline-block;background:var(--encre);color:var(--papier);
+  padding:.04em .22em .09em;transform:rotate(-2.5deg);letter-spacing:.16em;
+  font-size:clamp(26px,8.4vw,58px);box-shadow:6px 6px 0 var(--cyan)}
+.accroche{font-family:Georgia,serif;font-size:14px;line-height:1.7;max-width:33ch;margin-top:16px;color:#2b2a27}
+.menu{margin-top:auto;display:grid;gap:10px;padding-top:20px}
+.bt{border:3px solid var(--encre);background:var(--blanc);padding:15px;
+  font:900 15px/1 "Arial Black",sans-serif;letter-spacing:.04em;text-transform:uppercase;
+  text-align:left;box-shadow:6px 6px 0 var(--encre);display:flex;justify-content:space-between;
+  align-items:center;gap:10px}
+.bt em{font-style:normal;font-size:19px}
+.bt:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--encre)}
+.bt.jaune{background:var(--jaune)}.bt.cyan{background:var(--cyan)}
+.bt.rose{background:var(--rose)}.bt.petit{padding:10px 12px;font-size:12px;box-shadow:4px 4px 0 var(--encre)}
+.bt[disabled]{opacity:.4;box-shadow:3px 3px 0 var(--gris);border-color:var(--gris)}
+.tete{display:flex;align-items:center;gap:10px;margin-top:12px}
+.tete h2{font-size:clamp(22px,7.4vw,38px);text-transform:uppercase;font-style:italic;
+  letter-spacing:-.03em;line-height:.9;flex:1}
+.tete h2 b{color:var(--rouge);font-weight:inherit}
+.retour{flex:0 0 auto;width:42px;height:42px;border:3px solid var(--encre);background:var(--blanc);
+  font-size:18px;box-shadow:4px 4px 0 var(--encre)}
+.bourse{flex:0 0 auto;border:3px solid var(--encre);background:var(--jaune);padding:8px 10px;
+  font:900 13px/1 "Arial Black",sans-serif;box-shadow:4px 4px 0 var(--encre);white-space:nowrap}
+.collant{position:sticky;top:-2px;z-index:5;margin:10px -18px 0;padding:10px 18px 10px;
+  background:var(--papier);border-bottom:3px solid var(--encre);display:flex;gap:13px}
+.collant canvas{width:118px;height:152px;image-rendering:pixelated;flex:0 0 auto;
+  border:3px solid var(--encre);box-shadow:5px 5px 0 var(--rouge);
+  background:repeating-linear-gradient(45deg,#fff 0 10px,#eee6d6 10px 20px)}
+.resume{flex:1;min-width:0;display:flex;flex-direction:column}
+.resume .n{font:900 15px/1.15 "Arial Black",sans-serif;text-transform:uppercase;word-break:break-word}
+.resume .a{font:400 12px/1.45 Georgia,serif;color:#4a4842;margin-top:4px}
+.jauges{margin-top:7px;display:grid;gap:4px}
+.jauges .j{display:flex;align-items:center;gap:6px;font:900 9px/1 "Arial Black",sans-serif;
+  letter-spacing:.06em;text-transform:uppercase}
+.jauges .j span{width:50px}
+.jauges .j b{flex:1;height:9px;background:var(--blanc);border:2px solid var(--encre);display:flex}
+.jauges .j b i{width:16.6%;border-right:2px solid var(--encre)}
+.jauges .j b i.p{background:var(--rouge)}.jauges .j b i:last-child{border-right:0}
+.poses{display:flex;gap:5px;margin-top:auto;padding-top:8px}
+.poses button{flex:1;border:3px solid var(--encre);background:var(--blanc);padding:6px 2px;
+  font:900 9px/1 "Arial Black",sans-serif;text-transform:uppercase;box-shadow:2px 2px 0 var(--encre)}
+.poses button.on{background:var(--encre);color:var(--papier)}
+.onglets{display:flex;gap:6px;overflow-x:auto;margin:0 -18px;padding:12px 18px 4px;scrollbar-width:none}
+.onglets::-webkit-scrollbar{display:none}
+.onglets button{flex:0 0 auto;border:3px solid var(--encre);background:var(--blanc);padding:9px 12px;
+  font:900 11px/1 "Arial Black",sans-serif;text-transform:uppercase;box-shadow:3px 3px 0 var(--encre)}
+.onglets button.on{background:var(--encre);color:var(--papier);box-shadow:3px 3px 0 var(--cyan)}
+.rub{margin-top:15px;font:900 11px/1 "Arial Black",sans-serif;letter-spacing:.14em;
+  text-transform:uppercase;display:flex;align-items:center;gap:9px;color:#2b2a27}
+.rub::after{content:"";flex:1;height:3px;background:var(--encre)}
+.rangee{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.opt{border:3px solid var(--encre);background:var(--blanc);padding:9px 11px;
+  font:900 11.5px/1 "Arial Black",sans-serif;text-transform:uppercase;
+  box-shadow:3px 3px 0 var(--encre);position:relative}
+.opt.actif{background:var(--encre);color:var(--papier);box-shadow:3px 3px 0 var(--rouge)}
+.opt.bloque{opacity:.4}
+.opt .r{position:absolute;top:-6px;right:-6px;width:12px;height:12px;border:2px solid var(--encre);border-radius:50%}
+.pastel{width:38px;height:38px;padding:0;border:3px solid var(--encre);box-shadow:3px 3px 0 var(--encre)}
+.pastel.actif{box-shadow:3px 3px 0 var(--rouge);outline:3px solid var(--encre);outline-offset:3px}
+.liste{margin-top:14px;border:3px solid var(--encre);background:var(--blanc);box-shadow:6px 6px 0 var(--encre)}
+.liste .r{display:flex;justify-content:space-between;gap:10px;padding:12px;
+  border-bottom:3px solid var(--encre);font:900 12.5px/1.3 "Arial Black",sans-serif;text-transform:uppercase}
+.liste .r:last-child{border-bottom:0}
+.liste .r small{font:400 12px/1.45 Georgia,serif;text-transform:none;color:#4a4842;display:block;margin-top:4px}
+.liste .r .d{flex:0 0 auto;color:var(--rouge)}
+.note{font-family:Georgia,serif;font-size:13px;line-height:1.7;margin-top:13px;color:#4a4842}
+.billet{margin:14px auto 0;width:min(330px,96%);border:4px solid var(--encre);background:var(--blanc);
+  box-shadow:9px 9px 0 var(--encre);padding:16px;position:relative;overflow:hidden}
+.billet .haut{display:flex;justify-content:space-between;font:900 9.5px/1 "Arial Black",sans-serif;
+  letter-spacing:.14em;text-transform:uppercase;border-bottom:3px solid var(--encre);padding-bottom:9px}
+.billet .poste{font-size:clamp(24px,8vw,40px);text-transform:uppercase;font-style:italic;
+  line-height:.95;margin-top:13px;letter-spacing:-.02em}
+.billet .desc{font:400 13px/1.6 Georgia,serif;color:#3b3934;margin-top:8px}
+.billet .bonus{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.billet .bonus span{border:3px solid var(--encre);padding:6px 9px;
+  font:900 11px/1 "Arial Black",sans-serif;text-transform:uppercase;background:var(--jaune)}
+.billet .rarete{position:absolute;top:42px;right:-34px;transform:rotate(38deg);padding:5px 40px;
+  font:900 10px/1 "Arial Black",sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#fff;
+  border-top:3px solid var(--encre);border-bottom:3px solid var(--encre)}
+.pile{margin:16px auto 0;width:min(330px,96%);height:150px;border:4px dashed var(--encre);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font:900 13px/1.5 "Arial Black",sans-serif;text-transform:uppercase;padding:20px;
+  background:repeating-linear-gradient(45deg,#fff 0 12px,#efe7d8 12px 24px)}
+.tire{animation:tire .5s ease-out}
+@keyframes tire{0%{transform:translateY(30px) rotate(-6deg);opacity:0}100%{transform:none;opacity:1}}
+.coffre{border:3px solid var(--encre);background:var(--blanc);box-shadow:6px 6px 0 var(--encre);
+  padding:13px;margin-top:11px;display:flex;gap:12px;align-items:center}
+.coffre canvas{width:62px;height:62px;image-rendering:pixelated;flex:0 0 auto;
+  border:3px solid var(--encre);background:#efe7d8}
+.coffre .txt{flex:1;min-width:0}
+.coffre .txt h3{font-size:14px;text-transform:uppercase;font-style:italic}
+.coffre .txt p{font:400 12px/1.5 Georgia,serif;color:#4a4842;margin-top:3px}
+.coffre .txt .odds{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.coffre .txt .odds i{font:900 9px/1 "Arial Black",sans-serif;color:#fff;padding:4px 5px;
+  border:2px solid var(--encre);font-style:normal}
+#tirage{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;
+  justify-content:center;background:rgba(20,20,20,.93);padding:24px;text-align:center;color:var(--papier)}
+#tirage.on{display:flex}
+#tirage .carte{border:4px solid var(--papier);background:var(--papier);color:var(--encre);
+  padding:20px 18px;width:min(320px,92%);box-shadow:0 0 0 6px var(--encre);animation:tire .45s ease-out}
+#tirage .carte canvas{width:104px;height:104px;image-rendering:pixelated;margin-bottom:6px}
+#tirage .carte .rar{font:900 10px/1 "Arial Black",sans-serif;letter-spacing:.22em;
+  text-transform:uppercase;color:#fff;padding:6px;margin:-20px -18px 12px}
+#tirage .carte h3{font-size:21px;text-transform:uppercase;font-style:italic;line-height:1}
+#tirage .carte p{font:400 13px/1.6 Georgia,serif;color:#3b3934;margin-top:7px}
+#tirage .apres{margin-top:18px;display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
 </style>
 </head>
 <body>
+<div id="formes"></div>
 
-<div id="decor"><canvas id="scene"></canvas></div>
-<div id="voile"></div>
+<main class="ecran on" id="e-accueil">
+  <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="logo"><span class="m1">Battle</span><span class="m2">Dock</span><span class="m3">Fight</span></div>
+  <p class="accroche" id="accroche">Six adversaires sur le port. Deux manches gagnantes. Un docker qui monte, nuit après nuit.</p>
+  <div class="menu">
+    <button class="bt jaune" data-va="billet">Commencer <em>▸</em></button>
+    <button class="bt cyan" data-va="vestiaire">Vestiaire <em>▸</em></button>
+    <button class="bt rose" data-va="boutique">Caisses <em>▸</em></button>
+    <button class="bt" onclick="location.href='fight.html#enligne'">Jouer en ligne <em>▸</em></button>
+    <button class="bt" data-va="palmares">Palmarès <em>▸</em></button>
+  </div>
+</main>
 
-<div class="marque">
-  <p class="filet"><i></i><span>Un vallon à bâtir</span><i></i></p>
-  <h1>Battledock</h1>
-  <p class="ss">Pose tes bâtiments, place tes villageois,<br>
-    et laisse le vallon travailler sans toi.</p>
-</div>
-
-<div class="carte">
-  <div class="dedans">
-
-    <div class="frise">
-      <div><b>5</b><span>bâtiments</span></div><i></i>
-      <div><b>12</b><span>villageois</span></div><i></i>
-      <div><b>8 h</b><span>hors ligne</span></div>
-    </div>
-
-    <div class="onglets" role="tablist">
-      <button role="tab" id="ong-inscription" aria-selected="true"
-              aria-controls="form-inscription">Créer un vallon</button>
-      <button role="tab" id="ong-connexion" aria-selected="false"
-              aria-controls="form-connexion">Reprendre</button>
-    </div>
-
-    <div id="form-inscription" role="tabpanel" aria-labelledby="ong-inscription">
-      <div class="champ">
-        <label for="i-email">Adresse e-mail</label>
-        <div class="boite"><canvas class="i-mail"></canvas>
-          <input type="email" id="i-email" autocomplete="email"
-                 placeholder="ton adresse"></div>
+<main class="ecran" id="e-vestiaire">
+  <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="tete"><button class="retour" data-va="accueil">◀</button>
+    <h2>Ton <b>docker</b></h2><div class="bourse" id="b-v">0 €</div></div>
+  <div class="collant">
+    <canvas id="apercu" width="96" height="124"></canvas>
+    <div class="resume">
+      <div class="n" id="r-nom">Sans nom</div>
+      <div class="a" id="r-arme"></div>
+      <div class="jauges" id="r-jauges"></div>
+      <div class="poses" id="poses">
+        <button data-p="debout" class="on">Repos</button>
+        <button data-p="marche">Marche</button>
+        <button data-p="garde">Garde</button>
+        <button data-p="coup">Coup</button>
       </div>
-      <div class="champ">
-        <label for="i-mdp">Mot de passe</label>
-        <div class="boite"><canvas class="i-cle"></canvas>
-          <input type="password" id="i-mdp" autocomplete="new-password"
-                 placeholder="8 caractères minimum">
-          <span class="voir oeil" data-cible="i-mdp">Voir</span></div>
-      </div>
-      <button class="principal" id="btn-inscription">Commencer</button>
-      <p class="pied">Tu as déjà un vallon ?
-        <b data-aller="connexion">Le reprendre</b></p>
     </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:11px">
+    <input id="nom" maxlength="16" placeholder="TON NOM" autocomplete="off" spellcheck="false"
+      style="flex:1;min-width:0;border:3px solid #141414;background:#fff;padding:11px;
+      font:900 14px/1 'Arial Black',sans-serif;text-transform:uppercase">
+    <button class="bt petit" id="hasard">Au sort</button>
+  </div>
+  <div class="onglets" id="onglets"></div>
+  <div id="options"></div>
+  <div class="menu"><button class="bt jaune" data-va="accueil">Enregistrer <em>▸</em></button></div>
+</main>
 
-    <div id="form-connexion" role="tabpanel" aria-labelledby="ong-connexion"
-         class="masque">
-      <div class="champ">
-        <label for="c-email">Adresse e-mail</label>
-        <div class="boite"><canvas class="i-mail"></canvas>
-          <input type="email" id="c-email" autocomplete="email"
-                 placeholder="ton adresse"></div>
-      </div>
-      <div class="champ">
-        <label for="c-mdp">Mot de passe</label>
-        <div class="boite"><canvas class="i-cle"></canvas>
-          <input type="password" id="c-mdp" autocomplete="current-password"
-                 placeholder="ton mot de passe">
-          <span class="voir oeil" data-cible="c-mdp">Voir</span></div>
-      </div>
-      <button class="principal" id="btn-connexion">Entrer</button>
-      <p class="pied">Pas encore de vallon ?
-        <b data-aller="inscription">En créer un</b></p>
-    </div>
+<main class="ecran" id="e-billet">
+  <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="tete"><button class="retour" data-va="accueil">◀</button>
+    <h2>Le <b>billet</b></h2><div class="bourse" id="b-b">0 €</div></div>
+  <p class="note">Le bureau d'embauche distribue les postes. Ton billet décide de ce que tu vaux sur le quai jusqu'au prochain combat, et de ce qu'on te paie.</p>
+  <div id="zone-billet"><div class="pile">Pile de billets<br>du bureau d'embauche</div></div>
+  <div class="menu">
+    <button class="bt jaune" id="tirer">Tirer un billet <em>▸</em></button>
+    <button class="bt" id="quai" disabled>Descendre sur le quai <em>▸</em></button>
+  </div>
+</main>
 
-    <div class="message" id="message" role="status" aria-live="polite"></div>
-    <p class="note">Gratuit · rien à installer</p>
+<main class="ecran" id="e-boutique">
+  <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="tete"><button class="retour" data-va="accueil">◀</button>
+    <h2>Les <b>caisses</b></h2><div class="bourse" id="b-c">0 €</div></div>
+  <p class="note">Ce qui traîne dans les conteneurs mal fermés. Contenu tiré au sort ; un doublon te rend des euros.</p>
+  <div id="coffres"></div>
+  <div class="rub">Butin</div>
+  <p class="note" id="stat-butin"></p>
+  <div class="menu"><button class="bt cyan" data-va="vestiaire">Équiper au vestiaire <em>▸</em></button></div>
+</main>
 
+<main class="ecran" id="e-palmares">
+  <div class="bandeau"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="tete"><button class="retour" data-va="accueil">◀</button><h2>Le <b>palmarès</b></h2></div>
+  <div class="liste" id="liste-adv"></div>
+  <p class="note" id="note-palmares"></p>
+  <div class="menu"><button class="bt jaune" onclick="location.href='fight.html'">Au combat <em>▸</em></button></div>
+</main>
+
+<div id="tirage">
+  <div class="carte" id="carte"></div>
+  <div class="apres">
+    <button class="bt petit jaune" id="encore">Rouvrir</button>
+    <button class="bt petit" id="fermer" style="background:#f2ece0">Fermer</button>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="bd.js?v=6"></script>
-<script src="son.js?v=2"></script>
-
+<script src="bdf.js"></script>
 <script>
-/* ============================================================
-   LE DÉCOR
-   Cinq plans, dessinés à partir de la largeur réelle : collines
-   lointaines, lac, île, village, herbes du premier plan. Chaque
-   plan a sa propre vitesse — c'est ce qui creuse l'image.
-   ============================================================ */
-const cv = document.getElementById('scene'), cx = cv.getContext('2d');
-let F = 0, W = 0, H = 0, Z = 2;
+'use strict';
+const $=id=>document.getElementById(id);
+const hasardDe=a=>a[Math.random()*a.length|0];
+const {RARETES,CAT,RUBRIQUES,ONGLETS,POSTES,ADVERSAIRES,item,lookDefaut,statsDe,
+  dessinerDocker,dessinerArme,px}=BDF;
 
-const C = {
-  /* le ciel d'une fin d'après-midi, en cinq paliers */
-  c1:'#3f2a52', c2:'#6b3f63', c3:'#b25f5c', c4:'#e08a53', c5:'#f5b96a',
-  soleil:'#fff0c4', halo:'#ffd98f',
-  loin:'#4a3a63', loin2:'#5c4a75',        /* les collines du fond */
-  moyen:'#3d5a52', moyen2:'#4a6b5e',      /* la crête intermédiaire */
-  eau:'#2a4a6b', eau2:'#3a6488', eau3:'#5a8cae', ecume:'#c4e2ee',
-  herbe:'#4a7a3a', herbeC:'#5c9147', herbeS:'#3a6230', herbeN:'#2c4d26',
-  terre:'#8a6a45', terreS:'#6b5136',
-  bois:'#a87448', boisC:'#c08f5e', boisS:'#7a5230', boisN:'#4e3320',
-  toit:'#c9524a', toitC:'#e0685c', toitS:'#9c3a34',
-  pierre:'#8b919c', pierreC:'#a8aeb8', pierreS:'#6e7480',
-  creme:'#f6efe2', or:'#f5c96a', encre:'#1c1626'
-};
-function p(x, y, l, h, c){ cx.fillStyle = c; cx.fillRect(x, y, l, h); }
-/* le tramage : la seule façon honnête de fondre deux aplats */
-function trame(x, y, l, h, c){
-  for (let j = 0; j < h; j++)
-    for (let i = 0; i < l; i++)
-      if ((i + j) % 2 === 0) p(x + i, y + j, 1, 1, c);
-}
-function bruit(x, n){
-  const v = Math.sin(x * 127.1) * 43758.5453;
-  return Math.floor((v - Math.floor(v)) * n);
-}
+const PRENOMS=['Nino','Saïd','Marlène','Gino','Yassine','Bruno','Kader','Lucie','Ange','Fatou','Milo','Zora','Rachid','Perle'];
+const SURNOMS=['le Crochet','Deux-Sacs','la Grue','Poings Sales','le Môle','Sans Gants','la Corde','Quart de Nuit','Tête de Fer'];
 
-function cadrer(){
-  Z = window.innerWidth > 620 ? 3 : 2;
-  W = Math.ceil(window.innerWidth / Z);
-  H = Math.ceil(window.innerHeight / Z);
-  cv.width = W; cv.height = H;
-  cv.style.width = W * Z + 'px'; cv.style.height = H * Z + 'px';
-  cx.imageSmoothingEnabled = false;
-}
+const defaut=()=>Object.assign(lookDefaut(),{nom:'',euros:220,debloque:[],niveau:0,victoires:0,coffres:0});
+let d=defaut();
+const CLE='bdf.v3';
+try{
+  const b=localStorage.getItem(CLE)||localStorage.getItem('bdf.v2');
+  if(b){const o=JSON.parse(b);if(o.pieces!==undefined&&o.euros===undefined)o.euros=o.pieces;d=Object.assign(defaut(),o);}
+}catch(e){}
+function sauver(){try{localStorage.setItem(CLE,JSON.stringify(d));}catch(e){}}
 
-/* ---- une crête de collines, tracée en dents douces ---- */
-function crete(base, ampl, periode, phase, couleur, ombre){
-  const haut = [];
-  for (let x = 0; x < W; x++){
-    const y = Math.round(base
-      + Math.sin((x + phase) / periode) * ampl
-      + Math.sin((x + phase) / (periode * .37)) * (ampl * .34));
-    haut.push(y);
-    p(x, y, 1, H - y, couleur);
-  }
-  /* la lumière sur la ligne de crête, l'ombre juste dessous */
-  for (let x = 0; x < W; x++){
-    p(x, haut[x], 1, 2, ombre);
-    if (x > 0 && haut[x] < haut[x - 1]) p(x, haut[x], 1, 3, ombre);
-  }
-  return haut;
-}
+const debloque=(cat,it)=>!it.r||d.debloque.includes(cat+':'+it.id);
 
-function peindre(){
-  const HOR = Math.round(H * .34);            /* l'horizon */
-  const RIVE = Math.round(H * .40);           /* le bord de la rive */
+/* ---------------- aperçu ---------------- */
+let poseCourante='debout',faux={look:d,etat:'debout',coup:null,sol:1,sens:1};
+const apercu=$('apercu'),actx=apercu.getContext('2d');actx.imageSmoothingEnabled=false;
+$('poses').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  poseCourante=b.dataset.p;
+  document.querySelectorAll('#poses button').forEach(x=>x.classList.toggle('on',x===b));
+});
+(function boucle(t){
+  requestAnimationFrame(boucle);
+  if(!$('e-vestiaire').classList.contains('on'))return;
+  actx.clearRect(0,0,apercu.width,apercu.height);
+  faux.look=d;faux.etat=poseCourante;
+  if(poseCourante==='coup'){
+    const c=Math.floor(t/22)%40;
+    faux.coup={t:c,dep:8,act:8,fin:24,por:30+statsDe(d).portee*2,haut:0};
+    faux.etat='coup';
+  }else faux.coup=null;
+  actx.save();actx.translate(apercu.width/2,apercu.height-10);
+  dessinerDocker(actx,faux,t);
+  actx.restore();
+})(0);
 
-  /* ---------- 1. le ciel ---------- */
-  p(0, 0, W, H, C.c1);
-  const bandes = [[.00, C.c1], [.09, C.c2], [.17, C.c3], [.24, C.c4], [.29, C.c5]];
-  bandes.forEach(function(b, i){
-    const y = Math.round(H * b[0]);
-    const y2 = i < bandes.length - 1 ? Math.round(H * bandes[i + 1][0]) : HOR;
-    p(0, y, W, y2 - y, b[1]);
-    /* on trame la jonction, pour éviter la barre nette */
-    if (i >= 2) trame(0, y - 3, W, 6, bandes[i - 1][1]);
+/* ---------------- vestiaire ---------------- */
+let ongletActif='corps';
+function onglets(){
+  const z=$('onglets');z.innerHTML='';
+  ONGLETS.forEach(o=>{
+    const b=document.createElement('button');
+    b.textContent=o.nom;b.className=ongletActif===o.id?'on':'';
+    b.onclick=()=>{ongletActif=o.id;onglets();options();};
+    z.appendChild(b);
   });
-
-  /* ---------- 2. le soleil et son halo ---------- */
-  const sx = Math.round(W * .66), sy = HOR - Math.round(H * .05);
-  const r = Math.round(Math.min(W, H) * .05);
-  for (let k = 4; k > 0; k--){
-    const rr = r + k * 5;
-    cx.globalAlpha = .05 * k;
-    cx.fillStyle = C.halo;
-    cx.beginPath(); cx.arc(sx, sy, rr, 0, 6.284); cx.fill();
-    cx.globalAlpha = 1;
-  }
-  cx.fillStyle = C.soleil;
-  cx.beginPath(); cx.arc(sx, sy, r, 0, 6.284); cx.fill();
-  /* des nuages plats qui dérivent devant */
-  [[.18, .08, 1], [.72, .14, .7], [.4, .05, .5]].forEach(function(n, i){
-    const x = Math.round(((F / (14 + i * 9) + n[0] * W) % (W + 80)) - 40);
-    const y = Math.round(H * n[1]), e = n[2];
-    const l = Math.round(38 * e);
-    p(x, y, l, 3, 'rgba(255,232,200,.24)');
-    p(x + 6, y - 3, Math.round(l * .6), 3, 'rgba(255,232,200,.18)');
-    p(x - 5, y + 3, Math.round(l * .8), 2, 'rgba(255,232,200,.12)');
-  });
-  /* les oiseaux */
-  [[.2, .07], [.28, .1], [.75, .06]].forEach(function(o, i){
-    const x = Math.round(((F / 6 + o[0] * W * 2) % (W + 40)) - 20);
-    const y = Math.round(H * o[1]) + Math.round(Math.sin(F / 40 + i) * 2);
-    const b = Math.floor(F / 9 + i) % 2;
-    p(x, y, 3, 1, 'rgba(28,22,38,.55)');
-    p(x + 3, y - b, 2, 1, 'rgba(28,22,38,.55)');
-    p(x + 5, y, 3, 1, 'rgba(28,22,38,.55)');
-  });
-
-  /* ---------- 3. les collines, deux plans ---------- */
-  crete(HOR - Math.round(H * .032), H * .018, W / 2.6, 0, C.loin, C.loin2);
-  crete(HOR - Math.round(H * .009), H * .013, W / 3.8, W * .4, '#43485f', '#565b74');
-
-  /* ---------- 4. le lac ---------- */
-  p(0, HOR, W, RIVE - HOR, C.eau2);
-  p(0, HOR + Math.round((RIVE - HOR) * .55), W, RIVE - HOR, C.eau);
-  trame(0, HOR + Math.round((RIVE - HOR) * .45), W, 8, C.eau2);
-  /* une brume au ras de l'eau : elle recule les collines */
-  trame(0, HOR, W, 5, '#c9a2a8');
-  /* le chemin de lumière, sous le soleil */
-  const n = Math.max(5, Math.round((RIVE - HOR) / 6));
-  for (let i = 0; i < n; i++){
-    const y = HOR + 2 + i * 5;
-    const l = 5 + i * 3;
-    const d = Math.round(Math.sin(F / 24 + i * .9) * 2);
-    /* deux traits courts plutôt qu'une barre : ça scintille au lieu de barrer */
-    p(sx - l + d, y, Math.round(l * .7), 1, 'rgba(255,226,168,.6)');
-    p(sx + Math.round(l * .2) + d, y, Math.round(l * .6), 1, 'rgba(255,226,168,.42)');
-  }
-  /* les reflets, à deux vitesses */
-  for (let i = 0; i < Math.round(W / 9); i++){
-    const x = (i * 27 + Math.floor(F / (i % 2 ? 20 : 30)) * (i % 2 ? 1 : -1))
-              % (W + 30) - 15;
-    p(x, HOR + 3 + (i % 9) * 4, 6, 1, C.eau3);
-  }
-  /* une barque, qui tangue */
-  const bx = Math.round(W * .2), by = HOR + Math.round((RIVE - HOR) * .42)
-    + Math.round(Math.sin(F / 42) * 1.4);
-  p(bx, by + 5, 20, 4, C.encre);
-  p(bx + 2, by + 4, 16, 1, C.boisC);
-  p(bx + 9, by - 10, 1, 11, C.encre);
-  p(bx + 10, by - 9, 7 + (Math.floor(F / 34) % 2), 9, C.creme);
-  p(bx + 10, by - 9, 7, 2, C.toit);
-
-  /* ---------- 5. la rive et l'île ---------- */
-  /* le trait de côte ondule légèrement, tuile par tuile */
-  const cote = [];
-  for (let x = 0; x < W; x++){
-    cote.push(RIVE + Math.round(Math.sin(x / 17) * 2 + Math.sin(x / 6.3) * 1.2));
-  }
-  for (let x = 0; x < W; x++){
-    const y = cote[x];
-    const o = 1 + Math.round((Math.sin(F / 26 + x / 9) + 1) * 1.2);
-    p(x, y - o, 1, o, C.ecume);                 /* l'écume, qui bat */
-    p(x, y, 1, 4, '#d8c496');                   /* le sable */
-    p(x, y + 4, 1, H - y, C.herbe);             /* l'herbe */
-    p(x, y + 4, 1, 2, C.herbeS);
-  }
-  /* des touffes, stables d'une image à l'autre */
-  for (let x = 0; x < W; x += 3){
-    const g = bruit(x * 3.7, 9), y = cote[x] + 8;
-    if (g < 2) p(x, y + g * 5, 2, 2, C.herbeC);
-    if (g === 5) p(x, y + 12, 3, 2, C.herbeS);
-  }
-
-  /* ---------- 6. le village ---------- */
-  const sol = Math.round(H * .465);
-  maison(Math.round(W * .12), sol, 1);
-  moulin(Math.round(W * .74), sol - 6);
-  maison(Math.round(W * .46), sol + 6, .85);
-  arbre(Math.round(W * .3), sol + 2, 1);
-  arbre(Math.round(W * .63), sol + 8, .8);
-  arbre(Math.round(W * .89), sol - 2, .9);
-  /* deux villageois sur le sentier */
-  [[0, 0], [1, 70]].forEach(function(g, i){
-    const x = Math.round(((F / 3 + g[1]) % (W + 30)) - 15);
-    const y = sol + 16 + i * 12, pas = Math.floor(F / 10) % 2;
-    p(x - 1, y + 13, 8, 2, 'rgba(28,22,38,.22)');
-    p(x, y, 6, 3, '#6b4a2e');
-    p(x, y + 3, 6, 4, '#e0ac82');
-    p(x, y + 7, 6, 5, i ? '#4a7ec0' : C.toit);
-    p(x + (pas ? 0 : 1), y + 12, 2, 2, C.encre);
-    p(x + (pas ? 4 : 3), y + 12, 2, 2, C.encre);
-  });
-
-  /* ---------- 7. le premier plan, flou par la masse ---------- */
-  const bas = Math.round(H * .50);
-  p(0, bas + 6, W, H, C.herbeN);
-  for (let x = 0; x < W; x += 2){
-    const g = bruit(x * 1.9, 5);
-    /* une base continue, puis des brins qui dépassent : la masse d'abord */
-    const h = 4 + Math.round(Math.sin(x / 9) * 2) + g
-      + Math.round(Math.sin(F / 34 + x / 13) * 1.1);
-    p(x, bas + 6 - h, 2, h, C.herbeN);
-    if (g === 4) p(x, bas + 2 - h, 1, 4, C.herbeN);
-    if (g < 2) p(x, bas + 6 - h, 1, 2, C.herbeS);
-  }
-  /* quelques lucioles, qui montent puis s'éteignent */
-  for (let i = 0; i < 7; i++){
-    const t = (F / 2 + i * 90) % 420;
-    const x = Math.round((i * 53 + Math.sin(t / 30 + i) * 12) % W);
-    const y = Math.round(bas - t / 4);
-    const a = Math.max(0, .8 - t / 520);
-    p(x, y, 1, 1, 'rgba(255,224,140,' + a.toFixed(2) + ')');
-  }
 }
-
-/* ---- les bâtiments du village ---- */
-function maison(X, Y, e){
-  const l = Math.round(26 * e), h = Math.round(15 * e);
-  p(X, Y + 2, l + 4, 2, 'rgba(28,22,38,.2)');
-  p(X, Y - h, l, h, C.encre);
-  p(X + 1, Y - h + 1, l - 2, h - 2, C.creme);
-  p(X + 1, Y - h + 1, l - 2, 2, '#fffaf0');
-  p(X + 1, Y - 4, l - 2, 3, '#cbbda6');
-  p(X + 1, Y - h + 1, 2, h - 2, C.bois);        /* les colombages */
-  p(X + l - 3, Y - h + 1, 2, h - 2, C.bois);
-  p(X - 2, Y - h - Math.round(9 * e), l + 4, Math.round(10 * e), C.encre);
-  p(X - 1, Y - h - Math.round(8 * e), l + 2, Math.round(8 * e), C.toit);
-  p(X - 1, Y - h - Math.round(8 * e), l + 2, 3, C.toitC);
-  p(X - 1, Y - h - 1, l + 2, 2, C.toitS);
-  const px = X + Math.round(l * .42);
-  p(px, Y - Math.round(10 * e), Math.round(7 * e), Math.round(10 * e), C.encre);
-  p(px + 1, Y - Math.round(9 * e), Math.round(5 * e), Math.round(9 * e), C.boisN);
-  /* la fenêtre allumée, qui vacille */
-  const lu = (F % 130) < 112 ? C.or : '#ffe6a0';
-  p(X + 3, Y - Math.round(11 * e), 5, 5, C.encre);
-  p(X + 4, Y - Math.round(10 * e), 3, 3, lu);
-  /* la cheminée et sa fumée */
-  p(X + l - 8, Y - h - Math.round(13 * e), 4, 5, C.encre);
-  p(X + l - 7, Y - h - Math.round(12 * e), 2, 4, C.pierreS);
-  for (let i = 0; i < 3; i++){
-    const m = (F / 3.2 + i * 11) % 34;
-    p(X + l - 7 + Math.round(Math.sin((F + i * 40) / 22) * 2),
-      Y - h - Math.round(13 * e) - m, 2, 2,
-      'rgba(246,239,226,' + (.3 - m / 118).toFixed(2) + ')');
-  }
-}
-
-function moulin(X, Y){
-  p(X - 2, Y + 2, 22, 2, 'rgba(28,22,38,.2)');
-  p(X, Y - 26, 18, 26, C.encre);                /* la tour */
-  p(X + 1, Y - 25, 16, 24, C.pierre);
-  p(X + 1, Y - 25, 16, 3, C.pierreC);
-  p(X + 13, Y - 22, 4, 21, C.pierreS);
-  p(X + 6, Y - 10, 6, 10, C.encre);
-  p(X + 7, Y - 9, 4, 9, C.boisN);
-  p(X - 1, Y - 32, 20, 7, C.encre);             /* le toit */
-  p(X, Y - 31, 18, 5, C.toit);
-  p(X, Y - 31, 18, 2, C.toitC);
-  /* les ailes tournent : quatre pales, une rotation lente */
-  const a = F / 55, cxx = X + 9, cyy = Y - 21;
-  for (let k = 0; k < 4; k++){
-    const t = a + k * 1.5708;
-    for (let d = 3; d < 15; d++){
-      p(Math.round(cxx + Math.cos(t) * d), Math.round(cyy + Math.sin(t) * d),
-        2, 2, d > 6 ? C.creme : C.boisS);
+function options(){
+  const z=$('options');z.innerHTML='';
+  ONGLETS.find(x=>x.id===ongletActif).rubs.forEach(cle=>{
+    const rub=RUBRIQUES.find(r=>r.c===cle);
+    const t=document.createElement('div');t.className='rub';t.textContent=rub.nom;z.appendChild(t);
+    const r=document.createElement('div');r.className='rangee';z.appendChild(r);
+    if(rub.coul){
+      rub.coul().forEach((c,i)=>{
+        const b=document.createElement('button');
+        b.className='pastel'+(d[cle]===i?' actif':'');b.style.background=c;
+        b.onclick=()=>{d[cle]=i;sauver();options();resume();};
+        r.appendChild(b);
+      });
+    }else{
+      CAT[cle].forEach(it=>{
+        const ok=debloque(cle,it);
+        const b=document.createElement('button');
+        b.className='opt'+(d[cle]===it.id?' actif':'')+(ok?'':' bloque');
+        b.textContent=(ok?'':'🔒 ')+it.nom;
+        if(it.r){const s=document.createElement('span');s.className='r';s.style.background=RARETES[it.r].c;b.appendChild(s);}
+        b.onclick=()=>{
+          if(!ok){b.textContent='Dans une caisse';setTimeout(options,900);return;}
+          d[cle]=it.id;sauver();options();resume();
+        };
+        r.appendChild(b);
+      });
     }
-  }
-  p(cxx - 1, cyy - 1, 3, 3, C.encre);
-}
-
-function arbre(X, Y, e){
-  const v = Math.floor((F + X * 7) / 60) % 2;
-  const h = Math.round(11 * e);
-  p(X, Y + 2, Math.round(14 * e), 2, 'rgba(28,22,38,.2)');
-  p(X + Math.round(5 * e), Y - h, Math.round(4 * e), h, C.encre);
-  p(X + Math.round(6 * e), Y - h, Math.round(2 * e), h, C.boisS);
-  const a = X + v, t = Math.round(16 * e);
-  p(a + Math.round(5 * e), Y - h - t, Math.round(6 * e), 3, C.encre);
-  p(a + Math.round(2 * e), Y - h - t + 3, Math.round(12 * e), 5, C.encre);
-  p(a + Math.round(1 * e), Y - h - t + 8, Math.round(14 * e), 5, C.encre);
-  p(a + Math.round(4 * e), Y - h - t + 13, Math.round(8 * e), 4, C.encre);
-  p(a + Math.round(6 * e), Y - h - t + 1, Math.round(4 * e), 3, C.herbeC);
-  p(a + Math.round(3 * e), Y - h - t + 4, Math.round(10 * e), 4, C.herbeC);
-  p(a + Math.round(2 * e), Y - h - t + 8, Math.round(12 * e), 4, C.herbe);
-  p(a + Math.round(5 * e), Y - h - t + 12, Math.round(6 * e), 3, C.herbeS);
-}
-
-/* ---- les petites icônes des champs ---- */
-function icone(sel, f){
-  document.querySelectorAll(sel).forEach(function(e){
-    e.width = 16; e.height = 16;
-    const c = e.getContext('2d'); c.imageSmoothingEnabled = false;
-    const av = cx.fillStyle;
-    const g = { fillRect: function(){}, };
-    /* on peint directement, avec le même vocabulaire */
-    const old = p;
-    window.__p = old;
-    const pp = function(x, y, l, h, col){ c.fillStyle = col; c.fillRect(x, y, l, h); };
-    f(pp);
-    cx.fillStyle = av;
   });
 }
-icone('.i-mail', function(p){
-  p(1, 4, 14, 10, C.creme);
-  p(1, 4, 14, 1, '#cbbda6');
-  p(1, 4, 1, 10, '#cbbda6'); p(14, 4, 1, 10, '#cbbda6');
-  p(1, 13, 14, 1, '#cbbda6');
-  for (let i = 0; i < 6; i++){ p(2 + i, 5 + i, 1, 1, '#8a7f6c'); p(13 - i, 5 + i, 1, 1, '#8a7f6c'); }
+function resume(){
+  const s=statsDe(d);
+  $('r-nom').textContent=d.nom||'Sans nom';
+  $('r-arme').textContent=item('arme',d.arme).nom+(d.poste?' · '+POSTES.find(p=>p.id===d.poste).nom:'');
+  const j=(n,v)=>'<div class="j"><span>'+n+'</span><b>'+
+    Array.from({length:6},(_,i)=>'<i class="'+(i<v?'p':'')+'"></i>').join('')+'</b></div>';
+  $('r-jauges').innerHTML=j('Force',s.force)+j('Vitesse',s.vitesse)+j('Endur.',s.endurance)+j('Portée',s.portee);
+  bourses();
+}
+function bourses(){['b-v','b-b','b-c'].forEach(i=>{const e=$(i);if(e)e.textContent=d.euros+' €';});}
+
+$('nom').value=d.nom;
+$('nom').addEventListener('input',e=>{
+  d.nom=e.target.value.toUpperCase().slice(0,16);
+  if(e.target.value!==d.nom)e.target.value=d.nom;
+  sauver();resume();
 });
-icone('.i-cle', function(p){
-  p(3, 3, 7, 7, C.or); p(4, 4, 5, 5, '#1c1626'); p(5, 5, 3, 3, C.or);
-  p(9, 8, 5, 2, C.or); p(12, 10, 2, 2, C.or); p(9, 10, 2, 2, C.or);
-});
-
-function boucle(){ F++; if (F % 2 === 0) peindre(); requestAnimationFrame(boucle); }
-cadrer(); peindre(); boucle();
-let t = null;
-window.addEventListener('resize', function(){
-  clearTimeout(t); t = setTimeout(function(){ cadrer(); peindre(); }, 120);
-});
-
-
-function boucle(){ F++; if (F % 2 === 0) peindre(); requestAnimationFrame(boucle); }
-cadrer(); peindre(); boucle();
-let __t = null;
-window.addEventListener('resize', function(){
-  clearTimeout(__t); __t = setTimeout(function(){ cadrer(); peindre(); }, 120);
-});
-</script>
-
-<script>
-const SUPABASE_URL = 'https://zpfkekiavlfphialvphi.supabase.co';
-const SUPABASE_KEY = 'sb_publishable__dfR2lEOwKjhhtavvJEvGw_KVACZnHP';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const $ = id => document.getElementById(id);
-
-const vues = {
-  inscription: { onglet: $('ong-inscription'), form: $('form-inscription') },
-  connexion:   { onglet: $('ong-connexion'),   form: $('form-connexion') }
+$('hasard').onclick=()=>{
+  d.nom=(hasardDe(PRENOMS)+' '+hasardDe(SURNOMS)).toUpperCase();$('nom').value=d.nom;
+  RUBRIQUES.forEach(r=>{
+    if(r.coul)d[r.c]=Math.random()*r.coul().length|0;
+    else d[r.c]=hasardDe(CAT[r.c].filter(x=>debloque(r.c,x))).id;
+  });
+  sauver();options();resume();
 };
 
-function afficher(nom){
-  for (const [cle, v] of Object.entries(vues)){
-    const actif = cle === nom;
-    v.onglet.setAttribute('aria-selected', actif);
-    v.form.classList.toggle('masque', !actif);
-  }
-  cacherMessage();
-}
-
-Object.entries(vues).forEach(([cle, v]) => v.onglet.addEventListener('click', () => afficher(cle)));
-document.querySelectorAll('[data-aller]').forEach(b =>
-  b.addEventListener('click', () => afficher(b.dataset.aller))
-);
-
-document.querySelectorAll('.oeil').forEach(b => {
-  b.addEventListener('click', () => {
-    const champ = $(b.dataset.cible);
-    const cache = champ.type === 'password';
-    champ.type = cache ? 'text' : 'password';
-    b.textContent = cache ? 'Cacher' : 'Voir';
-  });
-});
-
-const boiteMsg = $('message');
-function montrerMessage(texte, type = 'erreur'){
-  boiteMsg.textContent = texte;
-  boiteMsg.className = 'message visible ' + type;
-}
-function cacherMessage(){ boiteMsg.className = 'message'; }
-
-const emailValide = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-
-function verifierInscription(){
-  const email = $('i-email').value.trim();
-  const mdp   = $('i-mdp').value;
-
-  if (!emailValide(email)) return 'Cette adresse e-mail n\u2019est pas valide.';
-  if (mdp.length < 8) return 'Le mot de passe fait 8 caractères minimum.';
-  return null;
-}
-
-function verifierConnexion(){
-  const email = $('c-email').value.trim();
-  const mdp   = $('c-mdp').value;
-  if (!emailValide(email)) return 'Cette adresse e-mail n\u2019est pas valide.';
-  if (!mdp) return 'Entre ton mot de passe.';
-  return null;
-}
-
-const traduire = m => {
-  const t = (m || '').toLowerCase();
-  if (t.includes('invalid login')) return 'E-mail ou mot de passe incorrect.';
-  if (t.includes('already registered') || t.includes('already been registered')) return 'Cette adresse est déjà inscrite. Connecte-toi.';
-  if (t.includes('email not confirmed')) return 'Confirme ton e-mail avant de te connecter.';
-  if (t.includes('rate limit') || t.includes('too many')) return 'Trop de tentatives. Attends une minute.';
-  if (t.includes('password')) return 'Mot de passe refusé : 8 caractères minimum.';
-  if (t.includes('failed to fetch') || t.includes('network')) return 'Pas de connexion au serveur. Réessaie.';
-  return m || 'Une erreur est survenue. Réessaie.';
+/* ---------------- billet ---------------- */
+$('tirer').onclick=()=>{
+  const total=POSTES.reduce((s,p)=>s+p.poids,0);let r=Math.random()*total,p=POSTES[0];
+  for(const q of POSTES){r-=q.poids;if(r<=0){p=q;break;}}
+  d.poste=p.id;d.euros+=p.euros;sauver();
+  const tags=[];
+  if(p.b.f)tags.push('Force +'+p.b.f);
+  if(p.b.v)tags.push('Vitesse +'+p.b.v);
+  if(p.b.e)tags.push('Endurance +'+p.b.e);
+  if(p.b.rg)tags.push('Rage +'+p.b.rg);
+  tags.push('+'+p.euros+' €');
+  $('zone-billet').innerHTML='<div class="billet tire">'+
+    '<div class="rarete" style="background:'+RARETES[p.r].c+'">'+RARETES[p.r].nom+'</div>'+
+    '<div class="haut"><span>Bureau d’embauche</span><span>Quart de nuit</span></div>'+
+    '<div class="poste">'+p.nom+'</div><div class="desc">'+p.d+'</div>'+
+    '<div class="bonus">'+tags.map(x=>'<span>'+x+'</span>').join('')+'</div></div>';
+  $('tirer').innerHTML='Retirer un billet <em>▸</em>';
+  $('quai').disabled=false;bourses();
 };
+$('quai').onclick=()=>{sauver();location.href='fight.html';};
 
-function occuper(btn, texte){
-  btn.dataset.libelle = btn.dataset.libelle || btn.textContent;
-  btn.disabled = true;
-  btn.textContent = texte;
-  btn.closest('[role="tabpanel"]').querySelectorAll('input').forEach(c => c.disabled = true);
+/* ---------------- caisses ---------------- */
+const COFFRES=[
+  {id:'bois',nom:'Caisse en bois',prix:120,d:'Ce qui tombe des palettes.',
+   odds:{commun:.62,peu:.28,rare:.08,epique:.017,leg:.003}},
+  {id:'fer',nom:'Caisse cerclée',prix:300,d:'Fermée au fil de fer, donc intéressante.',
+   odds:{commun:.34,peu:.36,rare:.22,epique:.07,leg:.01}},
+  {id:'scelle',nom:'Conteneur scellé',prix:750,d:'Numéro effacé. Personne ne le réclamera.',
+   odds:{commun:.06,peu:.24,rare:.40,epique:.24,leg:.06}}
+];
+function dessinerCoffre(cv,type){
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
+  const c={bois:['#b8996a','#8a7448'],fer:['#8a8577','#5f6b72'],scelle:['#4a6b74','#2b4750']}[type];
+  g.clearRect(0,0,32,32);
+  px(g,4,10,24,18,c[0]);px(g,4,10,24,4,c[1]);px(g,4,16,24,2,c[1]);
+  px(g,14,18,4,6,'#f2b134');px(g,4,26,24,2,c[1]);
+  if(type!=='bois'){px(g,8,10,3,18,c[1]);px(g,21,10,3,18,c[1]);}
+  if(type==='scelle')px(g,12,6,8,5,'#e8452c');
 }
-function liberer(btn){
-  btn.disabled = false;
-  btn.textContent = btn.dataset.libelle;
-  btn.closest('[role="tabpanel"]').querySelectorAll('input').forEach(c => c.disabled = false);
-}
-
-$('btn-inscription').addEventListener('click', async () => {
-  const erreur = verifierInscription();
-  if (erreur) return montrerMessage(erreur);
-  cacherMessage();
-
-  const btn = $('btn-inscription');
-  occuper(btn, 'Embauche en cours…');
-  try {
-    const { data, error } = await sb.auth.signUp({
-      email: $('i-email').value.trim(),
-      password: $('i-mdp').value
-    });
-    if (error) throw error;
-
-    if (data.session) {
-      montrerMessage('Compte créé. Bienvenue sur le quai.', 'ok');
-      setTimeout(() => location.href = 'personnage.html', 800);
-    } else {
-      montrerMessage('Compte créé. Ouvre ton e-mail pour confirmer ton adresse.', 'ok');
-      liberer(btn);
-    }
-  } catch (e) {
-    montrerMessage(traduire(e.message));
-    liberer(btn);
-  }
-});
-
-$('btn-connexion').addEventListener('click', async () => {
-  const erreur = verifierConnexion();
-  if (erreur) return montrerMessage(erreur);
-  cacherMessage();
-
-  const btn = $('btn-connexion');
-  occuper(btn, 'Connexion…');
-  try {
-    const { error } = await sb.auth.signInWithPassword({
-      email: $('c-email').value.trim(),
-      password: $('c-mdp').value
-    });
-    if (error) throw error;
-    montrerMessage('Connexion validée.', 'ok');
-    setTimeout(async () => {
-      const d = await BD.charger();
-      location.href = d && d.pseudo ? (BD.PAGES[d.etape] || 'jeu.html') : 'personnage.html';
-    }, 500);
-  } catch (e) {
-    montrerMessage(traduire(e.message));
-    liberer(btn);
-  }
-});
-
-sb.auth.getSession().then(async ({ data }) => {
-  if (data.session){
-    const d = await BD.charger();
-    location.replace(d && d.pseudo ? (BD.PAGES[d.etape] || 'jeu.html') : 'personnage.html');
-  }
-});
-
-document.querySelectorAll('input').forEach(champ => {
-  champ.addEventListener('keydown', e => {
-    if (e.key !== 'Enter') return;
-    const form = champ.closest('[role="tabpanel"]');
-    const champs = [...form.querySelectorAll('input')];
-    const suivant = champs[champs.indexOf(champ) + 1];
-    if (suivant) suivant.focus();
-    else form.querySelector('.principal').click();
+function boutique(){
+  const z=$('coffres');z.innerHTML='';
+  COFFRES.forEach(c=>{
+    const el=document.createElement('div');el.className='coffre';
+    const cv=document.createElement('canvas');cv.width=32;cv.height=32;
+    const t=document.createElement('div');t.className='txt';
+    t.innerHTML='<h3>'+c.nom+'</h3><p>'+c.d+'</p><div class="odds">'+
+      Object.entries(c.odds).map(([r,v])=>'<i style="background:'+RARETES[r].c+'">'+Math.round(v*100)+'%</i>').join('')+'</div>';
+    const b=document.createElement('button');
+    b.className='bt petit jaune';b.textContent=c.prix+' €';b.disabled=d.euros<c.prix;
+    b.onclick=()=>ouvrir(c);
+    el.append(cv,t,b);z.appendChild(el);dessinerCoffre(cv,c.id);
   });
-  champ.addEventListener('input', cacherMessage);
-});
+  const total=Object.keys(CAT).reduce((s,k)=>s+CAT[k].filter(x=>x.r).length,0);
+  $('stat-butin').textContent=d.debloque.length+' pièces trouvées sur '+total+
+    ' · '+d.coffres+' caisse'+(d.coffres>1?'s':'')+' ouverte'+(d.coffres>1?'s':'');
+}
+function pool(r){const o=[];Object.keys(CAT).forEach(c=>CAT[c].forEach(i=>{if(i.r===r)o.push({c,i});}));return o;}
+let dernier=null;
+function ouvrir(c){
+  if(d.euros<c.prix)return;
+  d.euros-=c.prix;d.coffres++;dernier=c;
+  let r=Math.random(),ch='commun';
+  for(const k in c.odds){r-=c.odds[k];if(r<=0){ch=k;break;}}
+  let p=pool(ch).filter(x=>!d.debloque.includes(x.c+':'+x.i.id)),doublon=false;
+  if(!p.length){p=pool(ch);doublon=true;}
+  if(!p.length){p=pool('peu');doublon=true;}
+  const {c:cat,i:it}=hasardDe(p);
+  let rendu=0;
+  if(doublon){rendu=RARETES[ch].rendu;d.euros+=rendu;}else d.debloque.push(cat+':'+it.id);
+  sauver();
+  const nomCat={carrure:'Carrure',cheveux:'Cheveux',barbe:'Poils',tatouage:'Tatouage',haut:'Haut',
+    bas:'Bas',ceinture:'Ceinture',pieds:'Chaussures',tete:'Tête',visage:'Visage',boucle:'Oreille',
+    mains:'Mains',dos:'Dos',arme:'Arme',expression:'Expression'}[cat]||cat;
+  $('carte').innerHTML='<div class="rar" style="background:'+RARETES[ch].c+'">'+RARETES[ch].nom+'</div>'+
+    '<canvas id="cvb" width="52" height="52"></canvas><h3>'+it.nom+'</h3><p>'+nomCat+
+    (it.d?' · '+it.d:'')+(doublon?'<br><b>Doublon</b> — rendu '+rendu+' €':'')+'</p>';
+  const g=$('cvb').getContext('2d');g.imageSmoothingEnabled=false;
+  if(cat==='arme'){g.save();g.translate(9,34);dessinerArme(g,it.id,0,0,0);g.restore();}
+  else{
+    const avant=d[cat];d[cat]=it.id;
+    const tmp=document.createElement('canvas');tmp.width=96;tmp.height=124;
+    const tg=tmp.getContext('2d');tg.imageSmoothingEnabled=false;
+    tg.save();tg.translate(48,114);dessinerDocker(tg,{look:d,etat:'debout',coup:null,sol:1,sens:1},0);tg.restore();
+    d[cat]=avant;g.drawImage(tmp,26,26,44,48,2,0,48,52);
+  }
+  $('tirage').classList.add('on');
+  $('encore').disabled=d.euros<c.prix;$('encore').textContent='Rouvrir · '+c.prix+' €';
+}
+$('fermer').onclick=()=>{$('tirage').classList.remove('on');boutique();bourses();};
+$('encore').onclick=()=>{if(dernier)ouvrir(dernier);};
+
+/* ---------------- navigation ---------------- */
+function aller(n){
+  document.querySelectorAll('.ecran').forEach(e=>{
+    const on=e.id==='e-'+n;e.classList.toggle('on',on);if(on)e.scrollTop=0;});
+  if(n==='vestiaire'){onglets();options();resume();}
+  if(n==='boutique')boutique();
+  if(n==='palmares')palmares();
+  if(n==='billet')bourses();
+  if(n==='accueil')sauver();
+  location.hash=n;
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-va]');if(b)aller(b.dataset.va);});
+function palmares(){
+  const l=$('liste-adv');l.innerHTML='';
+  ADVERSAIRES.forEach((a,i)=>{
+    const battu=i<d.niveau,courant=i===d.niveau;
+    const r=document.createElement('div');r.className='r';
+    r.innerHTML='<span>'+(battu||courant?a.nom:'? ? ?')+'<small>'+
+      (battu||courant?a.d:'Pas encore rencontré.')+'</small></span><span class="d">'+
+      (battu?'Battu':(courant?'À venir':'—'))+'</span>';
+    l.appendChild(r);
+  });
+  $('note-palmares').textContent=(d.nom||'Docker sans nom')+' · '+d.victoires+
+    ' victoire'+(d.victoires>1?'s':'')+' · '+d.euros+' € en poche.';
+}
+
+(()=>{
+  const z=$('formes'),cs=['#e8452c','#ffd029','#2ec4c9','#f26fa8','#141414'],o=[];
+  for(let i=0;i<15;i++){
+    const c=cs[i%5],x=Math.random()*100,y=Math.random()*100,s=14+Math.random()*44,r=Math.random()*360,t=i%4;
+    let st='left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;transform:rotate('+r+'deg);opacity:.3;';
+    if(t===0)st+='background:'+c+';border-radius:50%;';
+    else if(t===1)st+='background:'+c+';height:'+(s/3)+'px;';
+    else if(t===2)st+='border:4px solid '+c+';';
+    else st+='background:repeating-linear-gradient(45deg,'+c+' 0 5px,transparent 5px 10px);';
+    o.push('<i style="'+st+'"></i>');
+  }
+  z.innerHTML=o.join('');
+})();
+bourses();
+if(d.nom)$('accroche').innerHTML='Ton docker <b>'+d.nom+'</b> t’attend. '+
+  d.victoires+' victoire'+(d.victoires>1?'s':'')+' · '+d.euros+' €.';
+const dep=(location.hash||'').replace('#','');
+if(['vestiaire','billet','boutique','palmares'].includes(dep))aller(dep);
 </script>
 </body>
 </html>
