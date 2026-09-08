@@ -3,217 +3,349 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#e08a45">
-<title>Battle Dock Life — accueil</title>
+<title>Battle Dock Life — quatre accueils</title>
 <style>
-:root{--trait:#2a1710;--creme:#fdf3e0;--sable:#f2e2c0;
-  --ocre:#f2b134;--ocre-b:#b07d12;--terre:#c9563a;--terre-b:#8f3520;
-  --eau:#2a7d85;--eau-b:#175258;--bois:#8a5a2e;--bois-b:#573716}
+:root{--trait:#2a1710;--creme:#fdf3e0;--ocre:#f2b134;--ocre-b:#b07d12;
+  --terre:#c9563a;--terre-b:#8f3520;--eau:#2a7d85;--eau-b:#175258;--bois:#8a5a2e;--bois-b:#573716}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:#0e3f47;color:var(--trait);
-  font-family:"Arial Rounded MT Bold","Trebuchet MS",Verdana,sans-serif;font-weight:700;
-  -webkit-tap-highlight-color:transparent;overscroll-behavior:none}
-button{font-family:inherit;font-weight:700;border:0;background:none;color:inherit;cursor:pointer;width:100%}
+html,body{height:100%;background:#000;overflow:hidden;-webkit-tap-highlight-color:transparent}
+body{font-family:"Arial Rounded MT Bold","Trebuchet MS",Verdana,sans-serif;font-weight:700}
+button{font-family:inherit;font-weight:700;border:0;background:none;color:inherit;cursor:pointer}
 canvas{image-rendering:pixelated;display:block}
-#decor{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
-#voile{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,225,180,.10) 0%,transparent 28%,rgba(20,10,4,.55) 100%)}
-.app{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;
-  padding:calc(12px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
-.logo{width:min(430px,100%)}
-.logo svg{width:100%;height:auto;filter:drop-shadow(0 8px 10px rgba(20,10,4,.55))}
-.heros{flex:1;display:flex;align-items:flex-end;justify-content:center;width:100%;min-height:140px}
-.heros canvas{width:min(320px,96%);height:auto;filter:drop-shadow(0 10px 10px rgba(20,10,4,.5))}
-.fiche{width:min(430px,100%);background:var(--creme);border:3px solid var(--trait);border-radius:18px;
-  box-shadow:0 6px 0 rgba(20,10,4,.5);padding:11px 13px;display:flex;align-items:center;gap:11px;
-  margin-bottom:11px}
-.fiche .qui{flex:1;min-width:0}
-.fiche .nom{font-size:15px;text-transform:uppercase}
-.fiche .det{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12px;color:#6b4c34;margin-top:3px}
-.fiche .sous{flex:0 0 auto;background:var(--ocre);border:3px solid var(--trait);border-radius:12px;
-  padding:7px 10px;font-size:14px;box-shadow:0 3px 0 var(--ocre-b)}
-.menu{width:min(430px,100%);display:grid;gap:10px}
-.bt{display:flex;align-items:center;gap:11px;text-align:left;border:3px solid var(--trait);
-  border-radius:16px;padding:14px;font-size:17px;text-transform:uppercase;
-  background:var(--ocre);box-shadow:0 5px 0 var(--ocre-b)}
-.bt canvas{width:26px;height:26px;flex:0 0 auto}
-.bt span{flex:1}
-.bt em{font-style:normal;opacity:.55;font-size:15px}
-.bt.terre{background:var(--terre);color:var(--creme);box-shadow:0 5px 0 var(--terre-b)}
-.bt.eau{background:var(--eau);color:var(--creme);box-shadow:0 5px 0 var(--eau-b)}
-.bt.bois{background:var(--bois);color:var(--creme);box-shadow:0 5px 0 var(--bois-b)}
-.bt:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.45)}
-.bt[disabled]{opacity:.55}
-.pied{margin-top:10px;font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:11px;
-  color:rgba(253,243,224,.75);text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#barre{position:fixed;top:0;left:0;right:0;z-index:99;display:flex;background:#000;
+  border-bottom:1px solid #1e1e1e;padding-top:env(safe-area-inset-top)}
+#barre button{flex:1;padding:9px 3px 10px;border-right:1px solid #191919;color:#666;
+  font:600 10px/1.5 ui-monospace,monospace;text-transform:uppercase;width:auto}
+#barre button b{display:block;font-size:9px;font-weight:400;opacity:.5;text-transform:none}
+#barre button.on{color:#fff;background:#151515}
+.vue{position:fixed;inset:48px 0 0 0;display:none;overflow:hidden}
+.vue.on{display:block}
+
+/* ============ P — CARTE POSTALE ============ */
+#p{background:#2a1710;padding:14px;display:flex;flex-direction:column;gap:12px;
+  padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+#p .carte{position:relative;flex:1;border:6px solid #fdf3e0;border-radius:4px;overflow:hidden;
+  box-shadow:0 10px 24px rgba(0,0,0,.6)}
+#p .carte canvas{width:100%;height:100%;object-fit:cover}
+#p .titre{position:absolute;left:0;right:0;top:16%;text-align:center;pointer-events:none}
+#p .titre .a{display:block;font-size:clamp(15px,4.6vw,22px);letter-spacing:.36em;color:#fff;
+  text-shadow:0 3px 0 rgba(42,23,16,.8)}
+#p .titre .b{display:block;font-size:clamp(52px,17vw,96px);font-style:italic;color:#ffd97a;
+  -webkit-text-stroke:7px #2a1710;paint-order:stroke fill;line-height:.9;letter-spacing:.02em}
+#p .tampon{position:absolute;right:10px;top:10px;width:64px;height:64px;border-radius:50%;
+  border:3px dashed rgba(253,243,224,.85);color:#fdf3e0;display:flex;align-items:center;
+  justify-content:center;text-align:center;font-size:9px;line-height:1.2;transform:rotate(-12deg);
+  text-transform:uppercase}
+#p .billets{display:grid;gap:9px}
+#p .bl{display:flex;align-items:center;gap:11px;background:#fdf3e0;border-radius:6px;padding:13px 14px;
+  font-size:16px;text-transform:uppercase;color:#2a1710;position:relative;
+  box-shadow:0 5px 0 rgba(0,0,0,.45)}
+#p .bl::before,#p .bl::after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;
+  background:#2a1710;top:50%;transform:translateY(-50%)}
+#p .bl::before{left:-7px}#p .bl::after{right:-7px}
+#p .bl span{flex:1}#p .bl em{font-style:normal;opacity:.5}
+#p .bl.o{background:#ffd97a}#p .bl.t{background:#e8927a}
+#p .bl:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.45)}
+
+/* ============ Q — LA CHAMBRE ============ */
+#q{background:#1a1420;position:relative}
+#q canvas.piece{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#q .zone{position:absolute;border:3px solid rgba(253,243,224,.9);border-radius:14px;
+  background:rgba(42,23,16,.55);color:#fdf3e0;padding:8px 11px;font-size:12px;text-transform:uppercase;
+  backdrop-filter:blur(2px);display:flex;align-items:center;gap:7px;white-space:nowrap}
+#q .zone small{display:block;font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:10px;
+  opacity:.7;text-transform:none;margin-top:2px}
+#q .zone:active{transform:scale(.96)}
+#q .z1{left:6%;top:34%}#q .z2{right:6%;top:26%}#q .z3{left:8%;bottom:20%}#q .z4{right:7%;bottom:26%}
+#q .ent{position:absolute;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));
+  text-align:center;color:#fdf3e0;font-size:11px;opacity:.7}
+#q .titre{position:absolute;left:0;right:0;top:5%;text-align:center;color:#ffd97a;font-style:italic;
+  font-size:clamp(26px,8.5vw,44px);-webkit-text-stroke:6px #1a1420;paint-order:stroke fill}
+#q .titre small{display:block;font-style:normal;font-size:.3em;letter-spacing:.3em;color:#fdf3e0;
+  -webkit-text-stroke:4px #1a1420}
+
+/* ============ R — TÉLÉPHONE ============ */
+#r{background:linear-gradient(180deg,#f0a05a,#c9563a 50%,#2a7d85);
+  padding:16px 16px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+#r .hautr{display:flex;align-items:center;gap:9px;color:#fff;font-size:12px;
+  text-shadow:0 1px 3px rgba(0,0,0,.5)}
+#r .hautr .e{flex:1}
+#r .widget{background:rgba(253,243,224,.94);border-radius:20px;padding:13px;display:flex;gap:11px;
+  align-items:center;box-shadow:0 6px 0 rgba(0,0,0,.28)}
+#r .widget canvas{width:52px;height:66px;flex:0 0 auto}
+#r .widget .q{flex:1;min-width:0;color:#2a1710}
+#r .widget .n{font-size:15px;text-transform:uppercase}
+#r .widget .d{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:11.5px;color:#6b4c34;margin-top:3px}
+#r .widget .jg{height:8px;border-radius:5px;background:#e0cba0;margin-top:7px;overflow:hidden}
+#r .widget .jg i{display:block;height:100%;width:62%;background:linear-gradient(90deg,#f2b134,#c9563a)}
+#r .apps{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-content:start;padding-top:6px}
+#r .app{display:flex;flex-direction:column;align-items:center;gap:7px;color:#fff;font-size:11px;
+  text-shadow:0 1px 3px rgba(0,0,0,.55)}
+#r .app .ic{width:62px;height:62px;border-radius:20px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 5px 0 rgba(0,0,0,.3),inset 0 2px 0 rgba(255,255,255,.4);position:relative}
+#r .app canvas{width:32px;height:32px}
+#r .app .pt{position:absolute;top:-5px;right:-5px;background:#e8452c;color:#fff;border-radius:999px;
+  min-width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;
+  border:2px solid #fff}
+#r .app:active .ic{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+#r .dock{background:rgba(253,243,224,.28);border-radius:24px;padding:11px;display:flex;
+  justify-content:space-around;backdrop-filter:blur(4px)}
+
+/* ============ S — LE QUARTIER ============ */
+#s{background:#124e55;position:relative}
+#s canvas.q{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#s .titre{position:absolute;left:0;right:0;top:4%;text-align:center;color:#fdf3e0;font-style:italic;
+  font-size:clamp(24px,8vw,42px);-webkit-text-stroke:6px #0d2c31;paint-order:stroke fill}
+#s .titre b{color:#ffd97a}
+#s .bulle{position:absolute;transform:translate(-50%,-100%);background:#fdf3e0;border:3px solid #2a1710;
+  border-radius:14px;padding:8px 11px;font-size:12px;text-transform:uppercase;color:#2a1710;
+  box-shadow:0 5px 0 rgba(0,0,0,.4);white-space:nowrap}
+#s .bulle::after{content:"";position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);
+  border:7px solid transparent;border-top-color:#2a1710}
+#s .bulle small{display:block;font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:10.5px;
+  color:#6b4c34;text-transform:none;margin-top:2px}
+#s .bulle:active{transform:translate(-50%,-100%) scale(.95)}
+#s .barre{position:absolute;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));
+  display:flex;gap:9px}
+#s .barre button{flex:1;border:3px solid #2a1710;border-radius:15px;padding:13px 6px;font-size:14px;
+  text-transform:uppercase;background:var(--ocre);box-shadow:0 5px 0 var(--ocre-b)}
+#s .barre button.t{background:var(--terre);color:#fdf3e0;box-shadow:0 5px 0 var(--terre-b)}
+#s .barre button:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
 </style>
 </head>
 <body>
-<canvas id="decor" width="270" height="480"></canvas><div id="voile"></div>
-
-<div class="app">
-  <div class="logo" id="logo"></div>
-  <div class="heros"><canvas id="heros" width="220" height="150"></canvas></div>
-
-  <div class="fiche" id="fiche">
-    <div class="qui"><div class="nom" id="f-nom">ELIAS</div>
-      <div class="det" id="f-det">Docker simple · jour 12 · Mardi</div></div>
-    <div class="sous" id="f-sous">180 €</div>
-  </div>
-
-  <div class="menu">
-    <button class="bt terre"><canvas class="ic" data-ic="reprendre"></canvas><span>Reprendre ta vie</span><em>▸</em></button>
-    <button class="bt"><canvas class="ic" data-ic="neuf"></canvas><span>Nouvelle vie</span><em>▸</em></button>
-    <button class="bt bois"><canvas class="ic" data-ic="casque"></canvas><span>Ton docker</span><em>▸</em></button>
-    <button class="bt eau" disabled><canvas class="ic" data-ic="gants"></canvas><span>Le combat — bientôt</span><em>✕</em></button>
-  </div>
-  <div class="pied">Sauvegarde locale · v0.1</div>
+<div id="barre">
+  <button data-v="p" class="on">P<b>carte postale</b></button>
+  <button data-v="q">Q<b>la chambre</b></button>
+  <button data-v="r">R<b>téléphone</b></button>
+  <button data-v="s">S<b>le quartier</b></button>
 </div>
+
+<section class="vue on" id="p">
+  <div class="carte">
+    <canvas id="p-cv" width="270" height="360"></canvas>
+    <div class="titre"><span class="a">Battle Dock</span><span class="b">LIFE</span></div>
+    <div class="tampon">Quai<br>13002<br>★</div>
+  </div>
+  <div class="billets">
+    <button class="bl t"><span>Reprendre ta vie</span><em>▸</em></button>
+    <button class="bl o"><span>Nouvelle vie</span><em>▸</em></button>
+    <button class="bl"><span>Ton docker</span><em>▸</em></button>
+  </div>
+</section>
+
+<section class="vue" id="q">
+  <canvas class="piece" id="q-cv" width="270" height="440"></canvas>
+  <div class="titre"><small>Battle Dock</small>LIFE</div>
+  <button class="zone z1">Le lit<small>Reprendre ta vie</small></button>
+  <button class="zone z2">Le réveil<small>Nouvelle vie</small></button>
+  <button class="zone z3">Le blouson<small>Ton docker</small></button>
+  <button class="zone z4">La porte<small>Sortir bosser</small></button>
+  <div class="ent">Touche un objet de la chambre</div>
+</section>
+
+<section class="vue" id="r">
+  <div class="hautr"><span>07:12</span><span class="e"></span><span>Mardi · jour 12</span><span>◼◼◼</span></div>
+  <div class="widget">
+    <canvas id="r-perso" width="96" height="124"></canvas>
+    <div class="q"><div class="n">Elias · Docker simple</div>
+      <div class="d">180 € · loyer dans 3 jours</div><div class="jg"><i></i></div></div>
+  </div>
+  <div class="apps">
+    <button class="app"><div class="ic" style="background:linear-gradient(180deg,#f7c948,#b07d12)">
+      <canvas class="ic32" data-ic="grue"></canvas><span class="pt">2</span></div>Le port</button>
+    <button class="app"><div class="ic" style="background:linear-gradient(180deg,#7fd0d6,#2a7d85)">
+      <canvas class="ic32" data-ic="ville"></canvas></div>La ville</button>
+    <button class="app"><div class="ic" style="background:linear-gradient(180deg,#e8927a,#a83b28)">
+      <canvas class="ic32" data-ic="lit"></canvas></div>Chez toi</button>
+    <button class="app"><div class="ic" style="background:linear-gradient(180deg,#c08a52,#573716)">
+      <canvas class="ic32" data-ic="fiche"></canvas></div>Fiche</button>
+    <button class="app"><div class="ic" style="background:linear-gradient(180deg,#9fd699,#3a5c34)">
+      <canvas class="ic32" data-ic="sport"></canvas></div>Forme</button>
+    <button class="app"><div class="ic" style="background:linear-gradient(180deg,#b8b0a0,#5f6469)">
+      <canvas class="ic32" data-ic="gants"></canvas></div>Combat</button>
+  </div>
+  <div class="dock">
+    <button class="app"><div class="ic" style="width:52px;height:52px;border-radius:17px;background:linear-gradient(180deg,#f7c948,#b07d12)">
+      <canvas class="ic32" data-ic="reprendre"></canvas></div></button>
+    <button class="app"><div class="ic" style="width:52px;height:52px;border-radius:17px;background:linear-gradient(180deg,#e8927a,#a83b28)">
+      <canvas class="ic32" data-ic="neuf"></canvas></div></button>
+    <button class="app"><div class="ic" style="width:52px;height:52px;border-radius:17px;background:linear-gradient(180deg,#7fd0d6,#2a7d85)">
+      <canvas class="ic32" data-ic="fiche"></canvas></div></button>
+  </div>
+</section>
+
+<section class="vue" id="s">
+  <canvas class="q" id="s-cv" width="270" height="420"></canvas>
+  <div class="titre">Battle Dock <b>Life</b></div>
+  <button class="bulle" style="left:24%;top:38%">Chez toi<small>Dormir, manger</small></button>
+  <button class="bulle" style="left:74%;top:30%">Le port<small>2 quarts dispo</small></button>
+  <button class="bulle" style="left:50%;top:62%">La ville<small>Sport, bar, marché</small></button>
+  <div class="barre">
+    <button class="t">Reprendre</button>
+    <button>Nouvelle vie</button>
+  </div>
+</section>
 
 <script src="bdf.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const {dessinerDocker,lookDefaut,px}=BDF;
-
-/* ---------- logo ---------- */
-$('logo').innerHTML=`
-<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
- <defs>
-  <linearGradient id="or" x1="0" y1="0" x2="0" y2="1">
-   <stop offset="0%" stop-color="#fff3c4"/><stop offset="42%" stop-color="#f7c948"/>
-   <stop offset="76%" stop-color="#e09b16"/><stop offset="100%" stop-color="#a86c08"/>
-  </linearGradient>
-  <linearGradient id="mer" x1="0" y1="0" x2="0" y2="1">
-   <stop offset="0%" stop-color="#7fe0e6"/><stop offset="55%" stop-color="#2a7d85"/>
-   <stop offset="100%" stop-color="#0f4a50"/>
-  </linearGradient>
- </defs>
- <g font-family="Arial Black, Arial, sans-serif" text-anchor="middle">
-  <text x="260" y="58" font-size="40" font-style="italic" fill="#fdf3e0"
-        stroke="#2a1710" stroke-width="12" paint-order="stroke" letter-spacing="6">BATTLE DOCK</text>
-  <text x="260" y="152" font-size="112" font-style="italic" fill="url(#mer)"
-        stroke="#2a1710" stroke-width="18" paint-order="stroke" letter-spacing="4">LIFE</text>
-  <text x="260" y="148" font-size="112" font-style="italic" fill="rgba(255,255,255,.28)"
-        letter-spacing="4" clip-path="inset(0 0 66% 0)">LIFE</text>
-  <text x="260" y="185" font-size="19" fill="#fdf3e0" stroke="#2a1710" stroke-width="7"
-        paint-order="stroke" letter-spacing="7">UNE VIE SUR LE PORT</text>
- </g>
- <g stroke="#2a1710" stroke-width="6" fill="url(#or)">
-   <rect x="60" y="96" width="16" height="54" rx="7"/><rect x="444" y="96" width="16" height="54" rx="7"/>
- </g>
-</svg>`;
-
-/* ---------- icônes ---------- */
-function icone(cv,t){
-  cv.width=32;cv.height=32;
-  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,32,32);
-  if(t==='reprendre'){px(g,7,6,4,20,'#fdf3e0');px(g,13,10,4,12,'#fdf3e0');
-    px(g,19,7,4,18,'#fdf3e0');px(g,7,28,18,3,'#fdf3e0');}
-  if(t==='neuf'){px(g,14,6,5,21,'#2a1710');px(g,7,13,19,5,'#2a1710');}
-  if(t==='casque'){px(g,7,11,18,9,'#f2b134');px(g,4,19,24,4,'#b07d12');px(g,13,7,6,4,'#f2b134');}
-  if(t==='gants'){px(g,4,12,11,11,'#f0e2c8');px(g,3,15,3,5,'#d8c8a8');
-    px(g,17,12,11,11,'#f0e2c8');px(g,26,15,3,5,'#d8c8a8');}
-}
-document.querySelectorAll('canvas.ic').forEach(c=>icone(c,c.dataset.ic));
-
-/* ---------- décor : la rade au crépuscule ---------- */
-const dg=$('decor').getContext('2d');dg.imageSmoothingEnabled=false;
-const DW=270,DH=480,MER=250;
-function decor(t){
-  const g=dg.createLinearGradient(0,0,0,MER);
-  g.addColorStop(0,'#5d3a6b');g.addColorStop(.3,'#c95f52');
-  g.addColorStop(.62,'#f0a05a');g.addColorStop(1,'#ffd79a');
-  dg.fillStyle=g;dg.fillRect(0,0,DW,MER);
-  const sy=MER-44;
-  const h=dg.createRadialGradient(180,sy,6,180,sy,88);
-  h.addColorStop(0,'rgba(255,236,170,.85)');h.addColorStop(1,'rgba(255,190,110,0)');
-  dg.fillStyle=h;dg.fillRect(60,sy-95,240,190);
-  dg.fillStyle='#fff0bd';dg.beginPath();dg.arc(180,sy,25,0,7);dg.fill();
-  dg.fillStyle='rgba(255,220,190,.32)';
-  for(let i=0;i<4;i++){const x=((t/(130+i*60))+i*95)%(DW+90)-45;
-    dg.fillRect(x,48+i*22,62,7);dg.fillRect(x+12,41+i*22,36,7);}
-  // Notre-Dame de la Garde
-  dg.fillStyle='#6b3b34';dg.beginPath();dg.moveTo(150,MER);dg.quadraticCurveTo(214,112,272,MER);dg.fill();
-  const bx=208;
-  dg.fillStyle='#e8d6b4';dg.fillRect(bx-16,92,34,26);
-  for(let i=0;i<4;i++)px(dg,bx-12+i*8,100,4,10,'#8a6a4a');
-  dg.fillStyle='#e8d6b4';dg.fillRect(bx-5,56,12,38);
-  dg.fillStyle='#f2c95a';dg.fillRect(bx-4,44,10,12);
-  // fort à gauche
-  dg.fillStyle='#5e352f';dg.beginPath();dg.moveTo(-10,MER);dg.quadraticCurveTo(38,166,108,MER);dg.fill();
-  dg.fillStyle='#3f2a26';dg.fillRect(8,176,38,MER-176);
-  for(let i=0;i<4;i++)dg.fillRect(8+i*10,170,6,7);
-  // ville
-  for(let i=0;i<22;i++){
-    const x=i*13-4,hh=20+((i*37)%28),y=MER-hh;
-    dg.fillStyle=i%3?'#4a2f2c':'#402926';dg.fillRect(x,y,12,hh);
-    for(let f=0;f<3;f++)if((i*7+f*5)%4===0){
-      dg.fillStyle=Math.sin(t/900+i+f)>-.2?'rgba(255,206,120,.9)':'rgba(255,206,120,.35)';
-      dg.fillRect(x+3+(f%2)*5,y+5+f*6,3,3);}
-  }
-  // mer
-  const m=dg.createLinearGradient(0,MER,0,DH);
-  m.addColorStop(0,'#2b7d84');m.addColorStop(1,'#0c343b');
-  dg.fillStyle=m;dg.fillRect(0,MER,DW,DH-MER);
-  for(let i=0;i<16;i++){const y=MER+4+i*8,w=50-i*2+Math.sin(t/400+i)*10;
-    dg.fillStyle='rgba(255,214,150,'+(0.28-i*0.015)+')';
-    dg.fillRect(180-w/2+Math.sin(t/500+i*1.3)*5,y,w,3);}
-  for(let i=0;i<18;i++){const y=MER+8+i*12,dx=Math.sin(t/700+i)*8;
-    dg.fillStyle='rgba(255,255,255,.09)';
-    dg.fillRect(dx+((i*53)%DW)-30,y,24,2);}
-  dg.strokeStyle='rgba(253,243,224,.75)';dg.lineWidth=2;
-  for(let i=0;i<3;i++){const x=((t/(75+i*30))+i*110)%(DW+50)-25,
-    y=66+i*24+Math.sin(t/500+i)*8,o=Math.sin(t/110+i*2)*4;
-    dg.beginPath();dg.moveTo(x-6,y);dg.lineTo(x,y-o);dg.lineTo(x+6,y);dg.stroke();}
-}
-
-/* ---------- quai + docker ---------- */
-const hg=$('heros').getContext('2d');hg.imageSmoothingEnabled=false;
+document.querySelectorAll('#barre button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#barre button').forEach(x=>x.classList.toggle('on',x===b));
+    document.querySelectorAll('.vue').forEach(v=>v.classList.toggle('on',v.id===b.dataset.v));};
+});
 const look=Object.assign(lookDefaut(),{nom:'ELIAS',carrure:'solide',teint:2,cheveux:'court',cheveuxC:1,
-  barbe:'ombre',haut:'marcel',hautC:6,bas:'jean',basC:1,ceinture:'cuir',pieds:'brodequins',
-  tete:'rien',visage:'curedent',mains:'nues',dos:'sac',arme:'aucune',expression:'decide'});
-function quai(g,W,y,t){
-  g.fillStyle='rgba(12,52,59,.5)';g.fillRect(0,y+18,W,60);
-  for(let i=0;i<5;i++){g.fillStyle='rgba(255,255,255,.09)';
-    g.fillRect((((i*67)+Math.sin(t/600+i)*10)%W)-20,y+24+i*9,28,2);}
-  g.fillStyle='#c9a97a';g.fillRect(0,y,W,18);
-  g.fillStyle='#e0c393';g.fillRect(0,y,W,4);
-  g.fillStyle='#a8875c';g.fillRect(0,y+14,W,4);
-  for(let x=-6;x<W;x+=34)g.fillStyle='#a8875c',g.fillRect(x,y+4,3,10);
-  g.fillStyle='#2a1710';g.fillRect(0,y+18,W,3);
-  const bx=W-34;
-  g.fillStyle='#3f4a52';g.fillRect(bx,y-14,12,15);
-  g.fillStyle='#586570';g.fillRect(bx-2,y-19,16,6);
-  g.strokeStyle='#d9a95a';g.lineWidth=3;g.beginPath();g.moveTo(bx+2,y-8);
-  g.quadraticCurveTo(bx-42,y+10+Math.sin(t/900)*2,bx-82,y-2);g.stroke();
-  g.fillStyle='#9a6238';g.fillRect(14,y-20,26,20);
-  g.fillStyle='#c08a52';g.fillRect(14,y-20,26,3);
-  g.fillStyle='#4a2916';g.fillRect(14,y-12,26,3);
+  barbe:'ombre',haut:'marcel',hautC:6,bas:'jean',basC:1,pieds:'brodequins',tete:'rien',
+  visage:'curedent',mains:'nues',dos:'sac',arme:'aucune',expression:'decide'});
+const perso=t=>({look,etat:(Math.floor(t/3000)%4===3)?'gagne':'debout',coup:null,sol:1,sens:1,garde:0,stun:0});
+
+/* icônes 32 */
+function ic32(cv,t){
+  cv.width=32;cv.height=32;const g=cv.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,32,32);
+  if(t==='grue'){px(g,5,5,3,23,'#fff8e8');px(g,5,5,20,3,'#fff8e8');px(g,22,8,2,9,'#fff8e8');
+    px(g,19,17,8,6,'#2a1710');px(g,2,28,12,3,'#fff8e8');}
+  if(t==='ville'){px(g,4,12,8,18,'#fff8e8');px(g,13,7,7,23,'#fff8e8');px(g,21,15,7,15,'#fff8e8');
+    px(g,6,15,3,3,'#2a7d85');px(g,15,11,3,3,'#2a7d85');px(g,23,19,3,3,'#2a7d85');}
+  if(t==='lit'){px(g,3,14,26,11,'#fff8e8');px(g,3,10,9,7,'#ffd97a');px(g,3,25,4,5,'#fff8e8');
+    px(g,25,25,4,5,'#fff8e8');}
+  if(t==='fiche'){px(g,6,4,20,24,'#fff8e8');px(g,9,10,14,2,'#8a5a2e');px(g,9,15,10,2,'#8a5a2e');
+    px(g,9,20,12,2,'#8a5a2e');}
+  if(t==='sport'){px(g,3,14,6,7,'#fff8e8');px(g,23,14,6,7,'#fff8e8');px(g,9,16,14,3,'#fff8e8');}
+  if(t==='gants'){px(g,4,12,11,11,'#fff8e8');px(g,17,12,11,11,'#fff8e8');}
+  if(t==='reprendre'){px(g,7,6,4,20,'#2a1710');px(g,13,10,4,12,'#2a1710');px(g,19,7,4,18,'#2a1710');}
+  if(t==='neuf'){px(g,14,6,5,21,'#fff8e8');px(g,7,13,19,5,'#fff8e8');}
 }
+document.querySelectorAll('canvas.ic32').forEach(c=>ic32(c,c.dataset.ic));
+
+/* --- P : la rade en carte postale --- */
+const pg=$('p-cv').getContext('2d');pg.imageSmoothingEnabled=false;
+function rade(g,W,H,t){
+  const MER=H*.62;
+  const c=g.createLinearGradient(0,0,0,MER);
+  c.addColorStop(0,'#5d3a6b');c.addColorStop(.35,'#c95f52');c.addColorStop(1,'#ffd79a');
+  g.fillStyle=c;g.fillRect(0,0,W,MER);
+  g.fillStyle='#fff0bd';g.beginPath();g.arc(W*.66,MER-30,22,0,7);g.fill();
+  g.fillStyle='#6b3b34';g.beginPath();g.moveTo(W*.5,MER);g.quadraticCurveTo(W*.76,H*.24,W+10,MER);g.fill();
+  const bx=W*.75;g.fillStyle='#e8d6b4';g.fillRect(bx-14,H*.26,30,22);g.fillRect(bx-4,H*.16,10,32);
+  g.fillStyle='#f2c95a';g.fillRect(bx-3,H*.13,8,10);
+  g.fillStyle='#5e352f';g.beginPath();g.moveTo(-10,MER);g.quadraticCurveTo(W*.14,H*.4,W*.42,MER);g.fill();
+  for(let i=0;i<20;i++){const x=i*(W/20)-3,hh=14+((i*37)%22),y=MER-hh;
+    g.fillStyle=i%3?'#4a2f2c':'#402926';g.fillRect(x,y,W/22,hh);
+    if((i*7)%3===0){g.fillStyle=Math.sin(t/900+i)>-.2?'rgba(255,206,120,.9)':'rgba(255,206,120,.3)';
+      g.fillRect(x+3,y+5,3,3);}}
+  const m=g.createLinearGradient(0,MER,0,H);
+  m.addColorStop(0,'#2b7d84');m.addColorStop(1,'#0c343b');
+  g.fillStyle=m;g.fillRect(0,MER,W,H-MER);
+  for(let i=0;i<14;i++){const y=MER+4+i*((H-MER)/14),w=44-i*2+Math.sin(t/400+i)*9;
+    g.fillStyle='rgba(255,214,150,'+(0.26-i*0.016)+')';g.fillRect(W*.66-w/2,y,w,3);}
+  for(let i=0;i<12;i++){g.fillStyle='rgba(255,255,255,.09)';
+    g.fillRect(((i*47)+Math.sin(t/700+i)*9)%W-20,MER+10+i*12,22,2);}
+  [[W*.25,MER+52,1],[W*.7,MER+90,-1]].forEach(([x,y,s],i)=>{
+    const b=Math.sin(t/620+i*2)*2;
+    g.fillStyle='#f0e2c8';g.fillRect(x-2,y-16+b,2,16);
+    g.fillStyle=i?'#c9563a':'#f2b134';
+    g.beginPath();g.moveTo(x,y-16+b);g.lineTo(x+s*11,y-2+b);g.lineTo(x,y-2+b);g.fill();
+    g.fillStyle='#3f2a26';g.fillRect(x-11,y+b,24,4);});
+  g.strokeStyle='rgba(253,243,224,.8)';g.lineWidth=2;
+  for(let i=0;i<3;i++){const x=((t/(80+i*30))+i*100)%(W+40)-20,y=H*.13+i*20+Math.sin(t/500+i)*6,
+    o=Math.sin(t/110+i*2)*4;
+    g.beginPath();g.moveTo(x-5,y);g.lineTo(x,y-o);g.lineTo(x+5,y);g.stroke();}
+}
+
+/* --- Q : la chambre --- */
+const qg=$('q-cv').getContext('2d');qg.imageSmoothingEnabled=false;
+function chambre(g,W,H,t){
+  const SOL=H*.72;
+  const m=g.createLinearGradient(0,0,0,SOL);
+  m.addColorStop(0,'#2a2438');m.addColorStop(1,'#3c3247');
+  g.fillStyle=m;g.fillRect(0,0,W,SOL);
+  for(let x=0;x<W;x+=26)px(g,x,0,1,SOL,'#00000022');
+  // fenêtre sur le port
+  px(g,W*.55,H*.16,W*.36,H*.26,'#0f1b2a');
+  px(g,W*.55,H*.16,W*.36,5,'#4a3a2c');px(g,W*.72,H*.16,4,H*.26,'#4a3a2c');
+  px(g,W*.55,H*.28,W*.36,4,'#4a3a2c');
+  for(let i=0;i<14;i++)px(g,W*.56+((i*17)%(W*.34)),H*.17+((i*11)%(H*.24)),1,1,'#dfe6ef');
+  px(g,W*.62,H*.2,6,6,'#f2e2a0');
+  px(g,W*.57,H*.36,W*.32,3,'#f2b134');       // lumière du port au loin
+  // lit
+  px(g,W*.06,SOL-70,W*.34,64,'#8a5a2e');px(g,W*.06,SOL-84,W*.13,20,'#f0e2c8');
+  px(g,W*.06,SOL-46,W*.34,8,'#c9563a');
+  // réveil sur la table
+  px(g,W*.63,SOL-40,W*.2,10,'#6b4429');px(g,W*.68,SOL-58,26,18,'#3a3a44');
+  const h=new Date();px(g,W*.7,SOL-52,18,7,(Math.floor(t/500)%2)?'#f2b134':'#c9563a');
+  // blouson au mur
+  px(g,W*.16,H*.2,4,10,'#8d8073');px(g,W*.12,H*.3,26,34,'#2a4a6b');px(g,W*.12,H*.3,26,5,'#3f5f80');
+  // porte
+  px(g,W*.86,SOL-120,W*.16,120,'#5c3a1a');px(g,W*.86,SOL-120,W*.16,5,'#7a5334');
+  px(g,W*.88,SOL-62,5,5,'#f2b134');
+  // sol
+  px(g,0,SOL,W,H-SOL,'#5c3d24');px(g,0,SOL,W,4,'#7a5334');
+  for(let x=0;x<W;x+=30)px(g,x,SOL,2,H-SOL,'#452c19');
+  // le docker debout
+  g.save();g.translate(W*.42,SOL+18);
+  g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(0,1,16,4,0,0,7);g.fill();
+  dessinerDocker(g,perso(t),t);g.restore();
+}
+
+/* --- R : le personnage du widget --- */
+const rg=$('r-perso').getContext('2d');rg.imageSmoothingEnabled=false;
+
+/* --- S : le quartier vu de haut --- */
+const sg=$('s-cv').getContext('2d');sg.imageSmoothingEnabled=false;
+function quartier(g,W,H,t){
+  g.fillStyle='#14545c';g.fillRect(0,0,W,H);
+  // mer en haut
+  const m=g.createLinearGradient(0,0,0,H*.3);
+  m.addColorStop(0,'#1d6b72');m.addColorStop(1,'#2b7d84');
+  g.fillStyle=m;g.fillRect(0,0,W,H*.3);
+  for(let i=0;i<10;i++){g.fillStyle='rgba(255,255,255,.10)';
+    g.fillRect(((i*53)+Math.sin(t/700+i)*10)%W-20,10+i*11,24,2);}
+  // terre
+  g.fillStyle='#c9a97a';g.fillRect(0,H*.3,W,H*.7);
+  g.fillStyle='#b08f63';
+  for(let y=H*.3;y<H;y+=26)g.fillRect(0,y,W,2);
+  // routes
+  g.fillStyle='#7d7266';g.fillRect(W*.42,H*.3,26,H*.7);g.fillRect(0,H*.56,W,24);
+  g.fillStyle='rgba(253,243,224,.6)';
+  for(let y=H*.32;y<H;y+=20)g.fillRect(W*.53,y,3,9);
+  for(let x=6;x<W;x+=22)g.fillRect(x,H*.67,10,3);
+  // quai + grue (haut droite)
+  g.fillStyle='#a8875c';g.fillRect(W*.55,H*.26,W*.45,H*.12);
+  g.strokeStyle='#3f5560';g.lineWidth=4;
+  g.beginPath();g.moveTo(W*.78,H*.36);g.lineTo(W*.78,H*.14);g.lineTo(W*.95,H*.17);g.stroke();
+  const o=Math.sin(t/900)*4;
+  g.beginPath();g.moveTo(W*.9,H*.16);g.lineTo(W*.9+o,H*.24);g.stroke();
+  [[W*.58,H*.3],[W*.68,H*.31]].forEach(([x,y],i)=>{
+    g.fillStyle=i?'#c9563a':'#2a6b72';g.fillRect(x,y,26,16);
+    g.fillStyle='#ffffff22';g.fillRect(x,y,26,3);});
+  // immeuble « chez toi » (gauche)
+  g.fillStyle='#b5623a';g.fillRect(W*.1,H*.38,W*.24,H*.2);
+  g.fillStyle='#8f4526';g.fillRect(W*.1,H*.38,W*.24,5);
+  for(let i=0;i<6;i++)g.fillStyle=(i%2?'#f2d488':'#4a3550'),
+    g.fillRect(W*.13+ (i%3)*22, H*.42+Math.floor(i/3)*22, 12,12);
+  // ville en bas
+  for(let i=0;i<5;i++){
+    const x=W*.08+i*W*.19,y=H*.72;
+    g.fillStyle=['#8a5a2e','#5f8f57','#2a7d85','#c9563a','#9aa0a6'][i];
+    g.fillRect(x,y,W*.14,H*.14);g.fillStyle='#00000033';g.fillRect(x,y,W*.14,4);}
+  g.fillStyle='#c9563a';g.fillRect(W*.3,H*.69,W*.4,7);   // auvent du marché
+  // le docker qui marche sur la route
+  const px2=W*.46, py=H*.3+((t/28)%(H*.62));
+  g.save();g.translate(px2,py);g.scale(.8,.8);
+  g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(0,1,14,4,0,0,7);g.fill();
+  dessinerDocker(g,{look,etat:'marche',coup:null,sol:1,sens:1,garde:0,stun:0},t);g.restore();
+}
+
 (function boucle(t){
   requestAnimationFrame(boucle);
-  decor(t);
-  hg.clearRect(0,0,220,150);
-  quai(hg,220,112,t);
-  hg.save();hg.translate(110,112);
-  hg.fillStyle='rgba(20,10,4,.3)';hg.beginPath();hg.ellipse(0,1,16,4,0,0,7);hg.fill();
-  dessinerDocker(hg,{look,etat:(Math.floor(t/3000)%4===3)?'gagne':'debout',coup:null,sol:1,sens:1,garde:0,stun:0},t);
-  hg.restore();
+  const v=document.querySelector('.vue.on').id;
+  if(v==='p')rade(pg,270,360,t);
+  else if(v==='q')chambre(qg,270,440,t);
+  else if(v==='r'){rg.clearRect(0,0,96,124);rg.save();rg.translate(48,116);
+    dessinerDocker(rg,perso(t),t);rg.restore();}
+  else quartier(sg,270,420,t);
 })(0);
-
-/* ---------- la sauvegarde réelle si elle existe ---------- */
-try{
-  const s=JSON.parse(localStorage.getItem('bdlife.v1')||'null');
-  if(s){
-    const J=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
-    const P={secu:'Sécurité',bequille:'Béquille',docker:'Docker simple',taquet:'Taquet terre',
-      pointeur:'Pointeur',chauffeur:'Chauffeur',chef:'Chef de service'};
-    $('f-nom').textContent=(s.look&&s.look.nom)||'ELIAS';
-    $('f-det').textContent=(P[s.poste]||'Sécurité')+' · jour '+s.jour+' · '+J[(s.jour-1)%7];
-    $('f-sous').textContent=s.euros+' €';
-    if(s.look)Object.assign(look,s.look);
-  }
-}catch(x){}
 </script>
 </body>
 </html>
