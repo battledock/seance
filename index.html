@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2a1710">
+<title>Battle Dock</title>
+<style>
+:root{--trait:#2a1710;--creme:#fdf3e0;--sable:#e8ddc4;--ocre:#f2b134;--ocre-b:#b07d12;
+  --terre:#c9563a;--terre-b:#8f3520;--eau:#1d6b72;--vert:#1d9e75;--vert-b:#0f6e56;
+  --bois:#8a5a2e;--bois-b:#573716}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--sable);color:var(--trait);
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",Verdana,sans-serif;font-weight:700;
+  -webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+button{font-family:inherit;font-weight:700;border:0;background:none;color:inherit;cursor:pointer}
+canvas{image-rendering:pixelated;display:block}
+.app{position:fixed;inset:0;display:flex;flex-direction:column}
+
+.res{flex:0 0 auto;background:var(--trait);display:flex;gap:7px;
+  padding:calc(8px + env(safe-area-inset-top)) 10px 8px}
+.res .r{flex:1;background:#3a2a1c;border-radius:9px;padding:6px 9px;min-width:0}
+.res .r .n{color:#8d8073;font-size:10px}
+.res .r .v{font-size:15px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.or{color:var(--ocre)}.cl{color:var(--creme)}.ve{color:#9fe1cb}
+
+.gain{flex:0 0 auto;background:var(--terre);display:flex;align-items:center;gap:8px;
+  padding:7px 12px;color:var(--creme);font-size:13px}
+.gain .b{background:var(--terre-b);border-radius:12px;padding:3px 9px;font-size:11px;color:#ffd9c6;
+  flex:0 0 auto}
+
+.scene{flex:1;position:relative;min-height:0;background:var(--eau);overflow:hidden}
+.scene canvas{position:absolute;inset:0;width:100%;height:100%}
+.eti{position:absolute;transform:translate(-50%,0);background:var(--creme);border:2px solid var(--trait);
+  border-radius:14px;padding:4px 9px;font-size:11px;white-space:nowrap;box-shadow:0 3px 0 rgba(42,23,16,.45)}
+.eti.vide{background:rgba(253,243,224,.55);border-style:dashed;color:#4a3a2c}
+.bulle{position:absolute;transform:translate(-50%,-50%);min-width:40px;height:40px;padding:0 6px;
+  border-radius:20px;background:var(--ocre);border:2px solid var(--trait);display:flex;
+  align-items:center;justify-content:center;font-size:11px;color:#412402;
+  box-shadow:0 3px 0 rgba(42,23,16,.5);animation:flotte 1.6s ease-in-out infinite}
+@keyframes flotte{50%{transform:translate(-50%,-62%)}}
+
+.bas{flex:0 0 auto;background:var(--creme);border-top:3px solid var(--trait);
+  padding:11px 12px calc(11px + env(safe-area-inset-bottom))}
+.gros{width:100%;border:3px solid var(--trait);border-radius:13px;padding:14px;font-size:16px;
+  color:var(--creme);background:var(--vert);box-shadow:0 5px 0 var(--vert-b);text-align:center}
+.gros:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+.gros[disabled]{filter:grayscale(.6);opacity:.55}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.pt{border:3px solid var(--trait);border-radius:13px;padding:11px;text-align:center;font-size:13px;
+  background:var(--creme);box-shadow:0 4px 0 rgba(42,23,16,.4)}
+.pt span{display:block;font-size:18px;margin-bottom:3px}
+.pt:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(42,23,16,.4)}
+
+#fen{position:fixed;inset:0;z-index:20;display:none;align-items:flex-end;background:rgba(42,23,16,.75)}
+#fen.on{display:flex}
+#fen .b{width:100%;background:var(--creme);border-top:3px solid var(--trait);
+  border-radius:20px 20px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));
+  max-height:86vh;overflow-y:auto}
+#fen h2{font-size:19px;margin-bottom:6px}
+#fen p{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:13px;line-height:1.6;color:#5a4030}
+.ligne{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:2px solid rgba(122,90,60,.2)}
+.ligne:last-of-type{border-bottom:0}
+.ligne .ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;font-size:19px}
+.ligne .t{flex:1;min-width:0}
+.ligne .t .a{font-size:14px}
+.ligne .t .d{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12px;color:#6b4c34;margin-top:2px}
+.prix{border:3px solid var(--trait);border-radius:11px;padding:9px 11px;font-size:12px;
+  background:var(--ocre);box-shadow:0 3px 0 var(--ocre-b);flex:0 0 auto}
+.prix[disabled]{filter:grayscale(.7);opacity:.5}
+.barre{height:7px;background:#e0d4b8;border-radius:4px;margin-top:6px;overflow:hidden}
+.barre i{display:block;height:100%;border-radius:4px}
+.note{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12px;color:#6b4c34;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="res">
+    <div class="r"><div class="n">Caisse</div><div class="v or" id="r-euros">0 €</div></div>
+    <div class="r"><div class="n">Dockers</div><div class="v cl" id="r-dockers">0 / 0</div></div>
+    <div class="r"><div class="n">Réputation</div><div class="v ve" id="r-rep">0 %</div></div>
+  </div>
+  <div class="gain">
+    <div style="flex:1" id="g-txt">0 € par heure</div>
+    <div class="b" id="g-actifs">0 poste actif</div>
+  </div>
+
+  <div class="scene"><canvas id="quai"></canvas><div id="calques"></div></div>
+
+  <div class="bas">
+    <button class="gros" id="recolter">Rien à récolter</button>
+    <div class="duo">
+      <button class="pt" id="bt-equipe"><span>👷</span>Équipe</button>
+      <button class="pt" id="bt-contrats"><span>📄</span>Contrats</button>
+    </div>
+  </div>
+</div>
+
+<div id="fen"><div class="b" id="fen-b"></div></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const eu=n=>Math.round(n).toLocaleString('fr-FR')+' €';
+
+const POSTES=[
+  {id:'portique',nom:'Portique nord',ic:'⚓',couleur:'#1d9e75',base:60,cout:900,dockers:2,
+   x:.26,y:.30,l:.34,h:.19,d:'Le gros du trafic conteneur.'},
+  {id:'hangar',nom:'Hangar 12',ic:'📦',couleur:'#378add',base:34,cout:600,dockers:2,
+   x:.72,y:.28,l:.30,h:.17,d:'Stockage et reconditionnement.'},
+  {id:'criee',nom:'La criée',ic:'🐟',couleur:'#c9563a',base:22,cout:450,dockers:1,
+   x:.27,y:.68,l:.32,h:.18,d:'Poisson au petit matin.'},
+  {id:'sud',nom:'Quai sud',ic:'🏗️',couleur:'#8a5a2e',base:120,cout:8000,dockers:4,
+   x:.73,y:.68,l:.32,h:.18,d:'Le grand quai. Cher, mais il change tout.'}
+];
+const CONTRATS=[
+  {id:'agrumes',nom:'Cargaison d’agrumes',duree:2,gain:900,rep:2,d:'Deux heures, payé rubis sur l’ongle.'},
+  {id:'ciment',nom:'Sacs de ciment',duree:4,gain:2100,rep:1,d:'Lourd, sale, bien payé.'},
+  {id:'ferraille',nom:'Ferraille à charger',duree:6,gain:3600,rep:3,d:'Six heures, l’équipe finira lessivée.'}
+];
+
+const neuf=()=>({euros:1500,dockers:6,logements:8,rep:20,
+  niveaux:{portique:1,hangar:0,criee:0,sud:0},stock:0,derniere:Date.now(),contrat:null,fin:0});
+let e=neuf();
+const CLE='bd.gestion.v1';
+try{const b=localStorage.getItem(CLE);if(b)e=Object.assign(neuf(),JSON.parse(b));}catch(x){}
+const sauver=()=>{try{localStorage.setItem(CLE,JSON.stringify(e));}catch(x){}};
+
+const niv=p=>e.niveaux[p.id]||0;
+const prod=p=>niv(p)?p.base*niv(p)*(1+e.rep/200):0;
+const coutNiveau=p=>Math.round(p.cout*Math.pow(1.7,niv(p)));
+const occupes=()=>POSTES.reduce((s,p)=>s+p.dockers*niv(p),0);
+const manque=()=>occupes()>e.dockers;
+const revenu=()=>POSTES.reduce((s,p)=>s+prod(p),0)*(manque()?.5:1);
+const actifs=()=>POSTES.filter(p=>niv(p)).length;
+
+const cv=$('quai'),g=cv.getContext('2d');
+function taille(){const r=cv.parentElement.getBoundingClientRect();
+  cv.width=Math.max(1,Math.round(r.width));cv.height=Math.max(1,Math.round(r.height));}
+addEventListener('resize',()=>{taille();calques();});
+const px=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));};
+
+function dessiner(t){
+  const W=cv.width,H=cv.height;
+  px(0,0,W,H,'#c9a97a');
+  px(0,0,W,H*.19,'#155a61');
+  for(let i=0;i<8;i++)px(((i*67)+Math.sin(t/700+i)*10)%W-20,8+i*8,30,3,'#2f858d');
+  px(0,H*.19,W,5,'#8a6a44');
+  px(0,H*.52,W,H*.05,'#8d8073');
+  for(let x=6;x<W;x+=26)px(x,H*.535,12,3,'rgba(253,243,224,.5)');
+  POSTES.forEach(p=>{
+    const x=W*(p.x-p.l/2),y=H*p.y,w=W*p.l,h=H*p.h;
+    if(!niv(p)){g.setLineDash([7,6]);g.strokeStyle='#6d6a63';g.lineWidth=3;
+      g.strokeRect(x,y,w,h);g.setLineDash([]);return;}
+    px(x,y,w,h,p.couleur);px(x,y,w,4,'rgba(255,255,255,.3)');
+    g.strokeStyle='#2a1710';g.lineWidth=3;g.strokeRect(x,y,w,h);
+    for(let i=0;i<Math.min(niv(p),6);i++)px(x+8+i*11,y+h-13,7,7,'rgba(255,255,255,.75)');
+    if(p.id==='portique'){
+      const o=Math.sin(t/900)*5;
+      g.strokeStyle='#2a3f47';g.lineWidth=4;
+      g.beginPath();g.moveTo(x+14,y);g.lineTo(x+14,y-H*.13);g.lineTo(x+w-16,y-H*.11);g.stroke();
+      g.beginPath();g.moveTo(x+w*.6,y-H*.118);g.lineTo(x+w*.6+o,y-14);g.stroke();
+      px(x+w*.6+o-9,y-14,18,12,'#2a3f47');
+    }
+    if(p.id==='hangar')for(let i=0;i<3;i++)px(x+9,y+11+i*13,w-18,7,'rgba(0,0,0,.18)');
+    if(p.id==='criee'){px(x+8,y+9,w-16,8,'#f0ece2');
+      for(let i=0;i<4;i++)px(x+12+i*18,y+9,8,8,'#e8452c');}
+    if(p.id==='sud'){px(x+10,y+12,w*.4,h-24,'#5f6b72');px(x+w*.52,y+16,w*.34,h-30,'#9aa0a6');}
+  });
+}
+
+function calques(){
+  const z=$('calques');z.innerHTML='';
+  const H=cv.height;
+  POSTES.forEach(p=>{
+    const b=document.createElement('button');
+    b.className='eti'+(niv(p)?'':' vide');
+    b.style.left=(p.x*100)+'%';
+    b.style.top=Math.max(2,(p.y*H)-26)+'px';
+    b.textContent=niv(p)?p.nom+' · niv. '+niv(p):p.nom+' · '+eu(coutNiveau(p));
+    b.onclick=()=>fichePoste(p);
+    z.appendChild(b);
+  });
+  if(e.stock>=1){
+    const p=POSTES.find(q=>niv(q))||POSTES[0];
+    const b=document.createElement('button');
+    b.className='bulle';
+    b.style.left=Math.min(92,(p.x+p.l/2)*100)+'%';
+    b.style.top=(p.y*H)+'px';
+    b.textContent=Math.round(e.stock);
+    b.onclick=recolter;
+    z.appendChild(b);
+  }
+}
+
+function tic(){
+  const now=Date.now(), h=(now-e.derniere)/60000;   // 1 min réelle = 1 h de quai
+  if(h>0){e.stock+=revenu()*h;e.derniere=now;}
+  if(e.contrat&&now>=e.fin){
+    const c=CONTRATS.find(x=>x.id===e.contrat);
+    e.euros+=c.gain;e.rep=Math.min(100,e.rep+c.rep);e.contrat=null;
+    fenetre('Contrat livré','<p><b>'+c.nom+'</b> · +'+eu(c.gain)+' et +'+c.rep+' % de réputation.</p>');
+  }
+  sauver();rendre();
+}
+function recolter(){if(e.stock<1)return;e.euros+=Math.floor(e.stock);e.stock=0;sauver();rendre();}
+$('recolter').onclick=recolter;
+
+function rendre(){
+  $('r-euros').textContent=eu(e.euros);
+  $('r-dockers').textContent=occupes()+' / '+e.dockers;
+  $('r-rep').textContent=Math.round(e.rep)+' %';
+  $('g-txt').textContent=eu(revenu())+' par heure'+(manque()?' · effectif insuffisant':'');
+  $('g-actifs').textContent=actifs()+(actifs()>1?' postes actifs':' poste actif');
+  const b=$('recolter');
+  b.textContent=e.stock>=1?'Récolter '+eu(e.stock):'Rien à récolter';
+  b.disabled=e.stock<1;
+  calques();
+}
+
+function fenetre(titre,html){
+  $('fen-b').innerHTML='<h2>'+titre+'</h2>'+html+
+    '<button class="gros" id="fen-ok" style="margin-top:14px">Fermer</button>';
+  $('fen-ok').onclick=()=>$('fen').classList.remove('on');
+  $('fen').classList.add('on');
+}
+function fichePoste(p){
+  const n=niv(p),c=coutNiveau(p);
+  fenetre(p.nom,
+    '<p>'+p.d+'</p>'+
+    '<div class="ligne"><div class="ic" style="background:'+p.couleur+'">'+p.ic+'</div>'+
+    '<div class="t"><div class="a">'+(n?'Niveau '+n:'Non construit')+'</div>'+
+    '<div class="d">'+(n?eu(prod(p))+' par heure · '+p.dockers*n+' dockers':'Aucune production')+'</div>'+
+    '<div class="barre"><i style="width:'+Math.min(100,n*20)+'%;background:'+p.couleur+'"></i></div></div></div>'+
+    '<div class="ligne"><div class="t"><div class="a">'+(n?'Améliorer':'Construire')+'</div>'+
+    '<div class="d">+'+Math.round(p.base*(1+e.rep/200))+' €/h · '+p.dockers+' dockers de plus</div></div>'+
+    '<button class="prix" id="p-up"'+(e.euros<c?' disabled':'')+'>'+eu(c)+'</button></div>');
+  const up=$('p-up');
+  if(up)up.onclick=()=>{if(e.euros<c)return;
+    e.euros-=c;e.niveaux[p.id]=n+1;sauver();$('fen').classList.remove('on');rendre();};
+}
+$('bt-equipe').onclick=()=>{
+  const cd=Math.round(120*Math.pow(1.25,e.dockers-6));
+  const cl=Math.round(900*Math.pow(1.4,(e.logements-8)/4));
+  fenetre('Ton équipe',
+    '<p>Chaque poste mobilise des dockers. Sans effectif suffisant, la production tombe de moitié.</p>'+
+    '<div class="ligne"><div class="ic" style="background:#1d6b72">👷</div>'+
+    '<div class="t"><div class="a">'+e.dockers+' dockers · '+occupes()+' occupés</div>'+
+    '<div class="d">Places de logement : '+e.logements+'</div></div>'+
+    '<button class="prix" id="e-h"'+((e.euros<cd||e.dockers>=e.logements)?' disabled':'')+'>'+eu(cd)+'</button></div>'+
+    '<div class="ligne"><div class="ic" style="background:#8a5a2e">🏠</div>'+
+    '<div class="t"><div class="a">Agrandir le foyer</div><div class="d">+4 places</div></div>'+
+    '<button class="prix" id="e-l"'+(e.euros<cl?' disabled':'')+'>'+eu(cl)+'</button></div>'+
+    (e.dockers>=e.logements?'<div class="note">Plus une place libre : agrandis le foyer avant d’embaucher.</div>':''));
+  const h=$('e-h'),l=$('e-l');
+  if(h)h.onclick=()=>{if(e.euros>=cd&&e.dockers<e.logements){e.euros-=cd;e.dockers++;sauver();
+    $('fen').classList.remove('on');rendre();}};
+  if(l)l.onclick=()=>{if(e.euros>=cl){e.euros-=cl;e.logements+=4;sauver();
+    $('fen').classList.remove('on');rendre();}};
+};
+$('bt-contrats').onclick=()=>{
+  if(e.contrat){
+    const c=CONTRATS.find(x=>x.id===e.contrat);
+    const reste=Math.max(0,Math.ceil((e.fin-Date.now())/60000));
+    fenetre('Contrat en cours','<p><b>'+c.nom+'</b> — livraison dans '+reste+' min. '+
+      'À la clé : '+eu(c.gain)+' et +'+c.rep+' % de réputation.</p>');
+    return;
+  }
+  fenetre('Contrats du jour',
+    '<p>Un contrat mobilise le port et paie à la livraison.</p>'+
+    CONTRATS.map(c=>'<div class="ligne"><div class="ic" style="background:#c9563a">📄</div>'+
+      '<div class="t"><div class="a">'+c.nom+'</div><div class="d">'+c.d+' · '+c.duree+' min</div></div>'+
+      '<button class="prix" data-c="'+c.id+'">'+eu(c.gain)+'</button></div>').join('')+
+    '<div class="note">Une minute réelle vaut une heure sur le quai.</div>');
+  $('fen-b').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{
+    const c=CONTRATS.find(x=>x.id===b.dataset.c);
+    e.contrat=c.id;e.fin=Date.now()+c.duree*60000;sauver();
+    $('fen').classList.remove('on');rendre();
+  });
+};
+
+taille();
+(function boucle(t){requestAnimationFrame(boucle);dessiner(t);})(0);
+tic();setInterval(tic,1000);
+</script>
+</body>
+</html>
