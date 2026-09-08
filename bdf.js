@@ -305,6 +305,10 @@ function pose(f,t){
       }
       break;
     }
+    case 'gagne':{
+      const r=Math.sin(t/160);
+      p.torseY=-1;p.brasLeve=true;p.teteY=r>0?-1:0;p.jAv=2;p.jAr=-2;break;
+    }
     default:{
       const r=Math.sin(t/430);
       p.torseY=r>0?0:1;p.brasAr=r*1.2;p.teteY=r>.7?-1:0;
@@ -313,6 +317,7 @@ function pose(f,t){
     }
   }
   if(f.sol===0&&e!=='coup'){p.plie=Math.max(p.plie,4);}
+  if(f.garde&&f.stun>0){p.torseX+=(Math.random()-.5)*2;}
   return p;
 }
 
@@ -330,6 +335,7 @@ function dessinerDocker(g,f,t){
   const yTete=yT-16+P.teteY, xTete=xT+P.teteX+P.penche;
 
   if(P.ko){g.rotate(-1.42);g.translate(-28,-6);}
+  if(f.ecrase>0){const q=f.ecrase/10;g.scale(1+q*.22,1-q*.22);}
 
   /* ---- jambes ---- */
   const bas=item('bas',L.bas);
@@ -452,7 +458,11 @@ function dessinerDocker(g,f,t){
     else ext=9-(k.t-k.dep-k.act)*.6;
     brY=k.haut?-12:0;
   }
-  if(P.ferme){
+  if(P.brasLeve){
+    px(g,xT+torse/2-1,yT-12,bl,17,manche);
+    px(g,xT+torse/2-1,yT-18,7,7,mainC);
+    dessinerArme(g,L.arme,xT+torse/2+5,yT-14,t);
+  }else if(P.ferme){
     px(g,xT+1,yT-2,bl+3,18,manche);px(g,xT+3,yT-4,8,8,mainC);
     px(g,xT-2,yT+4,bl+2,14,ass(manche,18));
   }else if(ext!==null){
