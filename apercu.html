@@ -3,292 +3,566 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Battle Dock Fight — accueils illustrés</title>
+<meta name="theme-color" content="#e08a45">
+<title>Battle Dock Fight</title>
 <style>
+:root{
+  --trait:#2a1710;        /* contour foncé */
+  --creme:#fdf3e0;
+  --sable:#f5dcae;
+  --ocre:#f2b134;  --ocre-b:#b87a13;
+  --terre:#d4472c; --terre-b:#8f2716;
+  --eau:#1d6b72;   --eau-b:#0f4046;
+  --bois:#7a4a2a;  --bois-b:#4a2916;
+  --vert:#4f9c5a;  --vert-b:#2c6234;
+  --gris:#8d8073;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#0a0e12;overflow:hidden;-webkit-tap-highlight-color:transparent}
-body{font-family:"Arial Black","Arial Narrow",Helvetica,sans-serif}
-button{font-family:inherit;color:inherit;cursor:pointer}
-#barre{position:fixed;top:0;left:0;right:0;z-index:99;display:flex;background:#000;
-  border-bottom:1px solid #1e1e1e;padding-top:env(safe-area-inset-top)}
-#barre button{flex:1;padding:10px 3px 11px;background:none;border:0;border-right:1px solid #191919;
-  color:#666;font:600 10px/1.5 ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
-#barre button b{display:block;font-size:9px;font-weight:400;opacity:.5;letter-spacing:0;text-transform:none}
-#barre button.on{color:#fff;background:#151515}
-.vue{position:fixed;inset:50px 0 0 0;display:none;overflow:hidden}
-.vue.on{display:block}
+html,body{height:100%;overflow:hidden;background:#e08a45;color:var(--trait);
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",Verdana,system-ui,sans-serif;
+  font-weight:700;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;
+  overscroll-behavior:none}
+button{font-family:inherit;font-weight:700;color:inherit;cursor:pointer;border:0;background:none}
 canvas{image-rendering:pixelated;display:block}
 
-/* ================= M — HÉROS ================= */
-#m{background:#0b1016}
-#m .fondjeu{position:absolute;inset:0;width:100%;height:100%}
-#m .voile{position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(10,14,18,.85) 0%,rgba(10,14,18,.15) 34%,rgba(10,14,18,.9) 74%,#0b1016 100%)}
-#m .contenu{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-  padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
-#m .logo{text-align:center;text-transform:uppercase;font-style:italic;line-height:.82;
-  filter:drop-shadow(0 4px 0 rgba(0,0,0,.55))}
-#m .logo .a{display:block;font-size:clamp(34px,11.5vw,72px);color:#f4ead2;letter-spacing:-.03em}
-#m .logo .b{display:block;font-size:clamp(26px,8.6vw,54px);color:#e8452c;letter-spacing:.04em;
-  -webkit-text-stroke:1px #2a0d06}
-#m .stats{display:flex;gap:8px;margin-top:10px}
-#m .stats div{border:2px solid rgba(244,234,210,.35);background:rgba(10,14,18,.55);
-  padding:7px 11px;font:900 11px/1 "Arial Black",sans-serif;color:#f4ead2;
-  text-transform:uppercase;letter-spacing:.06em;backdrop-filter:blur(3px)}
-#m .stats div b{color:#ffd029}
-#m .heros{flex:1;display:flex;align-items:flex-end;justify-content:center;width:100%}
-#m .heros canvas{width:190px;height:246px;filter:drop-shadow(0 12px 14px rgba(0,0,0,.6))}
-#m .jouer{width:100%;max-width:420px;border:0;background:linear-gradient(180deg,#ffd029,#e8a516);
-  color:#20140a;padding:19px;font:900 20px/1 "Arial Black",sans-serif;font-style:italic;
-  text-transform:uppercase;letter-spacing:.04em;border-radius:4px;
-  box-shadow:0 6px 0 #8a5f0e,0 12px 24px rgba(0,0,0,.5);margin-top:6px}
-#m .jouer:active{transform:translateY(4px);box-shadow:0 2px 0 #8a5f0e}
-#m .tuiles{display:flex;gap:8px;width:100%;max-width:420px;margin-top:10px}
-#m .tuiles button{flex:1;border:2px solid rgba(244,234,210,.28);background:rgba(20,28,36,.72);
-  border-radius:4px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;
-  font:900 8.5px/1 "Arial Black",sans-serif;color:#c9d3da;text-transform:uppercase;letter-spacing:.04em;
-  backdrop-filter:blur(3px)}
-#m .tuiles canvas{width:30px;height:30px}
-#m .tuiles button:active{transform:translateY(2px)}
+/* ---------- fond ---------- */
+#ciel{position:fixed;inset:0;z-index:0;
+  background:linear-gradient(180deg,#f6c876 0%,#efa457 34%,#d97b46 62%,#1d6b72 62%,#124e55 100%)}
+#ciel::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 22%,rgba(255,240,200,.5),transparent 55%)}
+#vagues{position:fixed;left:0;right:0;bottom:0;height:38%;z-index:0;opacity:.4;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.16) 0 2px,transparent 2px 13px)}
 
-/* ================= N — TUILES ================= */
-#n{background:#101820;overflow-y:auto}
-#n .page{min-height:100%;padding:14px 14px calc(18px + env(safe-area-inset-bottom))}
-#n .bandeau{display:flex;align-items:center;gap:10px;border:3px solid #0a1016;border-radius:6px;
-  background:linear-gradient(150deg,#1d2a35,#141d25);padding:10px 12px;
-  box-shadow:0 5px 0 #0a1016}
-#n .bandeau canvas{width:56px;height:72px;flex:0 0 auto}
-#n .bandeau .qui{flex:1;min-width:0;color:#e8eef3}
-#n .bandeau .qui .nom{font:900 15px/1 "Arial Black",sans-serif;text-transform:uppercase}
-#n .bandeau .qui .sous{font:400 11.5px/1.4 Georgia,serif;color:#8fa3b0;margin-top:4px}
-#n .bandeau .qui .barre{height:8px;background:#0a1016;border-radius:4px;margin-top:8px;overflow:hidden}
-#n .bandeau .qui .barre i{display:block;height:100%;width:38%;background:linear-gradient(90deg,#2ec4c9,#8fe3b0)}
-#n .bandeau .sou{flex:0 0 auto;text-align:right;color:#ffd029;font:900 15px/1 "Arial Black",sans-serif}
-#n .bandeau .sou small{display:block;color:#8fa3b0;font:400 10px/1 Georgia,serif;margin-top:5px}
-#n .grille{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:13px}
-#n .t{position:relative;border:0;border-radius:8px;padding:13px;min-height:118px;text-align:left;
-  display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;
-  color:#12181d;box-shadow:0 6px 0 rgba(0,0,0,.45)}
-#n .t.grande{grid-column:span 2;min-height:132px}
-#n .t canvas{position:absolute;right:8px;bottom:8px;width:56px;height:56px;opacity:.95}
-#n .t .h{font:900 17px/1 "Arial Black",sans-serif;font-style:italic;text-transform:uppercase;letter-spacing:-.01em}
-#n .t .p{font:400 11.5px/1.45 Georgia,serif;max-width:16ch;margin-top:6px;opacity:.78}
-#n .t .go{margin-top:auto;font:900 10px/1 "Arial Black",sans-serif;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
-#n .t:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.45)}
-#n .t.j{background:linear-gradient(150deg,#ffd85c,#f2a91b)}
-#n .t.c{background:linear-gradient(150deg,#6fe0e4,#25a7ac)}
-#n .t.r{background:linear-gradient(150deg,#ff8f7d,#e8452c);color:#2a0d06}
-#n .t.v{background:linear-gradient(150deg,#a9dfa2,#5aa濃)}
-#n .t.v{background:linear-gradient(150deg,#a9dfa2,#57a86a)}
-#n .t.g{background:linear-gradient(150deg,#cdd8e0,#93a5b3)}
-#n .titre{color:#e8eef3;font:900 12px/1 "Arial Black",sans-serif;letter-spacing:.16em;
-  text-transform:uppercase;margin:18px 0 2px;display:flex;align-items:center;gap:9px}
-#n .titre::after{content:"";flex:1;height:2px;background:#22303c}
+/* ---------- écrans ---------- */
+.ecran{position:fixed;inset:0;z-index:1;display:none;flex-direction:column;
+  padding:calc(10px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ecran.on{display:flex}
 
-/* ================= O — CARROUSEL ================= */
-#o{background:#0a0f14}
-#o .piste{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none}
-#o .piste::-webkit-scrollbar{display:none}
-#o .carte{flex:0 0 86%;scroll-snap-align:center;margin:14px 7px calc(18px + env(safe-area-inset-bottom));
-  border-radius:12px;overflow:hidden;position:relative;display:flex;flex-direction:column;
-  box-shadow:0 14px 34px rgba(0,0,0,.6)}
-#o .carte canvas.ill{width:100%;height:44%;object-fit:cover;flex:0 0 auto}
-#o .carte .bas{flex:1;padding:16px;display:flex;flex-direction:column;color:#eef3f6;
-  background:linear-gradient(180deg,#16212a,#0e161d)}
-#o .carte .et{font:900 9px/1 "Arial Black",sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#ffd029}
-#o .carte h2{font:900 26px/1 "Arial Black",sans-serif;font-style:italic;text-transform:uppercase;
-  letter-spacing:-.02em;margin-top:9px}
-#o .carte p{font:400 13px/1.65 Georgia,serif;color:#a9bcc7;margin-top:9px}
-#o .carte .infos{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
-#o .carte .infos span{border:2px solid rgba(238,243,246,.25);padding:6px 9px;
-  font:900 9.5px/1 "Arial Black",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#c9d7df}
-#o .carte button{margin-top:auto;border:0;border-radius:5px;padding:15px;
-  font:900 15px/1 "Arial Black",sans-serif;font-style:italic;text-transform:uppercase;
-  background:linear-gradient(180deg,#ffd029,#e8a516);color:#20140a;box-shadow:0 5px 0 #8a5f0e}
-#o .carte button:active{transform:translateY(3px);box-shadow:0 2px 0 #8a5f0e}
-#o .pastilles{position:absolute;bottom:6px;left:0;right:0;display:flex;gap:6px;justify-content:center}
-#o .pastilles i{width:7px;height:7px;border-radius:50%;background:rgba(238,243,246,.3)}
+/* ---------- barre du haut ---------- */
+.barre{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.pilule{display:flex;align-items:center;gap:7px;background:linear-gradient(180deg,#fff8e8,#f0dcb4);
+  border:3px solid var(--trait);border-radius:999px;padding:7px 13px 7px 8px;
+  box-shadow:0 4px 0 rgba(42,23,16,.55);font-size:14px;color:var(--trait);white-space:nowrap}
+.pilule canvas{width:22px;height:22px}
+.pilule.eau{background:linear-gradient(180deg,#3aa0a8,#1d6b72);color:var(--creme);
+  text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.rond{width:44px;height:44px;border-radius:50%;border:3px solid var(--trait);
+  background:linear-gradient(180deg,#fff8e8,#f0dcb4);box-shadow:0 4px 0 rgba(42,23,16,.55);
+  font-size:19px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.rond:active,.pilule:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(42,23,16,.55)}
+.esp{flex:1}
+
+/* ---------- logo ---------- */
+.logo{text-align:center;margin-top:8px;line-height:.86;text-transform:uppercase;font-style:italic}
+.logo .a{display:block;font-size:clamp(34px,11.5vw,66px);color:var(--creme);
+  -webkit-text-stroke:6px var(--trait);paint-order:stroke fill;
+  text-shadow:0 6px 0 rgba(42,23,16,.45);letter-spacing:-.02em}
+.logo .b{display:block;font-size:clamp(26px,9vw,52px);color:var(--ocre);
+  -webkit-text-stroke:6px var(--trait);paint-order:stroke fill;
+  text-shadow:0 6px 0 rgba(42,23,16,.45);letter-spacing:.04em;margin-top:2px}
+
+/* ---------- héros ---------- */
+.heros{flex:1;display:flex;align-items:flex-end;justify-content:center;position:relative;min-height:150px}
+.heros canvas{width:180px;height:232px;filter:drop-shadow(0 10px 10px rgba(42,23,16,.45))}
+.quai{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);width:78%;height:26px;
+  border-radius:50%;background:radial-gradient(ellipse,rgba(42,23,16,.4),transparent 70%)}
+
+/* ---------- gros boutons ---------- */
+.gros{width:100%;border:4px solid var(--trait);border-radius:18px;padding:17px 18px;
+  font-size:22px;font-style:italic;text-transform:uppercase;color:var(--creme);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  text-shadow:0 3px 0 rgba(0,0,0,.35);position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--ocre) 0%,var(--ocre) 48%,var(--ocre-b) 100%);
+  box-shadow:0 7px 0 var(--ocre-b),0 12px 18px rgba(42,23,16,.35);margin-top:12px}
+.gros::before{content:"";position:absolute;left:8px;right:8px;top:5px;height:32%;
+  border-radius:12px;background:rgba(255,255,255,.28)}
+.gros:active{transform:translateY(5px);box-shadow:0 2px 0 var(--ocre-b)}
+.gros.terre{background:linear-gradient(180deg,#e8654a,var(--terre) 48%,var(--terre-b));box-shadow:0 7px 0 var(--terre-b),0 12px 18px rgba(42,23,16,.35)}
+.gros.eau{background:linear-gradient(180deg,#38a1a9,var(--eau) 48%,var(--eau-b));box-shadow:0 7px 0 var(--eau-b),0 12px 18px rgba(42,23,16,.35)}
+.gros.bois{background:linear-gradient(180deg,#9a6238,var(--bois) 48%,var(--bois-b));box-shadow:0 7px 0 var(--bois-b),0 12px 18px rgba(42,23,16,.35)}
+.gros.vert{background:linear-gradient(180deg,#6fbb79,var(--vert) 48%,var(--vert-b));box-shadow:0 7px 0 var(--vert-b),0 12px 18px rgba(42,23,16,.35)}
+.gros[disabled]{filter:grayscale(.7);opacity:.65}
+.gros.moyen{font-size:17px;padding:14px}
+
+/* ---------- rangée de tuiles ---------- */
+.tuiles{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+.tuile{border:4px solid var(--trait);border-radius:16px;padding:9px 4px 7px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--creme);
+  font-size:11px;text-transform:uppercase;text-shadow:0 2px 0 rgba(0,0,0,.3);
+  background:linear-gradient(180deg,#9a6238,var(--bois) 55%,var(--bois-b));
+  box-shadow:0 5px 0 var(--bois-b)}
+.tuile canvas{width:30px;height:30px}
+.tuile:active{transform:translateY(3px);box-shadow:0 2px 0 var(--bois-b)}
+.tuile.eau{background:linear-gradient(180deg,#38a1a9,var(--eau) 55%,var(--eau-b));box-shadow:0 5px 0 var(--eau-b)}
+.tuile.vert{background:linear-gradient(180deg,#6fbb79,var(--vert) 55%,var(--vert-b));box-shadow:0 5px 0 var(--vert-b)}
+.tuile.terre{background:linear-gradient(180deg,#e8654a,var(--terre) 55%,var(--terre-b));box-shadow:0 5px 0 var(--terre-b)}
+
+/* ---------- panneaux crème ---------- */
+.carte{background:linear-gradient(180deg,#fff8e8,var(--sable));border:4px solid var(--trait);
+  border-radius:20px;box-shadow:0 7px 0 rgba(42,23,16,.5);padding:14px;margin-top:12px}
+.titre{font-size:clamp(24px,7.6vw,36px);text-transform:uppercase;font-style:italic;
+  color:var(--creme);-webkit-text-stroke:5px var(--trait);paint-order:stroke fill;
+  text-shadow:0 4px 0 rgba(42,23,16,.4);line-height:1;flex:1}
+.txt{font-family:"Trebuchet MS",Verdana,sans-serif;font-weight:400;font-size:13.5px;
+  line-height:1.6;color:#5a4030}
+.rub{font-size:12px;text-transform:uppercase;color:#7a5a3c;letter-spacing:.06em;
+  margin-top:14px;display:flex;align-items:center;gap:8px}
+.rub::after{content:"";flex:1;height:3px;border-radius:2px;background:rgba(122,90,60,.3)}
+
+/* ---------- aperçu collant ---------- */
+.collant{position:sticky;top:0;z-index:5;margin-top:10px}
+.collant .dedans{display:flex;gap:12px;background:linear-gradient(180deg,#fff8e8,var(--sable));
+  border:4px solid var(--trait);border-radius:20px;box-shadow:0 6px 0 rgba(42,23,16,.5);padding:11px}
+.collant canvas#apercu{width:104px;height:134px;flex:0 0 auto;border-radius:14px;
+  border:3px solid var(--trait);background:linear-gradient(180deg,#8fd0d6,#2d7f86)}
+.infos{flex:1;min-width:0;display:flex;flex-direction:column}
+.infos .nom{font-size:15px;text-transform:uppercase;word-break:break-word}
+.infos .arme{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12px;color:#6b4c34;margin-top:3px}
+.jauges{margin-top:7px;display:grid;gap:5px}
+.jauges .j{display:flex;align-items:center;gap:7px;font-size:9.5px;text-transform:uppercase;color:#6b4c34}
+.jauges .j span{width:44px}
+.jauges .j b{flex:1;height:11px;border:2px solid var(--trait);border-radius:6px;overflow:hidden;
+  background:#e3cba0;display:flex}
+.jauges .j b i{flex:1;border-right:2px solid rgba(42,23,16,.25)}
+.jauges .j b i.p{background:linear-gradient(180deg,#f2b134,#d4472c)}
+.jauges .j b i:last-child{border-right:0}
+.poses{display:flex;gap:5px;margin-top:auto;padding-top:8px}
+.poses button{flex:1;border:3px solid var(--trait);border-radius:11px;padding:6px 2px;font-size:9.5px;
+  text-transform:uppercase;background:#fff8e8;box-shadow:0 3px 0 rgba(42,23,16,.45)}
+.poses button.on{background:var(--ocre);color:var(--trait)}
+.poses button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(42,23,16,.45)}
+
+/* ---------- onglets + options ---------- */
+.onglets{display:flex;gap:7px;overflow-x:auto;margin:12px -14px 0;padding:2px 14px 6px;scrollbar-width:none}
+.onglets::-webkit-scrollbar{display:none}
+.onglets button{flex:0 0 auto;border:4px solid var(--trait);border-radius:14px;padding:9px 13px;
+  font-size:12px;text-transform:uppercase;color:var(--creme);text-shadow:0 2px 0 rgba(0,0,0,.3);
+  background:linear-gradient(180deg,#9a6238,var(--bois) 55%,var(--bois-b));box-shadow:0 4px 0 var(--bois-b)}
+.onglets button.on{background:linear-gradient(180deg,#f8c85e,var(--ocre) 55%,var(--ocre-b));
+  color:var(--trait);text-shadow:none;box-shadow:0 4px 0 var(--ocre-b)}
+.rangee{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.opt{border:3px solid var(--trait);border-radius:13px;background:#fff8e8;padding:9px 11px;
+  font-size:11.5px;text-transform:uppercase;box-shadow:0 4px 0 rgba(42,23,16,.4);position:relative}
+.opt.actif{background:linear-gradient(180deg,#f8c85e,var(--ocre));box-shadow:0 4px 0 var(--ocre-b)}
+.opt.bloque{opacity:.45}
+.opt:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(42,23,16,.4)}
+.opt .r{position:absolute;top:-7px;right:-7px;width:14px;height:14px;border-radius:50%;
+  border:3px solid var(--trait)}
+.pastel{width:42px;height:42px;padding:0;border:3px solid var(--trait);border-radius:12px;
+  box-shadow:0 4px 0 rgba(42,23,16,.4)}
+.pastel.actif{outline:4px solid var(--ocre);outline-offset:2px}
+
+/* ---------- listes ---------- */
+.ligne{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;
+  border-bottom:3px solid rgba(122,90,60,.22)}
+.ligne:last-child{border-bottom:0}
+.ligne .g{flex:1;min-width:0;font-size:13px;text-transform:uppercase}
+.ligne small{display:block;font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12px;
+  color:#6b4c34;margin-top:4px;text-transform:none}
+.ligne .d{flex:0 0 auto;font-size:12px;color:var(--terre)}
+
+/* ---------- billet ---------- */
+.billet{background:linear-gradient(180deg,#fff8e8,#f2dcae);border:4px solid var(--trait);
+  border-radius:18px;box-shadow:0 7px 0 rgba(42,23,16,.5);padding:16px;position:relative;overflow:hidden}
+.billet .poste{font-size:clamp(26px,8.4vw,40px);text-transform:uppercase;font-style:italic;
+  line-height:1;margin-top:10px;color:var(--terre)}
+.billet .haut{display:flex;justify-content:space-between;font-size:10px;text-transform:uppercase;
+  color:#8a6a4a;border-bottom:3px solid rgba(122,90,60,.25);padding-bottom:8px}
+.billet .bonus{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.billet .bonus span{border:3px solid var(--trait);border-radius:999px;padding:6px 11px;font-size:11px;
+  text-transform:uppercase;background:linear-gradient(180deg,#f8c85e,var(--ocre));
+  box-shadow:0 3px 0 var(--ocre-b)}
+.billet .rarete{position:absolute;top:14px;right:-32px;transform:rotate(38deg);padding:5px 38px;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#fff;
+  border-top:3px solid var(--trait);border-bottom:3px solid var(--trait)}
+.pile{border:4px dashed rgba(42,23,16,.5);border-radius:18px;background:rgba(255,248,232,.5);
+  padding:26px 18px;text-align:center;font-size:13px;text-transform:uppercase;color:#6b4c34}
+.tire{animation:pop .45s cubic-bezier(.2,1.4,.5,1)}
+@keyframes pop{0%{transform:scale(.7) rotate(-5deg);opacity:0}100%{transform:none;opacity:1}}
+
+/* ---------- caisses ---------- */
+.coffre{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:3px solid rgba(122,90,60,.22)}
+.coffre:last-of-type{border-bottom:0}
+.coffre canvas{width:60px;height:60px;flex:0 0 auto;border:3px solid var(--trait);border-radius:14px;
+  background:linear-gradient(180deg,#f0dcb4,#d8bb8a)}
+.coffre .t{flex:1;min-width:0}
+.coffre .t h3{font-size:15px;text-transform:uppercase}
+.coffre .t p{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:12px;color:#6b4c34;margin-top:3px}
+.coffre .odds{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.coffre .odds i{font-size:9.5px;color:#fff;padding:3px 6px;border-radius:999px;
+  border:2px solid var(--trait);font-style:normal}
+.prix{border:3px solid var(--trait);border-radius:14px;padding:11px 13px;font-size:13px;
+  background:linear-gradient(180deg,#f8c85e,var(--ocre));box-shadow:0 4px 0 var(--ocre-b);flex:0 0 auto}
+.prix:active{transform:translateY(2px);box-shadow:0 2px 0 var(--ocre-b)}
+.prix[disabled]{filter:grayscale(.75);opacity:.6}
+
+/* ---------- tirage ---------- */
+#tirage{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;
+  background:rgba(42,23,16,.82);padding:22px}
+#tirage.on{display:flex;flex-direction:column}
+#tirage .boite{width:min(330px,94%);background:linear-gradient(180deg,#fff8e8,var(--sable));
+  border:5px solid var(--trait);border-radius:22px;box-shadow:0 10px 0 rgba(0,0,0,.4);
+  padding:0 18px 18px;text-align:center;animation:pop .5s cubic-bezier(.2,1.4,.5,1);overflow:hidden}
+#tirage .rar{margin:0 -18px 12px;padding:9px;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+#tirage canvas{width:104px;height:104px}
+#tirage h3{font-size:21px;text-transform:uppercase;font-style:italic;margin-top:4px}
+#tirage p{font-family:"Trebuchet MS",sans-serif;font-weight:400;font-size:13px;color:#6b4c34;margin-top:7px}
+#tirage .apres{display:flex;gap:9px;margin-top:16px;width:min(330px,94%)}
+#tirage .apres .gros{margin-top:0;flex:1;font-size:15px;padding:14px}
 </style>
 </head>
 <body>
+<div id="ciel"></div><div id="vagues"></div>
 
-<div id="barre">
-  <button data-v="m" class="on">M<b>héros</b></button>
-  <button data-v="n">N<b>tuiles</b></button>
-  <button data-v="o">O<b>cartes</b></button>
-</div>
-
-<!-- ============ M ============ -->
-<section class="vue on" id="m">
-  <canvas class="fondjeu" id="m-fond" width="480" height="270"></canvas>
-  <div class="voile"></div>
-  <div class="contenu">
-    <div class="logo"><span class="a">Battle Dock</span><span class="b">Fight</span></div>
-    <div class="stats"><div>Nuit <b>3</b>/6</div><div><b>220 €</b></div><div>Poste <b>Pointeur</b></div></div>
-    <div class="heros"><canvas id="m-perso" width="96" height="124"></canvas></div>
-    <button class="jouer">Combattre ▸</button>
-    <div class="tuiles">
-      <button><canvas class="ic" data-ic="billet"></canvas>Billet</button>
-      <button><canvas class="ic" data-ic="casque"></canvas>Vestiaire</button>
-      <button><canvas class="ic" data-ic="caisse"></canvas>Caisses</button>
-      <button><canvas class="ic" data-ic="gants"></canvas>En ligne</button>
-      <button><canvas class="ic" data-ic="coupe"></canvas>Palmarès</button>
-    </div>
+<!-- ================= ACCUEIL ================= -->
+<main class="ecran on" id="e-accueil">
+  <div class="barre">
+    <div class="pilule"><canvas class="ic" data-ic="euro"></canvas><span id="p-euros">0 €</span></div>
+    <div class="pilule eau"><span id="p-nuit">Nuit 1/6</span></div>
+    <div class="esp"></div>
   </div>
-</section>
+  <div class="logo"><span class="a">Battle Dock</span><span class="b">Fight</span></div>
+  <div class="heros"><div class="quai"></div><canvas id="heros" width="96" height="124"></canvas></div>
+  <button class="gros terre" id="bt-jouer">Combattre ▸</button>
+  <div class="tuiles">
+    <button class="tuile" data-va="billet"><canvas class="ic" data-ic="billet"></canvas>Billet</button>
+    <button class="tuile vert" data-va="vestiaire"><canvas class="ic" data-ic="casque"></canvas>Vestiaire</button>
+    <button class="tuile" data-va="boutique"><canvas class="ic" data-ic="caisse"></canvas>Caisses</button>
+    <button class="tuile eau" data-va="palmares"><canvas class="ic" data-ic="coupe"></canvas>Palmarès</button>
+  </div>
+</main>
 
-<!-- ============ N ============ -->
-<section class="vue" id="n">
-  <div class="page">
-    <div class="bandeau">
-      <canvas id="n-perso" width="96" height="124"></canvas>
-      <div class="qui">
-        <div class="nom">Elias le Crochet</div>
-        <div class="sous">Pointeur · Thon congelé</div>
-        <div class="barre"><i></i></div>
+<!-- ================= VESTIAIRE ================= -->
+<main class="ecran" id="e-vestiaire">
+  <div class="barre">
+    <button class="rond" data-va="accueil">◀</button>
+    <div class="titre">Vestiaire</div>
+    <div class="pilule"><canvas class="ic" data-ic="euro"></canvas><span class="euros">0 €</span></div>
+  </div>
+  <div class="collant"><div class="dedans">
+    <canvas id="apercu" width="96" height="124"></canvas>
+    <div class="infos">
+      <div class="nom" id="r-nom">Sans nom</div>
+      <div class="arme" id="r-arme"></div>
+      <div class="jauges" id="r-jauges"></div>
+      <div class="poses" id="poses">
+        <button data-p="debout" class="on">Repos</button>
+        <button data-p="marche">Marche</button>
+        <button data-p="garde">Garde</button>
+        <button data-p="coup">Coup</button>
       </div>
-      <div class="sou">220 €<small>Nuit 3/6</small></div>
     </div>
-
-    <div class="titre">Ce soir</div>
-    <div class="grille">
-      <button class="t j grande">
-        <div><div class="h">Prendre son billet</div>
-          <div class="p">Le bureau distribue les postes. Tire le tien.</div></div>
-        <div class="go">Commencer ▸</div>
-        <canvas class="ic" data-ic="billet" width="32" height="32"></canvas>
-      </button>
-      <button class="t r">
-        <div><div class="h">Carrière</div><div class="p">Le Nouveau t’attend.</div></div>
-        <div class="go">Combattre ▸</div>
-        <canvas class="ic" data-ic="gants" width="32" height="32"></canvas>
-      </button>
-      <button class="t c">
-        <div><div class="h">En ligne</div><div class="p">2 tables ouvertes.</div></div>
-        <div class="go">Rejoindre ▸</div>
-        <canvas class="ic" data-ic="planete" width="32" height="32"></canvas>
-      </button>
-      <button class="t v">
-        <div><div class="h">Vestiaire</div><div class="p">130 pièces à essayer.</div></div>
-        <div class="go">Habiller ▸</div>
-        <canvas class="ic" data-ic="casque" width="32" height="32"></canvas>
-      </button>
-      <button class="t g">
-        <div><div class="h">Caisses</div><div class="p">3 caisses · dès 120 €</div></div>
-        <div class="go">Ouvrir ▸</div>
-        <canvas class="ic" data-ic="caisse" width="32" height="32"></canvas>
-      </button>
-    </div>
-    <div class="titre">Palmarès</div>
-    <div class="grille">
-      <button class="t g grande" style="min-height:96px">
-        <div><div class="h">2 victoires sur 6</div><div class="p">Prochain : Fatou la Grue.</div></div>
-        <div class="go">Voir ▸</div>
-        <canvas class="ic" data-ic="coupe" width="32" height="32"></canvas>
-      </button>
-    </div>
+  </div></div>
+  <div class="carte" style="display:flex;gap:9px;align-items:center">
+    <input id="nom" maxlength="16" placeholder="TON NOM" autocomplete="off" spellcheck="false"
+      style="flex:1;min-width:0;border:3px solid #2a1710;border-radius:13px;background:#fff8e8;
+      padding:11px;font-family:inherit;font-weight:700;font-size:14px;text-transform:uppercase;color:#2a1710">
+    <button class="prix" id="hasard">Au sort</button>
   </div>
-</section>
+  <div class="onglets" id="onglets"></div>
+  <div class="carte" id="options"></div>
+  <button class="gros vert" data-va="accueil">Enregistrer ▸</button>
+</main>
 
-<!-- ============ O ============ -->
-<section class="vue" id="o">
-  <div class="piste" id="piste"></div>
-  <div class="pastilles"><i></i><i></i><i></i><i></i></div>
-</section>
+<!-- ================= BILLET ================= -->
+<main class="ecran" id="e-billet">
+  <div class="barre">
+    <button class="rond" data-va="accueil">◀</button>
+    <div class="titre">Le billet</div>
+    <div class="pilule"><canvas class="ic" data-ic="euro"></canvas><span class="euros">0 €</span></div>
+  </div>
+  <div class="carte"><p class="txt">Le bureau d'embauche distribue les postes. Ton billet décide de ce que tu vaux sur le quai jusqu'au prochain combat — et de ce qu'on te paie.</p></div>
+  <div id="zone-billet" style="margin-top:12px"><div class="pile">Pile de billets<br>du bureau d'embauche</div></div>
+  <button class="gros" id="tirer">Tirer un billet ▸</button>
+  <button class="gros terre" id="quai" disabled>Descendre sur le quai ▸</button>
+</main>
+
+<!-- ================= CAISSES ================= -->
+<main class="ecran" id="e-boutique">
+  <div class="barre">
+    <button class="rond" data-va="accueil">◀</button>
+    <div class="titre">Caisses</div>
+    <div class="pilule"><canvas class="ic" data-ic="euro"></canvas><span class="euros">0 €</span></div>
+  </div>
+  <div class="carte"><p class="txt">Ce qui traîne dans les conteneurs mal fermés. Le contenu est tiré au sort ; un doublon te rend des euros.</p></div>
+  <div class="carte" id="coffres"></div>
+  <div class="carte"><div class="rub" style="margin-top:0">Butin</div><p class="txt" id="stat-butin"></p></div>
+  <button class="gros vert" data-va="vestiaire">Équiper au vestiaire ▸</button>
+</main>
+
+<!-- ================= PALMARÈS ================= -->
+<main class="ecran" id="e-palmares">
+  <div class="barre">
+    <button class="rond" data-va="accueil">◀</button>
+    <div class="titre">Palmarès</div>
+    <div class="pilule"><canvas class="ic" data-ic="euro"></canvas><span class="euros">0 €</span></div>
+  </div>
+  <div class="carte" id="liste-adv"></div>
+  <div class="carte"><p class="txt" id="note-palmares"></p></div>
+  <button class="gros terre" onclick="location.href='fight.html'">Au combat ▸</button>
+</main>
+
+<!-- ================= TIRAGE ================= -->
+<div id="tirage">
+  <div class="boite" id="carte-butin"></div>
+  <div class="apres">
+    <button class="gros" id="encore">Rouvrir</button>
+    <button class="gros bois" id="fermer">Fermer</button>
+  </div>
+</div>
 
 <script src="bdf.js"></script>
 <script>
-const {dessinerDocker,dessinerArene,lookDefaut,px}=BDF;
+'use strict';
+const $=id=>document.getElementById(id);
+const tire=a=>a[Math.random()*a.length|0];
+const {RARETES,CAT,RUBRIQUES,ONGLETS,POSTES,ADVERSAIRES,ARENES,item,lookDefaut,statsDe,
+  dessinerDocker,dessinerArme,px}=BDF;
 
-/* onglets */
-document.querySelectorAll('#barre button').forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll('#barre button').forEach(x=>x.classList.toggle('on',x===b));
-    document.querySelectorAll('.vue').forEach(v=>v.classList.toggle('on',v.id===b.dataset.v));
-  };
-});
+const PRENOMS=['Nino','Saïd','Marlène','Gino','Yassine','Bruno','Kader','Lucie','Ange','Fatou','Milo','Zora','Rachid','Perle'];
+const SURNOMS=['le Crochet','Deux-Sacs','la Grue','Poings Sales','le Môle','Sans Gants','la Corde','Quart de Nuit','Tête de Fer'];
 
-/* docker de démonstration */
-const look=Object.assign(lookDefaut(),{nom:'ELIAS',carrure:'solide',teint:2,cheveux:'court',cheveuxC:1,
-  barbe:'courte',haut:'hv',hautC:1,bas:'treillis',basC:1,ceinture:'sangle',pieds:'brodequins',
-  tete:'casque',visage:'curedent',boucle:'anneau',mains:'manut',dos:'crochet',arme:'poisson',
-  expression:'decide',yeux:1,tatouage:'ancre'});
-const perso={look,etat:'debout',coup:null,sol:1,sens:1,garde:0,stun:0};
+const defaut=()=>Object.assign(lookDefaut(),{nom:'',euros:220,debloque:[],niveau:0,victoires:0,coffres:0});
+let d=defaut();
+const CLE='bdf.v3';
+try{const b=localStorage.getItem(CLE)||localStorage.getItem('bdf.v2');
+  if(b){const o=JSON.parse(b);if(o.pieces!==undefined&&o.euros===undefined)o.euros=o.pieces;d=Object.assign(defaut(),o);}}catch(e){}
+const sauver=()=>{try{localStorage.setItem(CLE,JSON.stringify(d));}catch(e){}};
+const debloque=(c,i)=>!i.r||d.debloque.includes(c+':'+i.id);
 
-/* icônes pixel */
+/* ---------------- icônes ---------------- */
 function icone(cv,type){
-  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
-  cv.width=32;cv.height=32;g.clearRect(0,0,32,32);
+  cv.width=32;cv.height=32;
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,32,32);
   switch(type){
+    case 'euro':
+      px(g,7,5,18,22,'#f2b134');px(g,7,5,18,4,'#ffe08a');px(g,9,23,14,4,'#b87a13');
+      px(g,12,10,9,3,'#8a5a10');px(g,10,14,4,7,'#8a5a10');px(g,12,13,8,3,'#8a5a10');
+      px(g,12,18,8,3,'#8a5a10');px(g,12,21,9,3,'#8a5a10');break;
     case 'billet':
-      px(g,4,9,24,15,'#f2ece0');px(g,4,9,24,3,'#e8452c');
-      px(g,7,16,12,2,'#6d6a63');px(g,7,20,9,2,'#6d6a63');px(g,21,17,4,4,'#ffd029');break;
+      px(g,3,9,26,15,'#fff8e8');px(g,3,9,26,4,'#d4472c');
+      px(g,6,17,13,2,'#8d8073');px(g,6,21,10,2,'#8d8073');px(g,21,17,5,5,'#f2b134');break;
     case 'casque':
-      px(g,7,12,18,8,'#ffd029');px(g,4,19,24,3,'#e8b81c');px(g,13,8,6,4,'#ffd029');
-      px(g,7,12,18,2,'#fff0b8');break;
+      px(g,7,11,18,9,'#f2b134');px(g,4,19,24,4,'#b87a13');px(g,13,7,6,4,'#f2b134');
+      px(g,7,11,18,2,'#ffe08a');break;
     case 'caisse':
-      px(g,5,11,22,15,'#b8996a');px(g,5,11,22,3,'#8a7448');px(g,5,17,22,2,'#8a7448');
-      px(g,14,19,4,5,'#f2b134');px(g,5,24,22,2,'#8a7448');break;
-    case 'gants':
-      px(g,4,13,11,10,'#e8452c');px(g,3,16,3,5,'#c9331f');
-      px(g,17,13,11,10,'#2ec4c9');px(g,26,16,3,5,'#1f9ba0');
-      px(g,4,13,11,2,'#ff7a68');px(g,17,13,11,2,'#7fe4e8');break;
-    case 'planete':
-      px(g,9,7,14,18,'#2ec4c9');px(g,11,5,10,22,'#2ec4c9');
-      px(g,4,14,24,3,'#f2ece0');px(g,12,9,5,4,'#1f8f93');px(g,16,18,6,4,'#1f8f93');break;
+      px(g,4,10,24,17,'#9a6238');px(g,4,10,24,3,'#c08a52');px(g,4,17,24,2,'#4a2916');
+      px(g,13,19,6,6,'#f2b134');px(g,4,25,24,2,'#4a2916');break;
     case 'coupe':
-      px(g,10,7,12,10,'#ffd029');px(g,6,8,4,6,'#e8b81c');px(g,22,8,4,6,'#e8b81c');
-      px(g,14,17,4,5,'#e8b81c');px(g,10,22,12,4,'#c9a227');px(g,12,9,4,3,'#fff0b8');break;
+      px(g,10,6,12,11,'#f2b134');px(g,6,8,4,6,'#b87a13');px(g,22,8,4,6,'#b87a13');
+      px(g,14,17,4,5,'#b87a13');px(g,9,22,14,5,'#9a6238');px(g,12,8,4,4,'#ffe08a');break;
   }
 }
-document.querySelectorAll('canvas.ic').forEach(c=>icone(c,c.dataset.ic));
+const majIcones=()=>document.querySelectorAll('canvas.ic').forEach(c=>icone(c,c.dataset.ic));
 
-/* M : arène animée + héros */
-const mf=document.getElementById('m-fond').getContext('2d');
-const mp=document.getElementById('m-perso').getContext('2d');
-mf.imageSmoothingEnabled=false;mp.imageSmoothingEnabled=false;
-const np=document.getElementById('n-perso').getContext('2d');np.imageSmoothingEnabled=false;
-
-/* O : cartes */
-const CARTES=[
-  {et:'Ce soir',t:'Carrière',p:'Six adversaires, deux manches gagnantes. Le Nouveau ouvre le bal, Arachné le referme.',
-   infos:['6 arènes','Progression','Gains en €'],ar:0,b:'Descendre sur le quai'},
-  {et:'À deux',t:'En ligne',p:'Ouvre une table, ton adversaire la rejoint depuis son téléphone. Les scores sont gardés.',
-   infos:['Temps réel','Classement','Pseudo'],ar:2,b:'Trouver un adversaire'},
-  {et:'Avant le combat',t:'Vestiaire',p:'Cent trente pièces à essayer, du bonnet de quart à la couronne du port.',
-   infos:['20 rubriques','Aperçu animé','Effets réels'],ar:3,b:'Habiller son docker'},
-  {et:'Le butin',t:'Caisses',p:'Ce qui traîne dans les conteneurs mal fermés. Du commun au légendaire.',
-   infos:['3 caisses','Dès 120 €','24 armes'],ar:5,b:'Ouvrir une caisse'}
-];
-const piste=document.getElementById('piste');
-CARTES.forEach(c=>{
-  const el=document.createElement('div');el.className='carte';
-  el.innerHTML='<canvas class="ill" width="480" height="270"></canvas>'+
-    '<div class="bas"><div class="et">'+c.et+'</div><h2>'+c.t+'</h2><p>'+c.p+'</p>'+
-    '<div class="infos">'+c.infos.map(i=>'<span>'+i+'</span>').join('')+'</div>'+
-    '<button>'+c.b+' ▸</button></div>';
-  piste.appendChild(el);
-  el._g=el.querySelector('canvas').getContext('2d');
-  el._g.imageSmoothingEnabled=false;el._ar=c.ar;
+/* ---------------- aperçus animés ---------------- */
+let pose='debout';
+const faux={look:d,etat:'debout',coup:null,sol:1,sens:1,garde:0,stun:0};
+const ap=$('apercu').getContext('2d'),he=$('heros').getContext('2d');
+ap.imageSmoothingEnabled=false;he.imageSmoothingEnabled=false;
+$('poses').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;pose=b.dataset.p;
+  document.querySelectorAll('#poses button').forEach(x=>x.classList.toggle('on',x===b));
 });
-
-/* boucle */
 (function boucle(t){
   requestAnimationFrame(boucle);
-  const vue=document.querySelector('.vue.on').id;
-  if(vue==='m'){
-    dessinerArene(mf,0,480,270,214,t);
-    mp.clearRect(0,0,96,124);mp.save();mp.translate(48,116);
-    perso.etat=(Math.floor(t/2600)%4===3)?'gagne':'debout';
-    dessinerDocker(mp,perso,t);mp.restore();
-  }else if(vue==='n'){
-    np.clearRect(0,0,96,124);np.save();np.translate(48,116);
-    dessinerDocker(np,perso,t);np.restore();
-  }else{
-    document.querySelectorAll('#o .carte').forEach(el=>dessinerArene(el._g,el._ar,480,270,214,t));
+  faux.look=d;
+  if($('e-vestiaire').classList.contains('on')){
+    faux.etat=pose;
+    if(pose==='coup'){faux.coup={t:Math.floor(t/22)%40,dep:8,act:8,fin:24,
+      por:30+statsDe(d).portee*2,haut:0};}else faux.coup=null;
+    ap.clearRect(0,0,96,124);ap.save();ap.translate(48,116);dessinerDocker(ap,faux,t);ap.restore();
+  }
+  if($('e-accueil').classList.contains('on')){
+    faux.etat=(Math.floor(t/2800)%4===3)?'gagne':'debout';faux.coup=null;
+    he.clearRect(0,0,96,124);he.save();he.translate(48,116);dessinerDocker(he,faux,t);he.restore();
   }
 })(0);
+
+/* ---------------- vestiaire ---------------- */
+let onglet='corps';
+function onglets(){
+  const z=$('onglets');z.innerHTML='';
+  ONGLETS.forEach(o=>{
+    const b=document.createElement('button');b.textContent=o.nom;
+    b.className=onglet===o.id?'on':'';
+    b.onclick=()=>{onglet=o.id;onglets();options();};
+    z.appendChild(b);
+  });
+}
+function options(){
+  const z=$('options');z.innerHTML='';
+  ONGLETS.find(x=>x.id===onglet).rubs.forEach((cle,n)=>{
+    const rub=RUBRIQUES.find(r=>r.c===cle);
+    const t=document.createElement('div');t.className='rub';t.textContent=rub.nom;
+    if(n===0)t.style.marginTop='0';z.appendChild(t);
+    const r=document.createElement('div');r.className='rangee';z.appendChild(r);
+    if(rub.coul){
+      rub.coul().forEach((c,i)=>{
+        const b=document.createElement('button');
+        b.className='pastel'+(d[cle]===i?' actif':'');b.style.background=c;
+        b.onclick=()=>{d[cle]=i;sauver();options();resume();};r.appendChild(b);
+      });
+    }else{
+      CAT[cle].forEach(it=>{
+        const ok=debloque(cle,it);
+        const b=document.createElement('button');
+        b.className='opt'+(d[cle]===it.id?' actif':'')+(ok?'':' bloque');
+        b.textContent=(ok?'':'🔒 ')+it.nom;
+        if(it.r){const s=document.createElement('span');s.className='r';s.style.background=RARETES[it.r].c;b.appendChild(s);}
+        b.onclick=()=>{if(!ok){b.textContent='Dans une caisse';setTimeout(options,900);return;}
+          d[cle]=it.id;sauver();options();resume();};
+        r.appendChild(b);
+      });
+    }
+  });
+}
+function resume(){
+  const s=statsDe(d);
+  $('r-nom').textContent=d.nom||'Sans nom';
+  $('r-arme').textContent=item('arme',d.arme).nom+(d.poste?' · '+POSTES.find(p=>p.id===d.poste).nom:'');
+  const j=(n,v)=>'<div class="j"><span>'+n+'</span><b>'+
+    Array.from({length:6},(_,i)=>'<i class="'+(i<v?'p':'')+'"></i>').join('')+'</b></div>';
+  $('r-jauges').innerHTML=j('Force',s.force)+j('Vitesse',s.vitesse)+j('Endur.',s.endurance)+j('Portée',s.portee);
+  sous();
+}
+function sous(){
+  document.querySelectorAll('.euros').forEach(e=>e.textContent=d.euros+' €');
+  $('p-euros').textContent=d.euros+' €';
+  $('p-nuit').textContent='Nuit '+Math.min(d.niveau+1,6)+'/6';
+}
+$('nom').value=d.nom;
+$('nom').addEventListener('input',e=>{
+  d.nom=e.target.value.toUpperCase().slice(0,16);
+  if(e.target.value!==d.nom)e.target.value=d.nom;
+  sauver();resume();
+});
+$('hasard').onclick=()=>{
+  d.nom=(tire(PRENOMS)+' '+tire(SURNOMS)).toUpperCase();$('nom').value=d.nom;
+  RUBRIQUES.forEach(r=>{
+    if(r.coul)d[r.c]=Math.random()*r.coul().length|0;
+    else d[r.c]=tire(CAT[r.c].filter(x=>debloque(r.c,x))).id;});
+  sauver();options();resume();
+};
+
+/* ---------------- billet ---------------- */
+$('tirer').onclick=()=>{
+  const total=POSTES.reduce((s,p)=>s+p.poids,0);let r=Math.random()*total,p=POSTES[0];
+  for(const q of POSTES){r-=q.poids;if(r<=0){p=q;break;}}
+  d.poste=p.id;d.euros+=p.euros;sauver();
+  const tags=[];
+  if(p.b.f)tags.push('Force +'+p.b.f);if(p.b.v)tags.push('Vitesse +'+p.b.v);
+  if(p.b.e)tags.push('Endurance +'+p.b.e);if(p.b.rg)tags.push('Rage +'+p.b.rg);
+  tags.push('+'+p.euros+' €');
+  $('zone-billet').innerHTML='<div class="billet tire">'+
+    '<div class="rarete" style="background:'+RARETES[p.r].c+'">'+RARETES[p.r].nom+'</div>'+
+    '<div class="haut"><span>Bureau d’embauche</span><span>Quart de nuit</span></div>'+
+    '<div class="poste">'+p.nom+'</div><p class="txt" style="margin-top:8px">'+p.d+'</p>'+
+    '<div class="bonus">'+tags.map(x=>'<span>'+x+'</span>').join('')+'</div></div>';
+  $('tirer').textContent='Retirer un billet ▸';$('quai').disabled=false;sous();
+};
+$('quai').onclick=()=>{sauver();location.href='fight.html';};
+$('bt-jouer').onclick=()=>{sauver();location.href='fight.html';};
+
+/* ---------------- caisses ---------------- */
+const COFFRES=[
+  {id:'bois',nom:'Caisse en bois',prix:120,d:'Ce qui tombe des palettes.',
+   odds:{commun:.62,peu:.28,rare:.08,epique:.017,leg:.003}},
+  {id:'fer',nom:'Caisse cerclée',prix:300,d:'Fermée au fil de fer, donc intéressante.',
+   odds:{commun:.34,peu:.36,rare:.22,epique:.07,leg:.01}},
+  {id:'scelle',nom:'Conteneur scellé',prix:750,d:'Numéro effacé. Personne ne le réclamera.',
+   odds:{commun:.06,peu:.24,rare:.40,epique:.24,leg:.06}}
+];
+function dessinerCoffre(cv,type){
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
+  cv.width=32;cv.height=32;g.clearRect(0,0,32,32);
+  const c={bois:['#b8996a','#7a5a2e'],fer:['#9aa0a6','#5f6b72'],scelle:['#4a8b94','#255a63']}[type];
+  px(g,3,9,26,19,c[0]);px(g,3,9,26,4,'#ffffff33');px(g,3,16,26,3,c[1]);
+  px(g,13,18,6,7,'#f2b134');px(g,3,26,26,2,c[1]);
+  if(type!=='bois'){px(g,7,9,4,19,c[1]);px(g,21,9,4,19,c[1]);}
+  if(type==='scelle')px(g,11,4,10,6,'#d4472c');
+}
+function boutique(){
+  const z=$('coffres');z.innerHTML='';
+  COFFRES.forEach(c=>{
+    const el=document.createElement('div');el.className='coffre';
+    const cv=document.createElement('canvas');
+    const t=document.createElement('div');t.className='t';
+    t.innerHTML='<h3>'+c.nom+'</h3><p>'+c.d+'</p><div class="odds">'+
+      Object.entries(c.odds).map(([r,v])=>'<i style="background:'+RARETES[r].c+'">'+Math.round(v*100)+'%</i>').join('')+'</div>';
+    const b=document.createElement('button');b.className='prix';b.textContent=c.prix+' €';
+    b.disabled=d.euros<c.prix;b.onclick=()=>ouvrir(c);
+    el.append(cv,t,b);z.appendChild(el);dessinerCoffre(cv,c.id);
+  });
+  const total=Object.keys(CAT).reduce((s,k)=>s+CAT[k].filter(x=>x.r).length,0);
+  $('stat-butin').textContent=d.debloque.length+' pièces trouvées sur '+total+' · '+
+    d.coffres+' caisse'+(d.coffres>1?'s':'')+' ouverte'+(d.coffres>1?'s':'');
+}
+const pool=r=>{const o=[];Object.keys(CAT).forEach(c=>CAT[c].forEach(i=>{if(i.r===r)o.push({c,i});}));return o;};
+let dernier=null;
+function ouvrir(c){
+  if(d.euros<c.prix)return;
+  d.euros-=c.prix;d.coffres++;dernier=c;
+  let r=Math.random(),ch='commun';
+  for(const k in c.odds){r-=c.odds[k];if(r<=0){ch=k;break;}}
+  let p=pool(ch).filter(x=>!d.debloque.includes(x.c+':'+x.i.id)),doublon=false;
+  if(!p.length){p=pool(ch);doublon=true;}
+  if(!p.length){p=pool('peu');doublon=true;}
+  const {c:cat,i:it}=tire(p);
+  let rendu=0;
+  if(doublon){rendu=RARETES[ch].rendu;d.euros+=rendu;}else d.debloque.push(cat+':'+it.id);
+  sauver();
+  const nomCat={carrure:'Carrure',cheveux:'Cheveux',barbe:'Poils',tatouage:'Tatouage',haut:'Haut',
+    bas:'Bas',ceinture:'Ceinture',pieds:'Chaussures',tete:'Tête',visage:'Visage',boucle:'Oreille',
+    mains:'Mains',dos:'Dos',arme:'Arme',expression:'Expression'}[cat]||cat;
+  $('carte-butin').innerHTML='<div class="rar" style="background:'+RARETES[ch].c+'">'+RARETES[ch].nom+'</div>'+
+    '<canvas id="cvb" width="52" height="52"></canvas><h3>'+it.nom+'</h3><p>'+nomCat+
+    (it.d?' · '+it.d:'')+(doublon?'<br><b>Doublon</b> — rendu '+rendu+' €':'')+'</p>';
+  const g=$('cvb').getContext('2d');g.imageSmoothingEnabled=false;
+  if(cat==='arme'){g.save();g.translate(9,34);dessinerArme(g,it.id,0,0,0);g.restore();}
+  else{
+    const avant=d[cat];d[cat]=it.id;
+    const tmp=document.createElement('canvas');tmp.width=96;tmp.height=124;
+    const tg=tmp.getContext('2d');tg.imageSmoothingEnabled=false;
+    tg.save();tg.translate(48,114);dessinerDocker(tg,{look:d,etat:'debout',coup:null,sol:1,sens:1},0);tg.restore();
+    d[cat]=avant;g.drawImage(tmp,26,26,44,48,2,0,48,52);
+  }
+  $('tirage').classList.add('on');
+  $('encore').disabled=d.euros<c.prix;$('encore').textContent='Rouvrir · '+c.prix+' €';
+}
+$('fermer').onclick=()=>{$('tirage').classList.remove('on');boutique();sous();};
+$('encore').onclick=()=>{if(dernier)ouvrir(dernier);};
+
+/* ---------------- navigation ---------------- */
+function aller(n){
+  document.querySelectorAll('.ecran').forEach(e=>{
+    const on=e.id==='e-'+n;e.classList.toggle('on',on);if(on)e.scrollTop=0;});
+  if(n==='vestiaire'){onglets();options();resume();}
+  if(n==='boutique')boutique();
+  if(n==='palmares')palmares();
+  sous();majIcones();
+  if(n==='accueil')sauver();
+  location.hash=n;
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-va]');if(b)aller(b.dataset.va);});
+function palmares(){
+  const l=$('liste-adv');l.innerHTML='';
+  ADVERSAIRES.forEach((a,i)=>{
+    const battu=i<d.niveau,courant=i===d.niveau;
+    const r=document.createElement('div');r.className='ligne';
+    r.innerHTML='<span class="g">'+(battu||courant?a.nom:'? ? ?')+'<small>'+
+      (battu||courant?a.d:'Pas encore rencontré.')+'</small></span><span class="d">'+
+      (battu?'Battu':(courant?'À venir':'—'))+'</span>';
+    l.appendChild(r);
+  });
+  $('note-palmares').textContent=(d.nom||'Docker sans nom')+' · '+d.victoires+
+    ' victoire'+(d.victoires>1?'s':'')+' · '+d.euros+' € en poche.';
+}
+majIcones();sous();
+const dep=(location.hash||'').replace('#','');
+if(['vestiaire','billet','boutique','palmares'].includes(dep))aller(dep);
 </script>
 </body>
 </html>
