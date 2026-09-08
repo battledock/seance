@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Battle Dock Fight — accueils illustrés</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0a0e12;overflow:hidden;-webkit-tap-highlight-color:transparent}
+body{font-family:"Arial Black","Arial Narrow",Helvetica,sans-serif}
+button{font-family:inherit;color:inherit;cursor:pointer}
+#barre{position:fixed;top:0;left:0;right:0;z-index:99;display:flex;background:#000;
+  border-bottom:1px solid #1e1e1e;padding-top:env(safe-area-inset-top)}
+#barre button{flex:1;padding:10px 3px 11px;background:none;border:0;border-right:1px solid #191919;
+  color:#666;font:600 10px/1.5 ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
+#barre button b{display:block;font-size:9px;font-weight:400;opacity:.5;letter-spacing:0;text-transform:none}
+#barre button.on{color:#fff;background:#151515}
+.vue{position:fixed;inset:50px 0 0 0;display:none;overflow:hidden}
+.vue.on{display:block}
+canvas{image-rendering:pixelated;display:block}
+
+/* ================= M — HÉROS ================= */
+#m{background:#0b1016}
+#m .fondjeu{position:absolute;inset:0;width:100%;height:100%}
+#m .voile{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,14,18,.85) 0%,rgba(10,14,18,.15) 34%,rgba(10,14,18,.9) 74%,#0b1016 100%)}
+#m .contenu{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+#m .logo{text-align:center;text-transform:uppercase;font-style:italic;line-height:.82;
+  filter:drop-shadow(0 4px 0 rgba(0,0,0,.55))}
+#m .logo .a{display:block;font-size:clamp(34px,11.5vw,72px);color:#f4ead2;letter-spacing:-.03em}
+#m .logo .b{display:block;font-size:clamp(26px,8.6vw,54px);color:#e8452c;letter-spacing:.04em;
+  -webkit-text-stroke:1px #2a0d06}
+#m .stats{display:flex;gap:8px;margin-top:10px}
+#m .stats div{border:2px solid rgba(244,234,210,.35);background:rgba(10,14,18,.55);
+  padding:7px 11px;font:900 11px/1 "Arial Black",sans-serif;color:#f4ead2;
+  text-transform:uppercase;letter-spacing:.06em;backdrop-filter:blur(3px)}
+#m .stats div b{color:#ffd029}
+#m .heros{flex:1;display:flex;align-items:flex-end;justify-content:center;width:100%}
+#m .heros canvas{width:190px;height:246px;filter:drop-shadow(0 12px 14px rgba(0,0,0,.6))}
+#m .jouer{width:100%;max-width:420px;border:0;background:linear-gradient(180deg,#ffd029,#e8a516);
+  color:#20140a;padding:19px;font:900 20px/1 "Arial Black",sans-serif;font-style:italic;
+  text-transform:uppercase;letter-spacing:.04em;border-radius:4px;
+  box-shadow:0 6px 0 #8a5f0e,0 12px 24px rgba(0,0,0,.5);margin-top:6px}
+#m .jouer:active{transform:translateY(4px);box-shadow:0 2px 0 #8a5f0e}
+#m .tuiles{display:flex;gap:8px;width:100%;max-width:420px;margin-top:10px}
+#m .tuiles button{flex:1;border:2px solid rgba(244,234,210,.28);background:rgba(20,28,36,.72);
+  border-radius:4px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;
+  font:900 8.5px/1 "Arial Black",sans-serif;color:#c9d3da;text-transform:uppercase;letter-spacing:.04em;
+  backdrop-filter:blur(3px)}
+#m .tuiles canvas{width:30px;height:30px}
+#m .tuiles button:active{transform:translateY(2px)}
+
+/* ================= N — TUILES ================= */
+#n{background:#101820;overflow-y:auto}
+#n .page{min-height:100%;padding:14px 14px calc(18px + env(safe-area-inset-bottom))}
+#n .bandeau{display:flex;align-items:center;gap:10px;border:3px solid #0a1016;border-radius:6px;
+  background:linear-gradient(150deg,#1d2a35,#141d25);padding:10px 12px;
+  box-shadow:0 5px 0 #0a1016}
+#n .bandeau canvas{width:56px;height:72px;flex:0 0 auto}
+#n .bandeau .qui{flex:1;min-width:0;color:#e8eef3}
+#n .bandeau .qui .nom{font:900 15px/1 "Arial Black",sans-serif;text-transform:uppercase}
+#n .bandeau .qui .sous{font:400 11.5px/1.4 Georgia,serif;color:#8fa3b0;margin-top:4px}
+#n .bandeau .qui .barre{height:8px;background:#0a1016;border-radius:4px;margin-top:8px;overflow:hidden}
+#n .bandeau .qui .barre i{display:block;height:100%;width:38%;background:linear-gradient(90deg,#2ec4c9,#8fe3b0)}
+#n .bandeau .sou{flex:0 0 auto;text-align:right;color:#ffd029;font:900 15px/1 "Arial Black",sans-serif}
+#n .bandeau .sou small{display:block;color:#8fa3b0;font:400 10px/1 Georgia,serif;margin-top:5px}
+#n .grille{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:13px}
+#n .t{position:relative;border:0;border-radius:8px;padding:13px;min-height:118px;text-align:left;
+  display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;
+  color:#12181d;box-shadow:0 6px 0 rgba(0,0,0,.45)}
+#n .t.grande{grid-column:span 2;min-height:132px}
+#n .t canvas{position:absolute;right:8px;bottom:8px;width:56px;height:56px;opacity:.95}
+#n .t .h{font:900 17px/1 "Arial Black",sans-serif;font-style:italic;text-transform:uppercase;letter-spacing:-.01em}
+#n .t .p{font:400 11.5px/1.45 Georgia,serif;max-width:16ch;margin-top:6px;opacity:.78}
+#n .t .go{margin-top:auto;font:900 10px/1 "Arial Black",sans-serif;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+#n .t:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.45)}
+#n .t.j{background:linear-gradient(150deg,#ffd85c,#f2a91b)}
+#n .t.c{background:linear-gradient(150deg,#6fe0e4,#25a7ac)}
+#n .t.r{background:linear-gradient(150deg,#ff8f7d,#e8452c);color:#2a0d06}
+#n .t.v{background:linear-gradient(150deg,#a9dfa2,#5aa濃)}
+#n .t.v{background:linear-gradient(150deg,#a9dfa2,#57a86a)}
+#n .t.g{background:linear-gradient(150deg,#cdd8e0,#93a5b3)}
+#n .titre{color:#e8eef3;font:900 12px/1 "Arial Black",sans-serif;letter-spacing:.16em;
+  text-transform:uppercase;margin:18px 0 2px;display:flex;align-items:center;gap:9px}
+#n .titre::after{content:"";flex:1;height:2px;background:#22303c}
+
+/* ================= O — CARROUSEL ================= */
+#o{background:#0a0f14}
+#o .piste{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+#o .piste::-webkit-scrollbar{display:none}
+#o .carte{flex:0 0 86%;scroll-snap-align:center;margin:14px 7px calc(18px + env(safe-area-inset-bottom));
+  border-radius:12px;overflow:hidden;position:relative;display:flex;flex-direction:column;
+  box-shadow:0 14px 34px rgba(0,0,0,.6)}
+#o .carte canvas.ill{width:100%;height:44%;object-fit:cover;flex:0 0 auto}
+#o .carte .bas{flex:1;padding:16px;display:flex;flex-direction:column;color:#eef3f6;
+  background:linear-gradient(180deg,#16212a,#0e161d)}
+#o .carte .et{font:900 9px/1 "Arial Black",sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#ffd029}
+#o .carte h2{font:900 26px/1 "Arial Black",sans-serif;font-style:italic;text-transform:uppercase;
+  letter-spacing:-.02em;margin-top:9px}
+#o .carte p{font:400 13px/1.65 Georgia,serif;color:#a9bcc7;margin-top:9px}
+#o .carte .infos{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+#o .carte .infos span{border:2px solid rgba(238,243,246,.25);padding:6px 9px;
+  font:900 9.5px/1 "Arial Black",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#c9d7df}
+#o .carte button{margin-top:auto;border:0;border-radius:5px;padding:15px;
+  font:900 15px/1 "Arial Black",sans-serif;font-style:italic;text-transform:uppercase;
+  background:linear-gradient(180deg,#ffd029,#e8a516);color:#20140a;box-shadow:0 5px 0 #8a5f0e}
+#o .carte button:active{transform:translateY(3px);box-shadow:0 2px 0 #8a5f0e}
+#o .pastilles{position:absolute;bottom:6px;left:0;right:0;display:flex;gap:6px;justify-content:center}
+#o .pastilles i{width:7px;height:7px;border-radius:50%;background:rgba(238,243,246,.3)}
+</style>
+</head>
+<body>
+
+<div id="barre">
+  <button data-v="m" class="on">M<b>héros</b></button>
+  <button data-v="n">N<b>tuiles</b></button>
+  <button data-v="o">O<b>cartes</b></button>
+</div>
+
+<!-- ============ M ============ -->
+<section class="vue on" id="m">
+  <canvas class="fondjeu" id="m-fond" width="480" height="270"></canvas>
+  <div class="voile"></div>
+  <div class="contenu">
+    <div class="logo"><span class="a">Battle Dock</span><span class="b">Fight</span></div>
+    <div class="stats"><div>Nuit <b>3</b>/6</div><div><b>220 €</b></div><div>Poste <b>Pointeur</b></div></div>
+    <div class="heros"><canvas id="m-perso" width="96" height="124"></canvas></div>
+    <button class="jouer">Combattre ▸</button>
+    <div class="tuiles">
+      <button><canvas class="ic" data-ic="billet"></canvas>Billet</button>
+      <button><canvas class="ic" data-ic="casque"></canvas>Vestiaire</button>
+      <button><canvas class="ic" data-ic="caisse"></canvas>Caisses</button>
+      <button><canvas class="ic" data-ic="gants"></canvas>En ligne</button>
+      <button><canvas class="ic" data-ic="coupe"></canvas>Palmarès</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ N ============ -->
+<section class="vue" id="n">
+  <div class="page">
+    <div class="bandeau">
+      <canvas id="n-perso" width="96" height="124"></canvas>
+      <div class="qui">
+        <div class="nom">Elias le Crochet</div>
+        <div class="sous">Pointeur · Thon congelé</div>
+        <div class="barre"><i></i></div>
+      </div>
+      <div class="sou">220 €<small>Nuit 3/6</small></div>
+    </div>
+
+    <div class="titre">Ce soir</div>
+    <div class="grille">
+      <button class="t j grande">
+        <div><div class="h">Prendre son billet</div>
+          <div class="p">Le bureau distribue les postes. Tire le tien.</div></div>
+        <div class="go">Commencer ▸</div>
+        <canvas class="ic" data-ic="billet" width="32" height="32"></canvas>
+      </button>
+      <button class="t r">
+        <div><div class="h">Carrière</div><div class="p">Le Nouveau t’attend.</div></div>
+        <div class="go">Combattre ▸</div>
+        <canvas class="ic" data-ic="gants" width="32" height="32"></canvas>
+      </button>
+      <button class="t c">
+        <div><div class="h">En ligne</div><div class="p">2 tables ouvertes.</div></div>
+        <div class="go">Rejoindre ▸</div>
+        <canvas class="ic" data-ic="planete" width="32" height="32"></canvas>
+      </button>
+      <button class="t v">
+        <div><div class="h">Vestiaire</div><div class="p">130 pièces à essayer.</div></div>
+        <div class="go">Habiller ▸</div>
+        <canvas class="ic" data-ic="casque" width="32" height="32"></canvas>
+      </button>
+      <button class="t g">
+        <div><div class="h">Caisses</div><div class="p">3 caisses · dès 120 €</div></div>
+        <div class="go">Ouvrir ▸</div>
+        <canvas class="ic" data-ic="caisse" width="32" height="32"></canvas>
+      </button>
+    </div>
+    <div class="titre">Palmarès</div>
+    <div class="grille">
+      <button class="t g grande" style="min-height:96px">
+        <div><div class="h">2 victoires sur 6</div><div class="p">Prochain : Fatou la Grue.</div></div>
+        <div class="go">Voir ▸</div>
+        <canvas class="ic" data-ic="coupe" width="32" height="32"></canvas>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ O ============ -->
+<section class="vue" id="o">
+  <div class="piste" id="piste"></div>
+  <div class="pastilles"><i></i><i></i><i></i><i></i></div>
+</section>
+
+<script src="bdf.js"></script>
+<script>
+const {dessinerDocker,dessinerArene,lookDefaut,px}=BDF;
+
+/* onglets */
+document.querySelectorAll('#barre button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('#barre button').forEach(x=>x.classList.toggle('on',x===b));
+    document.querySelectorAll('.vue').forEach(v=>v.classList.toggle('on',v.id===b.dataset.v));
+  };
+});
+
+/* docker de démonstration */
+const look=Object.assign(lookDefaut(),{nom:'ELIAS',carrure:'solide',teint:2,cheveux:'court',cheveuxC:1,
+  barbe:'courte',haut:'hv',hautC:1,bas:'treillis',basC:1,ceinture:'sangle',pieds:'brodequins',
+  tete:'casque',visage:'curedent',boucle:'anneau',mains:'manut',dos:'crochet',arme:'poisson',
+  expression:'decide',yeux:1,tatouage:'ancre'});
+const perso={look,etat:'debout',coup:null,sol:1,sens:1,garde:0,stun:0};
+
+/* icônes pixel */
+function icone(cv,type){
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;
+  cv.width=32;cv.height=32;g.clearRect(0,0,32,32);
+  switch(type){
+    case 'billet':
+      px(g,4,9,24,15,'#f2ece0');px(g,4,9,24,3,'#e8452c');
+      px(g,7,16,12,2,'#6d6a63');px(g,7,20,9,2,'#6d6a63');px(g,21,17,4,4,'#ffd029');break;
+    case 'casque':
+      px(g,7,12,18,8,'#ffd029');px(g,4,19,24,3,'#e8b81c');px(g,13,8,6,4,'#ffd029');
+      px(g,7,12,18,2,'#fff0b8');break;
+    case 'caisse':
+      px(g,5,11,22,15,'#b8996a');px(g,5,11,22,3,'#8a7448');px(g,5,17,22,2,'#8a7448');
+      px(g,14,19,4,5,'#f2b134');px(g,5,24,22,2,'#8a7448');break;
+    case 'gants':
+      px(g,4,13,11,10,'#e8452c');px(g,3,16,3,5,'#c9331f');
+      px(g,17,13,11,10,'#2ec4c9');px(g,26,16,3,5,'#1f9ba0');
+      px(g,4,13,11,2,'#ff7a68');px(g,17,13,11,2,'#7fe4e8');break;
+    case 'planete':
+      px(g,9,7,14,18,'#2ec4c9');px(g,11,5,10,22,'#2ec4c9');
+      px(g,4,14,24,3,'#f2ece0');px(g,12,9,5,4,'#1f8f93');px(g,16,18,6,4,'#1f8f93');break;
+    case 'coupe':
+      px(g,10,7,12,10,'#ffd029');px(g,6,8,4,6,'#e8b81c');px(g,22,8,4,6,'#e8b81c');
+      px(g,14,17,4,5,'#e8b81c');px(g,10,22,12,4,'#c9a227');px(g,12,9,4,3,'#fff0b8');break;
+  }
+}
+document.querySelectorAll('canvas.ic').forEach(c=>icone(c,c.dataset.ic));
+
+/* M : arène animée + héros */
+const mf=document.getElementById('m-fond').getContext('2d');
+const mp=document.getElementById('m-perso').getContext('2d');
+mf.imageSmoothingEnabled=false;mp.imageSmoothingEnabled=false;
+const np=document.getElementById('n-perso').getContext('2d');np.imageSmoothingEnabled=false;
+
+/* O : cartes */
+const CARTES=[
+  {et:'Ce soir',t:'Carrière',p:'Six adversaires, deux manches gagnantes. Le Nouveau ouvre le bal, Arachné le referme.',
+   infos:['6 arènes','Progression','Gains en €'],ar:0,b:'Descendre sur le quai'},
+  {et:'À deux',t:'En ligne',p:'Ouvre une table, ton adversaire la rejoint depuis son téléphone. Les scores sont gardés.',
+   infos:['Temps réel','Classement','Pseudo'],ar:2,b:'Trouver un adversaire'},
+  {et:'Avant le combat',t:'Vestiaire',p:'Cent trente pièces à essayer, du bonnet de quart à la couronne du port.',
+   infos:['20 rubriques','Aperçu animé','Effets réels'],ar:3,b:'Habiller son docker'},
+  {et:'Le butin',t:'Caisses',p:'Ce qui traîne dans les conteneurs mal fermés. Du commun au légendaire.',
+   infos:['3 caisses','Dès 120 €','24 armes'],ar:5,b:'Ouvrir une caisse'}
+];
+const piste=document.getElementById('piste');
+CARTES.forEach(c=>{
+  const el=document.createElement('div');el.className='carte';
+  el.innerHTML='<canvas class="ill" width="480" height="270"></canvas>'+
+    '<div class="bas"><div class="et">'+c.et+'</div><h2>'+c.t+'</h2><p>'+c.p+'</p>'+
+    '<div class="infos">'+c.infos.map(i=>'<span>'+i+'</span>').join('')+'</div>'+
+    '<button>'+c.b+' ▸</button></div>';
+  piste.appendChild(el);
+  el._g=el.querySelector('canvas').getContext('2d');
+  el._g.imageSmoothingEnabled=false;el._ar=c.ar;
+});
+
+/* boucle */
+(function boucle(t){
+  requestAnimationFrame(boucle);
+  const vue=document.querySelector('.vue.on').id;
+  if(vue==='m'){
+    dessinerArene(mf,0,480,270,214,t);
+    mp.clearRect(0,0,96,124);mp.save();mp.translate(48,116);
+    perso.etat=(Math.floor(t/2600)%4===3)?'gagne':'debout';
+    dessinerDocker(mp,perso,t);mp.restore();
+  }else if(vue==='n'){
+    np.clearRect(0,0,96,124);np.save();np.translate(48,116);
+    dessinerDocker(np,perso,t);np.restore();
+  }else{
+    document.querySelectorAll('#o .carte').forEach(el=>dessinerArene(el._g,el._ar,480,270,214,t));
+  }
+})(0);
+</script>
+</body>
+</html>
